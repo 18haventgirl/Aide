@@ -34,7 +34,7 @@ class Conversation(BaseModel):
     id_str = Column(String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()), comment='会话字符串标识符（UUID）')
     
     # 会话标题
-    title = Column(String(200), nullable=False, comment='会话标题')
+    title = Column(Text, nullable=False, comment='会话标题')
     
     # 会话描述
     description = Column(Text, comment='会话描述')

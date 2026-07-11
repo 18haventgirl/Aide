@@ -266,7 +266,20 @@ async def _process_stream_with_concurrent_handling(
             
             # 标记完成
             chat_response.is_finished = True
-            
+
+            # 合并来自多个 agent 的连续 AI 消息为一条，避免前端显示多条回复
+            if len(chat_response.messages) > 1:
+                merged_content_parts = []
+                merged_agent = chat_response.messages[-1].agent  # 使用最后一个 agent 名称
+                for msg in chat_response.messages:
+                    if msg.content and msg.content != "DISPLAY_SEAT_MAP":
+                        merged_content_parts.append(msg.content.strip())
+                if merged_content_parts:
+                    merged_text = "\n\n".join(merged_content_parts)
+                    # 保留特殊消息（如 DISPLAY_SEAT_MAP）
+                    special_messages = [m for m in chat_response.messages if m.content == "DISPLAY_SEAT_MAP"]
+                    chat_response.messages = [MessageResponse(content=merged_text, agent=merged_agent)] + special_messages
+
             # 保存最终回复
             if assistant_messages:
                 full_assistant_response = "\n".join(assistant_messages)

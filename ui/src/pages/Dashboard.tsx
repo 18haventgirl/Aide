@@ -393,27 +393,26 @@ const Dashboard: React.FC = () => {
               agent: msg.agent,
               timestamp: new Date(),
             }));
-            
-            // 不要直接替换消息列表，而是智能合并
-            // 如果响应中包含完整的会话历史，使用它
-            // 如果只包含新的AI响应，则添加到现有消息后面
+
+            // 只追加新的 AI 消息，不替换已有消息
             setMessages(prev => {
-              // 检查是否有新的AI消息需要添加
-              const lastMessage = prev[prev.length - 1];
+              // 过滤出需要添加的 AI 消息（排除用户消息，因为用户消息已经在发送时添加了）
               const aiMessages = newMessages.filter((msg: Message) => msg.type === 'ai');
-              
-              if (aiMessages.length > 0 && lastMessage && lastMessage.type === 'user') {
-                // 如果最后一条是用户消息，且响应中有AI消息，则添加AI消息
-                console.log('添加AI响应到现有消息列表');
-                return [...prev, ...aiMessages];
-              } else {
-                // 否则使用完整的消息列表（可能是会话历史）
-                console.log('使用完整的消息列表');
-                return newMessages;
+
+              if (aiMessages.length > 0) {
+                // 去重：检查是否已经存在相同内容的消息（避免重复添加）
+                const existingContents = new Set(prev.map(m => m.content));
+                const uniqueAiMessages = aiMessages.filter(msg => !existingContents.has(msg.content));
+
+                if (uniqueAiMessages.length > 0) {
+                  console.log('添加新的 AI 响应到消息列表:', uniqueAiMessages.length, '条');
+                  return [...prev, ...uniqueAiMessages];
+                }
               }
+
+              // 如果没有新的 AI 消息，保持原列表不变
+              return prev;
             });
-            
-            // 会话消息记录已简化，不再需要缓存
           }
           
           if (response.events && Array.isArray(response.events)) {

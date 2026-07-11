@@ -142,7 +142,7 @@ class PersonalAssistantManager:
         """创建MCP服务器连接"""
         return MCPServerStreamableHttp(
             name="personal_assistant_tools",
-            params={"url": self.mcp_server_url},
+            params={"url": self.mcp_server_url, "terminate_on_close": False},
             tool_filter=self._tool_filter
         )
     
