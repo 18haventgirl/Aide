@@ -136,6 +136,7 @@ class PersonalAssistantManager:
             tool_choice="auto",  # 自动选择工具
             parallel_tool_calls=True,  # 并行调用工具
             truncation="auto",  # 截断策略
+            extra_args={"num_retries": 3, "timeout": 60},
         )
     
     def _create_mcp_server(self) -> MCPServerStreamableHttp:
@@ -273,6 +274,10 @@ class PersonalAssistantManager:
         self.agents['conversation_title'] = Agent(
             name="Conversation Title Agent",
             model=self.model,
+            model_settings=ModelSettings(
+                temperature=0.3,
+                extra_args={"num_retries": 3, "timeout": 30},
+            ),
             instructions="You are a conversation title generator. Based on the user's chat history, summarize what the user wants to do and provide a title within 10 characters. ",
         )
         
@@ -419,17 +424,32 @@ class PersonalAssistantManager:
             "3. News Agent: Queries global and local latest news, specific topic information (such as travel, technology, finance) and updates. Call when users need to understand recent situations about places or events, or need background information for planning.\n"
             "4. Personal Assistant: A multi-functional assistant managing user personal information with sub-modules for note management, to-do list management, and personal preference management. Call when tasks involve recording information, creating action items, or managing personal preferences.\n\n"
             "Your approach: Analyze intent → Decompose tasks → Call appropriate agents → Integrate results → Deliver comprehensive response.\n\n"
-            "Important Principle: For clear and specific single-domain requests, directly handoff to the specialized agent without complex decomposition. Only use multi-agent coordination for complex, multi-domain tasks that require integration of different types of information.\n\n"
-            "Example Workflow:\n"
+            "CRITICAL RULE — NEVER SKIP A SUB-TASK:\n"
+            "- You MUST identify ALL sub-tasks in the user's request before calling any agent.\n"
+            "- If the user's request implies ANY action that needs recording (e.g. '明天去健身', '帮我记录', '提醒我', '安排', '计划'), you MUST call the Personal Assistant Agent to create a todo/note, IN ADDITION TO any other agents you call for related information.\n"
+            "- You must NOT return a final response until ALL identified sub-tasks have been dispatched to their respective agents.\n"
+            "- After a sub-agent returns its result, check if there are remaining sub-tasks. If yes, continue calling the next agent. Do NOT stop early.\n"
+            "- Common multi-task pattern: user mentions an activity + a related need → always create todo (Personal Assistant) AND handle the related need (Recipe/Weather/News).\n\n"
+            "Important Principle: For clear and specific single-domain requests with only ONE sub-task, directly handoff to the specialized agent. For any request that touches MULTIPLE domains or implies recording + querying, you MUST call ALL relevant agents sequentially.\n\n"
+            "Example Workflow 1 (Multi-domain):\n"
             "User Input: '我明天要去法国巴黎玩，给我出一个规划。'\n"
             "Your Chain of Thought:\n"
-            "1. Intent Analysis: User needs a travel plan for Paris tomorrow - this is a complex task requiring multiple types of information.\n"
+            "1. Intent Analysis: User needs a travel plan for Paris tomorrow - complex task requiring multiple types of information.\n"
             "2. Task Decomposition & Planning:\n"
-            "   - Sub-task 1: Get Paris weather for tomorrow to provide clothing and travel suggestions → Call Weather Agent\n"
-            "   - Sub-task 2: Query recent Paris news for any travel-affecting events or interesting activities → Call News Agent\n"
-            "   - Sub-task 3: Recommend Paris specialty foods or cuisines → Call Recipe Agent\n"
-            "   - Sub-task 4: Summarize all information into a complete plan and interact with user to confirm if recording is needed → Call Personal Assistant (notes/todo/preferences)\n"
-            "3. Execute agents in logical order, then integrate all results into a comprehensive Paris travel plan."
+            "   - Sub-task 1: Get Paris weather for tomorrow → Call Weather Agent\n"
+            "   - Sub-task 2: Query recent Paris news → Call News Agent\n"
+            "   - Sub-task 3: Recommend Paris specialty foods → Call Recipe Agent\n"
+            "   - Sub-task 4: Create a travel plan note/todo → Call Personal Assistant\n"
+            "3. Execute all 4 agents in logical order, then integrate all results.\n\n"
+            "Example Workflow 2 (Action + Query):\n"
+            "User Input: '我明天要去健身，去之前需要喝咖啡。'\n"
+            "Your Chain of Thought:\n"
+            "1. Intent Analysis: User wants to (a) record '明天去健身' as a todo, and (b) get coffee recommendations for pre-workout.\n"
+            "2. Task Decomposition:\n"
+            "   - Sub-task 1: Create a todo for '明天去健身' → Call Personal Assistant Agent\n"
+            "   - Sub-task 2: Recommend pre-workout coffee/recipes → Call Recipe Agent\n"
+            "3. Execute BOTH agents, then integrate results into one response.\n"
+            "4. DO NOT stop after only calling Recipe Agent. The todo creation is equally important."
         )
     
     # 钩子函数

@@ -34,8 +34,19 @@ from core.web_socket_core import connection_manager, WebSocketConfig
 # 导入服务管理器
 from service.service_manager import service_manager
 
-# 配置日志
-logging.basicConfig(level=logging.INFO)
+# 配置日志 - 写入文件避免 Windows Hidden 窗口 stdout flush 失败 [Errno 22]
+import logging.handlers
+_log_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), "app.log")
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler(_log_file, encoding='utf-8'),
+    ]
+)
+# 静默 LiteLLM 过量日志
+logging.getLogger("LiteLLM").setLevel(logging.WARNING)
+logging.getLogger("litellm").setLevel(logging.WARNING)
 logger = logging.getLogger(__name__)
 
 # =========================
@@ -319,6 +330,6 @@ if __name__ == "__main__":
         "main:app",
         host="0.0.0.0",
         port=WebSocketConfig.DEFAULT_PORT,
-        log_level="info",
+        log_level="warning",
         reload=False
     ) 
