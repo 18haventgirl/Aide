@@ -42,7 +42,7 @@ from agents.extensions.handoff_prompt import RECOMMENDED_PROMPT_PREFIX
 # 应用范围：所有智能代理和护栏都使用此模型配置
 # =========================
 model = LitellmModel(
-    model="gpt-4o",
+    model=os.getenv("OPENAI_CHAT_MODEL", "gpt-4o"),
     base_url=os.getenv("OPENAI_API_BASE_URL"),
     api_key=os.getenv("OPENAI_API_KEY"),
 )

@@ -1,5 +1,6 @@
 """
 数据库配置管理
+支持 MySQL 和 SQLite 两种数据库后端
 """
 
 import os
@@ -11,9 +12,16 @@ load_dotenv()
 
 class DatabaseConfig:
     """数据库配置管理类"""
-    
+
     def __init__(self):
         """初始化数据库配置"""
+        # 数据库类型: "sqlite" 或 "mysql"（默认 sqlite 用于本地开发）
+        self.db_type = os.getenv('DB_TYPE', 'sqlite').lower()
+
+        # SQLite 配置
+        self.sqlite_path = os.getenv('SQLITE_PATH', './aide.db')
+
+        # MySQL 配置
         self.host = os.getenv('DB_HOST', 'localhost')
         self.port = int(os.getenv('DB_PORT', '3306'))
         self.username = os.getenv('DB_USERNAME', 'root')
@@ -25,53 +33,71 @@ class DatabaseConfig:
         self.pool_timeout = int(os.getenv('DB_POOL_TIMEOUT', '30'))
         self.pool_recycle = int(os.getenv('DB_POOL_RECYCLE', '3600'))
         self.echo = os.getenv('DB_ECHO', 'false').lower() == 'true'
-    
+
     def get_connection_url(self) -> str:
         """
         获取数据库连接URL
-        
+
         Returns:
             数据库连接URL字符串
         """
-        return (
-            f"mysql+pymysql://{self.username}:{self.password}@"
-            f"{self.host}:{self.port}/{self.database}"
-            f"?charset={self.charset}"
-        )
-    
+        if self.db_type == 'sqlite':
+            # SQLite: 使用文件路径（项目根目录下的 aide.db）
+            return f"sqlite:///{self.sqlite_path}"
+        else:
+            # MySQL
+            return (
+                f"mysql+pymysql://{self.username}:{self.password}@"
+                f"{self.host}:{self.port}/{self.database}"
+                f"?charset={self.charset}"
+            )
+
     def get_engine_kwargs(self) -> dict:
         """
         获取数据库引擎配置参数
-        
+
         Returns:
             引擎配置参数字典
         """
-        return {
-            'pool_size': self.pool_size,
-            'max_overflow': self.max_overflow,
-            'pool_timeout': self.pool_timeout,
-            'pool_recycle': self.pool_recycle,
-            'echo': self.echo,
-            'pool_pre_ping': True,  # 连接前检查可用性
-            'connect_args': {
-                'charset': self.charset,
-                'autocommit': False,
+        if self.db_type == 'sqlite':
+            return {
+                'echo': self.echo,
+                'connect_args': {'check_same_thread': False},
             }
-        }
-    
+        else:
+            # MySQL 连接池配置
+            return {
+                'pool_size': self.pool_size,
+                'max_overflow': self.max_overflow,
+                'pool_timeout': self.pool_timeout,
+                'pool_recycle': self.pool_recycle,
+                'echo': self.echo,
+                'pool_pre_ping': True,  # 连接前检查可用性
+                'connect_args': {
+                    'charset': self.charset,
+                    'autocommit': False,
+                }
+            }
+
     def validate(self) -> bool:
         """
         验证数据库配置是否完整
-        
+
         Returns:
             配置是否有效
         """
-        required_fields = [self.host, self.username, self.database]
-        return all(field for field in required_fields)
-    
+        if self.db_type == 'sqlite':
+            return True  # SQLite 无需额外验证
+        else:
+            required_fields = [self.host, self.username, self.database]
+            return all(field for field in required_fields)
+
     def __str__(self) -> str:
         """配置信息字符串表示（隐藏密码）"""
-        return (
-            f"DatabaseConfig(host={self.host}, port={self.port}, "
-            f"username={self.username}, database={self.database})"
-        ) 
+        if self.db_type == 'sqlite':
+            return f"DatabaseConfig(type=sqlite, path={self.sqlite_path})"
+        else:
+            return (
+                f"DatabaseConfig(type=mysql, host={self.host}, port={self.port}, "
+                f"username={self.username}, database={self.database})"
+            ) 

@@ -12,6 +12,7 @@ class VectorConfig(BaseModel):
     
     # OpenAI Configuration
     openai_api_key: str
+    openai_api_base_url: str = "https://api.openai.com/v1"
     openai_embedding_model: str = "text-embedding-3-small"
     
     # Chroma Configuration
@@ -40,6 +41,7 @@ class VectorConfig(BaseModel):
         
         return cls(
             openai_api_key=openai_api_key,
+            openai_api_base_url=os.getenv("OPENAI_API_BASE_URL", "https://api.openai.com/v1"),
             openai_embedding_model=os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small"),
 
             # Chroma config

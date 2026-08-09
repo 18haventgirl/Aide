@@ -142,17 +142,21 @@ class DatabaseUtils:
     @staticmethod
     def truncate_table(engine, table_name: str) -> bool:
         """
-        清空数据表
-        
+        清空数据表（兼容 SQLite 和 MySQL）
+
         Args:
             engine: SQLAlchemy引擎
             table_name: 表名
-            
+
         Returns:
             清空是否成功
         """
         try:
-            sql = f"TRUNCATE TABLE {table_name}"
+            # SQLite 不支持 TRUNCATE，统一使用 DELETE FROM
+            if engine.name == 'sqlite':
+                sql = f"DELETE FROM {table_name}"
+            else:
+                sql = f"TRUNCATE TABLE {table_name}"
             with engine.connect() as conn:
                 conn.execute(text(sql))
                 conn.commit()

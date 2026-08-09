@@ -105,10 +105,11 @@ class ChromaVectorClient:
         try:
             self._embedding_function = embedding_functions.OpenAIEmbeddingFunction(
                 api_key=self.config.openai_api_key,
+                api_base=self.config.openai_api_base_url,
                 model_name=self.config.openai_embedding_model,
             )
-            
-            logger.info(f"OpenAI embedding function initialized with model: {self.config.openai_embedding_model}")
+
+            logger.info(f"OpenAI embedding function initialized with model: {self.config.openai_embedding_model}, base_url: {self.config.openai_api_base_url}")
             
         except Exception as e:
             logger.error(f"Failed to initialize OpenAI embedding function: {e}")
