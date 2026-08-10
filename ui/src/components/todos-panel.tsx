@@ -1,544 +1,200 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  CheckSquare, 
-  Plus, 
-  Calendar, 
-  AlertCircle, 
-  Edit3, 
-  Trash2,
-  X,
-  Save,
-  Clock,
-  Flag,
-  CheckCircle,
-  Circle,
-  BarChart3
-} from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { CheckSquare, Plus, Calendar, AlertCircle, Edit3, Trash2, X, Save, Clock, Flag, CheckCircle, Circle, BarChart3, MoreHorizontal } from 'lucide-react';
 import { Button } from './ui/button';
-import { Card } from './ui/card';
 import type { Todo, TodoCreateRequest, TodoUpdateRequest, PersonDataFilter } from '../lib/types';
 import { todoAPI } from '../services/apiService';
 
-interface TodosPanelProps {
-  userId: number;
-}
+interface TodosPanelProps { userId: number }
 
 export function TodosPanel({ userId }: TodosPanelProps) {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(false);
-  const [operationLoading, setOperationLoading] = useState(false);
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [editingTodo, setEditingTodo] = useState<Todo | null>(null);
+  const [opLoading, setOpLoading] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [editing, setEditing] = useState<Todo | null>(null);
   const [filter, setFilter] = useState<PersonDataFilter>({});
   const [showStats, setShowStats] = useState(false);
-  
-  // 表单状态
-  const [formData, setFormData] = useState<TodoCreateRequest>({
-    title: '',
-    description: '',
-    priority: 'medium',
-    due_date: undefined,
-    note_id: undefined
-  });
+  const [showFilters, setShowFilters] = useState(false);
+  const [menuOpen, setMenuOpen] = useState<number | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
-  // 加载待办事项列表
-  const loadTodos = async () => {
-    try {
-      setLoading(true);
-      const response = await todoAPI.getTodos(userId.toString(), {
-        completed: filter.completed,
-        priority: filter.priority,
-        overdue: filter.overdue,
-        limit: 50
-      });
-      // 修正：后端success_response会将数据包装在data字段中
-      setTodos(response.data || []);
-    } catch (error) {
-      console.error('加载待办事项失败:', error);
-      setTodos([]); // 出错时设置为空数组
-    } finally {
-      setLoading(false);
-    }
+  const [form, setForm] = useState<TodoCreateRequest>({ title: '', description: '', priority: 'medium', due_date: undefined, note_id: undefined });
+
+  const load = async () => {
+    setLoading(true);
+    try { const r = await todoAPI.getTodos(userId.toString(), { completed: filter.completed, priority: filter.priority, overdue: filter.overdue, limit: 50 }); setTodos(r.data || []); } catch { setTodos([]); }
+    setLoading(false);
   };
 
-  // 加载统计信息
   const loadStats = async () => {
-    try {
-      const response = await todoAPI.getStats(userId.toString());
-      // 修正：后端get_todo_stats返回包含data字段的结构，需要response.data.data
-      setStats(response.data?.data);
-    } catch (error) {
-      console.error('加载统计信息失败:', error);
-    }
+    try { const r = await todoAPI.getStats(userId.toString()); setStats(r.data?.data); } catch { /* noop */ }
   };
 
-  // 创建待办事项
-  const createTodo = async () => {
+  const submit = async () => {
+    setOpLoading(true);
+    const data = { ...form, due_date: form.due_date ? new Date(form.due_date).toISOString() : undefined };
     try {
-      setOperationLoading(true);
-      const createData = {
-        ...formData,
-        due_date: formData.due_date ? new Date(formData.due_date).toISOString() : undefined
-      };
-      
-      const response = await todoAPI.createTodo(userId.toString(), createData);
-      if (response.success) {
-        // 关闭创建窗口
-        setShowCreateForm(false);
-        // 重置表单
-        setFormData({ title: '', description: '', priority: 'medium', due_date: undefined, note_id: undefined });
-        // 刷新数据
-        await Promise.all([loadTodos(), loadStats()]);
-        // 成功提示
-        console.log('待办事项创建成功');
+      if (editing) {
+        await todoAPI.updateTodo(userId.toString(), editing.id.toString(), data as TodoUpdateRequest);
       } else {
-        console.error('创建待办事项失败:', response.message || '未知错误');
+        await todoAPI.createTodo(userId.toString(), data);
       }
-    } catch (error) {
-      console.error('创建待办事项失败:', error);
-    } finally {
-      setOperationLoading(false);
-    }
+      setShowForm(false); setEditing(null);
+      setForm({ title: '', description: '', priority: 'medium', due_date: undefined, note_id: undefined });
+      await Promise.all([load(), loadStats()]);
+    } catch { /* noop */ }
+    setOpLoading(false);
   };
 
-  // 更新待办事项
-  const updateTodo = async () => {
-    if (!editingTodo) return;
-
-    try {
-      setOperationLoading(true);
-      const updateData: TodoUpdateRequest = {
-        title: formData.title,
-        description: formData.description,
-        priority: formData.priority,
-        due_date: formData.due_date ? new Date(formData.due_date).toISOString() : undefined,
-        note_id: formData.note_id
-      };
-      
-      const response = await todoAPI.updateTodo(userId.toString(), editingTodo.id.toString(), updateData);
-      if (response.success) {
-        // 关闭编辑窗口
-        setEditingTodo(null);
-        setShowCreateForm(false);
-        // 重置表单
-        setFormData({ title: '', description: '', priority: 'medium', due_date: undefined, note_id: undefined });
-        // 刷新数据
-        await Promise.all([loadTodos(), loadStats()]);
-        // 成功提示
-        console.log('待办事项更新成功');
-      } else {
-        console.error('更新待办事项失败:', response.message || '未知错误');
-      }
-    } catch (error) {
-      console.error('更新待办事项失败:', error);
-    } finally {
-      setOperationLoading(false);
-    }
+  const remove = async (id: number) => {
+    if (!confirm('删除这条待办？')) return;
+    setOpLoading(true);
+    try { await todoAPI.deleteTodo(userId.toString(), id.toString()); await Promise.all([load(), loadStats()]); } catch { /* noop */ }
+    setOpLoading(false);
+    setMenuOpen(null);
   };
 
-  // 删除待办事项
-  const deleteTodo = async (todoId: number) => {
-    if (!confirm('确定要删除这个待办事项吗？')) return;
-
-    try {
-      setOperationLoading(true);
-      const response = await todoAPI.deleteTodo(userId.toString(), todoId.toString());
-      if (response.success) {
-        // 刷新数据
-        await Promise.all([loadTodos(), loadStats()]);
-        // 成功提示
-        console.log('待办事项删除成功');
-      } else {
-        console.error('删除待办事项失败:', response.message || '未知错误');
-      }
-    } catch (error) {
-      console.error('删除待办事项失败:', error);
-    } finally {
-      setOperationLoading(false);
-    }
+  const toggle = async (t: Todo) => {
+    setOpLoading(true);
+    try { t.completed ? await todoAPI.uncompleteTodo(userId.toString(), t.id.toString()) : await todoAPI.completeTodo(userId.toString(), t.id.toString()); await Promise.all([load(), loadStats()]); } catch { /* noop */ }
+    setOpLoading(false);
   };
 
-  // 切换完成状态
-  const toggleComplete = async (todo: Todo) => {
-    try {
-      setOperationLoading(true);
-      if (todo.completed) {
-        await todoAPI.uncompleteTodo(userId.toString(), todo.id.toString());
-      } else {
-        await todoAPI.completeTodo(userId.toString(), todo.id.toString());
-      }
-      // 刷新数据
-      await Promise.all([loadTodos(), loadStats()]);
-    } catch (error) {
-      console.error('切换完成状态失败:', error);
-    } finally {
-      setOperationLoading(false);
-    }
+  const startEdit = (t: Todo) => {
+    setEditing(t);
+    setForm({ title: t.title, description: t.description, priority: t.priority, due_date: t.due_date ? new Date(t.due_date).toISOString().split('T')[0] : undefined, note_id: t.note_id || undefined });
+    setShowForm(true);
+    setMenuOpen(null);
   };
 
-  // 开始编辑
-  const startEdit = (todo: Todo) => {
-    setEditingTodo(todo);
-    setFormData({
-      title: todo.title,
-      description: todo.description,
-      priority: todo.priority,
-      due_date: todo.due_date ? new Date(todo.due_date).toISOString().split('T')[0] : undefined,
-      note_id: todo.note_id || undefined
-    });
-    setShowCreateForm(true);
-  };
+  useEffect(() => { Promise.all([load(), loadStats()]).catch(() => {}); }, [userId, filter]);
+  useEffect(() => { const h = (e: MouseEvent) => { if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(null); }; document.addEventListener('mousedown', h); return () => document.removeEventListener('mousedown', h); }, []);
 
-  // 取消编辑
-  const cancelEdit = () => {
-    setEditingTodo(null);
-    setShowCreateForm(false);
-    setFormData({ title: '', description: '', priority: 'medium', due_date: undefined, note_id: undefined });
-  };
-
-  // 格式化日期
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString('zh-CN', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
-  };
-
-  // 获取优先级颜色
-  const getPriorityColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'text-red-500';
-      case 'medium': return 'text-yellow-500';
-      case 'low': return 'text-green-500';
-      default: return 'text-gray-500';
-    }
-  };
-
-  // 获取优先级背景色
-  const getPriorityBgColor = (priority: string) => {
-    switch (priority) {
-      case 'high': return 'bg-red-100 text-red-800';
-      case 'medium': return 'bg-yellow-100 text-yellow-800';
-      case 'low': return 'bg-green-100 text-green-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  // 获取优先级文本
-  const getPriorityText = (priority: string) => {
-    switch (priority) {
-      case 'high': return '高';
-      case 'medium': return '中';
-      case 'low': return '低';
-      default: return '中';
-    }
-  };
-
-  // 组件挂载时加载数据
-  useEffect(() => {
-    Promise.all([loadTodos(), loadStats()]).catch(error => {
-      console.error('初始化数据加载失败:', error);
-    });
-  }, [userId, filter]);
+  const fmt = (d: string | null) => d ? new Date(d).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' }) : '';
+  const pc = (p: string) => ({ high: 'text-red-600 bg-red-50', medium: 'text-amber-600 bg-amber-50', low: 'text-green-600 bg-green-50' }[p] || 'bg-gray-50');
+  const pt = (p: string) => ({ high: '高', medium: '中', low: '低' }[p] || '中');
 
   return (
     <div className="h-full flex flex-col">
-      {/* 头部 */}
-      <div className="flex items-center justify-between p-4 border-b">
-        <h2 className="text-lg font-semibold flex items-center gap-2">
-          <CheckSquare className="w-5 h-5" />
-          待办事项
-        </h2>
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowStats(!showStats)}
-            disabled={operationLoading}
-            className="flex items-center gap-1 disabled:opacity-50"
-          >
-            <BarChart3 className="w-4 h-4" />
-            统计
-          </Button>
-          <Button 
-            onClick={() => setShowCreateForm(true)}
-            disabled={operationLoading}
-            className="bg-green-500 hover:bg-green-600 disabled:opacity-50"
-            size="sm"
-          >
-            <Plus className="w-4 h-4 mr-1" />
-            新建任务
-          </Button>
+      {/* Compact header */}
+      <div className="flex items-center justify-between px-3 py-2 border-b border-border/30">
+        <h3 className="text-sm font-heading font-semibold text-foreground/80 flex items-center gap-1.5">
+          <CheckSquare className="w-3.5 h-3.5" />待办
+        </h3>
+        <div className="flex items-center gap-1">
+          <button onClick={() => setShowStats(!showStats)} className={`p-1.5 rounded-md transition-colors ${showStats ? 'bg-primary/10 text-primary' : 'hover:bg-muted text-muted-foreground'}`} title="统计"><BarChart3 className="w-3.5 h-3.5" /></button>
+          <button onClick={() => setShowFilters(!showFilters)} className={`p-1.5 rounded-md transition-colors ${showFilters ? 'bg-primary/10 text-primary' : 'hover:bg-muted text-muted-foreground'}`} title="筛选"><FilterIcon className="w-3.5 h-3.5" /></button>
+          <button onClick={() => { setEditing(null); setForm({ title: '', description: '', priority: 'medium', due_date: undefined, note_id: undefined }); setShowForm(true); }} className="p-1.5 rounded-md hover:bg-primary/10 text-primary transition-colors" title="新建"><Plus className="w-3.5 h-3.5" /></button>
         </div>
       </div>
 
-      {/* 统计信息 */}
+      {/* Stats */}
       {showStats && stats && (
-        <div className="p-4 border-b bg-gray-50">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">{stats.total}</div>
-              <div className="text-sm text-gray-600">总计</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">{stats.completed}</div>
-              <div className="text-sm text-gray-600">已完成</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-orange-600">{stats.pending}</div>
-              <div className="text-sm text-gray-600">进行中</div>
-            </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-red-600">{stats.overdue}</div>
-              <div className="text-sm text-gray-600">已过期</div>
-            </div>
+        <div className="px-3 py-2 border-b border-border/30 bg-muted/20 animate-fade-in">
+          <div className="grid grid-cols-4 gap-2 text-center">
+            {[['总计', 'text-blue-600', stats.total], ['完成', 'text-green-600', stats.completed], ['待办', 'text-amber-600', stats.pending], ['过期', 'text-red-600', stats.overdue]].map(([l, c, v]) => (
+              <div key={l as string}><div className={`text-lg font-bold ${c}`}>{v}</div><div className="text-[10px] text-muted-foreground">{l}</div></div>
+            ))}
           </div>
         </div>
       )}
 
-      {/* 过滤器 */}
-      <div className="p-4 border-b space-y-3">
-        <div className="flex gap-2">
-          <select
-            value={filter.completed !== undefined ? filter.completed.toString() : ''}
-            onChange={(e) => setFilter({ 
-              ...filter, 
-              completed: e.target.value === '' ? undefined : e.target.value === 'true'
-            })}
-            className="px-3 py-1 border rounded text-sm"
-          >
-            <option value="">全部状态</option>
-            <option value="false">未完成</option>
-            <option value="true">已完成</option>
+      {/* Filters */}
+      {showFilters && (
+        <div className="px-3 py-2 border-b border-border/30 bg-muted/20 flex gap-1.5 animate-fade-in">
+          <select value={filter.completed !== undefined ? String(filter.completed) : ''} onChange={e => setFilter({ ...filter, completed: e.target.value === '' ? undefined : e.target.value === 'true' })} className="flex-1 px-2 py-1 text-xs border border-border rounded-md bg-white">
+            <option value="">全部状态</option><option value="false">未完成</option><option value="true">已完成</option>
           </select>
-          
-          <select
-            value={filter.priority || ''}
-            onChange={(e) => setFilter({ ...filter, priority: (e.target.value || undefined) as 'high' | 'medium' | 'low' | undefined })}
-            className="px-3 py-1 border rounded text-sm"
-          >
-            <option value="">全部优先级</option>
-            <option value="high">高优先级</option>
-            <option value="medium">中优先级</option>
-            <option value="low">低优先级</option>
+          <select value={filter.priority || ''} onChange={e => setFilter({ ...filter, priority: (e.target.value || undefined) as any })} className="flex-1 px-2 py-1 text-xs border border-border rounded-md bg-white">
+            <option value="">全部优先级</option><option value="high">高</option><option value="medium">中</option><option value="low">低</option>
           </select>
-          
-          <select
-            value={filter.overdue !== undefined ? filter.overdue.toString() : ''}
-            onChange={(e) => setFilter({ 
-              ...filter, 
-              overdue: e.target.value === '' ? undefined : e.target.value === 'true'
-            })}
-            className="px-3 py-1 border rounded text-sm"
-          >
-            <option value="">全部任务</option>
-            <option value="true">已过期</option>
-            <option value="false">未过期</option>
+          <select value={filter.overdue !== undefined ? String(filter.overdue) : ''} onChange={e => setFilter({ ...filter, overdue: e.target.value === '' ? undefined : e.target.value === 'true' })} className="flex-1 px-2 py-1 text-xs border border-border rounded-md bg-white">
+            <option value="">全部时间</option><option value="true">已过期</option><option value="false">未过期</option>
           </select>
         </div>
-      </div>
+      )}
 
-      {/* 待办事项列表 */}
-      <div className="flex-1 overflow-y-auto">
+      {/* List */}
+      <div className="flex-1 overflow-y-auto scrollbar-thin">
         {loading ? (
-          <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-500"></div>
-          </div>
+          <div className="flex justify-center py-8"><div className="w-6 h-6 rounded-full border-2 border-primary border-t-transparent animate-spin" /></div>
         ) : todos.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            暂无待办事项
-          </div>
+          <div className="text-center py-8 text-xs text-muted-foreground">暂无待办</div>
         ) : (
-          <div className="p-4 space-y-3">
-            {todos.map((todo) => (
-              <Card key={todo.id} className={`p-4 hover:shadow-md transition-shadow ${
-                todo.completed ? 'opacity-75' : ''
-              }`}>
-                <div className="flex items-start gap-3">
-                  <button
-                    onClick={() => toggleComplete(todo)}
-                    disabled={operationLoading}
-                    className="mt-1 flex-shrink-0 disabled:opacity-50"
-                  >
-                    {todo.completed ? (
-                      <CheckCircle className="w-5 h-5 text-green-500" />
-                    ) : (
-                      <Circle className="w-5 h-5 text-gray-400 hover:text-green-500" />
-                    )}
+          <div className="p-2 space-y-1">
+            {todos.map(t => (
+              <div key={t.id} className={`group px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors relative ${t.completed ? 'opacity-60' : ''}`}>
+                <div className="flex items-start gap-2">
+                  <button onClick={() => toggle(t)} disabled={opLoading} className="mt-0.5 flex-shrink-0">
+                    {t.completed ? <CheckCircle className="w-4 h-4 text-green-500" /> : <Circle className="w-4 h-4 text-muted-foreground/40 hover:text-green-500 transition-colors" />}
                   </button>
-                  
-                  <div className="flex-1">
-                    <h3 className={`font-medium mb-1 ${
-                      todo.completed ? 'line-through text-gray-500' : 'text-gray-900'
-                    }`}>
-                      {todo.title}
-                    </h3>
-                    
-                    {todo.description && (
-                      <p className="text-sm text-gray-600 mb-2">{todo.description}</p>
-                    )}
-                    
-                    <div className="flex items-center gap-2 text-xs text-gray-500">
-                      <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full ${getPriorityBgColor(todo.priority)}`}>
-                        <Flag className="w-3 h-3" />
-                        {getPriorityText(todo.priority)}
-                      </span>
-                      
-                      {todo.due_date && (
-                        <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full ${
-                          todo.is_overdue ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800'
-                        }`}>
-                          <Calendar className="w-3 h-3" />
-                          {formatDate(todo.due_date)}
+                  <div className="flex-1 min-w-0">
+                    <h4 className={`text-sm truncate ${t.completed ? 'line-through text-muted-foreground' : 'text-foreground font-medium'}`}>{t.title}</h4>
+                    {t.description && <p className="text-xs text-muted-foreground truncate mt-0.5">{t.description}</p>}
+                    <div className="flex items-center gap-1.5 mt-1 flex-wrap">
+                      <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] rounded-full ${pc(t.priority)}`}><Flag className="w-2.5 h-2.5" />{pt(t.priority)}</span>
+                      {t.due_date && (
+                        <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] rounded-full ${t.is_overdue && !t.completed ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600'}`}>
+                          <Calendar className="w-2.5 h-2.5" />{fmt(t.due_date)}
                         </span>
                       )}
-                      
-                      {todo.is_overdue && !todo.completed && (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-red-100 text-red-800 rounded-full">
-                          <AlertCircle className="w-3 h-3" />
-                          已过期
-                        </span>
-                      )}
-                      
-                      <span className="inline-flex items-center gap-1 px-2 py-1 bg-gray-100 text-gray-600 rounded-full">
-                        <Clock className="w-3 h-3" />
-                        {todo.status_display}
-                      </span>
+                      {t.is_overdue && !t.completed && <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] bg-red-50 text-red-600 rounded-full"><AlertCircle className="w-2.5 h-2.5" />过期</span>}
                     </div>
                   </div>
-                  
-                  <div className="flex gap-1">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => startEdit(todo)}
-                      disabled={operationLoading}
-                      className="p-1 h-8 w-8 disabled:opacity-50"
-                    >
-                      <Edit3 className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => deleteTodo(todo.id)}
-                      disabled={operationLoading}
-                      className="p-1 h-8 w-8 text-red-500 hover:text-red-700 disabled:opacity-50"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                  {/* ... menu */}
+                  <div className="relative flex-shrink-0" ref={menuOpen === t.id ? menuRef : undefined}>
+                    <button onClick={() => setMenuOpen(menuOpen === t.id ? null : t.id)} className="p-1 rounded-md hover:bg-muted opacity-0 group-hover:opacity-100 transition-opacity">
+                      <MoreHorizontal className="w-3.5 h-3.5 text-muted-foreground" />
+                    </button>
+                    {menuOpen === t.id && (
+                      <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-border py-1 z-30 min-w-[100px] animate-fade-in">
+                        <button onClick={() => startEdit(t)} className="w-full flex items-center gap-2 px-3 py-1.5 text-xs hover:bg-muted transition-colors"><Edit3 className="w-3 h-3" />编辑</button>
+                        <button onClick={() => remove(t.id)} className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-destructive hover:bg-red-50 transition-colors"><Trash2 className="w-3 h-3" />删除</button>
+                      </div>
+                    )}
                   </div>
                 </div>
-              </Card>
+              </div>
             ))}
           </div>
         )}
       </div>
 
-      {/* 创建/编辑表单 */}
-      {showCreateForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md m-4">
+      {/* Form modal */}
+      {showForm && (
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50" onClick={() => { setShowForm(false); setEditing(null); }}>
+          <div className="bg-white rounded-2xl p-5 w-full max-w-md m-4 shadow-xl animate-fade-in" onClick={e => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold">
-                {editingTodo ? '编辑待办事项' : '创建待办事项'}
-              </h3>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={cancelEdit}
-                className="p-1 h-8 w-8"
-              >
-                <X className="w-4 h-4" />
-              </Button>
+              <h3 className="text-base font-heading font-semibold">{editing ? '编辑待办' : '新建待办'}</h3>
+              <button onClick={() => { setShowForm(false); setEditing(null); }} className="p-1.5 rounded-lg hover:bg-muted"><X className="w-4 h-4" /></button>
             </div>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  标题
-                </label>
-                <input
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  placeholder="请输入待办事项标题"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  描述
-                </label>
-                <textarea
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  rows={3}
-                  placeholder="请输入待办事项描述"
-                />
-              </div>
-              
-              <div className="flex gap-4">
-                <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    优先级
-                  </label>
-                  <select
-                    value={formData.priority}
-                    onChange={(e) => setFormData({ ...formData, priority: e.target.value as 'high' | 'medium' | 'low' })}
-                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  >
-                    <option value="low">低优先级</option>
-                    <option value="medium">中优先级</option>
-                    <option value="high">高优先级</option>
-                  </select>
-                </div>
-                
-                <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    截止日期
-                  </label>
-                  <input
-                    type="date"
-                    value={formData.due_date || ''}
-                    onChange={(e) => setFormData({ ...formData, due_date: e.target.value || undefined })}
-                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                  />
-                </div>
+            <div className="space-y-3">
+              <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="w-full px-3 py-2 text-sm border rounded-xl focus:ring-2 focus:ring-primary outline-none" placeholder="标题" />
+              <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} className="w-full px-3 py-2 text-sm border rounded-xl focus:ring-2 focus:ring-primary outline-none" rows={2} placeholder="描述（可选）" />
+              <div className="flex gap-3">
+                <select value={form.priority} onChange={e => setForm({ ...form, priority: e.target.value as any })} className="flex-1 px-3 py-2 text-sm border rounded-xl focus:ring-2 focus:ring-primary outline-none bg-white">
+                  <option value="low">低优先级</option><option value="medium">中优先级</option><option value="high">高优先级</option>
+                </select>
+                <input type="date" value={form.due_date || ''} onChange={e => setForm({ ...form, due_date: e.target.value || undefined })} className="flex-1 px-3 py-2 text-sm border rounded-xl focus:ring-2 focus:ring-primary outline-none" />
               </div>
             </div>
-            
-            <div className="flex justify-end gap-2 mt-6">
-              <Button
-                variant="outline"
-                onClick={cancelEdit}
-                disabled={operationLoading}
-              >
-                取消
-              </Button>
-              <Button
-                onClick={editingTodo ? updateTodo : createTodo}
-                className="bg-green-500 hover:bg-green-600"
-                disabled={!formData.title.trim() || operationLoading}
-              >
-                {operationLoading ? (
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-1"></div>
-                ) : (
-                  <Save className="w-4 h-4 mr-1" />
-                )}
-                {operationLoading 
-                  ? (editingTodo ? '更新中...' : '创建中...') 
-                  : (editingTodo ? '更新' : '创建')
-                }
-              </Button>
+            <div className="flex justify-end gap-2 mt-5">
+              <Button variant="outline" onClick={() => { setShowForm(false); setEditing(null); }} size="sm">取消</Button>
+              <Button onClick={submit} disabled={!form.title.trim() || opLoading} size="sm">{opLoading ? '保存中...' : editing ? '更新' : '创建'}</Button>
             </div>
           </div>
         </div>
       )}
     </div>
   );
-} 
+}
+
+// Simple filter icon component (no lucide Filter import to keep bundle small)
+function FilterIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3" />
+    </svg>
+  );
+}

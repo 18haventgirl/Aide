@@ -1,284 +1,153 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import type { Message } from "../lib/types";
 import ReactMarkdown from "react-markdown";
-import { SeatMap } from "./seat-map";
 import type { WebSocketConnectionStatus } from "../lib/websocket";
-import { Wifi, WifiOff, RefreshCw, Send, AlertCircle, Menu } from "lucide-react";
+import { WifiOff, Send, AlertCircle, Menu, Loader2, Bot, User as UserIcon } from "lucide-react";
 import { ConversationList } from "./ConversationList";
 import { useAppSelector } from "../store/hooks";
-
-// 打字机效果的样式
-const typewriterStyles = `
-  .typewriter-content {
-    overflow: hidden;
-    border-right: 2px solid transparent;
-    white-space: normal;
-    word-wrap: break-word;
-  }
-  
-  .typewriter-cursor {
-    animation: blink 1s infinite;
-  }
-  
-  @keyframes blink {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0; }
-  }
-`;
 
 interface ChatProps {
   messages: Message[];
   onSendMessage: (message: string) => void;
-  /** Whether waiting for assistant response */
   isLoading?: boolean;
-  /** Real-time streaming response */
   streamingResponse?: string;
-  /** WebSocket connection status */
   wsStatus?: WebSocketConnectionStatus;
-  /** Current conversation ID */
   conversationId?: string | null;
-  /** Callback when conversation is selected */
   onSelectConversation?: (conversationId: string) => void;
-  /** Key to trigger conversation list refresh */
   conversationListKey?: number;
 }
 
-export function Chat({ 
-  messages, 
-  onSendMessage, 
-  isLoading, 
-  streamingResponse, 
-  wsStatus = 'disconnected',
-  conversationId,
-  onSelectConversation,
-  conversationListKey
+export function Chat({
+  messages, onSendMessage, isLoading, streamingResponse,
+  wsStatus = 'disconnected', conversationId, onSelectConversation, conversationListKey,
 }: ChatProps) {
-  const { user } = useAppSelector((state) => state.auth);
+  const { user } = useAppSelector(s => s.auth);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [inputText, setInputText] = useState("");
   const [isComposing, setIsComposing] = useState(false);
-  const [showSeatMap, setShowSeatMap] = useState(false);
-  const [selectedSeat, setSelectedSeat] = useState<string | undefined>(undefined);
   const [isSending, setIsSending] = useState(false);
-  const [lastError, setLastError] = useState<string>("");
   const [showConversationList, setShowConversationList] = useState(false);
 
-  // Auto-scroll to bottom when messages or loading indicator change
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
-  }, [messages, isLoading]);
-
-  // Watch for special seat map trigger message (anywhere in list) and only if a seat has not been picked yet
-  useEffect(() => {
-    const hasTrigger = messages.some(
-      (m) => m.type === "ai" && m.content === "DISPLAY_SEAT_MAP"
-    );
-    // Show map if trigger exists and seat not chosen yet
-    if (hasTrigger && !selectedSeat) {
-      setShowSeatMap(true);
-    }
-  }, [messages, selectedSeat]);
+  }, [messages, streamingResponse]);
 
   const handleSend = useCallback(async () => {
-    if (!inputText.trim()) return;
-    
-    if (wsStatus !== 'connected') {
-      setLastError("连接已断开，请等待自动重连...");
-      return;
-    }
-
+    if (!inputText.trim() || wsStatus !== 'connected') return;
     setIsSending(true);
-    setLastError("");
-    
     try {
       await onSendMessage(inputText);
       setInputText("");
-    } catch (error) {
-      setLastError("发送失败，请重试");
-      console.error('发送消息失败:', error);
-    } finally {
-      setIsSending(false);
-    }
+    } catch { /* noop */ }
+    setIsSending(false);
   }, [inputText, onSendMessage, wsStatus]);
 
-  const handleSeatSelect = useCallback(
-    (seat: string) => {
-      setSelectedSeat(seat);
-      setShowSeatMap(false);
-      onSendMessage(`I would like seat ${seat}`);
-    },
-    [onSendMessage]
-  );
-
-  const handleConversationSelect = useCallback(
-    (selectedConversationId: string) => {
-      if (onSelectConversation) {
-        onSelectConversation(selectedConversationId);
-      }
-      setShowConversationList(false);
-    },
-    [onSelectConversation]
-  );
-
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-      if (e.key === "Enter" && !e.shiftKey && !isComposing) {
-        e.preventDefault();
-        handleSend();
-      }
-    },
-    [handleSend, isComposing]
-  );
-
-  const getConnectionStatusInfo = () => {
-    switch (wsStatus) {
-      case 'connected':
-        return {
-          icon: <Wifi className="h-4 w-4 text-green-500" />,
-          text: "已连接",
-          color: "text-green-600"
-        };
-      case 'connecting':
-        return {
-          icon: <RefreshCw className="h-4 w-4 text-yellow-500 animate-spin" />,
-          text: "连接中...",
-          color: "text-yellow-600"
-        };
-      case 'error':
-        return {
-          icon: <WifiOff className="h-4 w-4 text-red-500" />,
-          text: "连接错误",
-          color: "text-red-600"
-        };
-      case 'disconnected':
-      default:
-        return {
-          icon: <WifiOff className="h-4 w-4 text-red-500" />,
-          text: "连接断开",
-          color: "text-red-600"
-        };
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey && !isComposing) {
+      e.preventDefault();
+      handleSend();
     }
-  };
+  }, [handleSend, isComposing]);
 
-  const statusInfo = getConnectionStatusInfo();
+  const connected = wsStatus === 'connected';
 
   return (
-    <div className="flex flex-col h-full flex-1 bg-gray-50 md:bg-white md:shadow-md md:border md:border-gray-300 md:border-t-0 md:rounded-xl relative">
-      <style>{typewriterStyles}</style>
-      <div className="bg-blue-600 text-white h-12 px-4 flex items-center justify-between md:rounded-t-xl border-b border-blue-500">
-        <h2 className="font-semibold text-sm sm:text-base lg:text-lg">
-        Assistant View
-        </h2>
+    <div className="flex flex-col h-full bg-transparent relative">
+      {/* Header */}
+      <div className="h-12 flex-shrink-0 bg-white/25 backdrop-blur-[30px] border-b border-white/40 px-4 flex items-center justify-between" style={{ WebkitBackdropFilter: 'blur(30px)' }}>
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => setShowConversationList(true)}
-            className="p-2 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-md transition-all duration-200 text-blue-100 hover:text-white"
-            title="会话列表"
-          >
-            <Menu className="h-5 w-5" />
-          </button>
+          <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center">
+            <Bot className="w-3.5 h-3.5 text-white" />
+          </div>
+          <h2 className="font-heading font-semibold text-sm">Assistant</h2>
         </div>
+        <button
+          onClick={() => setShowConversationList(true)}
+          className="p-1.5 rounded-lg hover:bg-muted transition-colors"
+          title="会话列表"
+        >
+          <Menu className="w-4 h-4 text-muted-foreground" />
+        </button>
       </div>
 
       {/* Connection warning */}
-      {wsStatus !== 'connected' && (
-        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-3 mx-4 mt-2 rounded-r border border-yellow-200">
-          <div className="flex items-center">
-            <AlertCircle className="h-4 w-4 text-yellow-600 mr-2" />
-            <div className="text-sm text-yellow-800">
-              {wsStatus === 'connecting' && (
-                <span>正在尝试连接到服务器...</span>
-              )}
-              {wsStatus === 'error' && (
-                <div>
-                  <div>WebSocket连接失败，聊天功能不可用</div>
-                  <div className="text-xs mt-1">
-                    可能原因：1) 后端服务未启动 2) 认证失败 3) 网络问题
-                  </div>
-                </div>
-              )}
-              {wsStatus === 'disconnected' && (
-                <span>连接已断开，部分功能可能无法使用</span>
-              )}
-            </div>
-          </div>
+      {!connected && (
+        <div className="flex-shrink-0 bg-warning/10 border-b border-warning/20 px-4 py-2 flex items-center gap-2 text-sm text-warning/90">
+          <WifiOff className="w-3.5 h-3.5" />
+          <span>{wsStatus === 'connecting' ? '连接中...' : '未连接，消息功能不可用'}</span>
         </div>
       )}
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto min-h-0 px-4 pt-4 pb-20 bg-gray-50 md:bg-white">
+      <div className="flex-1 overflow-y-auto scrollbar-thin px-4 py-4 bg-transparent">
+        {messages.length === 0 && !streamingResponse && (
+          <div className="h-full flex flex-col items-center justify-center text-center px-8">
+            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-blue-100 flex items-center justify-center mb-4">
+              <Bot className="w-8 h-8 text-primary" />
+            </div>
+            <h3 className="font-heading font-semibold text-foreground mb-1">开始对话</h3>
+            <p className="text-sm text-muted-foreground max-w-xs">输入消息与 AI 助手交流，我会帮你管理待办、笔记和更多</p>
+          </div>
+        )}
+
         {messages.map((msg, idx) => {
-          if (msg.content === "DISPLAY_SEAT_MAP") return null; // Skip rendering marker message
+          if (msg.content === "DISPLAY_SEAT_MAP") return null;
+          const isUser = msg.type === 'user';
+          const isError = msg.content.startsWith('系统异常:');
           return (
-            <div
-              key={idx}
-              className={`flex mb-6 text-sm ${msg.type === "user" ? "justify-end" : "justify-start"
-                }`}
-            >
-              {msg.type === "user" ? (
-                <div className="ml-4 rounded-2xl rounded-br-md px-5 py-3 md:ml-24 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium max-w-[80%] shadow-lg border border-blue-600 transform hover:scale-[1.02] transition-all duration-200">
-                  <ReactMarkdown>{msg.content}</ReactMarkdown>
+            <div key={msg.id || idx} className={`flex mb-4 msg-enter ${isUser ? 'justify-end' : 'justify-start'}`} style={{ animationDelay: `${Math.min(idx * 30, 300)}ms` }}>
+              {!isUser && (
+                <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary/15 to-blue-100 flex items-center justify-center flex-shrink-0 mr-2.5 mt-0.5">
+                  <Bot className="w-4 h-4 text-primary" />
                 </div>
-              ) : (
-                <div className={`mr-4 rounded-2xl rounded-bl-md px-5 py-3 md:mr-24 font-medium max-w-[80%] shadow-md border transform hover:scale-[1.02] transition-all duration-200 ${
-                  msg.content.startsWith('系统异常:') 
-                    ? 'text-red-800 bg-gradient-to-r from-red-50 to-red-100 border-red-300' 
-                    : 'text-gray-800 bg-gradient-to-r from-gray-50 to-gray-100 border-gray-300'
-                }`}>
-                  <ReactMarkdown>{msg.content}</ReactMarkdown>
+              )}
+              <div className={`max-w-[78%] px-4 py-2.5 text-sm leading-relaxed ${
+                isUser
+                  ? 'msg-user'
+                  : isError ? 'msg-error' : 'msg-ai'
+              }`}>
+                <ReactMarkdown>{msg.content}</ReactMarkdown>
+              </div>
+              {isUser && (
+                <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center flex-shrink-0 ml-2.5 mt-0.5">
+                  <UserIcon className="w-4 h-4 text-white" />
                 </div>
               )}
             </div>
           );
         })}
-        {showSeatMap && (
-          <div className="flex justify-start mb-5">
-            <div className="mr-4 rounded-[16px] rounded-bl-[4px] md:mr-24">
-              <SeatMap
-                onSeatSelect={handleSeatSelect}
-                selectedSeat={selectedSeat}
-              />
-            </div>
-          </div>
-        )}
+
+        {/* Streaming response */}
         {streamingResponse && (
-          <div className="flex mb-6 text-sm justify-start">
-            <div className={`mr-4 rounded-2xl rounded-bl-md px-5 py-3 md:mr-24 font-medium max-w-[80%] shadow-md border transform hover:scale-[1.02] transition-all duration-200 ${
-              streamingResponse.startsWith('系统异常:')
-                ? 'text-red-800 bg-gradient-to-r from-red-50 to-red-100 border-red-200'
-                : 'text-gray-800 bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200'
-            }`}>
-              <div className={`text-xs font-semibold mb-2 flex items-center gap-2 ${
-                streamingResponse.startsWith('系统异常:')
-                  ? 'text-red-600'
-                  : 'text-blue-600'
-              }`}>
-                <div className={`w-2 h-2 rounded-full animate-pulse ${
-                  streamingResponse.startsWith('系统异常:')
-                    ? 'bg-red-500'
-                    : 'bg-blue-500'
-                }`}></div>
-                {streamingResponse.startsWith('系统异常:') ? '系统错误' : 'AI 正在回复...'}
+          <div className="flex mb-4 justify-start animate-fade-in">
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary/15 to-blue-100 flex items-center justify-center flex-shrink-0 mr-2.5 mt-0.5">
+              <Bot className="w-4 h-4 text-primary" />
+            </div>
+            <div className="max-w-[78%] px-4 py-2.5 msg-streaming text-sm leading-relaxed">
+              <div className="flex items-center gap-2 mb-2 text-xs text-primary/70 font-medium">
+                <div className="flex gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse-dot" />
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse-dot" style={{ animationDelay: '0.2s' }} />
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse-dot" style={{ animationDelay: '0.4s' }} />
+                </div>
+                正在回复...
               </div>
-              <div className="typewriter-content">
-                <ReactMarkdown>{streamingResponse}</ReactMarkdown>
-                {!streamingResponse.startsWith('系统异常:') && (
-                  <span className="typewriter-cursor inline-block w-0.5 h-4 bg-blue-500 ml-1"></span>
-                )}
-              </div>
+              <ReactMarkdown>{streamingResponse}</ReactMarkdown>
+              <span className="inline-block w-1.5 h-4 bg-primary/60 ml-0.5 animate-pulse rounded-sm align-text-bottom" />
             </div>
           </div>
         )}
+
+        {/* Loading skeleton */}
         {isLoading && !streamingResponse && (
-          <div className="flex mb-6 text-sm justify-start">
-            <div className="mr-4 rounded-2xl rounded-bl-md px-5 py-3 md:mr-24 bg-gradient-to-r from-gray-50 to-gray-100 font-medium max-w-[80%] shadow-md border border-gray-200">
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1">
-                  <div className="h-2 w-2 bg-blue-500 rounded-full animate-pulse"></div>
-                  <div className="h-2 w-2 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-                  <div className="h-2 w-2 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
-                </div>
-                <span className="text-sm text-gray-700 font-medium">正在处理...</span>
+          <div className="flex mb-4 justify-start animate-fade-in">
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary/15 to-blue-100 flex items-center justify-center flex-shrink-0 mr-2.5 mt-0.5">
+              <Bot className="w-4 h-4 text-primary" />
+            </div>
+            <div className="max-w-[78%] px-5 py-3 msg-ai">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                正在处理...
               </div>
             </div>
           </div>
@@ -287,92 +156,46 @@ export function Chat({
       </div>
 
       {/* Input area */}
-      <div className="p-3 md:p-4 bg-gray-50 md:bg-white border-t border-gray-200/50 md:border-t-0">
-        {/* Error message */}
-        {lastError && (
-          <div className="mb-2 p-2 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700 flex items-center gap-2">
-            <AlertCircle className="h-4 w-4 text-red-500" />
-            {lastError}
-          </div>
-        )}
-
-        {/* Status indicator */}
-        {isSending && (
-          <div className="mb-2 p-2 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-700 flex items-center gap-2">
-            <RefreshCw className="h-4 w-4 text-blue-500 animate-spin" />
-            正在发送消息...
-          </div>
-        )}
-
-        <div className="flex items-center">
-          <div className="flex w-full items-center pb-4 md:pb-1">
-            <div className={`flex w-full flex-col rounded-xl md:rounded-2xl p-2 md:p-3 transition-all duration-200 ${
-              wsStatus !== 'connected' 
-                ? 'bg-transparent' 
-                : 'bg-transparent md:bg-white md:border-2 md:border-gray-200 md:shadow-lg md:hover:shadow-xl md:focus-within:border-blue-400 md:focus-within:ring-2 md:focus-within:ring-blue-100'
-            }`}>
-              <div className="flex items-end gap-2">
-                <div className="flex min-w-0 flex-1 flex-col">
-                  <textarea
-                    id="prompt-textarea"
-                    tabIndex={0}
-                    dir="auto"
-                    rows={1}
-                    placeholder={
-                      wsStatus !== 'connected' 
-                        ? "连接断开，无法发送消息"
-                        : "在这里输入您的消息..."
-                    }
-                    className={`resize-none border focus:outline-none text-sm px-3 py-3 rounded-lg transition-all duration-200 ${
-                      wsStatus !== 'connected' 
-                        ? 'bg-gray-100 text-gray-400 border-gray-200' 
-                        : 'bg-white border-gray-200 hover:bg-gray-50 focus:bg-white text-gray-900 placeholder-gray-500 focus:border-blue-500 md:border-gray-300'
-                    }`}
-                    style={{ minHeight: '44px', maxHeight: '120px' }}
-                    value={inputText}
-                    onChange={(e) => setInputText(e.target.value)}
-                    onKeyDown={handleKeyDown}
-                    onCompositionStart={() => setIsComposing(true)}
-                    onCompositionEnd={() => setIsComposing(false)}
-                    disabled={wsStatus !== 'connected'}
-                  />
-                </div>
-                <button
-                  disabled={wsStatus !== 'connected' || !inputText.trim() || isSending}
-                  className={`flex h-11 px-3 items-center justify-center rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 border ${
-                    wsStatus !== 'connected' || !inputText.trim() || isSending
-                      ? 'bg-gray-300 text-gray-400 cursor-not-allowed border-gray-300'
-                      : 'bg-gradient-to-r from-primary to-blue-600 text-white hover:from-blue-600 hover:to-blue-700 hover:shadow-lg transform hover:scale-105 focus:ring-blue-300 border-primary shadow-md'
-                  }`}
-                  onClick={handleSend}
-                >
-                  {isSending ? (
-                    <>
-                      <RefreshCw className="h-4 w-4 animate-spin mr-1" />
-                      <span className="text-xs font-medium">发送中</span>
-                    </>
-                  ) : (
-                    <>
-                      <Send className="h-4 w-4 mr-1" />
-                      <span className="text-xs font-medium">发送</span>
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
+      <div className="flex-shrink-0 p-3 bg-transparent">
+        <div className={`transition-all duration-200 ${connected ? 'bg-white/75 backdrop-blur-[20px] rounded-2xl shadow-lg p-1' : 'bg-muted/50 rounded-2xl p-1'}`} style={connected ? { WebkitBackdropFilter: 'blur(30px)', border: '1px solid rgba(37,99,235,0.15)' } : {}}>
+          <div className="flex items-end gap-1.5">
+            <textarea
+              rows={1}
+              placeholder={connected ? "输入消息... (Enter 发送)" : "未连接"}
+              className={`flex-1 resize-none bg-transparent text-sm px-3 py-2.5 outline-none placeholder:text-muted-foreground/50 min-h-[44px] max-h-[120px] ${
+                !connected && 'text-muted-foreground/50'
+              }`}
+              value={inputText}
+              onChange={e => setInputText(e.target.value)}
+              onKeyDown={handleKeyDown}
+              onCompositionStart={() => setIsComposing(true)}
+              onCompositionEnd={() => setIsComposing(false)}
+              disabled={!connected}
+            />
+            <button
+              disabled={!connected || !inputText.trim() || isSending}
+              onClick={handleSend}
+              className={`h-10 w-10 flex items-center justify-center rounded-xl transition-all duration-200 flex-shrink-0 ${
+                connected && inputText.trim() && !isSending
+                  ? 'bg-gradient-to-r from-primary to-blue-600 text-white shadow-md shadow-primary/20 hover:shadow-lg hover:scale-105'
+                  : 'bg-muted text-muted-foreground cursor-not-allowed'
+              }`}
+            >
+              {isSending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Conversation List */}
+      {/* Conversation List Drawer */}
       <ConversationList
         isOpen={showConversationList}
         onClose={() => setShowConversationList(false)}
-        onSelectConversation={handleConversationSelect}
+        onSelectConversation={(id) => { onSelectConversation?.(id); setShowConversationList(false); }}
         currentConversationId={conversationId || null}
         userId={user?.user_id ? parseInt(String(user.user_id)) : 1}
         refreshKey={conversationListKey}
       />
     </div>
   );
-} 
+}

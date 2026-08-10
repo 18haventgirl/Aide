@@ -9,7 +9,7 @@ import { useToast } from './components/ui/toast';
 import { useAppDispatch } from './store/hooks';
 import { logout } from './store/slices/authSlice';
 import { useAuthInit, useAutoTokenRefresh, useRouteTokenValidation } from './hooks/useAuthInit';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Zap } from 'lucide-react';
 
 function App() {
   const { error: showError } = useToast();
@@ -39,10 +39,12 @@ function App() {
   // 认证初始化中，显示加载页面
   if (!isInitialized) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-center">
-          <Loader2 className="w-8 h-8 animate-spin text-blue-500 mx-auto mb-4" />
-          <p className="text-gray-600">初始化中...</p>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-indigo-50">
+        <div className="text-center animate-fade-in">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-blue-600 shadow-lg shadow-primary/25 mb-5 animate-float">
+            <Zap className="w-8 h-8 text-white" />
+          </div>
+          <p className="text-muted-foreground text-sm">正在加载 Aide...</p>
         </div>
       </div>
     );

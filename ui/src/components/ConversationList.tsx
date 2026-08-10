@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, ChevronDown, ChevronUp, X, Plus, Clock, User } from 'lucide-react';
+import { MessageSquare, ChevronDown, ChevronUp, X, Plus, Clock, User, Loader2 } from 'lucide-react';
 import { conversationAPI } from '../services/apiService';
 import { useToast } from './ui/toast';
 import { PAGINATION } from '../lib/config';
@@ -144,19 +144,19 @@ export function ConversationList({
   if (!isOpen) return null;
 
   return (
-    <div className="absolute inset-0 z-50 bg-black bg-opacity-50 flex items-start justify-end">
-      <div className="bg-white w-80 h-full shadow-xl flex flex-col border-l border-gray-300">
+    <div className="absolute inset-0 z-50 bg-black/30 backdrop-blur-sm flex items-start justify-end">
+      <div className="bg-white/95 backdrop-blur-glass w-80 h-full shadow-xl flex flex-col border-l border-border/30 animate-slide-in-right">
         {/* Header */}
-        <div className="bg-blue-600 text-white p-4 flex items-center justify-between border-b border-blue-500">
+        <div className="h-12 bg-gradient-to-r from-primary to-blue-600 text-white px-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <MessageSquare className="h-5 w-5" />
-            <h2 className="font-semibold">会话列表</h2>
+            <MessageSquare className="h-4.5 w-4.5" />
+            <h2 className="font-heading font-semibold text-sm">会话列表</h2>
           </div>
           <button
             onClick={onClose}
-            className="p-1 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-md transition-all duration-200 text-blue-100 hover:text-white"
+            className="p-1.5 rounded-lg hover:bg-white/20 transition-colors"
           >
-            <X className="h-5 w-5" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
@@ -164,7 +164,7 @@ export function ConversationList({
         <div className="p-4 border-b border-gray-200">
           <button
             onClick={createNewConversation}
-            className="w-full flex items-center gap-2 px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 rounded-lg transition-colors border border-blue-200 hover:border-blue-300"
+            className="w-full flex items-center gap-2 px-4 py-2.5 bg-primary/5 hover:bg-primary/10 text-primary rounded-xl transition-all border border-primary/10 hover:border-primary/20 font-medium text-sm"
           >
             <Plus className="h-4 w-4" />
             新建会话
@@ -190,8 +190,8 @@ export function ConversationList({
                 onSelectConversation(conversation.id_str);
                 onClose();
               }}
-              className={`p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors ${
-                currentConversationId === conversation.id_str ? 'bg-blue-50 border-l-4 border-l-blue-500 shadow-sm' : 'hover:shadow-sm'
+              className={`p-4 border-b border-border/30 cursor-pointer hover:bg-muted/50 transition-all ${
+                currentConversationId === conversation.id_str ? 'bg-primary/5 border-l-[3px] border-l-primary' : 'hover:shadow-sm'
               }`}
             >
               <div className="flex items-start justify-between">
@@ -218,23 +218,23 @@ export function ConversationList({
           ))}
 
           {loading && (
-            <div className="p-4 flex items-center justify-center text-gray-500">
-              <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-              <span className="ml-2">加载中...</span>
+            <div className="p-4 flex items-center justify-center text-muted-foreground">
+              <Loader2 className="w-5 h-5 animate-spin" />
+              <span className="ml-2 text-sm">加载中...</span>
             </div>
           )}
 
           {!hasMore && conversations.length > 0 && (
-            <div className="p-4 text-center text-gray-500 text-sm">
-              没有更多会话了
+            <div className="p-4 text-center text-muted-foreground text-xs">
+              — 已显示全部 —
             </div>
           )}
 
           {conversations.length === 0 && !loading && !error && (
-            <div className="p-8 text-center text-gray-500">
-              <MessageSquare className="h-12 w-12 mx-auto mb-4 text-gray-300" />
-              <p className="text-sm">还没有会话记录</p>
-              <p className="text-xs text-gray-400 mt-1">点击"新建会话"开始对话</p>
+            <div className="p-8 text-center text-muted-foreground">
+              <MessageSquare className="h-10 w-10 mx-auto mb-3 text-muted-foreground/30" />
+              <p className="text-sm">暂无会话</p>
+              <p className="text-xs mt-1">点击上方按钮开始对话</p>
             </div>
           )}
         </div>

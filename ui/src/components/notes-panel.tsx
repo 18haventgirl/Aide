@@ -1,27 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  FileText, 
-  Plus, 
-  Search, 
-  Tag, 
-  Edit3, 
-  Trash2, 
-  Filter,
-  X,
-  Save,
-  Search as SearchIcon
-} from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { FileText, Plus, Search, Tag, Edit3, Trash2, X, Save, MoreHorizontal, ChevronDown } from 'lucide-react';
 import { Button } from './ui/button';
-import { Card } from './ui/card';
 import type { Note, NoteCreateRequest, NoteUpdateRequest, PersonDataFilter } from '../lib/types';
 import { noteAPI } from '../services/apiService';
-import { useAppSelector } from '../store/hooks';
 
-interface NotesPanelProps {
-  userId: number;
-}
-
-// 预定义的标签选项
 const PREDEFINED_TAGS = [
   { value: 'lifestyle tips', label: '生活小贴士' },
   { value: 'cooking advice', label: '烹饪建议' },
@@ -29,452 +11,181 @@ const PREDEFINED_TAGS = [
   { value: 'news context', label: '新闻背景' }
 ];
 
+interface NotesPanelProps { userId: number }
+
 export function NotesPanel({ userId }: NotesPanelProps) {
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState(false);
-  const [operationLoading, setOperationLoading] = useState(false);
-  const [showCreateForm, setShowCreateForm] = useState(false);
-  const [editingNote, setEditingNote] = useState<Note | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [opLoading, setOpLoading] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+  const [editing, setEditing] = useState<Note | null>(null);
+  const [searchQ, setSearchQ] = useState('');
   const [filter, setFilter] = useState<PersonDataFilter>({});
-  const [availableTags, setAvailableTags] = useState<string[]>([]);
-  const [showSearchResults, setShowSearchResults] = useState(false);
-  
-  // 表单状态
-  const [formData, setFormData] = useState<NoteCreateRequest>({
-    title: '',
-    content: '',
-    tag: '',
-    status: 'draft'
-  });
+  const [tags, setTags] = useState<string[]>([]);
+  const [showFilters, setShowFilters] = useState(false);
+  const [menuOpen, setMenuOpen] = useState<number | null>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
-  // 加载笔记列表
-  const loadNotes = async () => {
+  const [form, setForm] = useState<NoteCreateRequest>({ title: '', content: '', tag: '', status: 'draft' });
+
+  const load = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const response = await noteAPI.getNotes(userId.toString(), {
-        tag: filter.tag,
-        status: filter.status,
-        search: filter.search,
-        limit: 50
-      });
-      // 适配后端新数据结构：response.data.data
-      setNotes(response.data?.data || []);
-    } catch (error) {
-      console.error('加载笔记失败:', error);
-      setNotes([]); // 出错时设置为空数组
-    } finally {
-      setLoading(false);
-    }
+      const r = await noteAPI.getNotes(userId.toString(), { tag: filter.tag, status: filter.status, search: filter.search, limit: 50 });
+      setNotes(r.data?.data || []);
+    } catch { setNotes([]); }
+    setLoading(false);
   };
 
-  // 加载可用标签
   const loadTags = async () => {
-    try {
-      const response = await noteAPI.getTags(userId.toString());
-      // 适配后端新数据结构：response.data.data
-      setAvailableTags(response.data?.data || []);
-    } catch (error) {
-      console.error('加载标签失败:', error);
-      setAvailableTags([]); // 出错时设置为空数组
-    }
+    try { const r = await noteAPI.getTags(userId.toString()); setTags(r.data?.data || []); } catch { setTags([]); }
   };
 
-  // 搜索笔记
-  const searchNotes = async () => {
-    if (!searchQuery.trim()) {
-      setShowSearchResults(false);
-      loadNotes();
-      return;
-    }
-
+  const search = async () => {
+    if (!searchQ.trim()) { load(); return; }
+    setLoading(true);
     try {
-      setLoading(true);
-      const response = await noteAPI.searchNotes(userId.toString(), {
-        query: searchQuery,
-        tag: filter.tag,
-        status: filter.status,
-        limit: 20,
-        use_vector_search: true
-      });
-      // 适配后端新数据结构：response.data.data
-      setNotes(response.data?.data || []);
-      setShowSearchResults(true);
-    } catch (error) {
-      console.error('搜索笔记失败:', error);
-      setNotes([]); // 出错时设置为空数组
-    } finally {
-      setLoading(false);
-    }
+      const r = await noteAPI.searchNotes(userId.toString(), { query: searchQ, tag: filter.tag, status: filter.status, limit: 20, use_vector_search: true });
+      setNotes(r.data?.data || []);
+    } catch { setNotes([]); }
+    setLoading(false);
   };
 
-  // 创建笔记
-  const createNote = async () => {
+  const submit = async () => {
+    setOpLoading(true);
     try {
-      setOperationLoading(true);
-      const response = await noteAPI.createNote(userId.toString(), formData);
-      if (response.success) {
-        // 关闭创建窗口
-        setShowCreateForm(false);
-        // 重置表单
-        setFormData({ title: '', content: '', tag: '', status: 'draft' });
-        // 刷新数据
-        await Promise.all([loadNotes(), loadTags()]);
-        // 成功提示
-        console.log('笔记创建成功');
+      if (editing) {
+        await noteAPI.updateNote(userId.toString(), editing.id.toString(), { title: form.title, content: form.content, tag: form.tag, status: form.status });
       } else {
-        console.error('创建笔记失败:', response.message || '未知错误');
+        await noteAPI.createNote(userId.toString(), form);
       }
-    } catch (error) {
-      console.error('创建笔记失败:', error);
-    } finally {
-      setOperationLoading(false);
-    }
+      setShowForm(false); setEditing(null);
+      setForm({ title: '', content: '', tag: '', status: 'draft' });
+      await Promise.all([load(), loadTags()]);
+    } catch { /* noop */ }
+    setOpLoading(false);
   };
 
-  // 更新笔记
-  const updateNote = async () => {
-    if (!editingNote) return;
-
-    try {
-      setOperationLoading(true);
-      const updateData: NoteUpdateRequest = {
-        title: formData.title,
-        content: formData.content,
-        tag: formData.tag,
-        status: formData.status
-      };
-      
-      const response = await noteAPI.updateNote(userId.toString(), editingNote.id.toString(), updateData);
-      if (response.success) {
-        // 关闭编辑窗口
-        setEditingNote(null);
-        setShowCreateForm(false);
-        // 重置表单
-        setFormData({ title: '', content: '', tag: '', status: 'draft' });
-        // 刷新数据
-        await Promise.all([loadNotes(), loadTags()]);
-        // 成功提示
-        console.log('笔记更新成功');
-      } else {
-        console.error('更新笔记失败:', response.message || '未知错误');
-      }
-    } catch (error) {
-      console.error('更新笔记失败:', error);
-    } finally {
-      setOperationLoading(false);
-    }
+  const remove = async (id: number) => {
+    if (!confirm('删除这条笔记？')) return;
+    setOpLoading(true);
+    try { await noteAPI.deleteNote(userId.toString(), id.toString()); await Promise.all([load(), loadTags()]); } catch { /* noop */ }
+    setOpLoading(false);
+    setMenuOpen(null);
   };
 
-  // 删除笔记
-  const deleteNote = async (noteId: number) => {
-    if (!confirm('确定要删除这个笔记吗？')) return;
+  const startEdit = (n: Note) => { setEditing(n); setForm({ title: n.title, content: n.content, tag: n.tag || '', status: n.status }); setShowForm(true); setMenuOpen(null); };
 
-    try {
-      setOperationLoading(true);
-      const response = await noteAPI.deleteNote(userId.toString(), noteId.toString());
-      if (response.success) {
-        // 刷新数据
-        await Promise.all([loadNotes(), loadTags()]);
-        // 成功提示
-        console.log('笔记删除成功');
-      } else {
-        console.error('删除笔记失败:', response.message || '未知错误');
-      }
-    } catch (error) {
-      console.error('删除笔记失败:', error);
-    } finally {
-      setOperationLoading(false);
-    }
-  };
+  useEffect(() => { Promise.all([load(), loadTags()]).catch(() => {}); }, [userId, filter]);
+  useEffect(() => { const h = (e: MouseEvent) => { if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(null); }; document.addEventListener('mousedown', h); return () => document.removeEventListener('mousedown', h); }, []);
 
-  // 开始编辑
-  const startEdit = (note: Note) => {
-    setEditingNote(note);
-    setFormData({
-      title: note.title,
-      content: note.content,
-      tag: note.tag || '',
-      status: note.status
-    });
-    setShowCreateForm(true);
-  };
-
-  // 取消编辑
-  const cancelEdit = () => {
-    setEditingNote(null);
-    setShowCreateForm(false);
-    setFormData({ title: '', content: '', tag: '', status: 'draft' });
-  };
-
-  // 获取标签显示名称
-  const getTagLabel = (tagValue: string) => {
-    const tag = PREDEFINED_TAGS.find(t => t.value === tagValue);
-    return tag ? tag.label : tagValue;
-  };
-
-  // 格式化日期
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString('zh-CN', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  // 获取状态颜色
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'draft': return 'bg-gray-100 text-gray-800';
-      case 'published': return 'bg-green-100 text-green-800';
-      case 'archived': return 'bg-yellow-100 text-yellow-800';
-      default: return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  // 组件挂载时加载数据
-  useEffect(() => {
-    Promise.all([loadNotes(), loadTags()]).catch(error => {
-      console.error('初始化数据加载失败:', error);
-    });
-  }, [userId, filter]);
+  const tagLabel = (v: string) => PREDEFINED_TAGS.find(t => t.value === v)?.label || v;
+  const fmt = (d: string | null) => d ? new Date(d).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : '';
+  const sc = (s: string) => ({ draft: 'bg-gray-100 text-gray-600', published: 'bg-green-100 text-green-700', archived: 'bg-yellow-100 text-yellow-700' }[s] || 'bg-gray-100');
 
   return (
     <div className="h-full flex flex-col">
-      {/* 头部 */}
-      <div className="flex items-center justify-between p-4 border-b">
-        <h2 className="text-lg font-semibold flex items-center gap-2">
-          <FileText className="w-5 h-5" />
-          笔记管理
-        </h2>
-        <Button 
-          onClick={() => setShowCreateForm(true)}
-          disabled={operationLoading}
-          className="bg-blue-500 hover:bg-blue-600 disabled:opacity-50"
-          size="sm"
-        >
-          <Plus className="w-4 h-4 mr-1" />
-          新建笔记
-        </Button>
-      </div>
-
-      {/* 搜索和过滤 */}
-      <div className="p-4 border-b space-y-3">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <input
-            type="text"
-            placeholder="搜索笔记..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && searchNotes()}
-            className="w-full pl-10 pr-10 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          {searchQuery && (
-            <button
-              onClick={searchNotes}
-              className="absolute right-3 top-1/2 transform -translate-y-1/2 text-blue-500 hover:text-blue-700"
-            >
-              <SearchIcon className="w-4 h-4" />
-            </button>
-          )}
-        </div>
-        
-        <div className="flex gap-2">
-          <select
-            value={filter.tag || ''}
-            onChange={(e) => setFilter({ ...filter, tag: e.target.value || undefined })}
-            className="px-3 py-1 border rounded text-sm"
-          >
-            <option value="">所有标签</option>
-            {PREDEFINED_TAGS.map(tag => (
-              <option key={tag.value} value={tag.value}>{tag.label}</option>
-            ))}
-            {(availableTags || []).filter(tag => !PREDEFINED_TAGS.some(pt => pt.value === tag)).map(tag => (
-              <option key={tag} value={tag}>{tag}</option>
-            ))}
-          </select>
-          
-          <select
-            value={filter.status || ''}
-            onChange={(e) => setFilter({ ...filter, status: e.target.value || undefined })}
-            className="px-3 py-1 border rounded text-sm"
-          >
-            <option value="">所有状态</option>
-            <option value="draft">草稿</option>
-            <option value="published">已发布</option>
-            <option value="archived">已归档</option>
-          </select>
+      {/* Compact header */}
+      <div className="flex items-center justify-between px-3 py-2 border-b border-border/30">
+        <h3 className="text-sm font-heading font-semibold text-foreground/80 flex items-center gap-1.5">
+          <FileText className="w-3.5 h-3.5" />笔记
+        </h3>
+        <div className="flex items-center gap-1">
+          <button onClick={() => setShowFilters(!showFilters)} className={`p-1.5 rounded-md transition-colors ${showFilters ? 'bg-primary/10 text-primary' : 'hover:bg-muted text-muted-foreground'}`} title="筛选"><Search className="w-3.5 h-3.5" /></button>
+          <button onClick={() => { setEditing(null); setForm({ title: '', content: '', tag: '', status: 'draft' }); setShowForm(true); }} className="p-1.5 rounded-md hover:bg-primary/10 text-primary transition-colors" title="新建笔记"><Plus className="w-3.5 h-3.5" /></button>
         </div>
       </div>
 
-      {/* 笔记列表 */}
-      <div className="flex-1 overflow-y-auto">
+      {/* Collapsible filter bar */}
+      {showFilters && (
+        <div className="px-3 py-2 border-b border-border/30 bg-muted/20 space-y-2 animate-fade-in">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+            <input value={searchQ} onChange={e => setSearchQ(e.target.value)} onKeyDown={e => e.key === 'Enter' && search()} placeholder="搜索..." className="w-full pl-8 pr-3 py-1.5 text-xs border border-border rounded-lg focus:ring-1 focus:ring-primary outline-none bg-white" />
+          </div>
+          <div className="flex gap-1.5">
+            <select value={filter.tag || ''} onChange={e => setFilter({ ...filter, tag: e.target.value || undefined })} className="flex-1 px-2 py-1 text-xs border border-border rounded-md bg-white">
+              <option value="">所有标签</option>
+              {PREDEFINED_TAGS.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+              {tags.filter(t => !PREDEFINED_TAGS.some(p => p.value === t)).map(t => <option key={t} value={t}>{t}</option>)}
+            </select>
+            <select value={filter.status || ''} onChange={e => setFilter({ ...filter, status: e.target.value || undefined })} className="flex-1 px-2 py-1 text-xs border border-border rounded-md bg-white">
+              <option value="">所有状态</option>
+              <option value="draft">草稿</option>
+              <option value="published">已发布</option>
+              <option value="archived">已归档</option>
+            </select>
+          </div>
+        </div>
+      )}
+
+      {/* List */}
+      <div className="flex-1 overflow-y-auto scrollbar-thin">
         {loading ? (
-          <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-          </div>
+          <div className="flex justify-center py-8"><div className="w-6 h-6 rounded-full border-2 border-primary border-t-transparent animate-spin" /></div>
         ) : notes.length === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            {showSearchResults ? '没有找到匹配的笔记' : '暂无笔记'}
-          </div>
+          <div className="text-center py-8 text-xs text-muted-foreground">暂无笔记</div>
         ) : (
-          <div className="p-4 space-y-3">
-            {(notes || []).map((note) => (
-              <Card key={note.id} className="p-4 hover:shadow-md transition-shadow">
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <h3 className="font-medium text-gray-900 mb-2">{note.title}</h3>
-                    <p className="text-sm text-gray-600 mb-2 line-clamp-2">{note.content}</p>
-                    <div className="flex items-center gap-2 text-xs text-gray-500">
-                      {note.tag && (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
-                          <Tag className="w-3 h-3" />
-                          {getTagLabel(note.tag)}
-                        </span>
-                      )}
-                      <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(note.status)}`}>
-                        {note.status === 'draft' ? '草稿' : note.status === 'published' ? '已发布' : '已归档'}
-                      </span>
-                      <span>{formatDate(note.last_updated)}</span>
+          <div className="p-2 space-y-1.5">
+            {notes.map(n => (
+              <div key={n.id} className="group px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors relative">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-sm font-medium text-foreground truncate">{n.title}</h4>
+                    {n.content && <p className="text-xs text-muted-foreground truncate mt-0.5">{n.content}</p>}
+                    <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
+                      {n.tag && <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] bg-primary/10 text-primary rounded-full"><Tag className="w-2.5 h-2.5" />{tagLabel(n.tag)}</span>}
+                      <span className={`px-1.5 py-0.5 text-[10px] rounded-full ${sc(n.status)}`}>{n.status === 'draft' ? '草稿' : n.status === 'published' ? '已发布' : '归档'}</span>
+                      <span className="text-[10px] text-muted-foreground/60">{fmt(n.last_updated)}</span>
                     </div>
                   </div>
-                  <div className="flex gap-1 ml-4">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => startEdit(note)}
-                      disabled={operationLoading}
-                      className="p-1 h-8 w-8 disabled:opacity-50"
-                    >
-                      <Edit3 className="w-4 h-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => deleteNote(note.id)}
-                      disabled={operationLoading}
-                      className="p-1 h-8 w-8 text-red-500 hover:text-red-700 disabled:opacity-50"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
+                  {/* ... menu */}
+                  <div className="relative" ref={menuOpen === n.id ? menuRef : undefined}>
+                    <button onClick={() => setMenuOpen(menuOpen === n.id ? null : n.id)} className="p-1 rounded-md hover:bg-muted opacity-0 group-hover:opacity-100 transition-opacity">
+                      <MoreHorizontal className="w-3.5 h-3.5 text-muted-foreground" />
+                    </button>
+                    {menuOpen === n.id && (
+                      <div className="absolute right-0 top-full mt-1 bg-white rounded-lg shadow-lg border border-border py-1 z-30 min-w-[100px] animate-fade-in">
+                        <button onClick={() => startEdit(n)} className="w-full flex items-center gap-2 px-3 py-1.5 text-xs hover:bg-muted transition-colors"><Edit3 className="w-3 h-3" />编辑</button>
+                        <button onClick={() => remove(n.id)} className="w-full flex items-center gap-2 px-3 py-1.5 text-xs text-destructive hover:bg-red-50 transition-colors"><Trash2 className="w-3 h-3" />删除</button>
+                      </div>
+                    )}
                   </div>
                 </div>
-              </Card>
+              </div>
             ))}
           </div>
         )}
       </div>
 
-      {/* 创建/编辑表单 */}
-      {showCreateForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md m-4">
+      {/* Form modal */}
+      {showForm && (
+        <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50" onClick={() => { setShowForm(false); setEditing(null); }}>
+          <div className="bg-white rounded-2xl p-5 w-full max-w-md m-4 shadow-xl animate-fade-in" onClick={e => e.stopPropagation()}>
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-semibold">
-                {editingNote ? '编辑笔记' : '创建笔记'}
-              </h3>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={cancelEdit}
-                className="p-1 h-8 w-8"
-              >
-                <X className="w-4 h-4" />
-              </Button>
+              <h3 className="text-base font-heading font-semibold">{editing ? '编辑笔记' : '新建笔记'}</h3>
+              <button onClick={() => { setShowForm(false); setEditing(null); }} className="p-1.5 rounded-lg hover:bg-muted"><X className="w-4 h-4" /></button>
             </div>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  标题
-                </label>
-                <input
-                  type="text"
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="请输入笔记标题"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  内容
-                </label>
-                <textarea
-                  value={formData.content}
-                  onChange={(e) => setFormData({ ...formData, content: e.target.value })}
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  rows={4}
-                  placeholder="请输入笔记内容"
-                />
-              </div>
-              
-              <div className="flex gap-4">
-                <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    标签
-                  </label>
-                  <select
-                    value={formData.tag}
-                    onChange={(e) => setFormData({ ...formData, tag: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">请选择标签</option>
-                    {PREDEFINED_TAGS.map(tag => (
-                      <option key={tag.value} value={tag.value}>{tag.label}</option>
-                    ))}
-                  </select>
-                </div>
-                
-                <div className="flex-1">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    状态
-                  </label>
-                  <select
-                    value={formData.status}
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="draft">草稿</option>
-                    <option value="published">已发布</option>
-                    <option value="archived">已归档</option>
-                  </select>
-                </div>
+            <div className="space-y-3">
+              <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="w-full px-3 py-2 text-sm border rounded-xl focus:ring-2 focus:ring-primary outline-none" placeholder="标题" />
+              <textarea value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} className="w-full px-3 py-2 text-sm border rounded-xl focus:ring-2 focus:ring-primary outline-none" rows={4} placeholder="内容" />
+              <div className="flex gap-3">
+                <select value={form.tag} onChange={e => setForm({ ...form, tag: e.target.value })} className="flex-1 px-3 py-2 text-sm border rounded-xl focus:ring-2 focus:ring-primary outline-none bg-white">
+                  <option value="">选择标签</option>
+                  {PREDEFINED_TAGS.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
+                </select>
+                <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value })} className="flex-1 px-3 py-2 text-sm border rounded-xl focus:ring-2 focus:ring-primary outline-none bg-white">
+                  <option value="draft">草稿</option><option value="published">已发布</option><option value="archived">已归档</option>
+                </select>
               </div>
             </div>
-            
-            <div className="flex justify-end gap-2 mt-6">
-              <Button
-                variant="outline"
-                onClick={cancelEdit}
-                disabled={operationLoading}
-              >
-                取消
-              </Button>
-              <Button
-                onClick={editingNote ? updateNote : createNote}
-                className="bg-blue-500 hover:bg-blue-600"
-                disabled={!formData.title.trim() || operationLoading}
-              >
-                {operationLoading ? (
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-1"></div>
-                ) : (
-                  <Save className="w-4 h-4 mr-1" />
-                )}
-                {operationLoading 
-                  ? (editingNote ? '更新中...' : '创建中...') 
-                  : (editingNote ? '更新' : '创建')
-                }
-              </Button>
+            <div className="flex justify-end gap-2 mt-5">
+              <Button variant="outline" onClick={() => { setShowForm(false); setEditing(null); }} size="sm">取消</Button>
+              <Button onClick={submit} disabled={!form.title.trim() || opLoading} size="sm">{opLoading ? '保存中...' : editing ? '更新' : '创建'}</Button>
             </div>
           </div>
         </div>
       )}
     </div>
   );
-} 
+}
