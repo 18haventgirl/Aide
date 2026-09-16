@@ -122,9 +122,16 @@ class PersonalAssistantManager:
     
     def _create_model(self) -> LitellmModel:
         """创建语言模型"""
+        model_name = os.getenv("OPENAI_CHAT_MODEL", "gpt-4o")
+        base_url = os.getenv("OPENAI_API_BASE_URL", "https://api.openai.com/v1")
+        # LiteLLM needs an explicit provider prefix for custom OpenAI-compatible
+        # model names such as DeepSeek aliases.
+        if base_url.rstrip("/") != "https://api.openai.com/v1" and "/" not in model_name:
+            model_name = f"openai/{model_name}"
+
         return LitellmModel(
-            model=os.getenv("OPENAI_CHAT_MODEL", "gpt-4o"),
-            base_url=os.getenv("OPENAI_API_BASE_URL", "https://api.openai.com/v1"),
+            model=model_name,
+            base_url=base_url,
             api_key=os.getenv("OPENAI_API_KEY"),
         )
     
@@ -507,4 +514,4 @@ class PersonalAssistantManager:
     
     def __repr__(self) -> str:
         """对象表示"""
-        return f"PersonalAssistantManager(initialized={self._initialized}, agents={list(self.agents.keys())})" 
+        return f"PersonalAssistantManager(initialized={self._initialized}, agents={list(self.agents.keys())})"

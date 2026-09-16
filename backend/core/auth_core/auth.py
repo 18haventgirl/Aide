@@ -13,6 +13,9 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # JWT配置
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key-here-change-in-production")
@@ -176,6 +179,19 @@ class AuthUtils:
         # 固定密码验证
         if password != "admin123456":
             return None
+
+        # 显式开启的本地测试账号，不依赖外部 JSONPlaceholder 服务。
+        if (
+            os.getenv("NODE_ENV", "development").lower() != "production"
+            and os.getenv("AIDE_ENABLE_LOCAL_TEST_LOGIN", "false").lower() == "true"
+            and username == "admin"
+        ):
+            return {
+                "user_id": "1",
+                "username": "admin",
+                "email": "admin@aide.local",
+                "name": "本地测试用户",
+            }
         
         # 使用全局服务管理器获取缓存的用户信息
         try:
@@ -329,4 +345,4 @@ class AuthService:
 
 
 # 全局认证服务实例
-auth_service = AuthService() 
+auth_service = AuthService()

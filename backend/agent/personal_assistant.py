@@ -41,9 +41,14 @@ from agents.extensions.handoff_prompt import RECOMMENDED_PROMPT_PREFIX
 # 配置来源：使用dotenv加载环境变量确保安全性
 # 应用范围：所有智能代理和护栏都使用此模型配置
 # =========================
+model_name = os.getenv("OPENAI_CHAT_MODEL", "gpt-4o")
+model_base_url = os.getenv("OPENAI_API_BASE_URL", "https://api.openai.com/v1")
+if model_base_url.rstrip("/") != "https://api.openai.com/v1" and "/" not in model_name:
+    model_name = f"openai/{model_name}"
+
 model = LitellmModel(
-    model=os.getenv("OPENAI_CHAT_MODEL", "gpt-4o"),
-    base_url=os.getenv("OPENAI_API_BASE_URL"),
+    model=model_name,
+    base_url=model_base_url,
     api_key=os.getenv("OPENAI_API_KEY"),
 )
 
@@ -386,4 +391,4 @@ __all__ = [
     'display_weather_map',
     'display_recipe_detail',
     'view_user_info'
-] 
+]

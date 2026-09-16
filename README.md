@@ -72,48 +72,25 @@ ai-personal-daily-assistant/
 
 ### 前置要求 (Prerequisites)
 
-- Python 3.8+
-- pip (Python 包管理器)
-- PostgreSQL 数据库 (或其他支持的数据库)
-- ChromaDB (向量数据库，如使用远程端则需要 C++ 编译环境)
+- Conda（用于创建 Python 3.11 环境）
+- SQLite（默认）或 MySQL
+- ChromaDB（默认使用本地持久化存储）
 
-### 1. 创建虚拟环境 (Create Virtual Environment)
+### 1. 创建 Conda 环境
 
-```bash
-# 在项目根目录下创建虚拟环境 (Create virtual environment in project root)
-python -m venv venv
-
-# 或者使用 python3 (Or use python3)
-python3 -m venv venv
+```powershell
+# 在项目根目录执行
+conda create -p .\backend\.venv python=3.11 pip
+conda activate .\backend\.venv
 ```
 
-### 2. 激活虚拟环境 (Activate Virtual Environment)
+### 2. 安装后端依赖
 
-**macOS/Linux:**
-```bash
-source venv/bin/activate
+```powershell
+.\backend\.venv\python.exe -m pip install -r .\backend\requirements.txt
 ```
 
-**Windows:**
-```bash
-# PowerShell
-venv\Scripts\Activate.ps1
-
-# 命令提示符 (Command Prompt)
-venv\Scripts\activate.bat
-```
-
-### 3. 安装后端依赖 (Install Backend Dependencies)
-
-```bash
-# 进入后端目录 (Navigate to backend directory)
-cd backend
-
-# 安装依赖包 (Install required packages)
-pip install -r requirements.txt
-```
-
-### 4. 配置环境变量 (Configure Environment Variables)
+### 3. 配置环境变量 (Configure Environment Variables)
 
 在 `backend` 目录下创建 `.env` 文件：
 
@@ -134,39 +111,26 @@ OPENAI_EMBEDDING_MODEL=text-embedding-3-small
 NEWS_API_TOKEN=your_news_api_token_here
 
 # 数据库配置 (Database Configuration)
-DB_HOST=localhost
-DB_PORT=5432
-DB_USERNAME=your_username
-DB_PASSWORD=your_password
-DB_DATABASE=ai_assistant
-DB_CHARSET=utf8mb4
+DB_TYPE=sqlite
+SQLITE_PATH=./aide.db
 
 # ChromaDB 向量数据库配置 (ChromaDB Vector Database Configuration)
-# 注意：使用远程 CHROMA 端点时，本地需要安装 C++ 编译环境
-# Note: When using remote CHROMA endpoint, local C++ compilation environment is required
-CHROMA_CLIENT_MODE=remote  # 可选值: local, remote
-CHROMA_HOST=localhost
-CHROMA_PORT=8000
+CHROMA_CLIENT_MODE=local
+CHROMA_PERSIST_DIR=./chroma_db
+
+# 可选：仅在本地开发时启用离线测试账号 admin / admin123456
+NODE_ENV=development
+AIDE_ENABLE_LOCAL_TEST_LOGIN=true
 ```
 
-### 5. 数据库初始化 (Database Initialization)
+### 4. 运行后端服务
 
-```bash
-# 确保数据库服务正在运行，然后执行数据库初始化
-python -c "from core.database_core.init_db import init_database; init_database()"
-```
-
-### 6. 运行后端服务 (Run Backend Service)
-
-```bash
-# 确保在 backend 目录下 (Make sure you are in the backend directory)
+```powershell
 cd backend
-
-# 运行后端服务 (Run backend service)
-python main.py
+.\.venv\python.exe -m uvicorn main:app --host 127.0.0.1 --port 8000
 ```
 
-后端服务默认运行在 `http://localhost:8000`
+后端启动时会初始化数据库和 MCP 服务。Windows 也可从项目根目录运行 `start.bat`，同时启动前后端。
 
 ## 前端环境配置与运行 (Frontend Environment Setup & Running)
 
@@ -213,7 +177,7 @@ npm run dev
 yarn dev
 ```
 
-前端开发服务器默认运行在 `http://localhost:5173`
+前端开发服务器默认运行在 `http://localhost:3000`
 
 ### 4. 构建生产版本 (Build for Production)
 
@@ -254,7 +218,7 @@ npm run preview
 - Python 3.8+
 - FastAPI
 - SQLAlchemy
-- PostgreSQL
+- SQLite（默认）或 MySQL
 - ChromaDB
 - OpenAI API
 

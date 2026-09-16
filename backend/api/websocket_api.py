@@ -48,6 +48,19 @@ from core.performance_manager import performance_manager
 # 配置日志
 logger = logging.getLogger(__name__)
 
+
+def _friendly_ai_error(error: Exception) -> str:
+    """Convert provider errors into messages that are useful to local testers."""
+    detail = str(error)
+    lowered = detail.lower()
+    if "credit insufficient" in lowered or "insufficient balance" in lowered or "balance=0" in lowered:
+        return "当前 API 密钥或模型通道的可用额度不足，请检查密钥所属账户、分组及渠道额度。"
+    if "connection error" in lowered:
+        return "无法连接模型 API，请检查 OPENAI_API_BASE_URL、网络连接和代理设置。"
+    if "llm provider not provided" in lowered:
+        return "模型提供商配置无效，请检查 OPENAI_CHAT_MODEL。"
+    return detail
+
 # 创建WebSocket API路由器
 websocket_router = APIRouter(tags=["WebSocket"])
 
@@ -209,7 +222,7 @@ async def _process_stream_with_concurrent_handling(
             
             # 设置错误状态
             chat_response.is_error = True
-            chat_response.error_message = str(runner_error)
+            chat_response.error_message = _friendly_ai_error(runner_error)
             chat_response.is_finished = True
             
             # 直接发送错误响应
@@ -318,7 +331,7 @@ async def _process_stream_with_concurrent_handling(
             
             # 设置错误状态到ChatResponse
             chat_response.is_error = True
-            chat_response.error_message = str(stream_error)
+            chat_response.error_message = _friendly_ai_error(stream_error)
             chat_response.is_finished = True
             
             # 直接发送错误响应，不依赖可能已失败的队列
@@ -1510,4 +1523,4 @@ async def refresh_user_context(user_id: int, current_user: Dict[str, Any] = Curr
         raise HTTPException(status_code=500, detail=f"刷新用户上下文失败: {str(e)}")
 
 # 导出路由器
-websocket_router.include_router(websocket_http_router) 
+websocket_router.include_router(websocket_http_router)

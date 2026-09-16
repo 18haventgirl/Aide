@@ -10,7 +10,7 @@ from datetime import datetime, timedelta
 from threading import RLock
 from core.database_core import DatabaseClient
 from core.vector_core import ChromaVectorClient, VectorConfig
-from core.auth_core.auth import AuthService
+from core.auth_core.auth import AuthService, AuthUtils
 
 
 class ServiceManager:
@@ -133,11 +133,7 @@ class ServiceManager:
         self._connection_pool_stats["cache_misses"] += 1
         
         # 验证令牌
-        auth_service = self.get_auth_service()
-        if not auth_service:
-            return None
-        
-        user_info = auth_service.verify_token(token)
+        user_info = AuthUtils.get_current_user_from_token(token)
         if user_info:
             # 缓存结果
             with self._lock:
@@ -275,4 +271,4 @@ class ServiceManager:
 
 
 # 全局服务管理器实例
-service_manager = ServiceManager() 
+service_manager = ServiceManager()

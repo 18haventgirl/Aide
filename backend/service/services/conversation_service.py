@@ -50,11 +50,6 @@ class ConversationService:
             创建的会话对象，失败时返回None
         """
         try:
-            # 验证用户是否存在
-            user = self.user_service.get_user(user_id)
-            if not user:
-                raise ValueError(f"用户不存在: {user_id}")
-            
             # 创建会话对象
             conversation_data = {
                 'user_id': user_id,
@@ -597,4 +592,4 @@ class ConversationService:
         关闭数据库连接
         """
         if self.db_client:
-            self.db_client.close() 
+            self.db_client.close()

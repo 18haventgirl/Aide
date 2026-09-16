@@ -147,7 +147,7 @@ const Login: React.FC = () => {
           <div className="mt-6 pt-5 border-t border-border/50 text-center">
             <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-muted/50 rounded-full text-xs text-muted-foreground">
               <Zap className="w-3 h-3 text-warning" />
-              <span>测试密码：admin123456</span>
+              <span>测试账号：admin / 密码：admin123456</span>
             </div>
           </div>
         </div>
