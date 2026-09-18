@@ -935,12 +935,6 @@ async def handle_stream_chat(user_id: str, message: str, connection_id: str, aut
                 )
                 return
             logger.info("medical retrieval: hits=%d doc_ids=%s", len(medical_hits), [h.doc_id for h in medical_hits])
-            if not medical_hits:
-                await _send_medical_direct(
-                    connection_id, conversation_id, ctx, agent_session,
-                    "目前没有找到足以回答的健康资料。涉及个人病情、检查结果或用药，请咨询医护人员。", "insufficient"
-                )
-                return
             try:
                 answer = await answer_with_evidence(message, medical_hits, input_items[:-1])
             except MedicalModelUnavailable:

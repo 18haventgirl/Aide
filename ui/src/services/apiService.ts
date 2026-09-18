@@ -323,7 +323,11 @@ export const noteAPI = {
   // 搜索笔记 - 修正：后端返回包含data字段的结构
   async searchNotes(userId: string, searchData: any): Promise<ApiResponse<{data: any[], total: number, user_id: number}>> {
     try {
-      return await apiService.post(API_ENDPOINTS.NOTE.SEARCH(userId), searchData);
+      const response = await apiService.post(API_ENDPOINTS.NOTE.SEARCH(userId), searchData);
+      if (response.success === false || !Array.isArray(response.data?.data)) {
+        return apiService.get(API_ENDPOINTS.NOTE.LIST(userId), { search: searchData.query, tag: searchData.tag, status: searchData.status, limit: searchData.limit });
+      }
+      return response;
     } catch {
       // Keep keyword search usable when vector dependencies are unavailable.
       return apiService.get(API_ENDPOINTS.NOTE.LIST(userId), { search: searchData.query, tag: searchData.tag, status: searchData.status, limit: searchData.limit });

@@ -51,7 +51,7 @@ class NoteUpdateRequest(BaseModel):
 class NoteSearchRequest(BaseModel):
     """搜索笔记请求模型"""
     query: str = Field(..., min_length=1, description="搜索查询")
-    use_vector_search: bool = Field(default=True, description="是否使用向量搜索")
+    use_vector_search: bool = Field(default=False, description="是否使用向量搜索；默认使用本地关键词搜索以保证响应速度")
     tag: Optional[str] = Field(default=None, description="标签过滤")
     status: Optional[str] = Field(default=None, description="状态过滤")
     limit: Optional[int] = Field(default=10, ge=1, le=50, description="返回数量限制")
@@ -102,8 +102,12 @@ async def search_notes(
                 
                 # 转换向量搜索结果
                 for result in vector_results:
+                    if request.tag and result.get("tag") != request.tag:
+                        continue
+                    if request.status and result.get("status") != request.status:
+                        continue
                     search_results.append({
-                        "id": result.get("id"),
+                        "id": result.get("id") or result.get("note_id"),
                         "user_id": user_id,
                         "title": result.get("title", ""),
                         "content": result.get("content", ""),
@@ -112,8 +116,8 @@ async def search_notes(
                         "created_at": result.get("created_at", ""),
                         "updated_at": result.get("updated_at", ""),
                         "last_updated": result.get("last_updated", ""),
-                        "similarity_score": result.get("similarity_score", 0.0),
-                        "search_type": "vector"
+                        "similarity_score": result.get("similarity_score", result.get("score", 0.0)),
+                        "search_type": result.get("search_type", "vector")
                     })
                     
             except Exception as e:
@@ -154,7 +158,7 @@ async def search_notes(
             "total": len(search_results),
             "user_id": user_id,
             "query": request.query,
-            "search_type": "vector" if request.use_vector_search else "text"
+            "search_type": (search_results[0].get("search_type") if search_results else ("vector" if request.use_vector_search else "text"))
         }
         
         return success_response(response_data, f"搜索完成，找到 {len(search_results)} 条结果")
@@ -529,4 +533,4 @@ async def delete_note(
         raise
     except Exception as e:
         logger.error(f"删除笔记失败: {str(e)}")
-        return internal_error_response(f"删除笔记失败: {str(e)}") 
+        return internal_error_response(f"删除笔记失败: {str(e)}")

@@ -26,16 +26,18 @@ export function NotesPanel({ userId }: NotesPanelProps) {
   const [showFilters, setShowFilters] = useState(false);
   const [menuOpen, setMenuOpen] = useState<number | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+  const requestSeq = useRef(0);
 
   const [form, setForm] = useState<NoteCreateRequest>({ title: '', content: '', tag: '', status: 'draft' });
 
   const load = async () => {
+    const seq = ++requestSeq.current;
     setLoading(true);
     try {
       const r = await noteAPI.getNotes(userId.toString(), { tag: filter.tag, status: filter.status, search: filter.search, limit: 50 });
-      setNotes(r.data?.data || []);
-    } catch { setNotes([]); }
-    setLoading(false);
+      if (seq === requestSeq.current && r.success !== false) setNotes(Array.isArray(r.data?.data) ? r.data.data : []);
+    } catch { /* Keep the last successful list visible on transient failures. */ }
+    if (seq === requestSeq.current) setLoading(false);
   };
 
   const loadTags = async () => {
@@ -43,13 +45,28 @@ export function NotesPanel({ userId }: NotesPanelProps) {
   };
 
   const search = async () => {
-    if (!searchQ.trim()) { load(); return; }
+    const query = searchQ.trim();
+    if (!query) { await load(); return; }
+    const seq = ++requestSeq.current;
     setLoading(true);
     try {
-      const r = await noteAPI.searchNotes(userId.toString(), { query: searchQ, tag: filter.tag, status: filter.status, limit: 20, use_vector_search: true });
-      setNotes(r.data?.data || []);
-    } catch { setNotes([]); }
-    setLoading(false);
+      // Keep interactive search on the local indexed text path. Remote vector
+      // search remains available to API clients but must not block the UI.
+      const r = await noteAPI.searchNotes(userId.toString(), { query, tag: filter.tag, status: filter.status, limit: 20, use_vector_search: false });
+      if (seq === requestSeq.current && r.success !== false) setNotes(Array.isArray(r.data?.data) ? r.data.data : []);
+    } catch { /* Do not replace the current list with an error state. */ }
+    if (seq === requestSeq.current) setLoading(false);
+  };
+
+  const clearSearch = async () => { setSearchQ(''); await load(); };
+  const toggleSearchPanel = async () => {
+    if (showFilters) {
+      setSearchQ('');
+      setShowFilters(false);
+      await load();
+      return;
+    }
+    setShowFilters(true);
   };
 
   const submit = async () => {
@@ -93,7 +110,7 @@ export function NotesPanel({ userId }: NotesPanelProps) {
           <FileText className="w-3.5 h-3.5" />笔记
         </h3>
         <div className="flex items-center gap-1">
-          <button onClick={() => setShowFilters(!showFilters)} className={`p-1.5 rounded-md transition-colors ${showFilters ? 'bg-primary/10 text-primary' : 'hover:bg-muted text-muted-foreground'}`} title="筛选"><Search className="w-3.5 h-3.5" /></button>
+          <button onClick={toggleSearchPanel} className={`p-1.5 rounded-md transition-colors ${showFilters ? 'bg-primary/10 text-primary' : 'hover:bg-muted text-muted-foreground'}`} title={showFilters ? '退出搜索' : '搜索'}><Search className="w-3.5 h-3.5" /></button>
           <button onClick={() => { setEditing(null); setForm({ title: '', content: '', tag: '', status: 'draft' }); setShowForm(true); }} className="p-1.5 rounded-md hover:bg-primary/10 text-primary transition-colors" title="新建笔记"><Plus className="w-3.5 h-3.5" /></button>
         </div>
       </div>
@@ -103,7 +120,8 @@ export function NotesPanel({ userId }: NotesPanelProps) {
         <div className="px-3 py-2 border-b border-border/30 bg-muted/20 space-y-2 animate-fade-in">
           <div className="relative">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-            <input value={searchQ} onChange={e => setSearchQ(e.target.value)} onKeyDown={e => e.key === 'Enter' && search()} placeholder="搜索..." className="w-full pl-8 pr-3 py-1.5 text-xs border border-border rounded-lg focus:ring-1 focus:ring-primary outline-none bg-white" />
+            <input value={searchQ} onChange={e => setSearchQ(e.target.value)} onKeyDown={e => e.key === 'Enter' && search()} placeholder="搜索..." className="w-full pl-8 pr-8 py-1.5 text-xs border border-border rounded-lg focus:ring-1 focus:ring-primary outline-none bg-white" />
+            {searchQ && <button onClick={clearSearch} className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground" title="清除搜索"><X className="w-3.5 h-3.5" /></button>}
           </div>
           <div className="flex gap-1.5">
             <select value={filter.tag || ''} onChange={e => setFilter({ ...filter, tag: e.target.value || undefined })} className="flex-1 px-2 py-1 text-xs border border-border rounded-md bg-white">

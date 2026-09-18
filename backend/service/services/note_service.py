@@ -6,6 +6,9 @@
 
 from typing import Optional, List, Dict, Any
 from datetime import datetime
+import hashlib
+import math
+import re
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, and_, func
 from core.database_core import DatabaseClient
@@ -551,7 +554,7 @@ class NoteService:
         """
         try:
             if not self.vector_client:
-                return []
+                return self._local_hybrid_search(user_id, query, limit)
             
             from core.vector_core import VectorQuery
             
@@ -575,20 +578,68 @@ class NoteService:
             for result in results:
                 metadata = result.metadata or {}
                 search_results.append({
+                    'id': metadata.get('note_id'),
                     'note_id': metadata.get('note_id'),
+                    'user_id': user_id,
                     'title': metadata.get('title'),
+                    'content': result.text,
                     'tag': metadata.get('tag'),
+                    'status': metadata.get('status', 'draft'),
                     'score': result.score,
+                    'search_type': 'remote_vector',
                     'text': result.text
                 })
             
-            return search_results
+            return search_results or self._local_hybrid_search(user_id, query, limit)
             
         except Exception as e:
             print(f"向量搜索失败: {e}")
+            return self._local_hybrid_search(user_id, query, limit)
+
+    def _local_hybrid_search(self, user_id: int, query: str, limit: int = 10) -> List[Dict[str, Any]]:
+        """离线回退：本地字符 n-gram embedding 与关键词硬匹配融合。"""
+        try:
+            with self.db_client.get_session() as session:
+                notes = session.query(Note).filter(Note.user_id == user_id).all()
+            if not notes:
+                return []
+
+            def tokens(text: str) -> List[str]:
+                chars = re.findall(r"[\u4e00-\u9fff]|[a-z0-9]+", (text or '').lower())
+                return chars + [chars[i] + chars[i + 1] for i in range(len(chars) - 1)]
+
+            def vector(text: str) -> List[float]:
+                values = [0.0] * 512
+                for term in tokens(text):
+                    slot = int.from_bytes(hashlib.blake2b(term.encode('utf-8'), digest_size=4).digest(), 'big') % 512
+                    values[slot] += 1.0
+                norm = math.sqrt(sum(v * v for v in values)) or 1.0
+                return [v / norm for v in values]
+
+            query_terms = set(tokens(query))
+            query_vector = vector(query)
+            ranked = []
+            for note in notes:
+                text = f"{note.title} {note.content} {note.tag or ''}"
+                note_terms = set(tokens(text))
+                lexical = len(query_terms & note_terms) / max(len(query_terms), 1)
+                note_vector = vector(text)
+                cosine = sum(a * b for a, b in zip(query_vector, note_vector))
+                score = 0.65 * cosine + 0.35 * lexical
+                if lexical > 0 or cosine >= 0.15:
+                    ranked.append((score, note))
+            ranked.sort(key=lambda item: (item[0], item[1].last_updated or datetime.min), reverse=True)
+            return [{
+                'id': note.id, 'note_id': note.id, 'user_id': note.user_id,
+                'title': note.title, 'content': note.content, 'tag': note.tag,
+                'status': note.status, 'score': round(score, 6),
+                'similarity_score': round(score, 6), 'search_type': 'local_hybrid'
+            } for score, note in ranked[:limit]]
+        except Exception as e:
+            print(f"本地混合搜索失败: {e}")
             return []
     
     def close(self):
         """关闭数据库连接"""
         if self.db_client:
-            self.db_client.close() 
+            self.db_client.close()
