@@ -122,7 +122,7 @@ export class WebSocketService {
         wsUrl.host = 'localhost:8000';
       }
       
-      console.log('🌐 WebSocket URL:', wsUrl.toString());
+      console.log('🌐 WebSocket 地址:', `${wsUrl.origin}${wsUrl.pathname}`);
       console.log('🔐 连接参数详情:', {
         userId: this._userId,
         username: this.username,
@@ -141,7 +141,6 @@ export class WebSocketService {
       };
       
       this.ws.onmessage = (event) => {
-        console.log('📥 收到WebSocket消息:', event.data);
         try {
           const message: WebSocketMessage = JSON.parse(event.data);
           this.handleMessage(message);
@@ -219,17 +218,15 @@ export class WebSocketService {
   // 发送消息
   send(message: WebSocketMessage) {
     if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
-      console.warn('⚠️ WebSocket未连接，无法发送消息:', message);
+      console.warn('⚠️ WebSocket未连接，无法发送消息');
       return;
     }
     
-    console.log('📤 发送WebSocket消息:', message);
     this.ws.send(JSON.stringify(message));
   }
   
   // 发送聊天消息
-  sendChatMessage(content: string) {
-    console.log('💬 发送聊天消息:', content, '会话ID:', this._conversationId);
+  sendChatMessage(content: string, mode: 'general' | 'medical' = 'general') {
     
     const message: WebSocketMessage = {
       type: 'chat',
@@ -237,13 +234,13 @@ export class WebSocketService {
       timestamp: new Date().toISOString()
     };
     
+    (message as any).metadata = { mode };
+
     // 如果有会话ID，添加到消息的metadata中
     if (this._conversationId) {
       message.conversation_id = this._conversationId;
       // 也添加到metadata中以便后端处理
-      (message as any).metadata = {
-        conversation_id: this._conversationId
-      };
+      (message as any).metadata.conversation_id = this._conversationId;
     }
     
     this.send(message);
@@ -269,7 +266,6 @@ export class WebSocketService {
   
   // 处理接收到的消息
   private handleMessage(message: WebSocketMessage) {
-    console.log('🔍 处理WebSocket消息:', message);
     const { type, content } = message;
     
     switch (type) {
@@ -283,7 +279,6 @@ export class WebSocketService {
         this.emit('ai_finished', content);
         break;
       case 'chat_response':
-        console.log('💬 收到聊天响应:', content);
         this.emit('chat_response', content);
         break;
       case 'connect':
@@ -309,7 +304,7 @@ export class WebSocketService {
         this.emit('auth_error', content);
         break;
       default:
-        console.log('📨 其他消息类型:', type, content);
+        console.log('📨 其他消息类型:', type);
         this.emit(type, content);
         this.emit('message', message);
     }
@@ -388,4 +383,4 @@ export function createWebSocketService(userId: string, username?: string, conver
 
 export function getWebSocketService(): WebSocketService | null {
   return wsService;
-} 
+}

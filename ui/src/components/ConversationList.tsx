@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, ChevronDown, ChevronUp, X, Plus, Clock, User, Loader2 } from 'lucide-react';
+import { MessageSquare, ChevronDown, ChevronUp, X, Plus, Clock, User, Loader2, Trash2 } from 'lucide-react';
 import { conversationAPI } from '../services/apiService';
 import { useToast } from './ui/toast';
 import { PAGINATION } from '../lib/config';
@@ -101,6 +101,17 @@ export function ConversationList({
   const createNewConversation = () => {
     onSelectConversation('new');
     onClose();
+  };
+
+  const deleteConversation = async (conversation: Conversation) => {
+    if (!window.confirm('删除此会话及其全部聊天记录？此操作无法撤销。')) return;
+    try {
+      await conversationAPI.deleteConversation(conversation.id_str);
+      setConversations(items => items.filter(item => item.id_str !== conversation.id_str));
+      if (currentConversationId === conversation.id_str) onSelectConversation('new');
+    } catch (err) {
+      showError('删除会话失败', err instanceof Error ? err.message : '请稍后重试');
+    }
   };
 
   // 格式化时间
@@ -213,6 +224,15 @@ export function ConversationList({
                     {formatTime(conversation.last_active)}
                   </div>
                 </div>
+                <button
+                  type="button"
+                  onClick={(event) => { event.stopPropagation(); void deleteConversation(conversation); }}
+                  className="ml-2 rounded-lg p-1.5 text-gray-400 hover:bg-red-50 hover:text-red-600"
+                  title="删除会话及聊天记录"
+                  aria-label={`删除会话 ${conversation.title}`}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
               </div>
             </div>
           ))}
@@ -241,4 +261,4 @@ export function ConversationList({
       </div>
     </div>
   );
-} 
+}

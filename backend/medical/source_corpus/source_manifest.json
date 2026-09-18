@@ -1,0 +1,48 @@
+{
+  "built_at": "2026-09-17",
+  "review_kind": "automated source comparison; no clinician review",
+  "sources": [
+    {
+      "id": "notice",
+      "file": "health_literacy_2024_wnd.html",
+      "url": "https://www.wnd.gov.cn/doc/2024/05/28/4333604.shtml",
+      "org": "无锡市新吴区人民政府（转载国家卫生健康委正式通知）",
+      "published": "2024-05-28",
+      "sha256": "f4520cd0b32dbd75d39777f59cb514adcdd4270af4fd52e0768bd674d736704d",
+      "bytes": 48401
+    },
+    {
+      "id": "explanation",
+      "file": "health_literacy_2024_explanation.pdf",
+      "url": "https://www.gov.cn/lianbo/bumen/202405/P020240530783730074981.pdf",
+      "org": "国家卫生健康委员会（国务院网站托管正式释义）",
+      "published": "2024-05-30",
+      "sha256": "084cb6c696ae6ab08f1e2e238427b9c90b071d29c6e2c238016d9254a88464df",
+      "bytes": 800346
+    },
+    {
+      "id": "chest",
+      "file": "beijing_chest_pain_2022.html",
+      "url": "https://wjw.beijing.gov.cn/bmfw_20143/jkzs/jzjj/202211/t20221102_2850165.html",
+      "org": "北京市卫生健康委员会",
+      "published": "2022-11-02",
+      "sha256": "114537579abc2d47c45ab52ac801b62058b81a2e21c900a7bd5a2464e684facb",
+      "bytes": 14223
+    },
+    {
+      "id": "abdomen",
+      "file": "guangzhou_postmeal_abdominal_2026.html",
+      "url": "https://kepu.wjw.gz.gov.cn/zs/content/post_5255.html",
+      "org": "广州市卫生健康委员会健康科普平台",
+      "published": "2026-02-24",
+      "sha256": "cf077baa2f9f7bd6ca4e2f685a6167c98819251c9b822627f9d7895a9b8e6572",
+      "bytes": 18116
+    }
+  ],
+  "checks": {
+    "final_notice_clauses": 66,
+    "pdf_clauses_cross_checked": 66,
+    "symptom_records": 2,
+    "records": 68
+  }
+}

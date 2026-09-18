@@ -8,7 +8,7 @@ import { useAppSelector } from "../store/hooks";
 
 interface ChatProps {
   messages: Message[];
-  onSendMessage: (message: string) => void;
+  onSendMessage: (message: string, mode?: 'general' | 'medical') => void;
   isLoading?: boolean;
   streamingResponse?: string;
   wsStatus?: WebSocketConnectionStatus;
@@ -27,6 +27,7 @@ export function Chat({
   const [isComposing, setIsComposing] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [showConversationList, setShowConversationList] = useState(false);
+  const [medicalMode, setMedicalMode] = useState(false);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
@@ -36,11 +37,11 @@ export function Chat({
     if (!inputText.trim() || wsStatus !== 'connected') return;
     setIsSending(true);
     try {
-      await onSendMessage(inputText);
+      await onSendMessage(inputText, medicalMode ? 'medical' : 'general');
       setInputText("");
     } catch { /* noop */ }
     setIsSending(false);
-  }, [inputText, onSendMessage, wsStatus]);
+  }, [inputText, onSendMessage, wsStatus, medicalMode]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey && !isComposing) {
@@ -60,6 +61,14 @@ export function Chat({
             <Bot className="w-3.5 h-3.5 text-white" />
           </div>
           <h2 className="font-heading font-semibold text-sm">Assistant</h2>
+          <button
+            type="button"
+            onClick={() => setMedicalMode(value => !value)}
+            aria-pressed={medicalMode}
+            className={`ml-2 rounded-full px-3 py-1 text-xs font-medium transition-colors ${medicalMode ? 'bg-blue-600 text-white' : 'bg-white/50 text-muted-foreground'}`}
+          >
+            健康知识{medicalMode ? ' · 已开启' : ''}
+          </button>
         </div>
         <button
           onClick={() => setShowConversationList(true)}
@@ -94,6 +103,7 @@ export function Chat({
           if (msg.content === "DISPLAY_SEAT_MAP") return null;
           const isUser = msg.type === 'user';
           const isError = msg.content.startsWith('系统异常:');
+          const citations = Array.isArray(msg.metadata?.citations) ? msg.metadata.citations : [];
           return (
             <div key={msg.id || idx} className={`flex mb-4 msg-enter ${isUser ? 'justify-end' : 'justify-start'}`} style={{ animationDelay: `${Math.min(idx * 30, 300)}ms` }}>
               {!isUser && (
@@ -107,6 +117,25 @@ export function Chat({
                   : isError ? 'msg-error' : 'msg-ai'
               }`}>
                 <ReactMarkdown>{msg.content}</ReactMarkdown>
+                {!isUser && citations.length > 0 && (
+                  <div className="mt-3 border-t border-blue-100 pt-2 space-y-1.5">
+                    <p className="text-xs font-semibold text-slate-600">资料来源</p>
+                    {citations.map((source: any, sourceIndex: number) => {
+                      const url = typeof source.url === 'string' && /^https?:\/\//i.test(source.url)
+                        ? source.url : null;
+                      return (
+                        <div key={`${source.doc_id}-${sourceIndex}`} className="rounded-lg border border-blue-100 bg-blue-50/70 px-2.5 py-2 text-xs">
+                          {url ? (
+                            <a href={url} target="_blank" rel="noopener noreferrer" className="font-medium text-blue-700 underline underline-offset-2 hover:text-blue-900">
+                              [{source.evidence_id || sourceIndex + 1}] {source.title}
+                            </a>
+                          ) : <span>{source.title}</span>}
+                          <p className="mt-0.5 text-slate-500">{source.source_org}{source.status === 'clinician_reviewed' ? ` · 医疗复核 ${source.reviewed_at || ''}` : ' · 原文核对，本机研究'}</p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
               {isUser && (
                 <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center flex-shrink-0 ml-2.5 mt-0.5">
@@ -157,6 +186,7 @@ export function Chat({
 
       {/* Input area */}
       <div className="flex-shrink-0 p-3 bg-transparent">
+        {medicalMode && <p className="px-2 pb-2 text-xs text-muted-foreground">健康知识功能仍在本机研究阶段；问题和检索资料会发送至已配置的回答模型。急症请及时拨打 120。</p>}
         <div className={`transition-all duration-200 ${connected ? 'bg-white/75 backdrop-blur-[20px] rounded-2xl shadow-lg p-1' : 'bg-muted/50 rounded-2xl p-1'}`} style={connected ? { WebkitBackdropFilter: 'blur(30px)', border: '1px solid rgba(37,99,235,0.15)' } : {}}>
           <div className="flex items-end gap-1.5">
             <textarea

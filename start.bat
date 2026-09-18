@@ -15,7 +15,7 @@ set "PYTHONIOENCODING=utf-8"
 set "FASTMCP_HOME=%ROOT%.fastmcp"
 
 echo Starting Aide backend and MCP service...
-start "Aide-Backend" /D "%BACKEND%" "%PYTHON%" -m uvicorn main:app --host 127.0.0.1 --port 8000
+start "Aide-Backend" /D "%BACKEND%" "%PYTHON%" -m uvicorn main:app --host 127.0.0.1 --port 8000 --no-access-log --log-level warning
 
 echo Starting Aide frontend...
 start "Aide-Frontend" /D "%ROOT%ui" cmd /c "npm run dev"

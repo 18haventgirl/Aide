@@ -210,6 +210,10 @@ token.json
 
 # Node.js 相关文件（如果项目包含前端部分）(Node.js related files if project includes frontend)
 node_modules/
+.pnpm-store/
+backend/chroma_db/
+backend/medical/models/
+backend/medical/source_downloads/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

@@ -1,0 +1,7 @@
+[
+  {"id": "R01", "query": "咳嗽两个多星期还没好，需要去检查吗？", "expected_doc_ids": ["MH-005"]},
+  {"id": "R02", "query": "血压正常了，能自己把降压药停掉吗？", "expected_doc_ids": ["MH-006"]},
+  {"id": "R03", "query": "吃得清淡是不是只要少放盐？", "expected_doc_ids": ["MH-014"]},
+  {"id": "R04", "query": "刚开始锻炼，成年人怎样规律运动？", "expected_doc_ids": ["MH-017"]},
+  {"id": "R05", "query": "怎样判断一个健康短视频说的内容靠不靠谱？", "expected_doc_ids": ["MH-027"]}
+]

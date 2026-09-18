@@ -87,6 +87,7 @@ class ConversationService:
             会话对象，未找到时返回None
         """
         try:
+            from ..models.chat_message import ChatMessage
             with self.db_client.get_session() as session:
                 conversation = session.query(Conversation).filter(
                     Conversation.id == conversation_id
@@ -261,6 +262,9 @@ class ConversationService:
                 if not conversation:
                     return False
                 
+                session.query(ChatMessage).filter(
+                    ChatMessage.conversation_id == conversation_id
+                ).delete(synchronize_session=False)
                 session.delete(conversation)
                 session.commit()
                 return True
@@ -269,7 +273,7 @@ class ConversationService:
             print(f"删除会话失败: {e}")
             return False
     
-    def delete_conversation_by_id_str(self, conversation_id_str: str) -> bool:
+    def delete_conversation_by_id_str(self, conversation_id_str: str, user_id: Optional[int] = None) -> bool:
         """
         根据字符串ID删除会话
         
@@ -280,14 +284,19 @@ class ConversationService:
             删除成功返回True，否则返回False
         """
         try:
+            from ..models.chat_message import ChatMessage
             with self.db_client.get_session() as session:
                 conversation = session.query(Conversation).filter(
                     Conversation.id_str == conversation_id_str
                 ).first()
                 
-                if not conversation:
+                if not conversation or (user_id is not None and conversation.user_id != user_id):
                     return False
-                
+                # There is no database foreign key between these tables. Remove
+                # messages in the same transaction so private text is not orphaned.
+                session.query(ChatMessage).filter(
+                    ChatMessage.conversation_id_str == conversation_id_str
+                ).delete(synchronize_session=False)
                 session.delete(conversation)
                 session.commit()
                 return True

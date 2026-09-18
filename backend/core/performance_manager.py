@@ -167,6 +167,11 @@ class PerformanceManager:
             
             self._logger.info(f"✅ 为用户 {user_id} 创建新的会话管理器")
             return session_manager
+
+    async def evict_conversation(self, user_id: int, conversation_id: str) -> bool:
+        """Clear cached message history after a conversation is deleted."""
+        manager = self._session_managers.get(user_id)
+        return await manager.remove_conversation(conversation_id) if manager else True
     
     def get_user_context(self, user_id: int, force_refresh: bool = False) -> PersonalAssistantContext:
         """
@@ -252,6 +257,7 @@ class PerformanceManager:
             "News Agent": assistant_manager.get_news_agent,
             "Recipe Agent": assistant_manager.get_recipe_agent,
             "Personal Assistant Agent": assistant_manager.get_personal_agent,
+            "Medical Knowledge Agent": assistant_manager.get_medical_agent,
             "Conversation Title Agent": assistant_manager.get_conversation_title_agent,
         }
         
@@ -319,4 +325,4 @@ class PerformanceManager:
 
 
 # 全局性能管理器实例
-performance_manager = PerformanceManager() 
+performance_manager = PerformanceManager()

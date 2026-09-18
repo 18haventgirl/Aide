@@ -25,6 +25,27 @@ logger = logging.getLogger(__name__)
 # 创建会话API路由器
 conversation_router = APIRouter(prefix="/conversations", tags=["会话"])
 
+
+@conversation_router.delete("/{conversation_id_str}")
+async def delete_conversation(
+    conversation_id_str: str,
+    current_user: Dict[str, Any] = CurrentUser,
+):
+    """Delete an owned conversation and its stored messages together."""
+    conversation_service = service_manager.get_service('conversation_service', ConversationService)
+    conversation = conversation_service.get_conversation_by_id_str(conversation_id_str)
+    if not conversation:
+        raise HTTPException(status_code=404, detail="会话不存在")
+    if str(conversation.user_id) != current_user["user_id"]:
+        raise HTTPException(status_code=403, detail="无权删除其他用户的会话")
+    if not conversation_service.delete_conversation_by_id_str(conversation_id_str, user_id=conversation.user_id):
+        raise HTTPException(status_code=500, detail="删除会话失败")
+    from core.performance_manager import performance_manager
+    if not await performance_manager.evict_conversation(conversation.user_id, conversation_id_str):
+        logger.error("删除后清除会话缓存失败: %s", conversation_id_str)
+        raise HTTPException(status_code=500, detail="会话已删除，但清除临时缓存失败，请重启服务")
+    return {"success": True, "message": "会话及其消息已删除"}
+
 # =========================
 # 数据模型
 # =========================
@@ -228,4 +249,4 @@ async def get_conversation_messages(
         raise
     except Exception as e:
         logger.error(f"获取会话聊天记录失败: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"获取聊天记录失败: {str(e)}") 
+        raise HTTPException(status_code=500, detail=f"获取聊天记录失败: {str(e)}")

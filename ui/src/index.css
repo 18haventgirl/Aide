@@ -146,6 +146,23 @@
     @apply bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/60 rounded-2xl rounded-bl-md shadow-sm;
   }
 
+  .msg-ai a,
+  .msg-streaming a {
+    @apply text-blue-700 underline underline-offset-2 decoration-2 break-words;
+    text-decoration-color: rgb(96 165 250);
+  }
+
+  .msg-ai a:hover,
+  .msg-streaming a:hover {
+    @apply text-blue-900;
+    text-decoration-color: currentColor;
+  }
+
+  .msg-ai a:focus-visible,
+  .msg-streaming a:focus-visible {
+    @apply rounded-sm outline outline-2 outline-offset-2 outline-blue-600;
+  }
+
   /* === Input Area === */
   .chat-input-container {
     @apply bg-white/75 backdrop-blur-glass-lg rounded-2xl shadow-lg;

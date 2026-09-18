@@ -7,6 +7,7 @@ WebSocket API模块
 import asyncio
 import json
 import logging
+import os
 from typing import Optional, Dict, Any, List
 from datetime import datetime
 from uuid import uuid4
@@ -44,6 +45,9 @@ from core.web_socket_core import (
 
 # 导入性能管理器
 from core.performance_manager import performance_manager
+from medical.chat import is_urgent, is_out_of_scope, needs_clinical_decision, contextual_query, evidence_input, citation_footer, extractive_fallback
+from medical.answering import answer_with_evidence, MedicalModelUnavailable
+from medical.runtime import search_with_metrics, retrieval_stats
 
 # 配置日志
 logger = logging.getLogger(__name__)
@@ -100,6 +104,9 @@ class ChatResponse(BaseModel):
     is_finished: bool = False
     is_error: bool = False
     error_message: str = ""
+    citations: List[Dict[str, Any]] = []
+    knowledge_status: Optional[str] = None
+    medical_preview: bool = False
 
 # =========================
 # 全局变量（从main中移过来的）
@@ -133,10 +140,15 @@ def _build_agents_list() -> List[Dict[str, Any]]:
         assistant_manager = performance_manager.get_assistant_manager()
         
         def make_agent_dict(agent):
+            handoffs = []
+            for item in getattr(agent, "handoffs", []):
+                name = getattr(item, "agent_name", getattr(item, "name", ""))
+                if name and name not in handoffs:
+                    handoffs.append(name)
             return {
                 "name": agent.name,
                 "description": getattr(agent, "handoff_description", ""),
-                "handoffs": [getattr(h, "agent_name", getattr(h, "name", "")) for h in getattr(agent, "handoffs", [])],
+                "handoffs": handoffs,
                 "tools": [getattr(t, "name", getattr(t, "__name__", "")) for t in getattr(agent, "tools", [])],
                 "input_guardrails": [_get_guardrail_name(g) for g in getattr(agent, "input_guardrails", [])],
             }
@@ -147,6 +159,7 @@ def _build_agents_list() -> List[Dict[str, Any]]:
             make_agent_dict(assistant_manager.get_recipe_agent()),
             make_agent_dict(assistant_manager.get_personal_agent()),
             make_agent_dict(assistant_manager.get_weather_agent()),
+            make_agent_dict(assistant_manager.get_medical_agent()),
         ]
     except Exception as e:
         logger.error(f"构建agent列表失败: {e}")
@@ -194,7 +207,8 @@ def get_session_manager_for_user(user_id: int) -> AgentSessionManager:
 
 async def _process_stream_with_concurrent_handling(
     agent, input_items, context, connection_id: str, user_id: str, 
-    conversation_id: str, agent_session, session_manager
+    conversation_id: str, agent_session, session_manager,
+    runner_input_items=None, medical_hits=None, medical_preview: bool = False
 ) -> None:
     """
     并发流式处理函数 - 优化多用户性能
@@ -213,16 +227,30 @@ async def _process_stream_with_concurrent_handling(
             agents=_build_agents_list(),
             guardrails=[]
         )
+        if medical_hits:
+            chat_response.knowledge_status = "grounded"
+            chat_response.medical_preview = medical_preview
+            chat_response.citations = [
+                {"doc_id": hit.doc_id, "title": hit.title, "url": hit.source_url,
+                 "source_org": hit.source_org,
+                 "reviewed_at": hit.reviewed_at.isoformat() if hit.reviewed_at else None}
+                for hit in medical_hits
+            ]
         
         # 启动流式处理
         try:
-            result = Runner.run_streamed(agent, input=input_items, context=context)
+            result = Runner.run_streamed(agent, input=runner_input_items or input_items, context=context)
         except Exception as runner_error:
             logger.error(f"❌ 用户 {user_id} Runner.run_streamed 失败: {runner_error}")
-            
-            # 设置错误状态
-            chat_response.is_error = True
-            chat_response.error_message = _friendly_ai_error(runner_error)
+            if medical_hits:
+                fallback = extractive_fallback(medical_hits, medical_preview)
+                chat_response.messages = [MessageResponse(content=fallback, agent="Medical Knowledge Agent")]
+                chat_response.raw_response = fallback
+                chat_response.knowledge_status = "source_excerpt"
+                await agent_session.save_message(fallback, "assistant")
+            else:
+                chat_response.is_error = True
+                chat_response.error_message = _friendly_ai_error(runner_error)
             chat_response.is_finished = True
             
             # 直接发送错误响应
@@ -279,6 +307,12 @@ async def _process_stream_with_concurrent_handling(
             
             # 标记完成
             chat_response.is_finished = True
+
+            if medical_hits and assistant_messages:
+                footer = citation_footer(medical_hits, medical_preview)
+                assistant_messages[-1] += footer
+                if chat_response.messages:
+                    chat_response.messages[-1].content += footer
             
             # 保存最终回复
             if assistant_messages:
@@ -318,7 +352,7 @@ async def _process_stream_with_concurrent_handling(
             await session_manager.save(conversation_id, final_state)
 
             # 根据用户聊天记录，生成会话标题
-            print(f"--------更新会话标题: {input_items}")
+            logger.debug("更新会话标题，历史消息数: %d", len(input_items))
             conversation_title_agent = _get_agent_by_name("Conversation Title Agent")
             if len(input_items) > 1 and len(input_items) < 5:
                 title_result = await Runner.run(conversation_title_agent, input=input_items)
@@ -328,41 +362,43 @@ async def _process_stream_with_concurrent_handling(
             
         except Exception as stream_error:
             logger.error(f"❌ 用户 {user_id} 流式处理错误: {stream_error}")
-            
-            # 设置错误状态到ChatResponse
-            chat_response.is_error = True
-            chat_response.error_message = _friendly_ai_error(stream_error)
+            # 停止队列处理
+            try:
+                await response_queue.put(None)
+                await db_save_queue.put(None)
+
+                # 等待并发任务完成或取消
+                await asyncio.gather(response_sender_task, db_saver_task, return_exceptions=True)
+            except Exception as cleanup_error:
+                logger.error(f"❌ 用户 {user_id} 清理并发任务失败: {cleanup_error}")
+
+            if medical_hits:
+                fallback = extractive_fallback(medical_hits, medical_preview)
+                chat_response.messages = [MessageResponse(content=fallback, agent="Medical Knowledge Agent")]
+                chat_response.raw_response = fallback
+                chat_response.knowledge_status = "source_excerpt"
+                try:
+                    await agent_session.save_message(fallback, "assistant")
+                except Exception as save_error:
+                    logger.error(f"❌ 用户 {user_id} 保存资料摘录失败: {save_error}")
+            else:
+                chat_response.is_error = True
+                chat_response.error_message = _friendly_ai_error(stream_error)
             chat_response.is_finished = True
-            
-            # 直接发送错误响应，不依赖可能已失败的队列
+
             error_message = WebSocketMessage(
                 type=MessageType.AI_RESPONSE,
                 content={
                     "type": "completion",
                     "final_response": chat_response.model_dump(),
-                    "message": "处理过程中发生错误"
+                    "message": "资料摘录" if medical_hits else "处理过程中发生错误"
                 },
-                sender_id="system",
-                receiver_id=None,
-                room_id=room_id
+                sender_id="system", receiver_id=None, room_id=room_id
             )
-            
-            # 直接使用connection_manager发送，确保错误消息能到达前端
             try:
                 await connection_manager.send_to_connection(connection_id, error_message)
-                logger.info(f"✅ 用户 {user_id} 错误消息已发送")
             except Exception as send_error:
-                logger.error(f"❌ 用户 {user_id} 发送错误消息失败: {send_error}")
-            
-            # 停止队列处理
-            try:
-                await response_queue.put(None)
-                await db_save_queue.put(None)
-                
-                # 等待并发任务完成或取消
-                await asyncio.gather(response_sender_task, db_saver_task, return_exceptions=True)
-            except Exception as cleanup_error:
-                logger.error(f"❌ 用户 {user_id} 清理并发任务失败: {cleanup_error}")
+                logger.error(f"❌ 用户 {user_id} 发送完成消息失败: {send_error}")
             
         finally:
             # 确保清理任务（检查任务是否存在）
@@ -644,7 +680,28 @@ async def _handle_stream_event_concurrent(
         logger.error(f"处理流式事件错误: {e}")
 
 
-async def handle_stream_chat(user_id: str, message: str, connection_id: str, authenticated_user: Optional[Dict[str, Any]] = None, conversation_id: Optional[str] = None) -> None:
+async def _send_medical_direct(connection_id, conversation_id, ctx, agent_session, answer, status, citations=None):
+    await agent_session.save_message(
+        answer, "assistant", sender_id="Medical Knowledge Agent",
+        extra_data={"knowledge_status": status, "citations": citations or []},
+    )
+    response = ChatResponse(
+        conversation_id=conversation_id,
+        current_agent="Medical Knowledge Agent",
+        messages=[MessageResponse(content=answer, agent="Medical Knowledge Agent")],
+        raw_response=answer,
+        events=[], context=ctx.model_dump(), agents=_build_agents_list(),
+        guardrails=[], is_finished=True, knowledge_status=status,
+        citations=citations or [],
+    )
+    await connection_manager.send_to_connection(connection_id, WebSocketMessage(
+        type=MessageType.AI_RESPONSE,
+        content={"type": "completion", "final_response": response.model_dump()},
+        sender_id="system", room_id=f"user_{ctx.user_id}_room",
+    ))
+
+
+async def handle_stream_chat(user_id: str, message: str, connection_id: str, authenticated_user: Optional[Dict[str, Any]] = None, conversation_id: Optional[str] = None, mode: Optional[str] = None) -> None:
     """处理流式聊天消息"""
     try:
         # 确保服务已初始化
@@ -725,7 +782,7 @@ async def handle_stream_chat(user_id: str, message: str, connection_id: str, aut
             return
 
         try:
-            triage_agent = _get_agent_by_name("Triage Agent")
+            triage_agent = _get_agent_by_name("Triage Agent") if mode != "medical" else None
             logger.debug(f"✅ 用户 {user_id} Triage Agent已获取（单例复用）")
         except Exception as e:
             logger.error(f"获取Triage Agent失败: {e}")
@@ -833,7 +890,7 @@ async def handle_stream_chat(user_id: str, message: str, connection_id: str, aut
         
         # 设置会话上下文
         agent_session.set_context(ctx)
-        agent_session.set_current_agent(triage_agent.name)
+        agent_session.set_current_agent(triage_agent.name if triage_agent else "Medical Knowledge Agent")
         
         # 保存用户消息到会话
         await agent_session.save_message(message, "user")
@@ -841,10 +898,68 @@ async def handle_stream_chat(user_id: str, message: str, connection_id: str, aut
         # 获取完整的会话历史（包含新添加的用户消息）
         session_state = agent_session.get_state()
         input_items = session_state.get("input_items", [])
+
+        runner_input_items = None
+        medical_hits = None
+        medical_preview = False
+        if mode == "medical":
+            if is_urgent(message):
+                await _send_medical_direct(
+                    connection_id, conversation_id, ctx, agent_session,
+                    "你描述的情况可能需要紧急处理。请立即拨打当地急救电话（中国大陆为 120），不要等待在线问答。", "urgent"
+                )
+                return
+            if is_out_of_scope(message):
+                guidance = (
+                    "这个问题需要结合个人病情由医护人员判断，我不能在线作诊断、推荐处方药或调整用药。请携带检查资料向医护人员咨询。"
+                    if needs_clinical_decision(message) else
+                    "这个问题超出当前健康知识范围，本模式仅提供面向成年人的一般健康科普与就医引导。"
+                )
+                await _send_medical_direct(
+                    connection_id, conversation_id, ctx, agent_session,
+                    guidance, "out_of_scope"
+                )
+                return
+            medical_preview = (
+                os.getenv("NODE_ENV") == "development"
+                and os.getenv("MEDICAL_RAG_PREVIEW", "false").lower() == "true"
+            )
+            try:
+                query = contextual_query(message, input_items[:-1])
+                medical_hits = await asyncio.to_thread(search_with_metrics, query, medical_preview, 5)
+            except Exception as search_error:
+                logger.error("医疗知识检索失败: %s", type(search_error).__name__)
+                await _send_medical_direct(
+                    connection_id, conversation_id, ctx, agent_session,
+                    "健康知识库暂时无法检索，请稍后再试。涉及个人病情或持续不适，请咨询医护人员。", "unavailable"
+                )
+                return
+            logger.info("medical retrieval: hits=%d doc_ids=%s", len(medical_hits), [h.doc_id for h in medical_hits])
+            if not medical_hits:
+                await _send_medical_direct(
+                    connection_id, conversation_id, ctx, agent_session,
+                    "目前没有找到足以回答的健康资料。涉及个人病情、检查结果或用药，请咨询医护人员。", "insufficient"
+                )
+                return
+            try:
+                answer = await answer_with_evidence(message, medical_hits, input_items[:-1])
+            except MedicalModelUnavailable:
+                await _send_medical_direct(
+                    connection_id, conversation_id, ctx, agent_session,
+                    "已找到相关资料，但可信的在线回答模型尚未配置或暂时不可用。请稍后重试；涉及个人病情请咨询医护人员。",
+                    "model_unavailable",
+                )
+                return
+            await _send_medical_direct(
+                connection_id, conversation_id, ctx, agent_session,
+                answer.text, answer.status, answer.citations,
+            )
+            return
         
         logger.info(f"🔄 用户 {user_id} 会话历史消息数量: {len(input_items)}")
-        for i, item in enumerate(input_items):
-            logger.debug(f"  {i+1}. [{item.get('role', 'unknown')}]: {item.get('content', '')[:50]}{'...' if len(item.get('content', '')) > 50 else ''}")
+        if mode != "medical":
+            for i, item in enumerate(input_items):
+                logger.debug(f"  {i+1}. [{item.get('role', 'unknown')}]: {item.get('content', '')[:50]}{'...' if len(item.get('content', '')) > 50 else ''}")
         
         # 启动非阻塞流式处理
         logger.info(f"🔄 用户 {user_id} 开始非阻塞流式处理")
@@ -853,7 +968,9 @@ async def handle_stream_chat(user_id: str, message: str, connection_id: str, aut
             stream_task = create_task(
                 _process_stream_with_concurrent_handling(
                     triage_agent, input_items, ctx, connection_id, user_id, 
-                    conversation_id, agent_session, session_manager
+                    conversation_id, agent_session, session_manager,
+                    runner_input_items=runner_input_items, medical_hits=medical_hits,
+                    medical_preview=medical_preview
                 )
             )
             logger.info(f"✅ 用户 {user_id} 流式处理任务已启动")
@@ -988,11 +1105,12 @@ class CustomMessageHandler(WebSocketMessageHandler):
         
         # 获取会话ID（从消息metadata中获取）
         conversation_id = message.metadata.get("conversation_id") if message.metadata else None
+        mode = message.metadata.get("mode") if message.metadata else None
         
         # 异步处理消息（不阻塞其他用户）
         task_id = f"{connection_id}_{datetime.utcnow().timestamp()}"
         task = create_task(self._process_chat_async(
-            user_id, str(message_content), connection_id, authenticated_user, conversation_id, task_id
+            user_id, str(message_content), connection_id, authenticated_user, conversation_id, task_id, mode
         ))
         
         # 跟踪任务
@@ -1005,15 +1123,16 @@ class CustomMessageHandler(WebSocketMessageHandler):
         # 清理完成的任务
         task.add_done_callback(lambda t: self._cleanup_task(task_id))
     
-    async def _process_chat_async(self, user_id: str, message_content: str, connection_id: str, 
-                                  authenticated_user: Optional[Dict[str, Any]], conversation_id: Optional[str], task_id: str):
+    async def _process_chat_async(self, user_id: str, message_content: str, connection_id: str,
+                                  authenticated_user: Optional[Dict[str, Any]], conversation_id: Optional[str], task_id: str,
+                                  mode: Optional[str] = None):
         """异步处理聊天消息"""
         try:
             start_time = asyncio.get_event_loop().time()
             logger.info(f"⚡ 开始处理用户 {user_id} 的消息 (任务ID: {task_id[:8]}...)")
             
             # 使用优化后的handle_stream_chat
-            await handle_stream_chat(user_id, message_content, connection_id, authenticated_user, conversation_id)
+            await handle_stream_chat(user_id, message_content, connection_id, authenticated_user, conversation_id, mode)
             
             processing_time = asyncio.get_event_loop().time() - start_time
             self._stats["messages_processed"] += 1
@@ -1455,6 +1574,7 @@ async def get_performance_stats(current_user: Dict[str, Any] = CurrentUser):
             "performance_manager": perf_stats,
             "message_handler": message_handler_stats,
             "service_manager": service_stats,
+            "medical_retrieval": retrieval_stats(),
             "websocket_connections": {
                 "total_active": len(connection_manager.active_connections),
                 "total_rooms": len(connection_manager.rooms)

@@ -1,0 +1,22 @@
+{
+  "doc_id": "BJ-EMERG-CHEST-2022",
+  "version": 1,
+  "title": "胸痛时应如何求助与准备信息",
+  "topic": "胸痛就医引导",
+  "audience": "中国大陆中文成年人；本机研究版",
+  "source_org": "北京市卫生健康委员会",
+  "source_url": "https://wjw.beijing.gov.cn/bmfw_20143/jkzs/jzjj/202211/t20221102_2850165.html",
+  "source_published_at": "2022-11-02",
+  "status": "source_checked",
+  "reviewer": "Aide source pipeline (automated source comparison; non-clinician)",
+  "reviewed_at": "2026-09-17",
+  "next_review_at": "2027-09-17",
+  "license_note": "仅本机研究和来源核对；公开展示或全文再分发前须核实原文使用条件并由医疗背景人员复核",
+  "source_sha256": "114537579abc2d47c45ab52ac801b62058b81a2e21c900a7bd5a2464e684facb",
+  "source_locator": "正文第1-3点（询问病情、观察症状、120急救）",
+  "source_collected_at": "2026-09-17",
+  "source_version": "原网页发布版",
+  "usage_scope": "北京市卫健委急救科普；成人突发胸痛求助，不能据此判断病因",
+  "withdrawn": false,
+  "body": "# 胸痛就医引导\n询问患者胸痛的性质，如部位、范围、持续时间等，疼痛有无放射至肩部、面颊及下颌、颈部、背部、上肢或上腹部，是否有冠心病、糖尿病、高血压、高血脂等病史；发作前是否有劳累、激动、暴饮暴食、寒冷刺激、吸烟、大量饮酒等情况。\n\n观察患者是否有面色苍白、大汗淋漓、四肢湿冷、口唇青紫、呼吸困难及咯血等症状，并检查患者脉搏是否正常。\n\n当患者出现胸痛时，应立即拨打急救电话120，无论胸痛是否缓解，均需至医院就诊。"
+}

@@ -33,6 +33,13 @@ const clearPersistedSession = () => {
   try { localStorage.removeItem(STORAGE_KEY); } catch { /* noop */ }
 };
 
+const parseMessageMetadata = (raw: unknown): Record<string, any> => {
+  try {
+    if (typeof raw === 'string') return JSON.parse(raw) || {};
+    return raw && typeof raw === 'object' ? raw as Record<string, any> : {};
+  } catch { return {}; }
+};
+
 /* ================================================================
    Dashboard Component
    ================================================================ */
@@ -85,6 +92,7 @@ const Dashboard: React.FC = () => {
             type: (m.sender_type === 'human' ? 'user' : 'ai') as Message['type'],
             agent: m.sender_type === 'human' ? 'user' : (m.sender_id || 'ai'),
             timestamp: new Date(m.created_at || Date.now()),
+            metadata: parseMessageMetadata(m.extra_data),
           }))
           .sort((a: Message, b: Message) => a.timestamp.getTime() - b.timestamp.getTime());
         setMessages(msgs);
@@ -169,6 +177,9 @@ const Dashboard: React.FC = () => {
           id: `${Date.now()}-${Math.random()}`,
           content: m.content, type: m.agent === 'user' ? 'user' : 'ai',
           agent: m.agent, timestamp: new Date(),
+          metadata: m.agent === 'Medical Knowledge Agent'
+            ? { citations: r.citations || [], knowledge_status: r.knowledge_status }
+            : {},
         }));
         setMessages(prev => {
           const last = prev[prev.length - 1];
@@ -235,6 +246,7 @@ const Dashboard: React.FC = () => {
             type: (m.sender_type === 'human' ? 'user' : 'ai') as Message['type'],
             agent: m.sender_type === 'human' ? 'user' : (m.sender_id || 'ai'),
             timestamp: new Date(m.created_at || Date.now()),
+            metadata: parseMessageMetadata(m.extra_data),
           }))
           .sort((a: Message, b: Message) => a.timestamp.getTime() - b.timestamp.getTime()));
       }
@@ -242,7 +254,7 @@ const Dashboard: React.FC = () => {
     setIsLoading(false);
   }, []);
 
-  const handleSendMessage = useCallback(async (content: string) => {
+  const handleSendMessage = useCallback(async (content: string, mode: 'general' | 'medical' = 'general') => {
     if (!content.trim() || isLoading) return;
     setIsLoading(true); setStreamingResponse('');
     setMessages(prev => [...prev, {
@@ -250,7 +262,7 @@ const Dashboard: React.FC = () => {
       type: 'user', agent: 'user', timestamp: new Date(),
     }]);
     const ws = getWebSocketService();
-    ws?.sendChatMessage(content.trim());
+    ws?.sendChatMessage(content.trim(), mode);
   }, [isLoading]);
 
   const handleLogout = () => {

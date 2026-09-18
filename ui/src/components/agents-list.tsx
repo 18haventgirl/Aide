@@ -55,7 +55,7 @@ export function AgentsList({ agents, currentAgent }: AgentsListProps) {
                 可转交给:
               </h4>
               <div className="flex flex-wrap gap-1">
-                {agent.handoffs.map((handoff, handoffIndex) => (
+                {[...new Set(agent.handoffs)].map((handoff, handoffIndex) => (
                   <Badge key={`handoff-${agentIndex}-${handoffIndex}-${handoff}`} variant="secondary" className="text-xs">
                     {handoff}
                   </Badge>
@@ -67,4 +67,4 @@ export function AgentsList({ agents, currentAgent }: AgentsListProps) {
       ))}
     </div>
   );
-} 
+}

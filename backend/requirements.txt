@@ -17,6 +17,11 @@ alembic>=1.12.0
 chromadb==1.0.15
 numpy>=1.26.0
 openai>=1.0.0
+# Offline medical BGE inference. See medical/download_bge.py for pinned weights.
+torch==2.6.0
+transformers==4.49.0
+pypdf==6.1.1
+huggingface-hub==0.36.2
 # Add required dependencies for the newer version of ChromaDB
 #duckdb<0.10.4
 pyarrow
@@ -39,3 +44,7 @@ passlib[bcrypt]
 requests>=2.31.0
 websockets>=11.0.0
 python-socks[asyncio]>=2.3.0
+
+# Local Chinese lexical reranking for the medical source index
+jieba==0.42.1
+rank-bm25==0.2.2
