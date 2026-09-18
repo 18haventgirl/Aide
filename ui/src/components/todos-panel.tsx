@@ -13,6 +13,7 @@ export function TodosPanel({ userId }: TodosPanelProps) {
   const [opLoading, setOpLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Todo | null>(null);
+  const [detail, setDetail] = useState<Todo | null>(null);
   const [filter, setFilter] = useState<PersonDataFilter>({});
   const [showStats, setShowStats] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
@@ -67,6 +68,7 @@ export function TodosPanel({ userId }: TodosPanelProps) {
     setShowForm(true);
     setMenuOpen(null);
   };
+  const openDetail = async (t: Todo) => { try { const r = await todoAPI.getTodo(userId.toString(), t.id.toString()); setDetail(r.data?.data || r.data || t); } catch { setDetail(t); } };
 
   useEffect(() => { Promise.all([load(), loadStats()]).catch(() => {}); }, [userId, filter]);
   useEffect(() => { const h = (e: MouseEvent) => { if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(null); }; document.addEventListener('mousedown', h); return () => document.removeEventListener('mousedown', h); }, []);
@@ -124,9 +126,9 @@ export function TodosPanel({ userId }: TodosPanelProps) {
         ) : (
           <div className="p-2 space-y-1">
             {todos.map(t => (
-              <div key={t.id} className={`group px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors relative ${t.completed ? 'opacity-60' : ''}`}>
+              <div key={t.id} onClick={() => openDetail(t)} className={`group px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors relative cursor-pointer ${t.completed ? 'opacity-60' : ''}`}>
                 <div className="flex items-start gap-2">
-                  <button onClick={() => toggle(t)} disabled={opLoading} className="mt-0.5 flex-shrink-0">
+                  <button onClick={(e) => { e.stopPropagation(); toggle(t); }} disabled={opLoading} className="mt-0.5 flex-shrink-0">
                     {t.completed ? <CheckCircle className="w-4 h-4 text-green-500" /> : <Circle className="w-4 h-4 text-muted-foreground/40 hover:text-green-500 transition-colors" />}
                   </button>
                   <div className="flex-1 min-w-0">
@@ -144,7 +146,7 @@ export function TodosPanel({ userId }: TodosPanelProps) {
                   </div>
                   {/* ... menu */}
                   <div className="relative flex-shrink-0" ref={menuOpen === t.id ? menuRef : undefined}>
-                    <button onClick={() => setMenuOpen(menuOpen === t.id ? null : t.id)} className="p-1 rounded-md hover:bg-muted opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onClick={(e) => { e.stopPropagation(); setMenuOpen(menuOpen === t.id ? null : t.id); }} className="p-1 rounded-md hover:bg-muted opacity-0 group-hover:opacity-100 transition-opacity">
                       <MoreHorizontal className="w-3.5 h-3.5 text-muted-foreground" />
                     </button>
                     {menuOpen === t.id && (
@@ -160,6 +162,15 @@ export function TodosPanel({ userId }: TodosPanelProps) {
           </div>
         )}
       </div>
+
+      {detail && <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-40" onClick={() => setDetail(null)}>
+        <div className="bg-white rounded-2xl p-5 w-full max-w-lg m-4 shadow-xl" onClick={e => e.stopPropagation()}>
+          <div className="flex justify-between items-start gap-3"><h3 className="text-lg font-heading font-semibold">{detail.title}</h3><button onClick={() => setDetail(null)} className="p-1.5 rounded-lg hover:bg-muted"><X className="w-4 h-4" /></button></div>
+          <div className="flex gap-2 mt-2 text-xs text-muted-foreground"><span>{detail.completed ? '已完成' : '未完成'}</span><span>· 优先级{pt(detail.priority)}</span>{detail.due_date && <span>· 截止 {fmt(detail.due_date)}</span>}</div>
+          <div className="mt-4 whitespace-pre-wrap text-sm leading-6 text-foreground/85 max-h-[55vh] overflow-y-auto">{detail.description || '暂无描述'}</div>
+          <div className="mt-4 text-xs text-muted-foreground">创建于 {fmt(detail.created_at)}</div>
+        </div>
+      </div>}
 
       {/* Form modal */}
       {showForm && (

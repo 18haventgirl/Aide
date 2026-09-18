@@ -19,6 +19,7 @@ export function NotesPanel({ userId }: NotesPanelProps) {
   const [opLoading, setOpLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Note | null>(null);
+  const [detail, setDetail] = useState<Note | null>(null);
   const [searchQ, setSearchQ] = useState('');
   const [filter, setFilter] = useState<PersonDataFilter>({});
   const [tags, setTags] = useState<string[]>([]);
@@ -75,6 +76,7 @@ export function NotesPanel({ userId }: NotesPanelProps) {
   };
 
   const startEdit = (n: Note) => { setEditing(n); setForm({ title: n.title, content: n.content, tag: n.tag || '', status: n.status }); setShowForm(true); setMenuOpen(null); };
+  const openDetail = async (n: Note) => { try { const r = await noteAPI.getNote(userId.toString(), n.id.toString()); setDetail(r.data?.data || r.data || n); } catch { setDetail(n); } };
 
   useEffect(() => { Promise.all([load(), loadTags()]).catch(() => {}); }, [userId, filter]);
   useEffect(() => { const h = (e: MouseEvent) => { if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(null); }; document.addEventListener('mousedown', h); return () => document.removeEventListener('mousedown', h); }, []);
@@ -128,7 +130,7 @@ export function NotesPanel({ userId }: NotesPanelProps) {
         ) : (
           <div className="p-2 space-y-1.5">
             {notes.map(n => (
-              <div key={n.id} className="group px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors relative">
+              <div key={n.id} onClick={() => openDetail(n)} className="group px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors relative cursor-pointer">
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
                     <h4 className="text-sm font-medium text-foreground truncate">{n.title}</h4>
@@ -141,7 +143,7 @@ export function NotesPanel({ userId }: NotesPanelProps) {
                   </div>
                   {/* ... menu */}
                   <div className="relative" ref={menuOpen === n.id ? menuRef : undefined}>
-                    <button onClick={() => setMenuOpen(menuOpen === n.id ? null : n.id)} className="p-1 rounded-md hover:bg-muted opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onClick={(e) => { e.stopPropagation(); setMenuOpen(menuOpen === n.id ? null : n.id); }} className="p-1 rounded-md hover:bg-muted opacity-0 group-hover:opacity-100 transition-opacity">
                       <MoreHorizontal className="w-3.5 h-3.5 text-muted-foreground" />
                     </button>
                     {menuOpen === n.id && (
@@ -157,6 +159,15 @@ export function NotesPanel({ userId }: NotesPanelProps) {
           </div>
         )}
       </div>
+
+      {detail && <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-40" onClick={() => setDetail(null)}>
+        <div className="bg-white rounded-2xl p-5 w-full max-w-lg m-4 shadow-xl" onClick={e => e.stopPropagation()}>
+          <div className="flex justify-between items-start gap-3"><h3 className="text-lg font-heading font-semibold">{detail.title}</h3><button onClick={() => setDetail(null)} className="p-1.5 rounded-lg hover:bg-muted"><X className="w-4 h-4" /></button></div>
+          <div className="flex gap-2 mt-2 text-xs text-muted-foreground"><span>{detail.status === 'published' ? '已发布' : detail.status === 'archived' ? '已归档' : '草稿'}</span>{detail.tag && <span>· {tagLabel(detail.tag)}</span>}</div>
+          <div className="mt-4 whitespace-pre-wrap text-sm leading-6 text-foreground/85 max-h-[55vh] overflow-y-auto">{detail.content || '暂无内容'}</div>
+          <div className="mt-4 text-xs text-muted-foreground">更新于 {fmt(detail.last_updated || detail.updated_at)}</div>
+        </div>
+      </div>}
 
       {/* Form modal */}
       {showForm && (

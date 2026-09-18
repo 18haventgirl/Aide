@@ -301,6 +301,10 @@ export const noteAPI = {
     return apiService.get(API_ENDPOINTS.NOTE.LIST(userId), params);
   },
 
+  async getNote(userId: string, noteId: string): Promise<ApiResponse<any>> {
+    return apiService.get(API_ENDPOINTS.NOTE.UPDATE(userId, noteId));
+  },
+
   // 创建笔记
   async createNote(userId: string, data: any): Promise<ApiResponse<any>> {
     return apiService.post(API_ENDPOINTS.NOTE.CREATE(userId), data);
@@ -318,7 +322,12 @@ export const noteAPI = {
 
   // 搜索笔记 - 修正：后端返回包含data字段的结构
   async searchNotes(userId: string, searchData: any): Promise<ApiResponse<{data: any[], total: number, user_id: number}>> {
-    return apiService.post(API_ENDPOINTS.NOTE.SEARCH(userId), searchData);
+    try {
+      return await apiService.post(API_ENDPOINTS.NOTE.SEARCH(userId), searchData);
+    } catch {
+      // Keep keyword search usable when vector dependencies are unavailable.
+      return apiService.get(API_ENDPOINTS.NOTE.LIST(userId), { search: searchData.query, tag: searchData.tag, status: searchData.status, limit: searchData.limit });
+    }
   },
 
   // 获取笔记标签 - 修正：后端返回包含data字段的结构
@@ -332,6 +341,10 @@ export const todoAPI = {
   // 获取待办事项列表 - 修正：后端直接返回Todo数组，不是分页结构
   async getTodos(userId: string, params?: any): Promise<ApiResponse<any[]>> {
     return apiService.get(API_ENDPOINTS.TODO.LIST(userId), params);
+  },
+
+  async getTodo(userId: string, todoId: string): Promise<ApiResponse<any>> {
+    return apiService.get(API_ENDPOINTS.TODO.UPDATE(userId, todoId));
   },
 
   // 创建待办事项
@@ -408,4 +421,4 @@ export const authAPI = {
 };
 
 // 导出axios实例供特殊需求使用
-export { apiClient }; 
+export { apiClient };
