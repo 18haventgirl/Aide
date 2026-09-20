@@ -8,7 +8,7 @@ import { useAppSelector } from "../store/hooks";
 
 interface ChatProps {
   messages: Message[];
-  onSendMessage: (message: string, mode?: 'general' | 'medical') => void;
+  onSendMessage: (message: string) => void;
   isLoading?: boolean;
   streamingResponse?: string;
   wsStatus?: WebSocketConnectionStatus;
@@ -27,7 +27,6 @@ export function Chat({
   const [isComposing, setIsComposing] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [showConversationList, setShowConversationList] = useState(false);
-  const [medicalMode, setMedicalMode] = useState(false);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
@@ -37,11 +36,11 @@ export function Chat({
     if (!inputText.trim() || wsStatus !== 'connected') return;
     setIsSending(true);
     try {
-      await onSendMessage(inputText, medicalMode ? 'medical' : 'general');
+      await onSendMessage(inputText);
       setInputText("");
     } catch { /* noop */ }
     setIsSending(false);
-  }, [inputText, onSendMessage, wsStatus, medicalMode]);
+  }, [inputText, onSendMessage, wsStatus]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey && !isComposing) {
@@ -61,14 +60,6 @@ export function Chat({
             <Bot className="w-3.5 h-3.5 text-white" />
           </div>
           <h2 className="font-heading font-semibold text-sm">Assistant</h2>
-          <button
-            type="button"
-            onClick={() => setMedicalMode(value => !value)}
-            aria-pressed={medicalMode}
-            className={`ml-2 rounded-full px-3 py-1 text-xs font-medium transition-colors ${medicalMode ? 'bg-blue-600 text-white' : 'bg-white/50 text-muted-foreground'}`}
-          >
-            健康知识{medicalMode ? ' · 已开启' : ''}
-          </button>
         </div>
         <button
           onClick={() => setShowConversationList(true)}
@@ -186,7 +177,6 @@ export function Chat({
 
       {/* Input area */}
       <div className="flex-shrink-0 p-3 bg-transparent">
-        {medicalMode && <p className="px-2 pb-2 text-xs text-muted-foreground">健康知识功能仍在本机研究阶段；问题和检索资料会发送至已配置的回答模型。急症请及时拨打 120。</p>}
         <div className={`transition-all duration-200 ${connected ? 'bg-white/75 backdrop-blur-[20px] rounded-2xl shadow-lg p-1' : 'bg-muted/50 rounded-2xl p-1'}`} style={connected ? { WebkitBackdropFilter: 'blur(30px)', border: '1px solid rgba(37,99,235,0.15)' } : {}}>
           <div className="flex items-end gap-1.5">
             <textarea

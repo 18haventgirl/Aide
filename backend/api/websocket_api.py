@@ -782,7 +782,7 @@ async def handle_stream_chat(user_id: str, message: str, connection_id: str, aut
             return
 
         try:
-            triage_agent = _get_agent_by_name("Medical Health Agent") if mode == "medical" else _get_agent_by_name("Triage Agent")
+            triage_agent = _get_agent_by_name("Triage Agent")
             logger.debug(f"✅ 用户 {user_id} Triage Agent已获取（单例复用）")
         except Exception as e:
             logger.error(f"获取Triage Agent失败: {e}")

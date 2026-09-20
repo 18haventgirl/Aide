@@ -452,6 +452,7 @@ class PersonalAssistantManager:
             "3. News Agent: Queries global and local latest news, specific topic information (such as travel, technology, finance) and updates. Call when users need to understand recent situations about places or events, or need background information for planning.\n"
             "4. Personal Assistant: A multi-functional assistant managing notes, to-dos and preferences.\n"
             "5. Medical Health Agent: Handles general adult health education and care-seeking guidance. It must use medical_search and cannot diagnose, prescribe or change medication.\n\n"
+            "Route questions about symptoms, fever, pain, cough, vomiting, diarrhea, medicines, examinations, diseases, prevention, or when to seek care to Medical Health Agent.\n"
             "Your approach: Analyze intent → Decompose tasks → Call appropriate agents → Integrate results → Deliver comprehensive response.\n\n"
             "Important Principle: For clear and specific single-domain requests, directly handoff to the specialized agent without complex decomposition. Only use multi-agent coordination for complex, multi-domain tasks that require integration of different types of information.\n\n"
             "Example Workflow:\n"
