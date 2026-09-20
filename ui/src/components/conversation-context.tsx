@@ -2,11 +2,11 @@ import { Database } from "lucide-react";
 import React from "react";
 
 interface ConversationContextProps {
-  context: Record<string, any>;
+  context: Record<string, unknown>;
 }
 
 export function ConversationContext({ context }: ConversationContextProps) {
-  const contextEntries = Object.entries(context).filter(([_, value]) => value);
+  const contextEntries = Object.entries(context).filter(([, value]) => value !== null && value !== undefined && value !== '');
 
   return (
     <div className="min-w-0 max-w-full space-y-3">

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import type { Message } from "../lib/types";
 import ReactMarkdown from "react-markdown";
 import type { WebSocketConnectionStatus } from "../lib/websocket";
-import { WifiOff, Send, AlertCircle, Menu, Loader2, Bot, User as UserIcon } from "lucide-react";
+import { WifiOff, Send, Menu, Loader2, Bot, User as UserIcon } from "lucide-react";
 import { ConversationList } from "./ConversationList";
 import { useAppSelector } from "../store/hooks";
 

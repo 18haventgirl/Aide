@@ -121,7 +121,7 @@ const Dashboard: React.FC = () => {
     const ws = createWebSocketService(uid, user.username, undefined, token);
     if (!ws) { setWsStatus('error'); return; }
 
-    if (conversationId) ws.setConversationId(conversationId);
+    if (conversationIdRef.current) ws.setConversationId(conversationIdRef.current);
 
     const onStatus = (s: WebSocketConnectionStatus) => { setWsStatus(s); if (s === 'connected') setWsError(''); };
     const onError = (c: any) => { setWsStatus('error'); setWsError(c?.error || '连接失败'); setIsLoading(false); setStreamingResponse(''); };
