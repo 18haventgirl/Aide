@@ -10,6 +10,7 @@ from .note_service import NoteService
 from .todo_service import TodoService
 from .conversation_service import ConversationService
 from .chat_message_service import ChatMessageService
+from .health_record_service import HealthRecordService
 
 __all__ = [
     'UserService',
@@ -17,5 +18,6 @@ __all__ = [
     'NoteService',
     'TodoService',
     'ConversationService',
-    'ChatMessageService'
+    'ChatMessageService',
+    'HealthRecordService'
 ] 

@@ -173,7 +173,38 @@ export interface TodoStatsResponse {
 // Person Data 相关类型定义
 // =========================
 
-export type PersonDataTab = 'notes' | 'todos'
+export type PersonDataTab = 'notes' | 'todos' | 'health'
+
+export type HealthRecordType = 'symptom' | 'vital' | 'medication' | 'visit'
+
+export interface HealthRecord {
+  id: number
+  user_id: number
+  observed_at: string
+  time_precision: 'minute' | 'day' | 'unknown'
+  record_type: HealthRecordType
+  title: string
+  summary: string
+  details: Record<string, unknown>
+  source: 'conversation' | 'manual'
+  source_conversation_id?: string | null
+  source_message_id?: string | null
+  confidence: 'explicit' | 'user_confirmed' | 'inferred_time'
+  status: 'active' | 'corrected' | 'deleted'
+  created_at: string | null
+  updated_at: string | null
+}
+
+export interface HealthRecordCreateRequest {
+  observed_at?: string
+  time_precision: 'minute' | 'day' | 'unknown'
+  record_type: HealthRecordType
+  title: string
+  summary: string
+  details: Record<string, unknown>
+  source?: 'conversation' | 'manual'
+  confidence?: 'explicit' | 'user_confirmed' | 'inferred_time'
+}
 
 export interface PersonDataFilter {
   search?: string

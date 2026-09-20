@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { FileText, CheckSquare, Layout } from 'lucide-react';
+import { FileText, CheckSquare, Layout, Activity } from 'lucide-react';
 import { NotesPanel } from './notes-panel';
 import { TodosPanel } from './todos-panel';
 import type { PersonDataTab } from '../lib/types';
 import { useAppSelector } from '../store/hooks';
+import { HealthRecordsPanel } from './health-records-panel';
 
 interface PersonDataPanelProps { userId?: number }
 
@@ -20,6 +21,7 @@ export function PersonDataPanel({ userId }: PersonDataPanelProps) {
   const tabs: [PersonDataTab, React.ElementType, string][] = [
     ['notes', FileText, '笔记'],
     ['todos', CheckSquare, '待办'],
+    ['health', Activity, '身体状况'],
   ];
 
   return (
@@ -49,6 +51,7 @@ export function PersonDataPanel({ userId }: PersonDataPanelProps) {
       <div className="flex-1 overflow-hidden bg-background">
         {activeTab === 'notes' && <NotesPanel userId={currentUserId} />}
         {activeTab === 'todos' && <TodosPanel userId={currentUserId} />}
+        {activeTab === 'health' && <HealthRecordsPanel userId={currentUserId} />}
       </div>
     </div>
   );

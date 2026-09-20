@@ -11,6 +11,7 @@ from .websocket_api import websocket_router
 from .system_api import system_router
 from .note_api import note_router
 from .todo_api import todo_router
+from .health_record_api import health_record_router
 
 __all__ = [
     "auth_router",
@@ -19,5 +20,6 @@ __all__ = [
     "websocket_router",
     "system_router",
     "note_router",
-    "todo_router"
+    "todo_router",
+    "health_record_router"
 ] 

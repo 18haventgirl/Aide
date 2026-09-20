@@ -82,6 +82,14 @@ export const API_ENDPOINTS = {
     STATS: (userId: string) => `/api/todos/${userId}/stats`,
     BY_NOTE: (userId: string, noteId: string) => `/api/todos/${userId}/by-note/${noteId}`,
   },
+
+  HEALTH_RECORD: {
+    LIST: (userId: string) => `/api/health-records/${userId}`,
+    DETAIL: (userId: string, recordId: string) => `/api/health-records/${userId}/${recordId}`,
+    CREATE: (userId: string) => `/api/health-records/${userId}`,
+    UPDATE: (userId: string, recordId: string) => `/api/health-records/${userId}/${recordId}`,
+    DELETE: (userId: string, recordId: string) => `/api/health-records/${userId}/${recordId}`,
+  },
 };
 
 // 导出配置项

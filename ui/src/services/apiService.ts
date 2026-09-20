@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { AxiosInstance, AxiosError, AxiosResponse } from 'axios';
 import { API_BASE_URL, API_ENDPOINTS, REQUEST_TIMEOUT } from '../lib/config';
-import type { LoginCredentials, AuthToken, User } from '../lib/types';
+import type { LoginCredentials, AuthToken, User, HealthRecord, HealthRecordCreateRequest } from '../lib/types';
 import { AuthManager } from '../lib/auth';
 
 // 通用API响应类型
@@ -222,6 +222,15 @@ class ApiService {
     }
   }
 
+  async patch<T>(url: string, data?: any): Promise<ApiResponse<T>> {
+    try {
+      const response = await apiClient.patch(url, data);
+      return response.data;
+    } catch (error) {
+      throw this.handleError(error);
+    }
+  }
+
   // 通用DELETE请求
   async delete<T>(url: string): Promise<ApiResponse<T>> {
     try {
@@ -384,6 +393,24 @@ export const todoAPI = {
   // 获取关联笔记的待办事项 - 后端返回包含data字段的结构
   async getTodosByNote(userId: string, noteId: string): Promise<ApiResponse<{data: any[], total: number}>> {
     return apiService.get(API_ENDPOINTS.TODO.BY_NOTE(userId, noteId));
+  },
+};
+
+export const healthRecordAPI = {
+  async getRecords(userId: string, params?: { start_date?: string; end_date?: string; limit?: number }): Promise<ApiResponse<{ records: HealthRecord[]; daily_counts: Record<string, number>; total: number; user_id: number }>> {
+    return apiService.get(API_ENDPOINTS.HEALTH_RECORD.LIST(userId), params);
+  },
+  async getRecord(userId: string, recordId: string): Promise<ApiResponse<HealthRecord>> {
+    return apiService.get(API_ENDPOINTS.HEALTH_RECORD.DETAIL(userId, recordId));
+  },
+  async createRecord(userId: string, data: HealthRecordCreateRequest): Promise<ApiResponse<HealthRecord>> {
+    return apiService.post(API_ENDPOINTS.HEALTH_RECORD.CREATE(userId), data);
+  },
+  async updateRecord(userId: string, recordId: string, data: Partial<HealthRecordCreateRequest>): Promise<ApiResponse<HealthRecord>> {
+    return apiService.patch(API_ENDPOINTS.HEALTH_RECORD.UPDATE(userId, recordId), data);
+  },
+  async deleteRecord(userId: string, recordId: string): Promise<ApiResponse<{ id: number }>> {
+    return apiService.delete(API_ENDPOINTS.HEALTH_RECORD.DELETE(userId, recordId));
   },
 };
 

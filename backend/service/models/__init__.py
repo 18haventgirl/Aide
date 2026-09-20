@@ -9,11 +9,13 @@ from .note import Note
 from .todo import Todo
 from .conversation import Conversation
 from .chat_message import ChatMessage
+from .health_record import HealthRecord
 
 __all__ = [
     'UserPreference',
     'Note',
     'Todo',
     'Conversation',
-    'ChatMessage'
+    'ChatMessage',
+    'HealthRecord'
 ] 
