@@ -22,7 +22,7 @@ def register_health_tools(mcp):
     service = HealthRecordService(db)
 
     @mcp.tool
-    def health_create_record(
+    def create_record(
         user_id: int,
         record_type: str,
         title: str,
@@ -54,7 +54,7 @@ def register_health_tools(mcp):
             return json.dumps({"success": False, "error": type(exc).__name__}, ensure_ascii=False)
 
     @mcp.tool
-    def health_get_records(user_id: int, start_date: str = "", end_date: str = "", limit: int = 100) -> str:
+    def get_records(user_id: int, start_date: str = "", end_date: str = "", limit: int = 100) -> str:
         """Read the user's own health records for a date range."""
         try:
             start = datetime.strptime(start_date, "%Y-%m-%d").date() if start_date else None
@@ -65,7 +65,7 @@ def register_health_tools(mcp):
             return json.dumps({"success": False, "error": type(exc).__name__}, ensure_ascii=False)
 
     @mcp.tool
-    def health_get_record(user_id: int, record_id: int) -> str:
+    def get_record(user_id: int, record_id: int) -> str:
         """Read one of the user's health record details."""
         record = service.get_record(user_id, record_id)
         if not record:
@@ -73,7 +73,7 @@ def register_health_tools(mcp):
         return json.dumps({"success": True, "record": record.to_dict()}, ensure_ascii=False)
 
     @mcp.tool
-    def health_update_record(user_id: int, record_id: int, summary: str = "", details: str = "{}") -> str:
+    def update_record(user_id: int, record_id: int, summary: str = "", details: str = "{}") -> str:
         """Correct an existing user health record after the user clarifies it."""
         try:
             details_dict = json.loads(details or "{}")

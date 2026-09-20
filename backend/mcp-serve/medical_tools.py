@@ -8,7 +8,7 @@ from medical.runtime import search_with_metrics
 
 def register_medical_tools(mcp):
     @mcp.tool
-    def medical_search(query: str, top_k: int = 5, audience: str = "adult", region: str = "CN") -> str:
+    def search(query: str, top_k: int = 5, audience: str = "adult", region: str = "CN") -> str:
         """Search the reviewed Chinese health knowledge base. This tool retrieves evidence only; the Agent writes the answer."""
         started = time.perf_counter()
         if audience != "adult" or region != "CN":
