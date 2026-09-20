@@ -23,7 +23,7 @@ class SupportedStatement(BaseModel):
 
 
 class AnswerDraft(BaseModel):
-    status: Literal["answered", "insufficient"]
+    status: Literal["answered"]
     statements: list[SupportedStatement] = Field(max_length=10)
 
 
@@ -40,9 +40,10 @@ _RESPONSE_SCHEMA = {
     "schema": {
         "type": "object",
         "properties": {
-            "status": {"type": "string", "enum": ["answered", "insufficient"]},
+            "status": {"type": "string", "enum": ["answered"]},
             "statements": {
                 "type": "array",
+                "minItems": 1,
                 "items": {
                     "type": "object",
                     "properties": {
@@ -67,8 +68,9 @@ _SYSTEM_PROMPT = (
     "不能把证据中较广的疾病范围推断为用户提到的具体疾病；如果问题问哪种做法更快，"
     "而证据只讲一般原则，就明确说资料没有比较恢复速度，不得推断疗效或病因。"
     "只回答成年人信息；不要主动加入婴幼儿、儿童、孕产妇或其他特殊人群的建议。"
-    "证据不能直接回答、适用人群不符或来源冲突时，返回 status=insufficient。"
-    "只输出约定的 JSON；用通俗中文，最多两条简短陈述，每条尽量只表达一个可核查的意思。"
+    "无论证据是否命中，都必须返回 status=answered 和至少一条 statements。没有证据支持时，"
+    "明确说知识库未覆盖，并仅给保守的通用安全引导；不要返回 insufficient。"
+    "只输出约定的 JSON；用通俗中文，最多三条简短陈述，每条尽量只表达一个可核查的意思。"
     'JSON 格式示例：{"status":"answered","statements":[{"text":"示例事实","evidence_ids":["E1"]}]}。'
 )
 
@@ -99,21 +101,18 @@ def _bounded_history(history: list[dict]) -> str:
 
 
 def _render_draft(draft: AnswerDraft, hits: list[MedicalHit]) -> AnswerResult:
-    if not hits and draft.status == "answered" and draft.statements:
+    if not hits and draft.statements:
         lines = [f"- {statement.text}" for statement in draft.statements[:3]]
         answer = "\n".join(lines)
-        answer += "\n\n以上为一般安全引导，当前知识库未覆盖本问题，不能替代医生对个人情况的判断。"
+        if not hits:
+            answer += "\n\n当前知识库未覆盖本问题，以上为模型生成的一般安全引导，不能替代医生对个人情况的判断。"
         return AnswerResult(answer, "llm_safety_fallback", [])
     if draft.status != "answered" or not draft.statements:
-        return AnswerResult(
-            "当前检索到的资料不足以直接回答这个问题。请先测量并记录体温，注意休息和补水；如果高热不退、症状持续加重，或出现明显胸闷、呼吸困难、意识异常等情况，请及时就医。涉及个人病情或用药，请咨询医护人员。",
-            "llm_safety_fallback",
-            [],
-        )
+        raise ValueError("medical model returned no statements")
     evidence = {f"E{i}": hit for i, hit in enumerate(hits[:5], 1)}
     used: dict[str, MedicalHit] = {}
     lines = []
-    if any(not statement.evidence_ids or any(eid not in evidence for eid in statement.evidence_ids)
+    if any(any(eid not in evidence for eid in statement.evidence_ids)
            for statement in draft.statements):
         raise ValueError("answer cites an unknown evidence ID")
     for statement in draft.statements[:2]:
@@ -135,7 +134,7 @@ def _render_draft(draft: AnswerDraft, hits: list[MedicalHit]) -> AnswerResult:
             citations_by_doc[hit.doc_id]["evidence_id"] += f", {eid}"
     answer = "\n".join(lines)
     answer += "\n\n本功能仍处于本机研究阶段，资料尚未经过医疗专业人员审核。"
-    return AnswerResult(answer, "evidence_cited", list(citations_by_doc.values()))
+    return AnswerResult(answer, "evidence_cited" if citations_by_doc else "llm_safety_fallback", list(citations_by_doc.values()))
 
 
 async def answer_with_evidence(
@@ -156,7 +155,7 @@ async def answer_with_evidence(
         )
     else:
         task = (
-            "知识库没有命中资料。请仍然给出最多三条保守的安全引导：说明无法诊断，"
+            "知识库没有命中资料。请仍然由你给出最多三条保守的安全引导：说明无法诊断，"
             "提示常见的就医危险信号，并建议根据症状严重程度咨询医护人员。"
             "禁止具体诊断、处方、剂量、停药或把不确定内容说成事实；所有 statements 的 evidence_ids 必须为空。"
         )
