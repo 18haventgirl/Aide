@@ -12,9 +12,13 @@ function Start-Hidden($file, $argList, $cwd) {
   Start-Process -FilePath $file -ArgumentList $argList -WorkingDirectory $cwd -WindowStyle Hidden
 }
 
+function Port-IsOpen($port) {
+  try { return (Test-NetConnection -ComputerName 127.0.0.1 -Port $port -InformationLevel Quiet -WarningAction SilentlyContinue) } catch { return $false }
+}
+
 # Start each service without opening a console window. Existing services keep
 # their ports; this avoids killing unrelated Node/Python processes.
-Start-Hidden $python @('-m','uvicorn','main:app','--host','127.0.0.1','--port','8000','--no-access-log','--log-level','warning') $backend
-Start-Hidden $python @((Join-Path $root 'mcp-serve\mcp_server.py')) (Join-Path $root 'backend')
-Start-Hidden $node @($vite,'--host','127.0.0.1','--port','3000') (Join-Path $root 'ui')
+if (-not (Port-IsOpen 8000)) { Start-Hidden $python @('-m','uvicorn','main:app','--host','127.0.0.1','--port','8000','--no-access-log','--log-level','warning') $backend }
+if (-not (Port-IsOpen 8002)) { Start-Hidden $python @((Join-Path $root 'mcp-serve\mcp_server.py')) (Join-Path $root 'backend') }
+if (-not (Port-IsOpen 3000)) { Start-Hidden $node @($vite,'--host','127.0.0.1','--port','3000') (Join-Path $root 'ui') }
 Write-Output 'Aide services started in hidden windows.'
