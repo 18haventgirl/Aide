@@ -104,6 +104,12 @@ def _render_draft(draft: AnswerDraft, hits: list[MedicalHit]) -> AnswerResult:
         answer = "\n".join(lines)
         answer += "\n\n以上为一般安全引导，当前知识库未覆盖本问题，不能替代医生对个人情况的判断。"
         return AnswerResult(answer, "llm_safety_fallback", [])
+    if not hits:
+        return AnswerResult(
+            "当前知识库未覆盖这个问题。请先测量并记录体温，注意休息和补水；如果高热不退、症状持续加重，或出现明显胸闷、呼吸困难、意识异常等情况，请及时就医。涉及个人病情或用药，请咨询医护人员。",
+            "llm_safety_fallback",
+            [],
+        )
     if draft.status != "answered" or not draft.statements:
         return AnswerResult("现有已核对资料不足以回答这个问题。涉及个人病情或用药，请咨询医护人员。", "insufficient", [])
     evidence = {f"E{i}": hit for i, hit in enumerate(hits[:5], 1)}
