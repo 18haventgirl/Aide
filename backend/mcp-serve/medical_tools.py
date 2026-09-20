@@ -17,7 +17,20 @@ def register_medical_tools(mcp):
                 "retrieval": {"search_type": "hybrid", "latency_ms": 0, "reason": "unsupported_audience_or_region"},
             }, ensure_ascii=False)
         try:
-            hits = search_with_metrics(query.strip()[:1000], preview=False, limit=max(1, min(top_k, 8)))
+            # Startup can race with the first two agent tool calls while the
+            # local Chroma tenant and BGE model are being initialized. Retry
+            # one transient initialization failure before reporting the tool
+            # as unavailable to the LLM.
+            last_error = None
+            for attempt in range(2):
+                try:
+                    hits = search_with_metrics(query.strip()[:1000], preview=False, limit=max(1, min(top_k, 8)))
+                    break
+                except (RuntimeError, ValueError) as exc:
+                    last_error = exc
+                    if attempt == 1:
+                        raise
+                    time.sleep(0.15)
             data = [{
                 "evidence_id": f"E{i}", "doc_id": hit.doc_id, "title": hit.title,
                 "section_path": hit.section_path, "text": hit.text[:1600],
@@ -34,4 +47,3 @@ def register_medical_tools(mcp):
                 "query": query, "knowledge_status": "unavailable", "hits": [],
                 "retrieval": {"search_type": "hybrid", "latency_ms": round((time.perf_counter() - started) * 1000, 1), "error": type(exc).__name__},
             }, ensure_ascii=False)
-

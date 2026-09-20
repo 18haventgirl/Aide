@@ -15,6 +15,7 @@ from .bge_embedding import BGEEmbedding
 from .local_embedding import ChineseHashEmbedding
 
 _lock = threading.Lock()
+_kb_init_lock = threading.Lock()
 _stats = {"queries": 0, "queries_with_hits": 0, "errors": 0, "total_latency_ms": 0.0}
 _log_path = Path(__file__).resolve().parents[1] / "logs" / "medical_retrieval.jsonl"
 
@@ -69,7 +70,12 @@ def get_knowledge_base(preview: bool = False, research_mode: bool | None = None)
 def search_with_metrics(query: str, preview: bool = False, limit: int = 5):
     start = time.perf_counter()
     try:
-        kb = get_knowledge_base(preview)
+        # lru_cache does not serialize a cache miss.  The first two MCP tool
+        # calls can arrive concurrently after startup, which may make Chroma
+        # initialize the same local tenant twice.  Serialize only this one
+        # time-sensitive initialization path; normal searches remain parallel.
+        with _kb_init_lock:
+            kb = get_knowledge_base(preview)
         # An empty published index must not call a remote embedding service or
         # silently fall through to the development draft collection.
         hits = kb.search(query, limit=limit) if kb.collection.count() else []

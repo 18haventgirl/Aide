@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import os
+import threading
 from pathlib import Path
 
 
@@ -50,6 +51,7 @@ class BGEEmbedding:
         self._tokenizer = None
         self._model = None
         self._torch = None
+        self._load_lock = threading.Lock()
 
     def name(self) -> str:
         return f"{MODEL_ID}@{MODEL_REVISION}"
@@ -57,20 +59,23 @@ class BGEEmbedding:
     def _load(self) -> None:
         if self._model is not None:
             return
-        try:
-            import torch
-            from transformers import AutoModel, AutoTokenizer
-        except ImportError as error:
-            raise RuntimeError("BGE inference requires torch and transformers") from error
+        with self._load_lock:
+            if self._model is not None:
+                return
+            try:
+                import torch
+                from transformers import AutoModel, AutoTokenizer
+            except ImportError as error:
+                raise RuntimeError("BGE inference requires torch and transformers") from error
 
-        self._tokenizer = AutoTokenizer.from_pretrained(self.model_dir, local_files_only=True)
-        self._model = AutoModel.from_pretrained(
-            self.model_dir, local_files_only=True, use_safetensors=True
-        ).to("cpu")
-        self._model.eval()
-        if self._model.config.hidden_size != DIMENSIONS:
-            raise ValueError(f"unexpected BGE dimension: {self._model.config.hidden_size}")
-        self._torch = torch
+            self._tokenizer = AutoTokenizer.from_pretrained(self.model_dir, local_files_only=True)
+            self._model = AutoModel.from_pretrained(
+                self.model_dir, local_files_only=True, use_safetensors=True
+            ).to("cpu")
+            self._model.eval()
+            if self._model.config.hidden_size != DIMENSIONS:
+                raise ValueError(f"unexpected BGE dimension: {self._model.config.hidden_size}")
+            self._torch = torch
 
     def _encode(self, texts: list[str]) -> list[list[float]]:
         if not texts:
