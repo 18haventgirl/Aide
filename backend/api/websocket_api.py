@@ -782,7 +782,7 @@ async def handle_stream_chat(user_id: str, message: str, connection_id: str, aut
             return
 
         try:
-            triage_agent = _get_agent_by_name("Triage Agent") if mode != "medical" else None
+            triage_agent = _get_agent_by_name("Medical Health Agent") if mode == "medical" else _get_agent_by_name("Triage Agent")
             logger.debug(f"✅ 用户 {user_id} Triage Agent已获取（单例复用）")
         except Exception as e:
             logger.error(f"获取Triage Agent失败: {e}")
@@ -902,7 +902,10 @@ async def handle_stream_chat(user_id: str, message: str, connection_id: str, aut
         runner_input_items = None
         medical_hits = None
         medical_preview = False
-        if mode == "medical":
+        # Medical Health Agent now uses the same Agent/LiteLLM runner as every
+        # other agent. The legacy direct medical path remains opt-in only for
+        # rollback while the MCP medical_search tool is being validated.
+        if mode == "medical" and os.getenv("LEGACY_MEDICAL_FLOW", "false").lower() == "true":
             if is_urgent(message):
                 await _send_medical_direct(
                     connection_id, conversation_id, ctx, agent_session,

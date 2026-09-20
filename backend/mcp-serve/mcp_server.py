@@ -18,6 +18,7 @@ from weather_tools import register_weather_tools
 from news_tools import register_news_tools
 from recipe_tools import register_recipe_tools
 from user_data_tools import register_user_data_tools
+from medical_tools import register_medical_tools
 
 # Import database initialization components
 from core.database_core import DatabaseClient
@@ -35,6 +36,8 @@ recipe_mcp = FastMCP("Recipe")
 register_recipe_tools(recipe_mcp)     # Register recipe tools
 user_data_mcp = FastMCP("UserData")
 register_user_data_tools(user_data_mcp)  # Register user data tools
+medical_mcp = FastMCP("Medical")
+register_medical_tools(medical_mcp)
 
 mcp = FastMCP("MainApp")
 
@@ -100,6 +103,7 @@ async def create_mcp_server():
     await mcp.import_server(news_mcp, prefix="news")
     await mcp.import_server(recipe_mcp, prefix="recipe")
     await mcp.import_server(user_data_mcp, prefix="user_data")
+    await mcp.import_server(medical_mcp, prefix="medical")
     
     print("📦 Registering tool modules...")
     
