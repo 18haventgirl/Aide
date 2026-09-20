@@ -25,6 +25,6 @@ function Port-IsOpen($port) {
 # Start each service without opening a console window. Existing services keep
 # their ports; this avoids killing unrelated Node/Python processes.
 if (-not (Port-IsOpen 8000)) { Start-Hidden $python @('-m','uvicorn','main:app','--host','127.0.0.1','--port','8000','--no-access-log','--log-level','info') $backend 'backend' }
-if (-not (Port-IsOpen 8002)) { Start-Hidden $python @((Join-Path $root 'mcp-serve\mcp_server.py')) (Join-Path $root 'backend') 'mcp' }
+if (-not (Port-IsOpen 8002)) { Start-Hidden $python @((Join-Path $backend 'mcp-serve\mcp_server.py')) $backend 'mcp' }
 if (-not (Port-IsOpen 3000)) { Start-Hidden $node @($vite,'--host','127.0.0.1','--port','3000') (Join-Path $root 'ui') 'frontend' }
 Write-Output 'Aide services started in hidden windows.'
