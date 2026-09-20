@@ -8,22 +8,22 @@ interface AgentsListProps {
 
 export function AgentsList({ agents, currentAgent }: AgentsListProps) {
   return (
-    <div className="space-y-3">
+    <div className="min-w-0 space-y-3">
       {agents.map((agent, agentIndex) => (
         <div
           key={`agent-${agentIndex}-${agent.name}`}
-          className={`p-4 rounded-lg border-2 transition-all ${
+          className={`min-w-0 overflow-hidden p-4 rounded-lg border-2 transition-all ${
             currentAgent === agent.name
               ? "border-blue-500 bg-blue-50"
               : "border-gray-200 bg-white hover:border-gray-300"
           }`}
         >
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
+          <div className="flex min-w-0 items-start justify-between gap-2">
+            <div className="min-w-0 flex-1">
               <h3 className="font-semibold text-sm text-gray-900">
                 {agent.name}
               </h3>
-              <p className="text-xs text-gray-600 mt-1">
+              <p className="text-xs text-gray-600 mt-1 break-words [overflow-wrap:anywhere]">
                 {agent.description}
               </p>
             </div>

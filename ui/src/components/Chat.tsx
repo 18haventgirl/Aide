@@ -102,7 +102,7 @@ export function Chat({
                   <Bot className="w-4 h-4 text-primary" />
                 </div>
               )}
-              <div className={`max-w-[78%] px-4 py-2.5 text-sm leading-relaxed ${
+              <div className={`min-w-0 max-w-[78%] overflow-hidden px-4 py-2.5 text-sm leading-relaxed break-words ${
                 isUser
                   ? 'msg-user'
                   : isError ? 'msg-error' : 'msg-ai'
@@ -143,7 +143,7 @@ export function Chat({
             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary/15 to-blue-100 flex items-center justify-center flex-shrink-0 mr-2.5 mt-0.5">
               <Bot className="w-4 h-4 text-primary" />
             </div>
-            <div className="max-w-[78%] px-4 py-2.5 msg-streaming text-sm leading-relaxed">
+            <div className="min-w-0 max-w-[78%] overflow-hidden px-4 py-2.5 msg-streaming text-sm leading-relaxed break-words">
               <div className="flex items-center gap-2 mb-2 text-xs text-primary/70 font-medium">
                 <div className="flex gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse-dot" />

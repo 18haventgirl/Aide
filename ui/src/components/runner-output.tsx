@@ -53,7 +53,7 @@ export function RunnerOutput({ runnerEvents }: RunnerOutputProps) {
   };
 
   return (
-    <div className="space-y-3">
+    <div className="min-w-0 space-y-3">
       <div className="flex items-center gap-2">
         <Terminal className="h-4 w-4 text-gray-600" />
         <h3 className="font-semibold text-sm text-gray-900">
@@ -71,11 +71,11 @@ export function RunnerOutput({ runnerEvents }: RunnerOutputProps) {
         {runnerEvents.map((event) => (
           <div
             key={event.id}
-            className={`p-3 rounded-lg border ${getEventColor(event.type)}`}
+            className={`min-w-0 overflow-hidden p-3 rounded-lg border ${getEventColor(event.type)}`}
           >
             <div className="flex items-start gap-2">
               {getEventIcon(event.type)}
-              <div className="flex-1">
+              <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 mb-1">
                   <span className="text-xs font-medium text-gray-900 uppercase">
                     {event.type}
@@ -84,7 +84,7 @@ export function RunnerOutput({ runnerEvents }: RunnerOutputProps) {
                     by {event.agent}
                   </span>
                 </div>
-                <p className="text-xs text-gray-700">
+                <p className="text-xs text-gray-700 break-words [overflow-wrap:anywhere]">
                   {event.content}
                 </p>
                 
@@ -92,9 +92,9 @@ export function RunnerOutput({ runnerEvents }: RunnerOutputProps) {
                   <div className="mt-2 p-2 bg-white bg-opacity-50 rounded text-xs">
                     <div className="font-medium text-gray-700 mb-1">元数据:</div>
                     {Object.entries(event.metadata).map(([key, value], index) => (
-                      <div key={`metadata-${event.id}-${index}-${key}`} className="flex justify-between">
-                        <span className="text-gray-600">{key}:</span>
-                        <span className="text-gray-900 font-mono">
+                      <div key={`metadata-${event.id}-${index}-${key}`} className="grid grid-cols-[minmax(0,auto)_minmax(0,1fr)] gap-x-2">
+                        <span className="min-w-0 text-gray-600 break-words">{key}:</span>
+                        <span className="min-w-0 text-right text-gray-900 font-mono break-words [overflow-wrap:anywhere]">
                           {typeof value === 'string' ? value : JSON.stringify(value)}
                         </span>
                       </div>
@@ -121,4 +121,4 @@ function Database({ className }: { className?: string }) {
       <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
     </svg>
   );
-} 
+}

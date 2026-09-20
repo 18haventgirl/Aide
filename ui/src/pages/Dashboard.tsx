@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { logout } from "../store/slices/authSlice";
 import { AgentPanel } from "../components/agent-panel";
@@ -68,6 +68,11 @@ const Dashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isRestoring, setIsRestoring] = useState(false);
   const [streamingResponse, setStreamingResponse] = useState("");
+  const conversationIdRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    conversationIdRef.current = conversationId;
+  }, [conversationId]);
 
   /* ---- Restore session on mount ---- */
   useEffect(() => {
@@ -143,7 +148,8 @@ const Dashboard: React.FC = () => {
         setStreamingResponse(''); setIsLoading(false); return;
       }
       if (content.raw_response) setStreamingResponse(content.raw_response);
-      if (content.conversation_id && !conversationId) {
+      if (content.conversation_id && !conversationIdRef.current) {
+        conversationIdRef.current = content.conversation_id;
         setConversationId(content.conversation_id);
         ws?.setConversationId(content.conversation_id);
         saveConversationId(content.conversation_id);
@@ -158,7 +164,8 @@ const Dashboard: React.FC = () => {
 
     const processResponse = (r: any) => {
       if (!r) return;
-      if (r.conversation_id && !conversationId) {
+      if (r.conversation_id && !conversationIdRef.current) {
+        conversationIdRef.current = r.conversation_id;
         setConversationId(r.conversation_id);
         ws?.setConversationId(r.conversation_id);
         saveConversationId(r.conversation_id);
@@ -202,7 +209,8 @@ const Dashboard: React.FC = () => {
     ws.on('ai_response', onStream);
     ws.on('ai_thinking', onStream);
     ws.on('ai_finished', onStream);
-    ws.on('chat_response', (r: any) => processResponse(r));
+    const onChatResponse = (r: any) => processResponse(r);
+    ws.on('chat_response', onChatResponse);
     ws.on('conversation_switched', onSwitched);
 
     ws.connect().catch(() => { setWsStatus('error'); });
@@ -215,8 +223,9 @@ const Dashboard: React.FC = () => {
       ws.off('ai_response', onStream);
       ws.off('ai_thinking', onStream);
       ws.off('ai_finished', onStream);
-      ws.off('chat_response', (r: any) => processResponse(r));
+      ws.off('chat_response', onChatResponse);
       ws.off('conversation_switched', onSwitched);
+      ws.disconnect();
     };
   }, [user, token]);
 
@@ -224,6 +233,7 @@ const Dashboard: React.FC = () => {
   const handleSelectConversation = useCallback(async (cid: string) => {
     const ws = getWebSocketService();
     if (cid === 'new') {
+      conversationIdRef.current = null;
       setConversationId(null); setMessages([]); setEvents([]);
       setGuardrails([]); setContext({}); setCurrentAgent("");
       setIsLoading(false); setStreamingResponse('');
@@ -231,6 +241,7 @@ const Dashboard: React.FC = () => {
       saveConversationId(null);
       return;
     }
+    conversationIdRef.current = cid;
     setConversationId(cid);
     saveConversationId(cid);
     if (ws?.status === 'connected') ws.switchConversation(cid);
@@ -407,7 +418,7 @@ const Dashboard: React.FC = () => {
 
         {/* Mobile: Sidebar overlay */}
         {mobileTab !== 'chat' && (
-          <div className="md:hidden fixed inset-0 top-14 bottom-[72px] z-20 bg-background animate-fade-in">
+          <div className="md:hidden fixed inset-0 top-14 bottom-[72px] z-20 flex flex-col bg-background animate-fade-in">
             <div className="flex items-center gap-2 p-3 border-b border-border/30">
               <button onClick={() => setMobileTab('chat')} className="p-1.5 rounded-lg hover:bg-muted">
                 <ChevronLeft className="w-5 h-5" />
