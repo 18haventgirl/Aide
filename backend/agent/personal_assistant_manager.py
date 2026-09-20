@@ -4,7 +4,7 @@ import os
 import sys
 from pathlib import Path
 from typing import Dict, List, Any, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 
 # Add backend directory to Python path FIRST
@@ -46,6 +46,7 @@ class PersonalAssistantContext(BaseModel):
     lng: str  # 经度
     user_preferences: Dict[str, Dict[str, Any]]  # 用户偏好
     todos: List[Todo]  # 待办事项
+    conversation_id: Optional[str] = Field(default=None, exclude=True)  # 当前会话ID，用于记录来源
     
     def model_dump(self, **kwargs) -> Dict[str, Any]:
         """重写序列化方法，确保Todo对象可以被正确序列化"""
@@ -439,7 +440,8 @@ class PersonalAssistantManager:
         """为医疗 Agent 注入当前用户身份，避免健康记录写入错误用户。"""
         return (
             f"你是面向普通公众的健康陪伴助手，服务成年人。当前用户 ID 是 {context.context.user_id}，"
-            "调用 health_create_record、health_get_records、health_get_record 或 health_update_record 时必须使用这个 user_id。"
+            f"当前会话 ID 是 {context.context.conversation_id or 'unknown'}。调用健康记录工具时必须使用这个 user_id，"
+            "创建记录时将当前会话 ID 作为 source_conversation_id 传入。"
             "每次健康问题必须先调用 medical_search，再只根据资料和用户明确提供的事实回答。"
             "不要诊断、开处方、建议自行停药或调整剂量。\n\n"
             "回答要自然、有逻辑：先回应当前问题，再给现在能做的安全建议、需要观察的变化、何时就医，"

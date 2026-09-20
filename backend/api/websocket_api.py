@@ -823,6 +823,7 @@ async def handle_stream_chat(user_id: str, message: str, connection_id: str, aut
         
         # 更新用户会话映射
         user_conversations[user_id] = conversation_id
+        ctx.conversation_id = conversation_id
         try:
             agent_session = await session_manager.get_session(conversation_id)
             if agent_session is None:
