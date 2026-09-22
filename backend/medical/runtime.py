@@ -78,7 +78,16 @@ def search_with_metrics(query: str, preview: bool = False, limit: int = 5):
             kb = get_knowledge_base(preview)
         # An empty published index must not call a remote embedding service or
         # silently fall through to the development draft collection.
-        hits = kb.search(query, limit=limit) if kb.collection.count() else []
+        try:
+            hits = kb.search(query, limit=limit) if kb.collection.count() else []
+        except TypeError:
+            # A separate sync process can replace Chroma rows while this MCP
+            # process still holds collection/lexical caches. Recreate the
+            # runtime once so data refreshes do not require a manual restart.
+            with _kb_init_lock:
+                get_knowledge_base.cache_clear()
+                kb = get_knowledge_base(preview)
+            hits = kb.search(query, limit=limit) if kb.collection.count() else []
     except Exception as error:
         latency_ms = round((time.perf_counter() - start) * 1000, 1)
         with _lock:
