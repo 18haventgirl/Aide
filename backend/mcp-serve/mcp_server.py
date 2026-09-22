@@ -132,7 +132,10 @@ def main():
             transport="http",
             host="127.0.0.1", 
             port=8002,
-            path="/mcp"
+            path="/mcp",
+            # Tools do not need server-side conversation state. Stateless mode
+            # keeps backend clients valid across MCP process restarts.
+            stateless_http=True,
         )
         
     except Exception as e:

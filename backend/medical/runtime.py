@@ -12,12 +12,28 @@ from dotenv import load_dotenv
 
 from .knowledge_base import MedicalKnowledgeBase
 from .bge_embedding import BGEEmbedding
+from .bge_reranker import BGEReranker
 from .local_embedding import ChineseHashEmbedding
 
 _lock = threading.Lock()
 _kb_init_lock = threading.Lock()
 _stats = {"queries": 0, "queries_with_hits": 0, "errors": 0, "total_latency_ms": 0.0}
 _log_path = Path(__file__).resolve().parents[1] / "logs" / "medical_retrieval.jsonl"
+
+
+@lru_cache(maxsize=1)
+def get_reranker():
+    if os.getenv("MEDICAL_USE_RERANKER", "true").lower() != "true":
+        return None
+    try:
+        return BGEReranker(
+            batch_size=int(os.getenv("MEDICAL_RERANKER_BATCH_SIZE", "8")),
+            max_length=int(os.getenv("MEDICAL_RERANKER_MAX_LENGTH", "256")),
+        )
+    except (FileNotFoundError, ValueError):
+        # Installation is optional. The KB reports a deterministic hybrid
+        # fallback until the pinned local model has been downloaded.
+        return None
 
 
 def _write_event(event: dict) -> None:
@@ -63,7 +79,9 @@ def get_knowledge_base(preview: bool = False, research_mode: bool | None = None)
         embedding = BGEEmbedding(batch_size=int(os.getenv("MEDICAL_BGE_BATCH_SIZE", "8")))
         model_name = embedding.name()
     return MedicalKnowledgeBase(
-        client, embedding, model_name, preview=preview, research_mode=research_mode
+        client, embedding, model_name, preview=preview, research_mode=research_mode,
+        reranker=None if preview else get_reranker(),
+        reranker_requested=(not preview and os.getenv("MEDICAL_USE_RERANKER", "true").lower() == "true"),
     )
 
 
@@ -95,11 +113,17 @@ def search_with_metrics(query: str, preview: bool = False, limit: int = 5):
             _write_event({"preview": preview, "error": type(error).__name__, "latency_ms": latency_ms})
         raise
     latency_ms = round((time.perf_counter() - start) * 1000, 1)
+    diagnostics = kb.search_metrics() if hasattr(kb, "search_metrics") else {}
     with _lock:
         _stats["queries"] += 1
         _stats["queries_with_hits"] += bool(hits)
         _stats["total_latency_ms"] += latency_ms
-        _write_event({"preview": preview, "hit_doc_ids": list(dict.fromkeys(h.doc_id for h in hits)), "latency_ms": latency_ms})
+        _write_event({
+            "preview": preview,
+            "hit_doc_ids": list(dict.fromkeys(h.doc_id for h in hits)),
+            "latency_ms": latency_ms,
+            **diagnostics,
+        })
     return hits
 
 

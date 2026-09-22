@@ -20,6 +20,7 @@ def tokens(text: str) -> list[str]:
 class LexicalIndex:
     def __init__(self, ids: list[str], documents: list[str]):
         self.ids = tuple(ids)
+        self.documents = dict(zip(ids, documents))
         self.ranker = BM25Okapi([tokens(document) for document in documents]) if documents else None
 
     def scores(self, query: str) -> dict[str, float]:
@@ -27,3 +28,10 @@ class LexicalIndex:
         if not terms or self.ranker is None:
             return {item_id: 0.0 for item_id in self.ids}
         return dict(zip(self.ids, self.ranker.get_scores(terms).tolist()))
+
+    def ranked(self, query: str, limit: int) -> list[tuple[str, float]]:
+        """Return only positive full-corpus BM25 candidates."""
+        scores = self.scores(query)
+        return [(item_id, score) for item_id, score in
+                sorted(scores.items(), key=lambda item: item[1], reverse=True)[:limit]
+                if score > 0]

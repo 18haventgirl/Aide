@@ -3,7 +3,7 @@
 import json
 import time
 
-from medical.runtime import search_with_metrics
+from medical.runtime import get_knowledge_base, search_with_metrics
 
 
 def register_medical_tools(mcp):
@@ -36,14 +36,21 @@ def register_medical_tools(mcp):
                 "section_path": hit.section_path, "text": hit.text[:1600],
                 "source_url": hit.source_url, "source_org": hit.source_org,
                 "reviewed_at": hit.reviewed_at.isoformat() if hit.reviewed_at else None,
+                "relevance_score": (round(hit.rerank_score, 4)
+                                    if hit.rerank_score is not None else None),
             } for i, hit in enumerate(hits, 1)]
+            diagnostics = get_knowledge_base(False).search_metrics()
             return json.dumps({
                 "query": query, "knowledge_status": "grounded" if data else "not_covered",
                 "hits": data,
-                "retrieval": {"search_type": "hybrid", "latency_ms": round((time.perf_counter() - started) * 1000, 1)},
+                "retrieval": {
+                    "search_type": "dense_bm25_rerank",
+                    "latency_ms": round((time.perf_counter() - started) * 1000, 1),
+                    **diagnostics,
+                },
             }, ensure_ascii=False)
         except Exception as exc:
             return json.dumps({
                 "query": query, "knowledge_status": "unavailable", "hits": [],
-                "retrieval": {"search_type": "hybrid", "latency_ms": round((time.perf_counter() - started) * 1000, 1), "error": type(exc).__name__},
+                "retrieval": {"search_type": "dense_bm25_rerank", "latency_ms": round((time.perf_counter() - started) * 1000, 1), "error": type(exc).__name__},
             }, ensure_ascii=False)

@@ -7,9 +7,9 @@ import chromadb
 from pydantic import ValidationError
 
 from medical.chunking import chunk_document
-from medical.chat import is_urgent, needs_clinical_decision, extractive_fallback
+from medical.chat import is_urgent, needs_clinical_decision
 from medical.knowledge_base import MedicalKnowledgeBase
-from medical.schema import MedicalDocument, MedicalHit
+from medical.schema import MedicalDocument
 
 
 class TestEmbedding:
@@ -34,7 +34,35 @@ class QueryAwareEmbedding(TestEmbedding):
         return self(texts)
 
 
-def document(doc_id: str, status: str = "source_checked", version: int = 1) -> MedicalDocument:
+class ConstantEmbedding:
+    def name(self):
+        return "test-medical-embedding"
+
+    def embed_documents(self, texts):
+        return [[1.0, 0.0, 0.0] for _ in texts]
+
+    def embed_queries(self, texts):
+        return [[1.0, 0.0, 0.0] for _ in texts]
+
+    def __call__(self, input):
+        return self.embed_documents(input)
+
+
+class KeywordReranker:
+    def name(self):
+        return "test-reranker"
+
+    def score(self, query, passages):
+        return [0.95 if "优先内容" in passage else 0.05 for passage in passages]
+
+
+class BrokenReranker(KeywordReranker):
+    def score(self, query, passages):
+        raise RuntimeError("test failure")
+
+
+def document(doc_id: str, status: str = "source_checked", version: int = 1,
+             body: str = "# 饮水\n测试用文本：饮水与日常生活。") -> MedicalDocument:
     return MedicalDocument.model_validate({
         "doc_id": doc_id,
         "version": version,
@@ -52,7 +80,7 @@ def document(doc_id: str, status: str = "source_checked", version: int = 1) -> M
         "source_sha256": "0" * 64 if status in {"source_checked", "clinician_reviewed"} else None,
         "source_locator": "测试段" if status in {"source_checked", "clinician_reviewed"} else None,
         "source_collected_at": "2024-01-01" if status in {"source_checked", "clinician_reviewed"} else None,
-        "body": "# 饮水\n测试用文本：饮水与日常生活。",
+        "body": body,
     })
 
 
@@ -114,6 +142,35 @@ class MedicalRagTests(unittest.TestCase):
         kb.sync([withdrawn])
         self.assertEqual(kb.collection.count(), 0)
 
+    def test_cross_encoder_controls_final_order(self):
+        kb = MedicalKnowledgeBase(
+            chromadb.EphemeralClient(), ConstantEmbedding(),
+            "test-v1", research_mode=True,
+            reranker=KeywordReranker(),
+        )
+        kb.max_distance = 0.50
+        kb.use_lexical = True
+        kb.sync([
+            document("LOW", body="# 普通\n普通内容。"),
+            document("HIGH", body="# 优先\n优先内容。"),
+        ])
+        hits = kb.search("内容", limit=2)
+        self.assertEqual(hits[0].doc_id, "HIGH")
+        self.assertIsNotNone(hits[0].rerank_score)
+        self.assertEqual(kb.search_metrics()["reranker_status"], "applied")
+
+    def test_reranker_failure_uses_hybrid_fallback(self):
+        kb = MedicalKnowledgeBase(
+            chromadb.EphemeralClient(), ConstantEmbedding(),
+            "test-v1", research_mode=True,
+            reranker=BrokenReranker(),
+        )
+        kb.max_distance = 0.50
+        kb.use_lexical = True
+        kb.sync([document("A")])
+        self.assertEqual(kb.search("饮水", limit=1)[0].doc_id, "A")
+        self.assertEqual(kb.search_metrics()["reranker_status"], "fallback:RuntimeError")
+
     def test_urgent_routing(self):
         self.assertTrue(is_urgent("我现在胸口痛、冒冷汗，还有点喘，先上网查查吗？"))
         self.assertTrue(is_urgent("胸口疼还冒冷汗，怎么处理？"))
@@ -123,19 +180,6 @@ class MedicalRagTests(unittest.TestCase):
         self.assertTrue(needs_clinical_decision("我的降压药能停掉吗？"))
         self.assertTrue(needs_clinical_decision("请根据我的胸部 CT 影像判断是不是肺癌。"))
         self.assertFalse(needs_clinical_decision("高血压平时怎么自己管理？"))
-
-    def test_model_failure_excerpt_is_labeled_and_cited(self):
-        hit = MedicalHit(
-            chunk_id="A:1", doc_id="A", title="健康资料", section_path="饮食",
-            text="清淡饮食需要关注整体膳食。", source_org="测试机构",
-            source_url="https://example.org/health",
-        )
-        answer = extractive_fallback([hit], preview=True)
-        self.assertIn("在线回答模型暂不可用", answer)
-        self.assertIn(hit.text, answer)
-        self.assertIn(hit.source_url, answer)
-        self.assertIn("开发预览草稿", answer)
-
 
 if __name__ == "__main__":
     unittest.main()

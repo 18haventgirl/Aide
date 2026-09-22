@@ -62,3 +62,9 @@ class MedicalHit(BaseModel):
     reviewed_at: date | None = None
     next_review_at: date | None = None
     distance: float | None = None
+    dense_rank: int | None = None
+    lexical_rank: int | None = None
+    lexical_score: float | None = None
+    fusion_score: float | None = None
+    rerank_score: float | None = None
+    retrieval_method: str = "dense"

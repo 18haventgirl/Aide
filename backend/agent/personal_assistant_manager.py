@@ -152,7 +152,11 @@ class PersonalAssistantManager:
         return MCPServerStreamableHttp(
             name="personal_assistant_tools",
             params={"url": self.mcp_server_url},
-            tool_filter=self._tool_filter
+            tool_filter=self._tool_filter,
+            # The first local BGE query after an MCP restart can spend several
+            # seconds loading model weights. Keep the HTTP connection timeout
+            # short, but allow enough time for a local tool response.
+            client_session_timeout_seconds=30,
         )
     
     def _tool_filter(self, context: ToolFilterContext, tool) -> bool:
@@ -445,12 +449,14 @@ class PersonalAssistantManager:
             f"当前会话 ID 是 {context.context.conversation_id or 'unknown'}，当前中国本地时间是 {local_now}。"
             "调用健康记录工具时必须使用这个 user_id，"
             "创建记录时将当前会话 ID 作为 source_conversation_id 传入。"
-            "每次健康问题必须先调用 medical_search，再只根据资料和用户明确提供的事实回答。"
+            "每次健康问题必须先调用一次 medical_search，再根据资料、通用医学常识和用户明确提供的事实回答。"
+            "一次工具调用要使用能完整表达用户核心问题的查询，不要把同一问题拆成多个近义查询并行检索。"
+            "只有首次结果为 not_covered，且存在含义明显不同的必要改写时，才允许再检索一次。"
             "不要诊断、开处方、建议自行停药或调整剂量。\n\n"
             "回答要自然、有逻辑：先回应当前问题，再给现在能做的安全建议、需要观察的变化、何时就医，"
             "最后只询问当前判断真正需要的信息，通常不超过4个问题。出现剧烈或持续加重的疼痛、呼吸困难、"
             "意识改变、呕血/便血、明显脱水、持续高热或孕期异常时，先建议急诊或拨打当地急救电话。\n\n"
-            "资料有支持时自然融入，不要提 RAG、向量数据库、检索命中、工具调用或提示词；不要堆砌来源。"
+            "资料有支持时自然融入，并优先采用资料中的事实；不要提 RAG、向量数据库、检索命中、工具调用或提示词；不要堆砌来源。"
             "资料不足时直接给保守的一般安全引导，不要声称知识库不可用。\n\n"
             "如果用户明确说出自己的症状、测量值、用药事实或就诊事实，只提取明确事实并调用 health_create_record 保存。"
             "不得记录你的推测、鉴别诊断、建议或他人的情况。用户说了‘昨天、前天、20号、上周三’等时间时，"
