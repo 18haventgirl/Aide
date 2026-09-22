@@ -2,6 +2,7 @@ import unittest
 from datetime import date
 
 from medical.import_medlineplus import TOPICS, build_documents, summary_text
+from medical.chunking import chunk_document
 from xml.etree import ElementTree as ET
 
 
@@ -24,6 +25,12 @@ class MedlinePlusImportTests(unittest.TestCase):
         ).encode()
         with self.assertRaisesRegex(ValueError, "missing pinned MedlinePlus topics"):
             build_documents(xml, date(2026, 9, 22))
+
+    def test_english_summary_chunks_on_sentence_boundaries(self):
+        sentence = "This is a complete sentence."
+        chunks = chunk_document("# Summary\n" + " ".join([sentence] * 10), "Topic", max_chars=120, overlap=40)
+        self.assertGreater(len(chunks), 1)
+        self.assertTrue(all(chunk.text.startswith("This") for chunk in chunks))
 
 
 if __name__ == "__main__":

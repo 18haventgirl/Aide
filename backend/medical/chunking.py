@@ -16,7 +16,30 @@ class TextChunk:
 
 
 _HEADING = re.compile(r"^(#{1,6})\s+(.+?)\s*$")
-_SENTENCES = re.compile(r"(?<=[。！？；!?;])")
+_SENTENCES = re.compile(r"(?<=[。！？；!?;])|(?<=\.)(?=\s+[A-Z0-9])")
+
+
+def _overlap_tail(text: str, limit: int) -> str:
+    """Keep complete trailing sentences when possible, else a word boundary."""
+    if not limit or len(text) <= limit:
+        return text if limit else ""
+    sentences = [part.strip() for part in _SENTENCES.split(text) if part.strip()]
+    selected: list[str] = []
+    size = 0
+    for sentence in reversed(sentences):
+        extra = len(sentence) + (1 if selected else 0)
+        if size + extra > limit:
+            break
+        selected.insert(0, sentence)
+        size += extra
+    if selected:
+        return " ".join(selected)
+    tail = text[-limit:]
+    if text[-limit - 1].isalnum() and tail[0].isalnum():
+        boundary = re.search(r"\s+", tail)
+        if boundary:
+            tail = tail[boundary.end():]
+    return tail.strip()
 
 
 def _sections(body: str, title: str):
@@ -70,7 +93,7 @@ def chunk_document(body: str, title: str, max_chars: int = 600, overlap: int = 8
                 output.append(TextChunk(section_path, current.strip(), section_index))
                 section_index += 1
                 # Keep a short tail to maintain context without crossing sections.
-                current = current[-overlap:] if overlap else ""
+                current = _overlap_tail(current, overlap)
                 if len(current) + 1 + len(part) > max_chars:
                     current = ""
             current += ("\n" if current else "") + part
