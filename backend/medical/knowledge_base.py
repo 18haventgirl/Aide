@@ -19,7 +19,7 @@ PREVIEW_INDEX_VERSION = "medical-zh-section-v1"
 
 
 def load_corpus(directory: Path) -> list[MedicalDocument]:
-    files = sorted(path for path in directory.glob("*.json") if path.name != "source_manifest.json")
+    files = sorted(path for path in directory.glob("*.json") if not path.name.endswith("_manifest.json"))
     if not files:
         raise ValueError(f"no JSON documents found in {directory}")
     documents = [MedicalDocument.model_validate(json.loads(path.read_text(encoding="utf-8"))) for path in files]

@@ -1,0 +1,22 @@
+{
+  "doc_id": "MPLUS-4748-sore-throat",
+  "version": 1,
+  "title": "咽痛（Sore Throat）",
+  "topic": "咽痛",
+  "audience": "普通公众（官方英文资料）",
+  "source_org": "MedlinePlus, U.S. National Library of Medicine",
+  "source_url": "https://medlineplus.gov/sorethroat.html",
+  "source_published_at": "2026-09-19",
+  "status": "source_checked",
+  "reviewer": "Aide MedlinePlus importer (automated source parsing; non-clinician)",
+  "reviewed_at": "2026-09-22",
+  "next_review_at": "2026-10-22",
+  "license_note": "MedlinePlus XML permits download and use with attribution to MedlinePlus.gov; retain source link.",
+  "source_sha256": "58a4f6c4e50dbb5ab7e3e6344b74012ef0d2733f448c518e7d8e5893f632f4b9",
+  "source_locator": "health-topic id=4748; full-summary",
+  "source_collected_at": "2026-09-22",
+  "source_version": "MedlinePlus Health Topic XML 2026-09-19",
+  "usage_scope": "Aide local research index; official English summary with Chinese retrieval labels",
+  "withdrawn": false,
+  "body": "# 咽痛（Sore Throat）\n\n中文检索词：嗓子疼、喉咙痛、咽喉疼痛\n\nOfficial title: Sore Throat\n\nAlso called: Pharyngitis\n\n## MedlinePlus summary\n\nYour throat is a tube that carries food to your esophagus and air to your windpipe and larynx (also called the voice box). The technical name for the throat is pharynx.\nYou can have a sore throat for many reasons. Often, colds and flu cause sore throats. Other causes can include:\n- Allergies\n- Mononucleosis\n- Smoking\n- Strep throat\n- Tonsillitis\nTreatment depends on the cause. Sucking on lozenges, drinking lots of liquids, and gargling may ease the pain. Over-the-counter pain relievers can also help, but children should not take aspirin."
+}

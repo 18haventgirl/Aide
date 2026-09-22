@@ -5,7 +5,8 @@
 ## 数据与模型
 
 - `source_pipeline.py` 对照 2024 年正式《健康素养 66 条》与国务院网站托管的正式释义 PDF，生成 66 条记录；另有北京、广州卫健委各一条常见症状就医资料。原文及 SHA256 记在 `source_downloads/` 和 `source_corpus/source_manifest.json`。原文下载目录被 Git 忽略。
-- `source_corpus/` 的 68 条 JSON 资料为 `source_checked`，表示机器核对原文，**不是医疗专业审核**。仅能进入开发环境的研究索引。正式公共索引仅接纳 `clinician_reviewed` 且未过期、未撤回的资料。
+- `source_corpus/` 当前包含 76 条 JSON 资料，均为 `source_checked`，表示机器核对原文，**不是医疗专业审核**。仅能进入开发环境的研究索引。正式公共索引仅接纳 `clinician_reviewed` 且未过期、未撤回的资料。
+- `import_medlineplus.py` 从固定版本的 MedlinePlus Health Topic XML 中只导入 8 个高频主题。正文保留官方英文，中文内容仅作为检索标题和别名；这些资料同样是 `source_checked`，不是医疗专业审核。
 - 向量模型为本机运行的 `BAAI/bge-small-zh-v1.5`，固定模型 revision 和权重 SHA256。模型文件在 `models/`（Git 忽略）。研究与正式索引使用分开的 Chroma collection。
 - 检索使用章节切片、BGE 向量和研究版暂定距离门槛。门槛 `MEDICAL_RESEARCH_MAX_DISTANCE` 默认 0.50。另用 [jieba](https://github.com/fxsjy/jieba) 与 [rank-bm25](https://github.com/dorianbrown/rank_bm25) 补充强关键词命中的片段；保留向量结果原有排序。设置 `MEDICAL_RESEARCH_USE_LEXICAL=false` 可复测纯向量基线。这些门槛来自同一批本机题，不能视作医学可信度分数，也不能直接用于公开产品。
 - 生成使用单独的 `MEDICAL_LLM_*` 配置。默认允许官方 OpenAI、DeepSeek 或本机地址。当前本机配置为 DeepSeek。发送给模型的是本轮问题、最多四轮简短上下文与最多五条证据。输出必须为结构化陈述并引用已提供的证据编号；未知编号、异常和模型不可用时拒绝生成。
@@ -19,6 +20,8 @@
 .\.venv\python.exe -m medical.download_bge
 .\.venv\python.exe -m medical.download_sources
 .\.venv\python.exe -m medical.source_pipeline
+.\.venv\python.exe -m medical.download_medlineplus
+.\.venv\python.exe -m medical.import_medlineplus
 .\.venv\python.exe -m medical.cli validate --corpus medical/source_corpus
 .\.venv\python.exe -m medical.cli sync --research --corpus medical/source_corpus
 .\.venv\python.exe -m medical.evaluate --cases medical/eval_cases_research.json --k 5

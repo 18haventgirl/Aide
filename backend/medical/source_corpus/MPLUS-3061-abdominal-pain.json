@@ -1,0 +1,22 @@
+{
+  "doc_id": "MPLUS-3061-abdominal-pain",
+  "version": 1,
+  "title": "腹痛（Abdominal Pain）",
+  "topic": "腹痛",
+  "audience": "普通公众（官方英文资料）",
+  "source_org": "MedlinePlus, U.S. National Library of Medicine",
+  "source_url": "https://medlineplus.gov/abdominalpain.html",
+  "source_published_at": "2026-09-19",
+  "status": "source_checked",
+  "reviewer": "Aide MedlinePlus importer (automated source parsing; non-clinician)",
+  "reviewed_at": "2026-09-22",
+  "next_review_at": "2026-10-22",
+  "license_note": "MedlinePlus XML permits download and use with attribution to MedlinePlus.gov; retain source link.",
+  "source_sha256": "58a4f6c4e50dbb5ab7e3e6344b74012ef0d2733f448c518e7d8e5893f632f4b9",
+  "source_locator": "health-topic id=3061; full-summary",
+  "source_collected_at": "2026-09-22",
+  "source_version": "MedlinePlus Health Topic XML 2026-09-19",
+  "usage_scope": "Aide local research index; official English summary with Chinese retrieval labels",
+  "withdrawn": false,
+  "body": "# 腹痛（Abdominal Pain）\n\n中文检索词：肚子痛、肚子疼、腹部疼痛、胃疼\n\nOfficial title: Abdominal Pain\n\nAlso called: Bellyache\n\n## MedlinePlus summary\n\nYour abdomen extends from below your chest to your groin. Some people call it the stomach, but your abdomen contains many other important organs. Pain in the abdomen can come from any one of them. The pain may start somewhere else, such as your chest. Severe pain doesn't always mean a serious problem. Nor does mild pain mean a problem is not serious.\nCall your health care provider if mild pain lasts a week or more or if you have pain with other symptoms. Get medical help immediately if:\n- You have abdominal pain that is sudden and sharp\n- You also have pain in your chest, neck or shoulder\n- You're vomiting blood or have blood in your stool\n- Your abdomen is stiff, hard and tender to touch\n- You can't move your bowels, especially if you're also vomiting"
+}

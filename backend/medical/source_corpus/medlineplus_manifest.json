@@ -1,0 +1,19 @@
+{
+  "source": "MedlinePlus Health Topic XML",
+  "download_url": "https://medlineplus.gov/xml/mplus_topics_compressed_2026-09-19.zip",
+  "source_date": "2026-09-19",
+  "archive_sha256": "4b52e1a2c4c499d363dfbff1776875b53a695b315e7761e1c283b223b675ed74",
+  "xml_sha256": "58a4f6c4e50dbb5ab7e3e6344b74012ef0d2733f448c518e7d8e5893f632f4b9",
+  "topic_ids": [
+    "3061",
+    "196",
+    "1543",
+    "211",
+    "511",
+    "273",
+    "489",
+    "4748"
+  ],
+  "documents": 8,
+  "review_kind": "automated source parsing; no clinician review"
+}
