@@ -1,0 +1,592 @@
+node_id,node_type,name,unit,source_url,dataset_id,release
+FDC:321358,Food,"Hummus, commercial",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:321360,Food,"Tomatoes, grape, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:321611,Food,"Beans, snap, green, canned, regular pack, drained solids",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:323121,Food,"Frankfurter, beef, unheated",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:323294,Food,"Nuts, almonds, dry roasted, with salt added",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:323505,Food,"Kale, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:323604,Food,"Egg, whole, raw, frozen, pasteurized",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:323697,Food,"Egg, white, raw, frozen, pasteurized",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:323793,Food,"Egg, white, dried",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:324317,Food,"Onion rings, breaded, par fried, frozen, prepared, heated in oven",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:324653,Food,"Pickles, cucumber, dill or kosher dill",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:325036,Food,"Cheese, parmesan, grated",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:325198,Food,"Cheese, pasteurized process, American, vitamin D fortified",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:325287,Food,"Grapefruit juice, white, canned or bottled, unsweetened",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:325430,Food,"Peaches, yellow, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:325524,Food,"Seeds, sunflower seed kernels, dry roasted, with salt added",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:326196,Food,"Kale, frozen, cooked, boiled, drained, without salt",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:326698,Food,"Mustard, prepared, yellow",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:327046,Food,"Kiwifruit, green, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:327357,Food,"Nectarines, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:328637,Food,"Cheese, cheddar",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:328841,Food,"Cheese, cottage, lowfat, 2% milkfat",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:329370,Food,"Cheese, mozzarella, low moisture, part-skim",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:329490,Food,"Egg, whole, dried",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:329596,Food,"Egg, yolk, raw, frozen, pasteurized",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:329716,Food,"Egg, yolk, dried",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:330137,Food,"Yogurt, Greek, plain, nonfat",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:330415,Food,"Yogurt, Greek, strawberry, nonfat",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:330458,Food,"Oil, coconut",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:331897,Food,"Chicken, broilers or fryers, drumstick, meat only, cooked, braised",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:331960,Food,"Chicken, broiler or fryers, breast, skinless, boneless, meat only, cooked, braised",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:332282,Food,"Sauce, pasta, spaghetti/marinara, ready-to-serve",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:332397,Food,"Ham, sliced, pre-packaged, deli meat (96%fat free, water added)",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:332791,Food,"Olives, green, Manzanilla, stuffed with pimiento",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:333008,Food,"Cookies, oatmeal, soft, with raisins",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:333281,Food,"Tomatoes, canned, red, ripe, diced",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:333374,Food,"Fish, haddock, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:333476,Food,"Fish, pollock, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:334194,Food,"Fish, tuna, light, canned in water, drained solids",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:334536,Food,"Restaurant, Chinese, fried rice, without meat",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:334628,Food,"Restaurant, Latino, tamale, pork",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:334720,Food,"Restaurant, Latino, pupusas con frijoles (pupusas, bean)",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:746758,Food,"Beef, loin, tenderloin roast, separable lean only, boneless, trimmed to 0"" fat, select, cooked, roasted",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:746759,Food,"Beef, loin, top loin steak, boneless, lip-on, separable lean only, trimmed to 1/8"" fat, choice, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:746760,Food,"Beef, round, eye of round roast, boneless, separable lean only, trimmed to 0"" fat, select, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:746761,Food,"Beef, round, top round roast, boneless, separable lean only, trimmed to 0"" fat, select, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:746762,Food,"Beef, short loin, porterhouse steak, separable lean only, trimmed to 1/8"" fat, select, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:746763,Food,"Beef, short loin, t-bone steak, bone-in, separable lean only, trimmed to 1/8"" fat, choice, cooked, grilled",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:746764,Food,"Carrots, frozen, unprepared",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:746765,Food,"Cheese, dry white, queso seco",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:746766,Food,"Cheese, ricotta, whole milk",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:746767,Food,"Cheese, swiss",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:746768,Food,"Figs, dried, uncooked",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:746769,Food,"Lettuce, cos or romaine, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:746770,Food,"Melons, cantaloupe, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:746771,Food,"Oranges, raw, navels",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:746772,Food,"Milk, lowfat, fluid, 1% milkfat, with added vitamin A and vitamin D",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:746773,Food,"Pears, raw, bartlett",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:746774,Food,"Restaurant, Chinese, sweet and sour pork",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:746775,Food,"Salt, table, iodized",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:746776,Food,"Milk, nonfat, fluid, with added vitamin A and vitamin D (fat free or skim)",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:746777,Food,"Sauce, salsa, ready-to-serve",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:746778,Food,"Milk, reduced fat, fluid, 2% milkfat, with added vitamin A and vitamin D",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:746779,Food,"Sausage, breakfast sausage, beef, pre-cooked, unprepared",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:746780,Food,"Sausage, Italian, pork, mild, cooked, pan-fried",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:746781,Food,"Sausage, pork, chorizo, link or ground, cooked, pan-fried",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:746782,Food,"Milk, whole, 3.25% milkfat, with added vitamin D",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:746783,Food,"Sausage, turkey, breakfast links, mild, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:746784,Food,"Sugars, granulated",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:746785,Food,"Turkey, ground, 93% lean, 7% fat, pan-broiled crumbles",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:746952,Food,"Ham, sliced, restaurant",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:747429,Food,"Cheese, American, restaurant",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:747430,Food,"Beans, Dry, Medium Red (0% moisture)",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:747431,Food,"Beans, Dry, Red (0% moisture)",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:747432,Food,"Beans, Dry, Flor de Mayo (0% moisture)",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:747433,Food,"Beans, Dry, Brown (0% moisture)",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:747434,Food,"Beans, Dry, Tan (0% moisture)",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:747435,Food,"Beans, Dry, Light Tan (0% moisture)",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:747436,Food,"Beans, Dry, Carioca (0% moisture)",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:747437,Food,"Beans, Dry, Cranberry (0% moisture)",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:747438,Food,"Beans, Dry, Light Red Kidney (0% moisture)",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:747439,Food,"Beans, Dry, Pink (0% moisture)",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:747440,Food,"Beans, Dry, Dark Red Kidney (0% moisture)",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:747441,Food,"Beans, Dry, Navy (0% moisture)",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:747442,Food,"Beans, Dry, Small White (0% moisture)",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:747443,Food,"Beans, Dry, Small Red (0% moisture)",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:747444,Food,"Beans, Dry, Black (0% moisture)",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:747445,Food,"Beans, Dry, Pinto (0% moisture)",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:747446,Food,"Beans, Dry, Great Northern (0% moisture)",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:747447,Food,"Broccoli, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:747693,Food,"Ketchup, restaurant",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:747997,Food,"Eggs, Grade A, Large, egg white",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:748236,Food,"Eggs, Grade A, Large, egg yolk",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:748278,Food,"Oil, canola",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:748323,Food,"Oil, corn",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:748366,Food,"Oil, soybean",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:748608,Food,"Oil, olive, extra virgin",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:748967,Food,"Eggs, Grade A, Large, egg whole",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:749420,Food,"Pork, cured, bacon, cooked, restaurant",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:789828,Food,"Butter, stick, unsalted",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:789890,Food,"Flour, wheat, all-purpose, enriched, bleached",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:789951,Food,"Flour, wheat, all-purpose, enriched, unbleached",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:790018,Food,"Flour, wheat, all-purpose, unenriched, unbleached",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:790085,Food,"Flour, whole wheat, unenriched",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:790146,Food,"Flour, bread, white, enriched, unbleached",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:790214,Food,"Flour, rice, white, unenriched",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:790276,Food,"Flour, corn, yellow, fine meal, enriched",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:790508,Food,"Butter, stick, salted",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:790577,Food,"Onions, red, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:790646,Food,"Onions, yellow, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:1104647,Food,"Garlic, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:1104705,Food,"Flour, soy, defatted",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:1104766,Food,"Flour, soy, full-fat",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:1104812,Food,"Flour, rice, brown",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:1104867,Food,"Flour, rice, glutinous",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:1104913,Food,"Flour, pastry, unenriched, unbleached",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:1104962,Food,"Onions, white, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:1105073,Food,"Bananas, overripe, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:1105314,Food,"Bananas, ripe and slightly ripe, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:1750339,Food,"Apples, red delicious, with skin, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:1750340,Food,"Apples, fuji, with skin, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:1750341,Food,"Apples, gala, with skin, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:1750342,Food,"Apples, granny smith, with skin, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:1750343,Food,"Apples, honeycrisp, with skin, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:1750348,Food,"Oil, peanut",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:1750349,Food,"Oil, sunflower",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:1750350,Food,"Oil, safflower",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:1750351,Food,"Oil, olive, extra light",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:1999626,Food,"Mushroom, lion's mane",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:1999627,Food,"Mushroom, oyster",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:1999628,Food,"Mushrooms, shiitake",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:1999629,Food,"Mushrooms, white button",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:1999630,Food,"Soy milk, unsweetened, plain, shelf stable",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:1999631,Food,"Almond milk, unsweetened, plain, shelf stable",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:1999632,Food,"Spinach, baby",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:1999633,Food,"Spinach, mature",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:1999634,Food,"Tomato, roma",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2003586,Food,"Flour, 00",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2003587,Food,"Flour, spelt, whole grain",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2003588,Food,"Flour, semolina, coarse and semi-coarse",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2003589,Food,"Flour, semolina, fine",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2003590,Food,"Apple juice, with added vitamin C, from concentrate, shelf stable",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2003591,Food,"Orange juice, no pulp, not fortified, from concentrate, refrigerated",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2003592,Food,"Grape juice, purple, with added vitamin C, from concentrate, shelf stable",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2003593,Food,"Grape juice, white, with added vitamin C, from concentrate, shelf stable",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2003594,Food,"Cranberry juice, not fortified, from concentrate, shelf stable",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2003595,Food,"Grapefruit juice, red, not fortified, not from concentrate, refrigerated",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2003596,Food,"Tomato juice, with added ingredients, from concentrate, shelf stable",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2003597,Food,"Orange juice, no pulp, not fortified, not from concentrate, refrigerated",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2003598,Food,"Mushroom, portabella",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2003599,Food,"Mushroom, king oyster",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2003600,Food,"Mushroom, enoki",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2003601,Food,"Mushroom, crimini",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2003602,Food,"Mushroom, maitake",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2003603,Food,"Mushroom, beech",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2003604,Food,"Mushroom, pioppini",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2257044,Food,"Soy milk, sweetened, plain, refrigerated",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2257045,Food,"Almond milk, unsweetened, plain, refrigerated",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2257046,Food,"Oat milk, unsweetened, plain, refrigerated",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2258586,Food,"Carrots, mature, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2258587,Food,"Carrots, baby, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2258588,Food,"Peppers, bell, green, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2258589,Food,"Peppers, bell, yellow, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2258590,Food,"Peppers, bell, red, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2258591,Food,"Peppers, bell, orange, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2259792,Food,"Buttermilk, low fat",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2259793,Food,"Yogurt, plain, whole milk",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2259794,Food,"Yogurt, Greek, plain, whole milk",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2259795,Food,"Cheese, parmesan, grated, refrigerated",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2259796,Food,"Cheese, feta, whole milk, crumbled",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2261420,Food,"Flour, almond",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2261421,Food,"Flour, oat, whole grain",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2261422,Food,"Flour, potato",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2262072,Food,"Peanut butter, creamy",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2262073,Food,"Sesame butter, creamy",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2262074,Food,"Almond butter, creamy",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2262075,Food,"Flaxseed, ground",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2346384,Food,"Cottage cheese, full fat, large or small curd",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2346385,Food,"Cream cheese, full fat, block",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2346386,Food,"Cream, heavy",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2346387,Food,"Cream, sour, full fat",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2346388,Food,"Lettuce, iceberg, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2346389,Food,"Lettuce, romaine, green, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2346390,Food,"Lettuce, leaf, red, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2346391,Food,"Lettuce, leaf, green, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2346392,Food,"Nuts, pine nuts, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2346393,Food,"Nuts, almonds, whole, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2346394,Food,"Nuts, walnuts, English, halves, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2346395,Food,"Nuts, pecans, halves, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2346396,Food,"Oats, whole grain, rolled, old fashioned",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2346397,Food,"Oats, whole grain, steel cut",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2346398,Food,"Pineapple, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2346399,Food,"Cherries, sweet, dark red, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2346400,Food,"Beans, snap, green, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2346401,Food,"Potatoes, russet, without skin, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2346402,Food,"Potatoes, red, without skin, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2346403,Food,"Potatoes, gold, without skin, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2346404,Food,"Sweet potatoes, orange flesh, without skin, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2346405,Food,"Celery, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2346406,Food,"Cucumber, with peel, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2346407,Food,"Cabbage, green, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2346408,Food,"Cabbage, red, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2346409,Food,"Strawberries, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2346410,Food,"Raspberries, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2346411,Food,"Blueberries, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2346412,Food,"Grapes, red, seedless, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2346413,Food,"Grapes, green, seedless, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2346414,Food,"Applesauce, unsweetened, with added vitamin C",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2512371,Food,"Flour, amaranth",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2512372,Food,"Flour, quinoa",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2512373,Food,"Flour, sorghum",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2512374,Food,"Flour, buckwheat",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2512375,Food,"Flour, rye",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2512376,Food,"Flour, barley",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2512377,Food,"Flour, cassava",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2512378,Food,"Buckwheat, whole grain",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2512379,Food,"Millet, whole grain",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2512380,Food,"Rice, brown, long grain, unenriched, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2512381,Food,"Rice, white, long grain, unenriched, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2514743,Food,"Beef, ground, 90% lean meat / 10% fat, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2514744,Food,"Beef, ground, 80% lean meat / 20% fat, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2514745,Food,"Pork, ground, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2514746,Food,"Chicken, ground, with additives, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2514747,Food,"Turkey, ground, 93% lean/ 7% fat, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2515373,Food,"Nuts, brazilnuts, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2515374,Food,"Nuts, cashew nuts, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2515375,Food,"Nuts, hazelnuts or filberts, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2515376,Food,"Peanuts, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2515377,Food,"Flour, chestnut",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2515378,Food,"Nuts, macadamia nuts, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2515379,Food,"Nuts, pistachio nuts, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2515380,Food,"Seeds, pumpkin seeds (pepitas), raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2515381,Food,"Seeds, sunflower seed, kernel, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2515382,Food,"Flour, coconut",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2644281,Food,"Beans, cannellini, dry",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2644282,Food,"Chickpeas, (garbanzo beans, bengal gram), dry",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2644283,Food,"Lentils, dry",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2644284,Food,"Blackeye pea, dry",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2644285,Food,"Beans, black, canned, sodium added, drained and rinsed",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2644286,Food,"Beans, navy, canned, sodium added, drained and rinsed",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2644287,Food,"Beans, cannellini, canned, sodium added, drained and rinsed",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2644288,Food,"Chickpeas (garbanzo beans, bengal gram), canned, sodium added, drained and rinsed",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2644289,Food,"Beans, kidney, dark red, canned, sodium added, sugar added, drained and rinsed",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2644290,Food,"Beans, kidney, light red, canned, sodium added, sugar added, drained and rinsed",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2644291,Food,"Peas, green, sweet, canned, sodium added, sugar added, drained and rinsed",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2644292,Food,"Beans, pinto, canned, sodium added, drained and rinsed",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2644293,Food,"Blackeye pea, canned, sodium added, drained and rinsed",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2644294,Food,"Beans, great northern, canned, sodium added, drained and rinsed",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2646168,Food,"Pork, loin, boneless, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2646169,Food,"Pork, loin, tenderloin, boneless, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2646170,Food,"Chicken, breast, boneless, skinless, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2646171,Food,"Chicken, thigh, boneless, skinless, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2646172,Food,"Beef, ribeye, steak, boneless, choice, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2646173,Food,"Beef, round, top round, boneless, choice, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2646174,Food,"Beef, chuck, roast, boneless, choice, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2646175,Food,"Beef, flank, steak, boneless, choice, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2647437,Food,"Yogurt, plain, nonfat",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2647438,Food,"Cheese, monterey jack, solid",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2647439,Food,"Cheese, pasteurized process cheese food or product, American, singles",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2647440,Food,"Cheese, provolone, sliced",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2647441,Food,"Cheese, oaxaca, solid",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2647442,Food,"Cheese, queso fresco, solid",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2647443,Food,"Cheese, cotija, solid",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2684440,Food,"Fish, salmon, sockeye, wild caught, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2684441,Food,"Fish, salmon, Atlantic, farm raised, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2684442,Food,"Fish, tilapia, farm raised, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2684443,Food,"Crustaceans, shrimp, farm raised, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2684444,Food,"Fish, cod, Atlantic, wild caught, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2684445,Food,"Fish, catfish, farm raised, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2684446,Food,"Crustaceans, crab, blue swimming, lump, pasteurized, refrigerated",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2685568,Food,"Squash, summer, green, zucchini, includes skin, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2685569,Food,"Squash, summer, yellow, includes skin, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2685570,Food,"Squash, winter, butternut, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2685571,Food,"Squash, winter, acorn, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2685572,Food,"Cabbage, bok choy, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2685573,Food,"Cauliflower, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2685574,Food,"Collards, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2685575,Food,"Brussels sprouts, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2685576,Food,"Beets, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2685577,Food,"Eggplant, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2685578,Food,"Tomatoes, whole, canned, solids and liquids, with salt added",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2685579,Food,"Tomato, sauce, canned, with salt added",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2685580,Food,"Tomato, paste, canned, without salt added",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2685581,Food,"Tomatoes, crushed, canned",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2685582,Food,"Tomato, puree, canned",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2710815,Food,"Apricot, with skin, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2710816,Food,"Melons, honeydew, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2710817,Food,"Plantains, ripe, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2710818,Food,"Plantains, underripe, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2710819,Food,"Chia seeds, dry, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2710820,Food,"Bulgur, dry, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2710821,Food,"Wild rice, dry, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2710822,Food,"Arugula, baby, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2710823,Food,"Asparagus, green, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2710824,Food,"Avocado, Hass, peeled, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2710825,Food,"Rice, black, unenriched, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2710826,Food,"Corn, sweet, yellow and white kernels,  fresh, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2710827,Food,"Einkorn, grain, dry, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2710828,Food,"Farro, pearled, dry, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2710829,Food,"Fonio, grain, dry, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2710830,Food,"Khorasan, grain, dry, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2710831,Food,"Kiwifruit (kiwi), green, peeled, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2710832,Food,"Mandarin, seedless, peeled, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2710833,Food,"Mango, Tommy Atkins, peeled, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2710834,Food,"Mango, Ataulfo, peeled, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2710835,Food,"Corn flour, masa harina, white or yellow, dry, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2710836,Food,"Pear, Anjou, green, with skin, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2710837,Food,"Plum, black, with skin, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2710838,Food,"Rice, red, unenriched, dry, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2710839,Food,"Sorghum bran, white, unenriched, dry, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2710840,Food,"Sorghum flour, white, pearled, unenriched, dry, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2710841,Food,"Sorghum grain, white, pearled, unenriched, dry, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2710842,Food,"Sorghum, whole grain, white, dry, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2710843,Food,"Plantains, overripe, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2727566,Food,"Chicken, drumstick, meat and skin, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2727567,Food,"Chicken, thigh, meat and skin, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2727568,Food,"Chicken, wing, meat and skin, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2727569,Food,"Chicken, breast, meat and skin, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2727570,Food,"Lamb, ground, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2727571,Food,"Bison, ground, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2727572,Food,"Beef, short loin (NY strip steak), raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2727573,Food,"Beef, tenderloin steak, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2727574,Food,"Beef, top sirloin steak, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2727575,Food,"Pork, chop, center cut, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2727576,Food,"Pork, belly, with skin, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2727577,Food,"Pawpaw, peeled, seeded, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2727578,Food,"Squash, pie pumpkin, peeled, seeded, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2727579,Food,"Squash, spaghetti, peeled, seeded, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2727580,Food,"Rutabaga, peeled, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2727581,Food,"Blackberries, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2727582,Food,"Tomatillos, dehusked, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2727583,Food,"Cabbage, napa, leaf, destemmed, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2727584,Food,"Leeks, bulb and greens, root removed, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2727585,Food,"Green onion, (scallion), bulb and greens, root removed, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2727586,Food,"Shallots, bulb, peeled, root removed, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2727587,Food,"Juice, prune, shelf-stable",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2727588,Food,"Juice, pomegranate, from concentrate, shelf-stable",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2727589,Food,"Juice, tart cherry, from concentrate, shelf-stable",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2747652,Food,"Anchovies, canned in olive oil, with salt, drained",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2747653,Food,"Beet greens, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2747654,Food,"Cod, Pacific or Alaskan, frozen, wild caught",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2747655,Food,"Fennel, bulb, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2747656,Food,"Halibut, frozen, wild caught",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2747657,Food,"Lobster, tail only, frozen, wild caught",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2747658,Food,"Mahi mahi, frozen, wild caught",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2747659,Food,"Parsnips, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2747660,Food,"Peppers, banana or Hungarian wax, seeded, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2747661,Food,"Peppers, jalapeno, seeded, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2747662,Food,"Peppers, poblano, seeded, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2747663,Food,"Peppers, serrano, seeded, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2747664,Food,"Radicchio, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2747665,Food,"Radishes, red, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2747666,Food,"Scallops, bay, Patagonian, frozen, wild caught",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2747667,Food,"Scallops, sea, frozen, wild caught",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2747668,Food,"Sea bass, Chilean, frozen, wild caught",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2747669,Food,"Snapper, frozen, wild caught",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2747670,Food,"Snow crab, legs only, frozen  ",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2747671,Food,"Squid (calamari), frozen, tubes only",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2747672,Food,"Swordfish, frozen, wild caught",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2747673,Food,"Tuna, ahi or yellowfin, frozen, wild caught",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2747674,Food,"Turnips, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2747675,Food,"Watermelon, seedless, flesh only, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC:2747676,Food,"Watermelon, seedless, rind only, raw",,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1002,Nutrient,Nitrogen,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1003,Nutrient,Protein,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1004,Nutrient,Total lipid (fat),g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1005,Nutrient,"Carbohydrate, by difference",g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1007,Nutrient,Ash,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1008,Nutrient,Energy,kcal,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1009,Nutrient,Starch,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1010,Nutrient,Sucrose,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1011,Nutrient,Glucose,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1012,Nutrient,Fructose,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1013,Nutrient,Lactose,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1014,Nutrient,Maltose,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1024,Nutrient,Specific Gravity,sp gr,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1032,Nutrient,Citric acid,mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1039,Nutrient,Malic acid,mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1041,Nutrient,Oxalic acid,mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1043,Nutrient,Pyruvic acid,mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1044,Nutrient,Quinic acid,mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1050,Nutrient,"Carbohydrate, by summation",g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1051,Nutrient,Water,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1062,Nutrient,Energy,kJ,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1063,Nutrient,"Sugars, Total",g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1071,Nutrient,Resistant starch,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1075,Nutrient,Galactose,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1076,Nutrient,Raffinose,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1077,Nutrient,Stachyose,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1079,Nutrient,"Fiber, total dietary",g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1082,Nutrient,"Fiber, soluble",g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1084,Nutrient,"Fiber, insoluble",g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1085,Nutrient,Total fat (NLEA),g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1087,Nutrient,"Calcium, Ca",mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1089,Nutrient,"Iron, Fe",mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1090,Nutrient,"Magnesium, Mg",mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1091,Nutrient,"Phosphorus, P",mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1092,Nutrient,"Potassium, K",mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1093,Nutrient,"Sodium, Na",mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1094,Nutrient,"Sulfur, S",mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1095,Nutrient,"Zinc, Zn",mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1097,Nutrient,"Cobalt, Co",µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1098,Nutrient,"Copper, Cu",mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1100,Nutrient,"Iodine, I",µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1101,Nutrient,"Manganese, Mn",mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1102,Nutrient,"Molybdenum, Mo",µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1103,Nutrient,"Selenium, Se",µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1105,Nutrient,Retinol,µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1106,Nutrient,"Vitamin A, RAE",µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1107,Nutrient,"Carotene, beta",µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1108,Nutrient,"Carotene, alpha",µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1109,Nutrient,Vitamin E (alpha-tocopherol),mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1110,Nutrient,"Vitamin D (D2 + D3), International Units",IU,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1111,Nutrient,Vitamin D2 (ergocalciferol),µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1112,Nutrient,Vitamin D3 (cholecalciferol),µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1113,Nutrient,25-hydroxycholecalciferol,µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1114,Nutrient,Vitamin D (D2 + D3),µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1116,Nutrient,Phytoene,µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1117,Nutrient,Phytofluene,µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1118,Nutrient,"Carotene, gamma",µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1119,Nutrient,Zeaxanthin,µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1120,Nutrient,"Cryptoxanthin, beta",µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1121,Nutrient,Lutein,µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1122,Nutrient,Lycopene,µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1123,Nutrient,Lutein + zeaxanthin,µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1125,Nutrient,"Tocopherol, beta",mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1126,Nutrient,"Tocopherol, gamma",mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1127,Nutrient,"Tocopherol, delta",mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1128,Nutrient,"Tocotrienol, alpha",mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1129,Nutrient,"Tocotrienol, beta",mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1130,Nutrient,"Tocotrienol, gamma",mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1131,Nutrient,"Tocotrienol, delta",mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1137,Nutrient,"Boron, B",µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1146,Nutrient,"Nickel, Ni",µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1159,Nutrient,cis-beta-Carotene,µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1160,Nutrient,cis-Lycopene,µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1161,Nutrient,cis-Lutein/Zeaxanthin,µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1162,Nutrient,"Vitamin C, total ascorbic acid",mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1165,Nutrient,Thiamin,mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1166,Nutrient,Riboflavin,mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1167,Nutrient,Niacin,mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1170,Nutrient,Pantothenic acid,mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1175,Nutrient,Vitamin B-6,mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1176,Nutrient,Biotin,µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1177,Nutrient,"Folate, total",µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1178,Nutrient,Vitamin B-12,µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1180,Nutrient,"Choline, total",mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1183,Nutrient,Vitamin K (Menaquinone-4),µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1184,Nutrient,Vitamin K (Dihydrophylloquinone),µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1185,Nutrient,Vitamin K (phylloquinone),µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1188,Nutrient,5-methyl tetrahydrofolate (5-MTHF),µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1191,Nutrient,10-Formyl folic acid (10HCOFA),µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1192,Nutrient,5-Formyltetrahydrofolic acid (5-HCOH4,µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1194,Nutrient,"Choline, free",mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1195,Nutrient,"Choline, from phosphocholine",mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1196,Nutrient,"Choline, from phosphotidyl choline",mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1197,Nutrient,"Choline, from glycerophosphocholine",mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1198,Nutrient,Betaine,mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1199,Nutrient,"Choline, from sphingomyelin",mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1210,Nutrient,Tryptophan,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1211,Nutrient,Threonine,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1212,Nutrient,Isoleucine,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1213,Nutrient,Leucine,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1214,Nutrient,Lysine,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1215,Nutrient,Methionine,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1216,Nutrient,Cystine,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1217,Nutrient,Phenylalanine,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1218,Nutrient,Tyrosine,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1219,Nutrient,Valine,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1220,Nutrient,Arginine,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1221,Nutrient,Histidine,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1222,Nutrient,Alanine,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1223,Nutrient,Aspartic acid,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1224,Nutrient,Glutamic acid,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1225,Nutrient,Glycine,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1226,Nutrient,Proline,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1227,Nutrient,Serine,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1228,Nutrient,Hydroxyproline,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1232,Nutrient,Cysteine,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1253,Nutrient,Cholesterol,mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1257,Nutrient,"Fatty acids, total trans",g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1258,Nutrient,"Fatty acids, total saturated",g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1259,Nutrient,SFA 4:0,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1260,Nutrient,SFA 6:0,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1261,Nutrient,SFA 8:0,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1262,Nutrient,SFA 10:0,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1263,Nutrient,SFA 12:0,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1264,Nutrient,SFA 14:0,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1265,Nutrient,SFA 16:0,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1266,Nutrient,SFA 18:0,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1267,Nutrient,SFA 20:0,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1268,Nutrient,MUFA 18:1,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1269,Nutrient,PUFA 18:2,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1270,Nutrient,PUFA 18:3,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1271,Nutrient,PUFA 20:4,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1272,Nutrient,PUFA 22:6 n-3 (DHA),g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1273,Nutrient,SFA 22:0,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1276,Nutrient,PUFA 18:4,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1277,Nutrient,MUFA 20:1,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1278,Nutrient,PUFA 20:5 n-3 (EPA),g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1279,Nutrient,MUFA 22:1,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1280,Nutrient,PUFA 22:5 n-3 (DPA),g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1281,Nutrient,TFA 14:1 t,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1284,Nutrient,Ergosterol,mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1285,Nutrient,Stigmasterol,mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1286,Nutrient,Campesterol,mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1287,Nutrient,Brassicasterol,mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1288,Nutrient,Beta-sitosterol,mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1289,Nutrient,Campestanol,mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1292,Nutrient,"Fatty acids, total monounsaturated",g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1293,Nutrient,"Fatty acids, total polyunsaturated",g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1294,Nutrient,Beta-sitostanol,mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1296,Nutrient,Delta-5-avenasterol,mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1298,Nutrient,"Phytosterols, other",mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1299,Nutrient,SFA 15:0,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1300,Nutrient,SFA 17:0,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1301,Nutrient,SFA 24:0,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1303,Nutrient,TFA 16:1 t,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1304,Nutrient,TFA 18:1 t,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1305,Nutrient,TFA 22:1 t,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1306,Nutrient,TFA 18:2 t not further defined,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1311,Nutrient,PUFA 18:2 CLAs,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1312,Nutrient,MUFA 24:1 c,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1313,Nutrient,"PUFA 20:2 n-6 c,c",g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1314,Nutrient,MUFA 16:1 c,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1315,Nutrient,MUFA 18:1 c,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1316,Nutrient,"PUFA 18:2 n-6 c,c",g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1317,Nutrient,MUFA 22:1 c,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1321,Nutrient,"PUFA 18:3 n-6 c,c,c",g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1323,Nutrient,MUFA 17:1,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1325,Nutrient,PUFA 20:3,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1329,Nutrient,"Fatty acids, total trans-monoenoic",g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1330,Nutrient,"Fatty acids, total trans-dienoic",g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1331,Nutrient,"Fatty acids, total trans-polyenoic",g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1333,Nutrient,MUFA 15:1,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1334,Nutrient,PUFA 22:2,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1335,Nutrient,SFA 11:0,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1340,Nutrient,Daidzein,mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1341,Nutrient,Genistein,mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1404,Nutrient,"PUFA 18:3 n-3 c,c,c (ALA)",g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1405,Nutrient,PUFA 20:3 n-3,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1406,Nutrient,PUFA 20:3 n-6,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1409,Nutrient,PUFA 18:3i,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1411,Nutrient,PUFA 22:4,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:1414,Nutrient,PUFA 20:3 n-9,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2000,Nutrient,Total Sugars,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2003,Nutrient,SFA 5:0,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2004,Nutrient,SFA 7:0,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2005,Nutrient,SFA 9:0,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2006,Nutrient,SFA 21:0,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2007,Nutrient,SFA 23:0,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2008,Nutrient,MUFA 12:1,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2009,Nutrient,MUFA 14:1 c,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2010,Nutrient,MUFA 17:1 c,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2012,Nutrient,MUFA 20:1 c,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2013,Nutrient,TFA 20:1 t,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2014,Nutrient,MUFA 22:1 n-9,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2015,Nutrient,MUFA 22:1 n-11,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2016,Nutrient,PUFA 18:2 c,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2017,Nutrient,TFA 18:2 t,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2018,Nutrient,PUFA 18:3 c,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2019,Nutrient,TFA 18:3 t,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2020,Nutrient,PUFA 20:3 c,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2021,Nutrient,PUFA 22:3,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2022,Nutrient,PUFA 20:4c,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2023,Nutrient,PUFA 20:5c,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2024,Nutrient,PUFA 22:5 c,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2025,Nutrient,PUFA 22:6 c,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2026,Nutrient,PUFA 20:2 c,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2028,Nutrient,trans-beta-Carotene,µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2029,Nutrient,trans-Lycopene,µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2032,Nutrient,"Cryptoxanthin, alpha",µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2033,Nutrient,Total dietary fiber (AOAC 2011.25),g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2038,Nutrient,High Molecular Weight Dietary Fiber (HMWDF),g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2047,Nutrient,Energy (Atwater General Factors),kcal,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2048,Nutrient,Energy (Atwater Specific Factors),kcal,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2049,Nutrient,Daidzin,mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2050,Nutrient,Genistin,mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2051,Nutrient,Glycitin,mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2052,Nutrient,Delta-7-Stigmastenol,mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2053,Nutrient,Stigmastadiene,mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2057,Nutrient,Ergothioneine,mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2058,Nutrient,Beta-glucan,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2059,Nutrient,Vitamin D4,µg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2060,Nutrient,Ergosta-7-enol,mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2061,Nutrient,"Ergosta-7,22-dienol",mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2062,Nutrient,"Ergosta-5,7-dienol",mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2063,Nutrient,Verbascose,g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2065,Nutrient,Low Molecular Weight Dietary Fiber (LMWDF),g,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2066,Nutrient,Vitamin A,mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30
+FDC-NUTRIENT:2069,Nutrient,Glutathione,mg,https://fdc.nal.usda.gov/download-datasets/,usda_fdc,2026-04-30

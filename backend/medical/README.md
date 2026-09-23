@@ -52,3 +52,7 @@ cd backend
 ```
 
 固定的 2026-09-19 官方 XML 压缩包在被 Git 忽略的 `source_downloads/`。导出器生成 68 条主题文档、`normalized/` 与 `rag/` JSONL 和 SHA256 清单；其中 50 条是新增主题。中文名称/别名只用于召回，英文官方摘要仍是证据正文。MedlinePlus 的 `source_published_at` 记录 XML `date-created`，快照日期另存 `source_version`。影子评估在独立 Chroma 目录中构建基线与扩容索引，不触碰运行中的研究 collection。
+
+## 结构化营养数据试点
+
+USDA Foundation Foods 2026-04-30 数据可用 `medical.download_usda_foundation` 下载，`medical.import_usda_foundation` 导入本地 SQLite，`medical.export_usda_graph` 导出食物与营养素关系。下载文件和数据库被 Git 忽略；版本、校验值及导入数量见 `medical-rag-data/structured/` 的清单，详细复现步骤见 `medical-rag-data/reports/usda_foundation_pilot.md`。此数据目前只供离线验证，尚未接入医疗 Agent。

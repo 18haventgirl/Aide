@@ -1,0 +1,16 @@
+{
+  "dataset_id": "usda_fdc",
+  "data_type": "FoundationFoods",
+  "release": "2026-04-30",
+  "source_url": "https://fdc.nal.usda.gov/fdc-datasets/FoodData_Central_foundation_food_json_2026-04-30.zip",
+  "license_url": "https://fdc.nal.usda.gov/api-guide/",
+  "archive_sha256": "186e988ec542e913f51ef62b86a47758e8cdd0d1dc3889e7b055581f3c09c77a",
+  "json_sha256": "27d1fe3fd89edfbe528ed915da5619320e1d004d4594603a1b19bdb1511590cc",
+  "food_records": 363,
+  "nutrient_definitions": 228,
+  "food_nutrient_records": 15193,
+  "missing_amounts": 27,
+  "null_placeholders_in_source": 32,
+  "unit_basis": "per 100 g of food",
+  "agent_enabled": false
+}
