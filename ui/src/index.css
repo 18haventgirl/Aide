@@ -163,6 +163,69 @@
     @apply rounded-sm outline outline-2 outline-offset-2 outline-blue-600;
   }
 
+  /* Assistant messages share one renderer during streaming and after save. */
+  .chat-markdown > :first-child { margin-top: 0; }
+  .chat-markdown > :last-child { margin-bottom: 0; }
+  .chat-markdown p { margin: 0.5rem 0; }
+  .chat-markdown h1, .chat-markdown h2, .chat-markdown h3 {
+    @apply font-semibold;
+    margin: 0.9rem 0 0.4rem;
+    line-height: 1.35;
+  }
+  .chat-markdown h1 { font-size: 1.25em; }
+  .chat-markdown h2 { font-size: 1.15em; }
+  .chat-markdown h3 { font-size: 1.05em; }
+  .chat-markdown ul, .chat-markdown ol {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+  }
+  .chat-markdown ul { list-style-type: disc; }
+  .chat-markdown ol { list-style-type: decimal; }
+  .chat-markdown li { padding-left: 0.1rem; margin: 0.2rem 0; }
+  .chat-markdown li > p { margin: 0; }
+  .chat-markdown blockquote {
+    @apply border-l-4 border-blue-200 pl-3 text-muted-foreground;
+    margin: 0.7rem 0;
+  }
+  .chat-markdown hr { @apply border-border; margin: 0.9rem 0; }
+  .chat-markdown pre {
+    @apply rounded-lg bg-slate-900 p-3 text-slate-100;
+    max-width: 100%;
+    margin: 0.7rem 0;
+    overflow-x: auto;
+    white-space: pre;
+    tab-size: 2;
+  }
+  .chat-markdown pre code {
+    background: transparent;
+    padding: 0;
+    color: inherit;
+    font-size: 0.85rem;
+  }
+  .chat-markdown :not(pre) > code {
+    @apply rounded bg-slate-100 px-1 py-0.5 text-slate-800;
+    font-size: 0.88em;
+    overflow-wrap: anywhere;
+  }
+  .chat-table-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+    margin: 0.7rem 0;
+    border: 1px solid hsl(var(--border));
+    border-radius: 0.5rem;
+  }
+  .chat-table-scroll table { width: 100%; border-collapse: collapse; }
+  .chat-table-scroll th, .chat-table-scroll td {
+    padding: 0.5rem 0.7rem;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid hsl(var(--border));
+    overflow-wrap: anywhere;
+  }
+  .chat-table-scroll th { @apply bg-slate-50 font-semibold; }
+  .chat-table-scroll tr:last-child td { border-bottom: 0; }
+  .chat-table-scroll tbody tr:nth-child(even) { background: rgb(248 250 252 / 0.65); }
+
   /* === Input Area === */
   .chat-input-container {
     @apply bg-white/75 backdrop-blur-glass-lg rounded-2xl shadow-lg;

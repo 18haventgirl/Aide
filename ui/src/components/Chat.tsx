@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import type { Message } from "../lib/types";
-import ReactMarkdown from "react-markdown";
+import { ChatMarkdown } from "./ChatMarkdown";
 import type { WebSocketConnectionStatus } from "../lib/websocket";
 import { WifiOff, Send, Menu, Loader2, Bot, User as UserIcon } from "lucide-react";
 import { ConversationList } from "./ConversationList";
@@ -102,12 +102,12 @@ export function Chat({
                   <Bot className="w-4 h-4 text-primary" />
                 </div>
               )}
-              <div className={`min-w-0 max-w-[78%] overflow-hidden px-4 py-2.5 text-sm leading-relaxed break-words ${
+              <div className={`min-w-0 ${isUser ? 'max-w-[78%]' : 'max-w-[94%] sm:max-w-[85%]'} overflow-hidden px-4 py-2.5 text-sm leading-relaxed break-words ${
                 isUser
                   ? 'msg-user'
                   : isError ? 'msg-error' : 'msg-ai'
               }`}>
-                <ReactMarkdown>{msg.content}</ReactMarkdown>
+                <ChatMarkdown content={msg.content} />
                 {!isUser && citations.length > 0 && (
                   <div className="mt-3 border-t border-blue-100 pt-2 space-y-1.5">
                     <p className="text-xs font-semibold text-slate-600">资料来源</p>
@@ -143,7 +143,7 @@ export function Chat({
             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-primary/15 to-blue-100 flex items-center justify-center flex-shrink-0 mr-2.5 mt-0.5">
               <Bot className="w-4 h-4 text-primary" />
             </div>
-            <div className="min-w-0 max-w-[78%] overflow-hidden px-4 py-2.5 msg-streaming text-sm leading-relaxed break-words">
+            <div className="min-w-0 max-w-[94%] sm:max-w-[85%] overflow-hidden px-4 py-2.5 msg-streaming text-sm leading-relaxed break-words">
               <div className="flex items-center gap-2 mb-2 text-xs text-primary/70 font-medium">
                 <div className="flex gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse-dot" />
@@ -152,7 +152,7 @@ export function Chat({
                 </div>
                 正在回复...
               </div>
-              <ReactMarkdown>{streamingResponse}</ReactMarkdown>
+              <ChatMarkdown content={streamingResponse} />
               <span className="inline-block w-1.5 h-4 bg-primary/60 ml-0.5 animate-pulse rounded-sm align-text-bottom" />
             </div>
           </div>
