@@ -85,7 +85,7 @@ export function NotesPanel({ userId }: NotesPanelProps) {
   };
 
   const remove = async (id: number) => {
-    if (!confirm('删除这条笔记？')) return;
+    if (opLoading || !confirm('删除这条笔记？')) return;
     setOpLoading(true);
     try { await noteAPI.deleteNote(userId.toString(), id.toString()); await Promise.all([load(), loadTags()]); } catch { /* noop */ }
     setOpLoading(false);

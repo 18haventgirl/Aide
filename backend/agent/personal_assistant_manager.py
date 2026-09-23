@@ -2,6 +2,7 @@ from __future__ import annotations as _annotations
 
 import os
 import sys
+import asyncio
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Any, Optional
@@ -106,6 +107,7 @@ class PersonalAssistantManager:
         self.db_client = db_client
         self.vector_client = None
         self.mcp_server_url = mcp_server_url
+        self._mcp_connected = False
         
         # 模型配置
         self.model = self._create_model()
@@ -203,16 +205,33 @@ class PersonalAssistantManager:
     
     async def _initialize_mcp_server(self) -> bool:
         """初始化MCP服务器连接"""
-        try:
-            print("🔌 正在连接MCP服务器...")
-            await self.mcp_server.connect()
-            print(f"✅ MCP服务器连接成功: {self.mcp_server.name}")
-            return True
-        except Exception as e:
-            print(f"❌ MCP服务器连接失败: {e}")
-            print(f"   服务器地址: {self.mcp_server_url}")
-            print("⚠️  将在没有MCP服务器的情况下继续运行")
-            return False
+        print("🔌 正在连接MCP服务器...")
+        last_error = None
+        # API and MCP are started as separate hidden processes. The API can
+        # initialize slightly earlier, so retry the connection before making
+        # agents permanently tool-less.
+        for attempt in range(30):
+            try:
+                await self.mcp_server.connect()
+                self._mcp_connected = True
+                print(f"✅ MCP服务器连接成功: {self.mcp_server.name}")
+                return True
+            except Exception as e:
+                last_error = e
+                if attempt < 29:
+                    # A failed streamable HTTP client may retain a partial
+                    # session. Recreate it before the next attempt.
+                    self.mcp_server = self._create_mcp_server()
+                    await asyncio.sleep(2.0)
+        self._mcp_connected = False
+        print(f"❌ MCP服务器连接失败: {last_error}")
+        print(f"   服务器地址: {self.mcp_server_url}")
+        print("⚠️  将在没有MCP工具的情况下继续运行，避免使用未连接的客户端")
+        return False
+
+    def _mcp_servers(self) -> list:
+        """Only attach a connected MCP client to agents."""
+        return [self.mcp_server] if self._mcp_connected else []
     
     def _initialize_vector_database(self) -> bool:
         """初始化向量数据库"""
@@ -237,7 +256,7 @@ class PersonalAssistantManager:
             model_settings=self.model_settings,
             handoff_description="A weather agent that can get the weather of a location.",
             instructions=self._get_weather_instructions,
-            mcp_servers=[self.mcp_server],
+            mcp_servers=self._mcp_servers(),
         )
         
         # 新闻智能体
@@ -247,7 +266,7 @@ class PersonalAssistantManager:
             model_settings=self.model_settings,
             handoff_description="A news agent that can get the news of a location.",
             instructions=self._get_news_instructions,
-            mcp_servers=[self.mcp_server],
+            mcp_servers=self._mcp_servers(),
         )
         
         # 菜谱智能体
@@ -257,7 +276,7 @@ class PersonalAssistantManager:
             model_settings=self.model_settings,
             handoff_description="A recipe agent that can get the recipe of a location.",
             instructions=self._get_recipe_instructions,
-            mcp_servers=[self.mcp_server],
+            mcp_servers=self._mcp_servers(),
         )
         
         # 个人助手智能体
@@ -267,7 +286,7 @@ class PersonalAssistantManager:
             model_settings=self.model_settings,
             handoff_description="A personal assistant agent that can get the personal information of a user.",
             instructions=self._get_personal_instructions,
-            mcp_servers=[self.mcp_server],
+            mcp_servers=self._mcp_servers(),
         )
 
         self.agents['medical'] = Agent[PersonalAssistantContext](
@@ -275,7 +294,7 @@ class PersonalAssistantManager:
             model=self.model,
             model_settings=ModelSettings(temperature=0.1, top_p=1.0),
             instructions=self._get_medical_instructions,
-            mcp_servers=[self.mcp_server],
+            mcp_servers=self._mcp_servers(),
         )
         
         # 任务调度中心

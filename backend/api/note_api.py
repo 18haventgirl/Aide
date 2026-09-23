@@ -516,7 +516,10 @@ async def delete_note(
         # 先获取笔记验证存在性和权限
         note = note_service.get_note(note_id)
         if not note:
-            return not_found_response("笔记不存在")
+            # DELETE is idempotent. A stale card can remain briefly after a
+            # search/index refresh; treating an already removed note as a
+            # successful delete prevents a misleading business-error toast.
+            return success_response(None, "笔记已删除")
         
         if note.user_id != user_id:
             return internal_error_response("无权删除此笔记")

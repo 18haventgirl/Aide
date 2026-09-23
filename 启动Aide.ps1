@@ -22,9 +22,12 @@ function Port-IsOpen($port) {
   try { return (Test-NetConnection -ComputerName 127.0.0.1 -Port $port -InformationLevel Quiet -WarningAction SilentlyContinue) } catch { return $false }
 }
 
-# Start each service without opening a console window. Existing services keep
-# their ports; this avoids killing unrelated Node/Python processes.
-if (-not (Port-IsOpen 8000)) { Start-Hidden $python @('-m','uvicorn','main:app','--host','127.0.0.1','--port','8000','--no-access-log','--log-level','info') $backend 'backend' }
+# Start MCP before the API. MCP performs a one-time local model warmup, and
+# starting the API first can otherwise make its agent manager cache an
+# unconnected client. Both processes still run without visible consoles.
 if (-not (Port-IsOpen 8002)) { Start-Hidden $python @((Join-Path $backend 'mcp-serve\mcp_server.py')) $backend 'mcp' }
+$mcpDeadline = (Get-Date).AddSeconds(90)
+while (-not (Port-IsOpen 8002) -and (Get-Date) -lt $mcpDeadline) { Start-Sleep -Milliseconds 500 }
+if (-not (Port-IsOpen 8000)) { Start-Hidden $python @('-m','uvicorn','main:app','--host','127.0.0.1','--port','8000','--no-access-log','--log-level','info') $backend 'backend' }
 if (-not (Port-IsOpen 3000)) { Start-Hidden $node @($vite,'--host','127.0.0.1','--port','3000') (Join-Path $root 'ui') 'frontend' }
 Write-Output 'Aide services started in hidden windows.'
