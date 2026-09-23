@@ -1,0 +1,35 @@
+dataset_id,name,category,source_url,access_method,language,jurisdiction,priority,investigation_status,intended_use,notes
+medlineplus_topics,MedlinePlus Health Topic XML,health_topics,https://medlineplus.gov/xml.html,official_xml,en|es,US,P1,verified,research_rag,Only health topic summaries; exclude linked third-party content
+nhc_health_literacy,China NHC Health Literacy 66,health_topics,https://www.nhc.gov.cn/,official_html_pdf,zh,CN,P1,partial,research_rag,Existing 66 research documents; usage terms require source-level audit
+medlineplus_encyclopedia,MedlinePlus A.D.A.M. Encyclopedia,encyclopedia,https://medlineplus.gov/encyclopedia.html,website,en,US,P3,verified,link_only,Copyrighted third-party content
+medlineplus_ahfs,MedlinePlus AHFS Drug Monographs,drug_monographs,https://medlineplus.gov/druginformation.html,website,en,US,P3,verified,link_only,Copyrighted third-party content
+pmc_oa,PMC Open Access Subset,research_articles,https://pmc.ncbi.nlm.nih.gov/tools/openftlist/,official_oai_bioc_cloud,en|multi,global,P2,verified,offline_evidence,License varies by article
+pubmed,PubMed Citation Metadata,citation_metadata,https://pubmed.ncbi.nlm.nih.gov/,official_api,en|multi,global,P2,candidate,source_discovery,Metadata is not licensed full text
+dailymed_spl,DailyMed Structured Product Labels,drug_labels,https://dailymed.nlm.nih.gov/dailymed/app-support-web-services.cfm,official_api,en,US,P2,verified,drug_pilot,Check content rights and US applicability
+openfda_label,openFDA Drug Label Downloads,drug_labels,https://open.fda.gov/apis/drug/label/download/,official_bulk_json,en,US,P2,verified,drug_pilot,Check record-level provenance
+usda_fdc,USDA FoodData Central,nutrition,https://fdc.nal.usda.gov/api-guide/,official_api_csv_json,en,US,P2,verified,structured_nutrition,CC0; preserve food type and units
+foodrugs,FooDrugs,food_drug_interaction,https://pubmed.ncbi.nlm.nih.gov/?term=FooDrugs,publication_discovery,en,global,P3,candidate,offline_relation_research,Original download and license need confirmation
+kg_dfi,KG-DFI,food_drug_interaction,https://github.com/bmil-jnu/KG-DFI,github,en,global,P3,partial,offline_relation_research,Predictions are not verified clinical interactions
+dfi_corpus,DFI Extraction Corpus,food_drug_interaction,https://github.com/ccadd-snu/corpus-for-DFI-extraction,github,en,global,P3,partial,offline_relation_research,Confirm exact repository and data license before use
+opencmkg,OpenCMKG,chinese_medical_graph,https://github.com/RuiqingDing/OpenCMKG,github,zh,CN,P3,verified,offline_relation_research,Research only and aggregated upstream rights
+d2hkg,D2hKG,diet_health_graph,https://github.com/search?q=D2hKG&type=repositories,discovery_search,zh|en,unknown,P3,candidate,discovery_only,Canonical repository and license unverified
+huatuo_26m,Huatuo-26M,chinese_medical_qa,https://github.com/FreedomIntelligence/Huatuo-26M,github,zh,CN,P3,verified,offline_eval_candidate,QA corpus is not clinical evidence
+cmedqa2,cMedQA2,chinese_medical_qa,https://github.com/zhangsheng93/cMedQA2,github,zh,CN,P3,verified,offline_eval_candidate,Repository says non-commercial research only
+cmexam,CMExam,chinese_medical_exam,https://github.com/williamliujl/CMExam,github,zh,CN,P3,partial,offline_eval_candidate,Exam questions are not patient education evidence
+mondo,MONDO Disease Ontology,disease_ontology,https://github.com/monarch-initiative/mondo,github,en,global,P2,verified,entity_mapping,Check included cross-reference provenance
+disease_ontology,Disease Ontology,disease_ontology,https://github.com/DiseaseOntology/HumanDiseaseOntology,github,en,global,P2,candidate,entity_mapping,License and release need audit
+hpo,Human Phenotype Ontology,symptom_ontology,https://github.com/obophenotype/human-phenotype-ontology,github,en,global,P2,partial,entity_mapping,Ontology and annotations may have distinct conditions
+mesh,MeSH,medical_vocabulary,https://www.nlm.nih.gov/mesh/meshhome.html,official_download,en|multi,global,P2,candidate,entity_mapping,Review NLM terms
+rxnorm_full,RxNorm Full Release,drug_vocabulary,https://www.nlm.nih.gov/research/umls/rxnorm/overview.html,official_download,en,US,P3,verified,entity_mapping,UTS license and third-party source restrictions
+rxnorm_cpc,RxNorm Current Prescribable Content,drug_vocabulary,https://www.nlm.nih.gov/research/umls/rxnorm/overview.html,official_download,en,US,P2,verified,entity_mapping,US centric subset; check latest release
+umls,UMLS Metathesaurus,medical_vocabulary,https://www.nlm.nih.gov/databases/umls.html,registered_download,multi,global,P3,verified,entity_mapping,Account and license required
+snomed_ct,SNOMED CT,medical_vocabulary,https://www.snomed.org/get-snomed,registered_download,multi,global,P3,candidate,entity_mapping,Country-specific license conditions
+icd11,WHO ICD-11,disease_classification,https://icd.who.int/,official_api,multi,global,P3,candidate,entity_mapping,API and content terms require audit
+nih_ods,NIH ODS Fact Sheets,nutrition_guidance,https://ods.od.nih.gov/factsheets/list-all/,official_html,en,US,P2,candidate,topic_research,Review each fact sheet usage terms
+openfoodfacts,Open Food Facts,food_products,https://world.openfoodfacts.org/data,official_download,multi,global,P3,candidate,structured_nutrition,Community label data; license and quality audit
+foodon,FoodOn,food_ontology,https://github.com/FoodOntology/foodon,github,en,global,P3,candidate,entity_mapping,Check release and cross-reference licenses
+chebi,ChEBI,chemical_ontology,https://www.ebi.ac.uk/chebi/,official_download,en,global,P3,candidate,entity_mapping,Check terms and source mapping
+drugcentral,DrugCentral,drug_database,https://drugcentral.org/,official_download,en,US|global,P3,candidate,offline_drug_research,License and data provenance audit
+sider,SIDER Drug Side Effects,adverse_effects,https://sideeffects.embl.de/,official_download,en,global,P3,candidate,offline_drug_research,Potential research-only restrictions
+pubchem,PubChem,chemical_database,https://pubchem.ncbi.nlm.nih.gov/,official_api,en,global,P3,candidate,entity_mapping,Chemical identifiers do not imply clinical effect
+clinicaltrials,ClinicalTrials.gov,trial_registry,https://clinicaltrials.gov/data-api/api,official_api,en,global,P3,candidate,offline_evidence,Registrations are not trial results

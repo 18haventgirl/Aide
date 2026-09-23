@@ -1,0 +1,35 @@
+dataset_id,classification,license_name,license_url,commercial_use,redistribution,translation_or_adaptation,rag_use,model_training,registration_required,answer_eligible,checked_on,notes
+medlineplus_topics,OPEN,US federal public domain,https://medlineplus.gov/about/using/usingcontent/,yes,yes,yes,yes,unknown,no,yes,2026-09-23,Only NLM health topic summaries with attribution; not linked third-party material
+nhc_health_literacy,UNKNOWN,UNKNOWN,https://www.nhc.gov.cn/,unknown,unknown,unknown,unknown,unknown,unknown,no,2026-09-23,Audit existing research source before expansion
+medlineplus_encyclopedia,RESTRICTED,Third-party copyright,https://medlineplus.gov/about/using/usingcontent/,no,no,no,no,no,yes,no,2026-09-23,A.D.A.M. material requires permission
+medlineplus_ahfs,RESTRICTED,Third-party copyright,https://medlineplus.gov/about/using/usingcontent/,no,no,no,no,no,yes,no,2026-09-23,AHFS monographs require permission
+pmc_oa,UNKNOWN,Per-article licenses,https://pmc.ncbi.nlm.nih.gov/tools/openftlist/,unknown,unknown,unknown,unknown,unknown,no,no,2026-09-23,Assess each article license
+pubmed,UNKNOWN,UNKNOWN,https://pubmed.ncbi.nlm.nih.gov/,unknown,unknown,unknown,unknown,unknown,unknown,no,2026-09-23,Metadata only until terms verified
+dailymed_spl,UNKNOWN,UNKNOWN,https://dailymed.nlm.nih.gov/dailymed/app-support-web-services.cfm,unknown,unknown,unknown,unknown,unknown,no,no,2026-09-23,API availability is not a license determination
+openfda_label,UNKNOWN,UNKNOWN,https://open.fda.gov/apis/drug/label/download/,unknown,unknown,unknown,unknown,unknown,no,no,2026-09-23,Check source and record rights
+usda_fdc,OPEN,CC0 1.0,https://fdc.nal.usda.gov/api-guide/,yes,yes,yes,yes,unknown,no,yes,2026-09-23,USDA requests source attribution
+foodrugs,UNKNOWN,UNKNOWN,https://pubmed.ncbi.nlm.nih.gov/?term=FooDrugs,unknown,unknown,unknown,unknown,unknown,unknown,no,2026-09-23,Canonical source pending
+kg_dfi,UNKNOWN,UNKNOWN,https://github.com/bmil-jnu/KG-DFI,unknown,unknown,unknown,unknown,unknown,unknown,no,2026-09-23,Data rights separate from code rights
+dfi_corpus,UNKNOWN,UNKNOWN,https://github.com/ccadd-snu/corpus-for-DFI-extraction,unknown,unknown,unknown,unknown,unknown,unknown,no,2026-09-23,Review data and publication rights
+opencmkg,RESEARCH_ONLY,Research only statement,https://github.com/RuiqingDing/OpenCMKG, no,no,unknown,no,unknown,no,no,2026-09-23,Aggregated upstream source rights uncertain
+d2hkg,UNKNOWN,UNKNOWN,https://github.com/search?q=D2hKG&type=repositories,unknown,unknown,unknown,unknown,unknown,unknown,no,2026-09-23,Source pending
+huatuo_26m,UNKNOWN,Apache-2.0 stated by repository,https://github.com/FreedomIntelligence/Huatuo-26M,unknown,unknown,unknown,unknown,unknown,no,no,2026-09-23,Underlying collected content requires audit; evaluation candidate only
+cmedqa2,NON_COMMERCIAL,Non-commercial research,https://github.com/zhangsheng93/cMedQA2, no,unknown,unknown,no,unknown,no,no,2026-09-23,Community QA not evidence
+cmexam,UNKNOWN,UNKNOWN,https://github.com/williamliujl/CMExam,unknown,unknown,unknown,unknown,unknown,unknown,no,2026-09-23,Exam rights require audit
+mondo,OPEN,CC BY 4.0,https://github.com/monarch-initiative/mondo/blob/master/LICENSE,yes,yes,yes,yes,unknown,no,no,2026-09-23,Entity mapping only; check upstream cross-references
+disease_ontology,UNKNOWN,UNKNOWN,https://github.com/DiseaseOntology/HumanDiseaseOntology,unknown,unknown,unknown,unknown,unknown,unknown,no,2026-09-23,Audit license
+hpo,UNKNOWN,UNKNOWN,https://human-phenotype-ontology.github.io/license.html,unknown,unknown,unknown,unknown,unknown,unknown,no,2026-09-23,Review ontology vs annotations terms
+mesh,UNKNOWN,UNKNOWN,https://www.nlm.nih.gov/mesh/meshhome.html,unknown,unknown,unknown,unknown,unknown,unknown,no,2026-09-23,Audit terms
+rxnorm_full,REGISTRATION_REQUIRED,UMLS license,https://www.nlm.nih.gov/research/umls/rxnorm/overview.html,unknown,unknown,unknown,unknown,unknown,yes,no,2026-09-23,Third-party vocabularies may impose extra restrictions
+rxnorm_cpc,UNKNOWN,Subset terms to review,https://www.nlm.nih.gov/research/umls/rxnorm/overview.html,unknown,unknown,unknown,unknown,unknown,no,no,2026-09-23,Subset download does not need license but reuse must be checked
+umls,REGISTRATION_REQUIRED,UMLS license,https://www.nlm.nih.gov/databases/umls.html,unknown,unknown,unknown,unknown,unknown,yes,no,2026-09-23,Individual UTS account required
+snomed_ct,UNKNOWN,UNKNOWN,https://www.snomed.org/get-snomed,unknown,unknown,unknown,unknown,unknown,unknown,no,2026-09-23,Jurisdiction-specific licensing
+icd11,UNKNOWN,UNKNOWN,https://icd.who.int/,unknown,unknown,unknown,unknown,unknown,unknown,no,2026-09-23,Audit API terms
+nih_ods,UNKNOWN,UNKNOWN,https://ods.od.nih.gov/factsheets/list-all/,unknown,unknown,unknown,unknown,unknown,unknown,no,2026-09-23,Audit page-level rights
+openfoodfacts,UNKNOWN,UNKNOWN,https://world.openfoodfacts.org/data,unknown,unknown,unknown,unknown,unknown,unknown,no,2026-09-23,Audit share-alike and record quality
+foodon,UNKNOWN,UNKNOWN,https://github.com/FoodOntology/foodon,unknown,unknown,unknown,unknown,unknown,unknown,no,2026-09-23,Audit terms
+chebi,UNKNOWN,UNKNOWN,https://www.ebi.ac.uk/chebi/,unknown,unknown,unknown,unknown,unknown,unknown,no,2026-09-23,Audit terms
+drugcentral,UNKNOWN,UNKNOWN,https://drugcentral.org/,unknown,unknown,unknown,unknown,unknown,unknown,no,2026-09-23,Audit terms
+sider,UNKNOWN,UNKNOWN,https://sideeffects.embl.de/,unknown,unknown,unknown,unknown,unknown,unknown,no,2026-09-23,Audit terms
+pubchem,UNKNOWN,UNKNOWN,https://pubchem.ncbi.nlm.nih.gov/,unknown,unknown,unknown,unknown,unknown,unknown,no,2026-09-23,Audit API terms
+clinicaltrials,UNKNOWN,UNKNOWN,https://clinicaltrials.gov/data-api/api,unknown,unknown,unknown,unknown,unknown,unknown,no,2026-09-23,Audit reuse terms
