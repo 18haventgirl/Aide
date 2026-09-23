@@ -1,0 +1,22 @@
+{
+  "doc_id": "MPLUS-254-foodborne-illness",
+  "version": 1,
+  "title": "食源性疾病（Foodborne Illness）",
+  "topic": "食源性疾病",
+  "audience": "普通公众（官方英文资料）",
+  "source_org": "MedlinePlus, U.S. National Library of Medicine",
+  "source_url": "https://medlineplus.gov/foodborneillness.html",
+  "source_published_at": "1999-09-02",
+  "status": "source_checked",
+  "reviewer": "Aide MedlinePlus importer (automated source parsing; non-clinician)",
+  "reviewed_at": "2026-09-24",
+  "next_review_at": "2026-10-24",
+  "license_note": "MedlinePlus XML permits download and use with attribution to MedlinePlus.gov; retain source link.",
+  "source_sha256": "58a4f6c4e50dbb5ab7e3e6344b74012ef0d2733f448c518e7d8e5893f632f4b9",
+  "source_locator": "health-topic id=254; full-summary",
+  "source_collected_at": "2026-09-24",
+  "source_version": "MedlinePlus Health Topic XML 2026-09-19",
+  "usage_scope": "Aide local research index; official English summary with Chinese retrieval labels",
+  "withdrawn": false,
+  "body": "# 食源性疾病（Foodborne Illness）\n\n中文检索词：食物中毒、吃坏肚子、食源性疾病\n\nOfficial title: Foodborne Illness\n\nAlso called: Food Poisoning\n\nMedlinePlus summary:\n\nEach year, around 48 million people in the United States get sick from contaminated food. Common causes include bacteria and viruses. Less often, the cause may be a parasite or a harmful chemical, such as a high amount of pesticides. Symptoms of foodborne illness depend on the cause. They can be mild or serious. They usually include:\n- Upset stomach\n- Abdominal cramps\n- Nausea and vomiting\n- Diarrhea\n- Fever\n- Dehydration\nMost foodborne illnesses are acute. This means that they happen suddenly and last a short time.\nIt takes several steps to get food from the farm or fishery to your dining table. Contamination can happen during any of these steps. For example, it can happen to:\n- Raw meat during slaughter\n- Fruits and vegetables when they are growing or when they are processed\n- Refrigerated foods when they are left on a loading dock in warm weather\nBut it can also happen in your kitchen if you leave food out for more than 2 hours at room temperature. Handling food safely can help prevent foodborne illnesses.\nMost people with foodborne illness get better on their own. It is important to replace lost fluids and electrolytes to prevent dehydration. If your health care provider can diagnose the specific cause, you may get medicines such as antibiotics to treat it. For more serious illness, you may need treatment at a hospital.\nNIH: National Institute of Diabetes and Digestive and Kidney Diseases"
+}

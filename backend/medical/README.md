@@ -5,8 +5,8 @@
 ## 数据与模型
 
 - `source_pipeline.py` 对照 2024 年正式《健康素养 66 条》与国务院网站托管的正式释义 PDF，生成 66 条记录；另有北京、广州卫健委各一条常见症状就医资料。原文及 SHA256 记在 `source_downloads/` 和 `source_corpus/source_manifest.json`。原文下载目录被 Git 忽略。
-- `source_corpus/` 当前线上研究基线包含 86 条 JSON 资料，均为 `source_checked`，表示机器核对原文，**不是医疗专业审核**。新一批 MedlinePlus 主题先在独立影子索引评估，通过后才同步到这里。正式公共索引仅接纳 `clinician_reviewed` 且未过期、未撤回的资料。
-- `import_medlineplus.py` 从固定版本的 MedlinePlus Health Topic XML 中选择原有 18 个高频主题和新选的 50 个运动、睡眠、慢病预防、营养等主题。正文保留官方英文，中文标题与别名和官方摘要位于同一检索片段，避免召回只有标签而没有医学内容的片段。新主题尚未通过影子评估前不会修改运行中的研究索引。
+- `source_corpus/` 当前本机研究索引包含 136 条 JSON 资料，均为 `source_checked`，表示机器核对原文，**不是医疗专业审核**。正式公共索引仅接纳 `clinician_reviewed` 且未过期、未撤回的资料。
+- `import_medlineplus.py` 从固定版本的 MedlinePlus Health Topic XML 中选择原有 18 个高频主题和新选的 50 个运动、睡眠、慢病预防、营养等主题。正文保留官方英文，中文标题与别名和官方摘要位于同一检索片段，避免召回只有标签而没有医学内容的片段。影子对照通过后已同步到本机研究索引；详见 `medical-rag-data/reports/medlineplus_eval_2026-09-24.md`。
 - 向量模型为本机运行的 `BAAI/bge-small-zh-v1.5`，固定模型 revision 和权重 SHA256。模型文件在 `models/`（Git 忽略）。研究与正式索引使用分开的 Chroma collection。
 - 检索先分别取得 BGE 稠密候选和全库 jieba/BM25 关键词候选，用加权 RRF 合并后，将前 8 个片段交给本机 `BAAI/bge-reranker-base` 交叉编码器重排。最后按相关性门槛过滤，并限制单份文档最多占两个片段。重排模型固定 revision 和权重 SHA256；模型缺失或推理失败时会退回经过门槛控制的混合排序，不会让检索服务整体中断。
 - 医疗 Agent 与其他 Agent 共用 Aide 的 LiteLLM 模型配置 `OPENAI_API_KEY`、`OPENAI_API_BASE_URL` 和 `OPENAI_CHAT_MODEL`。每个健康问题先调用一次 `medical_search`，把检索证据与对话问题一起交给同一个 LLM；首次结果明确未覆盖且确需换一种含义检索时，最多再调用一次。旧的 `MEDICAL_LLM_*` 独立生成路径已移除。

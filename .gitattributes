@@ -1,0 +1,3 @@
+medical-rag-data/**/*.jsonl text eol=lf
+medical-rag-data/**/*.csv text eol=lf
+medical-rag-data/**/*_manifest.json text eol=lf

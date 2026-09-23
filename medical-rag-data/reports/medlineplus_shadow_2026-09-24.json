@@ -1,0 +1,414 @@
+{
+  "baseline_documents": 86,
+  "expanded_documents": 136,
+  "medlineplus_manifest": {
+    "source": "MedlinePlus Health Topic XML",
+    "download_url": "https://medlineplus.gov/xml/mplus_topics_compressed_2026-09-19.zip",
+    "source_date": "2026-09-19",
+    "archive_sha256": "4b52e1a2c4c499d363dfbff1776875b53a695b315e7761e1c283b223b675ed74",
+    "xml_sha256": "58a4f6c4e50dbb5ab7e3e6344b74012ef0d2733f448c518e7d8e5893f632f4b9",
+    "topic_ids": [
+      "3061",
+      "196",
+      "1543",
+      "211",
+      "511",
+      "273",
+      "489",
+      "4748",
+      "216",
+      "208",
+      "157",
+      "4744",
+      "3077",
+      "5324",
+      "200",
+      "1653",
+      "448",
+      "4293",
+      "6601",
+      "6603",
+      "490",
+      "6469",
+      "408",
+      "422",
+      "144",
+      "113",
+      "34",
+      "4",
+      "5930",
+      "5784",
+      "26",
+      "6781",
+      "277",
+      "8",
+      "24",
+      "2",
+      "299",
+      "6051",
+      "28",
+      "36",
+      "61",
+      "1434",
+      "254",
+      "1256",
+      "1558",
+      "108",
+      "1359",
+      "294",
+      "6236",
+      "23",
+      "1250",
+      "5987",
+      "1224",
+      "91",
+      "3157",
+      "40",
+      "5358",
+      "5798",
+      "3756",
+      "6807",
+      "6661",
+      "1598",
+      "6450",
+      "1530",
+      "1616",
+      "4224",
+      "5461",
+      "7667"
+    ],
+    "documents": 68,
+    "review_kind": "automated source parsing; no clinician review"
+  },
+  "baseline_index": {
+    "indexed_documents": 86,
+    "indexed_chunks": 159,
+    "removed_chunks": 0
+  },
+  "expanded_index": {
+    "indexed_documents": 136,
+    "indexed_chunks": 650,
+    "removed_chunks": 0
+  },
+  "evaluations": {
+    "eval_cases_research.json": {
+      "before": {
+        "cases": 111,
+        "supported_cases": 61,
+        "unanswerable_cases": 20,
+        "urgent_cases": 20,
+        "followup_cases": 10,
+        "recall_at_1": 0.967,
+        "recall_at_5": 1.0,
+        "mrr": 0.98,
+        "ndcg_at_5": 0.985,
+        "forbidden_hit_rate_at_5": 0.0,
+        "average_retrieval_latency_ms": 1219.0,
+        "p95_retrieval_latency_ms": 1481.0,
+        "unanswerable_rejection_rate": 1.0,
+        "urgent_detection_rate": 1.0,
+        "followup_recall_at_5": 1.0
+      },
+      "after_original_labels": {
+        "cases": 111,
+        "supported_cases": 61,
+        "unanswerable_cases": 20,
+        "urgent_cases": 20,
+        "followup_cases": 10,
+        "recall_at_1": 0.951,
+        "recall_at_5": 1.0,
+        "mrr": 0.971,
+        "ndcg_at_5": 0.979,
+        "forbidden_hit_rate_at_5": 0.0,
+        "average_retrieval_latency_ms": 1290.1,
+        "p95_retrieval_latency_ms": 2116.3,
+        "unanswerable_rejection_rate": 1.0,
+        "urgent_detection_rate": 1.0,
+        "followup_recall_at_5": 1.0
+      },
+      "after_adjudicated": {
+        "cases": 111,
+        "supported_cases": 61,
+        "unanswerable_cases": 20,
+        "urgent_cases": 20,
+        "followup_cases": 10,
+        "recall_at_1": 0.951,
+        "recall_at_5": 1.0,
+        "mrr": 0.971,
+        "ndcg_at_5": 0.979,
+        "forbidden_hit_rate_at_5": 0.0,
+        "average_retrieval_latency_ms": 1290.1,
+        "p95_retrieval_latency_ms": 2116.3,
+        "unanswerable_rejection_rate": 1.0,
+        "urgent_detection_rate": 1.0,
+        "followup_recall_at_5": 1.0
+      }
+    },
+    "eval_cases_validation_v1.json": {
+      "before": {
+        "cases": 33,
+        "supported_cases": 15,
+        "unanswerable_cases": 8,
+        "urgent_cases": 5,
+        "followup_cases": 5,
+        "recall_at_1": 0.933,
+        "recall_at_5": 1.0,
+        "mrr": 0.956,
+        "ndcg_at_5": 0.967,
+        "forbidden_hit_rate_at_5": null,
+        "average_retrieval_latency_ms": 1182.9,
+        "p95_retrieval_latency_ms": 1810.9,
+        "unanswerable_rejection_rate": 1.0,
+        "urgent_detection_rate": 1.0,
+        "followup_recall_at_5": 1.0
+      },
+      "after_original_labels": {
+        "cases": 33,
+        "supported_cases": 15,
+        "unanswerable_cases": 8,
+        "urgent_cases": 5,
+        "followup_cases": 5,
+        "recall_at_1": 0.867,
+        "recall_at_5": 0.933,
+        "mrr": 0.889,
+        "ndcg_at_5": 0.9,
+        "forbidden_hit_rate_at_5": null,
+        "average_retrieval_latency_ms": 1366.4,
+        "p95_retrieval_latency_ms": 1859.2,
+        "unanswerable_rejection_rate": 1.0,
+        "urgent_detection_rate": 1.0,
+        "followup_recall_at_5": 1.0
+      },
+      "after_adjudicated": {
+        "cases": 33,
+        "supported_cases": 15,
+        "unanswerable_cases": 8,
+        "urgent_cases": 5,
+        "followup_cases": 5,
+        "recall_at_1": 0.933,
+        "recall_at_5": 1.0,
+        "mrr": 0.956,
+        "ndcg_at_5": 0.967,
+        "forbidden_hit_rate_at_5": null,
+        "average_retrieval_latency_ms": 1441.5,
+        "p95_retrieval_latency_ms": 2554.5,
+        "unanswerable_rejection_rate": 1.0,
+        "urgent_detection_rate": 1.0,
+        "followup_recall_at_5": 1.0
+      }
+    },
+    "eval_cases_expansion_v1.json": {
+      "before": {
+        "cases": 10,
+        "supported_cases": 10,
+        "unanswerable_cases": 0,
+        "urgent_cases": 0,
+        "followup_cases": 0,
+        "recall_at_1": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_5": 1.0,
+        "forbidden_hit_rate_at_5": null,
+        "average_retrieval_latency_ms": 1623.4,
+        "p95_retrieval_latency_ms": 1980.3,
+        "unanswerable_rejection_rate": null,
+        "urgent_detection_rate": null,
+        "followup_recall_at_5": null
+      },
+      "after_original_labels": {
+        "cases": 10,
+        "supported_cases": 10,
+        "unanswerable_cases": 0,
+        "urgent_cases": 0,
+        "followup_cases": 0,
+        "recall_at_1": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_5": 1.0,
+        "forbidden_hit_rate_at_5": null,
+        "average_retrieval_latency_ms": 1634.5,
+        "p95_retrieval_latency_ms": 1916.0,
+        "unanswerable_rejection_rate": null,
+        "urgent_detection_rate": null,
+        "followup_recall_at_5": null
+      },
+      "after_adjudicated": {
+        "cases": 10,
+        "supported_cases": 10,
+        "unanswerable_cases": 0,
+        "urgent_cases": 0,
+        "followup_cases": 0,
+        "recall_at_1": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "ndcg_at_5": 1.0,
+        "forbidden_hit_rate_at_5": null,
+        "average_retrieval_latency_ms": 1634.5,
+        "p95_retrieval_latency_ms": 1916.0,
+        "unanswerable_rejection_rate": null,
+        "urgent_detection_rate": null,
+        "followup_recall_at_5": null
+      }
+    },
+    "eval_cases_medlineplus_expansion.json": {
+      "after": {
+        "cases": 10,
+        "supported_cases": 10,
+        "unanswerable_cases": 0,
+        "urgent_cases": 0,
+        "followup_cases": 0,
+        "recall_at_1": 0.9,
+        "recall_at_5": 1.0,
+        "mrr": 0.95,
+        "ndcg_at_5": 0.963,
+        "forbidden_hit_rate_at_5": null,
+        "average_retrieval_latency_ms": 1654.0,
+        "p95_retrieval_latency_ms": 2632.3,
+        "unanswerable_rejection_rate": null,
+        "urgent_detection_rate": null,
+        "followup_recall_at_5": null
+      },
+      "details": [
+        {
+          "id": "EX-01",
+          "kind": "supported",
+          "expected": [
+            "MPLUS-490-exercise-physical-fitness",
+            "MPLUS-6603-how-much-exercise"
+          ],
+          "retrieved": [
+            "NHC-HL2024-32",
+            "MPLUS-6603-how-much-exercise"
+          ],
+          "first_match_rank": 2,
+          "forbidden_retrieved": []
+        },
+        {
+          "id": "EX-02",
+          "kind": "supported",
+          "expected": [
+            "MPLUS-408-sleep-disorders",
+            "MPLUS-6469-healthy-sleep"
+          ],
+          "retrieved": [
+            "MPLUS-6469-healthy-sleep",
+            "NHC-HL2024-39"
+          ],
+          "first_match_rank": 1,
+          "forbidden_retrieved": []
+        },
+        {
+          "id": "EX-03",
+          "kind": "supported",
+          "expected": [
+            "MPLUS-34-high-blood-pressure",
+            "MPLUS-6450-prevent-high-blood-pressure"
+          ],
+          "retrieved": [
+            "MPLUS-6450-prevent-high-blood-pressure"
+          ],
+          "first_match_rank": 1,
+          "forbidden_retrieved": []
+        },
+        {
+          "id": "EX-04",
+          "kind": "supported",
+          "expected": [
+            "MPLUS-5784-prediabetes",
+            "MPLUS-6661-prevent-diabetes"
+          ],
+          "retrieved": [
+            "MPLUS-6661-prevent-diabetes",
+            "NHC-HL2024-27"
+          ],
+          "first_match_rank": 1,
+          "forbidden_retrieved": []
+        },
+        {
+          "id": "EX-05",
+          "kind": "supported",
+          "expected": [
+            "MPLUS-26-cholesterol",
+            "MPLUS-6807-lower-cholesterol-diet"
+          ],
+          "retrieved": [
+            "MPLUS-6807-lower-cholesterol-diet"
+          ],
+          "first_match_rank": 1,
+          "forbidden_retrieved": []
+        },
+        {
+          "id": "EX-06",
+          "kind": "supported",
+          "expected": [
+            "MPLUS-254-foodborne-illness"
+          ],
+          "retrieved": [
+            "MPLUS-254-foodborne-illness",
+            "MPLUS-1256-food-allergy"
+          ],
+          "first_match_rank": 1,
+          "forbidden_retrieved": []
+        },
+        {
+          "id": "EX-07",
+          "kind": "supported",
+          "expected": [
+            "MPLUS-6051-dehydration"
+          ],
+          "retrieved": [
+            "MPLUS-6051-dehydration"
+          ],
+          "first_match_rank": 1,
+          "forbidden_retrieved": []
+        },
+        {
+          "id": "EX-08",
+          "kind": "supported",
+          "expected": [
+            "MPLUS-1256-food-allergy"
+          ],
+          "retrieved": [
+            "MPLUS-1256-food-allergy"
+          ],
+          "first_match_rank": 1,
+          "forbidden_retrieved": []
+        },
+        {
+          "id": "EX-09",
+          "kind": "supported",
+          "expected": [
+            "MPLUS-1530-exercise-older-adults"
+          ],
+          "retrieved": [
+            "MPLUS-1530-exercise-older-adults",
+            "NHC-HL2024-21"
+          ],
+          "first_match_rank": 1,
+          "forbidden_retrieved": []
+        },
+        {
+          "id": "EX-10",
+          "kind": "supported",
+          "expected": [
+            "MPLUS-1359-quitting-smoking"
+          ],
+          "retrieved": [
+            "MPLUS-1359-quitting-smoking",
+            "NHC-HL2024-34"
+          ],
+          "first_match_rank": 1,
+          "forbidden_retrieved": []
+        }
+      ]
+    }
+  },
+  "adjudicated_equivalents": {
+    "VS09": {
+      "doc_id": "MPLUS-6603-how-much-exercise",
+      "reason": "Official adult exercise summary covers both weekly aerobic minutes and strength training."
+    }
+  },
+  "passed": true,
+  "regressions": []
+}

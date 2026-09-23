@@ -1,0 +1,22 @@
+{
+  "doc_id": "MPLUS-28-dental-health",
+  "version": 1,
+  "title": "口腔健康（Dental Health）",
+  "topic": "口腔健康",
+  "audience": "普通公众（官方英文资料）",
+  "source_org": "MedlinePlus, U.S. National Library of Medicine",
+  "source_url": "https://medlineplus.gov/dentalhealth.html",
+  "source_published_at": "1999-02-10",
+  "status": "source_checked",
+  "reviewer": "Aide MedlinePlus importer (automated source parsing; non-clinician)",
+  "reviewed_at": "2026-09-24",
+  "next_review_at": "2026-10-24",
+  "license_note": "MedlinePlus XML permits download and use with attribution to MedlinePlus.gov; retain source link.",
+  "source_sha256": "58a4f6c4e50dbb5ab7e3e6344b74012ef0d2733f448c518e7d8e5893f632f4b9",
+  "source_locator": "health-topic id=28; full-summary",
+  "source_collected_at": "2026-09-24",
+  "source_version": "MedlinePlus Health Topic XML 2026-09-19",
+  "usage_scope": "Aide local research index; official English summary with Chinese retrieval labels",
+  "withdrawn": false,
+  "body": "# 口腔健康（Dental Health）\n\n中文检索词：牙齿健康、口腔卫生、牙疼\n\nOfficial title: Dental Health\n\nAlso called: Oral health\n\nMedlinePlus summary:\n\nIt's important to take care of your mouth and teeth starting in childhood. If you don't, you could have problems with your teeth and gums - like cavities or even tooth loss.\nHere's how to keep your mouth and teeth healthy:\n- Brush your teeth twice a day with a fluoride toothpaste\n- Clean between your teeth every day with floss or another type of between-the-teeth cleaner\n- Snack smart - limit sugary snacks\n- Don't smoke or chew tobacco\n- See your dentist or oral health professional regularly\nNIH: National Institute of Dental and Craniofacial Research"
+}
