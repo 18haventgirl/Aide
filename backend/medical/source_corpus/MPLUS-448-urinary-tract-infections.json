@@ -1,0 +1,22 @@
+{
+  "doc_id": "MPLUS-448-urinary-tract-infections",
+  "version": 1,
+  "title": "尿路感染（Urinary Tract Infections）",
+  "topic": "尿路感染",
+  "audience": "普通公众（官方英文资料）",
+  "source_org": "MedlinePlus, U.S. National Library of Medicine",
+  "source_url": "https://medlineplus.gov/urinarytractinfections.html",
+  "source_published_at": "2026-09-19",
+  "status": "source_checked",
+  "reviewer": "Aide MedlinePlus importer (automated source parsing; non-clinician)",
+  "reviewed_at": "2026-09-22",
+  "next_review_at": "2026-10-22",
+  "license_note": "MedlinePlus XML permits download and use with attribution to MedlinePlus.gov; retain source link.",
+  "source_sha256": "58a4f6c4e50dbb5ab7e3e6344b74012ef0d2733f448c518e7d8e5893f632f4b9",
+  "source_locator": "health-topic id=448; full-summary",
+  "source_collected_at": "2026-09-22",
+  "source_version": "MedlinePlus Health Topic XML 2026-09-19",
+  "usage_scope": "Aide local research index; official English summary with Chinese retrieval labels",
+  "withdrawn": false,
+  "body": "# 尿路感染（Urinary Tract Infections）\n\n中文检索词：尿痛、尿频、尿急、小便刺痛\n\nOfficial title: Urinary Tract Infections\n\nAlso called: UTI\n\nMedlinePlus summary:\n\nThe urinary system is the body's drainage system for removing wastes and extra water. It includes two kidneys, two ureters, a bladder, and a urethra. Urinary tract infections (UTIs) are the second most common type of infection in the body.\nYou may have a UTI if you notice:\n- Pain or burning when you urinate\n- Fever, tiredness, or shakiness\n- An urge to urinate often\n- Pressure in your lower belly\n- Urine that smells bad or looks cloudy or reddish\n- Pain in your back or side below the ribs\nPeople of any age or sex can get UTIs. But about four times as many women get UTIs as men. You're also at higher risk if you have diabetes, need a tube to drain your bladder, or have a spinal cord injury.\nIf you think you have a UTI it is important to see your doctor. Your doctor can tell if you have a UTI with a urine test. Treatment is with antibiotics.\nNIH: National Institute of Diabetes and Digestive and Kidney Diseases"
+}

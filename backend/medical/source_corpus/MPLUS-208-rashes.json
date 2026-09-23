@@ -1,0 +1,22 @@
+{
+  "doc_id": "MPLUS-208-rashes",
+  "version": 1,
+  "title": "皮疹（Rashes）",
+  "topic": "皮疹",
+  "audience": "普通公众（官方英文资料）",
+  "source_org": "MedlinePlus, U.S. National Library of Medicine",
+  "source_url": "https://medlineplus.gov/rashes.html",
+  "source_published_at": "2026-09-19",
+  "status": "source_checked",
+  "reviewer": "Aide MedlinePlus importer (automated source parsing; non-clinician)",
+  "reviewed_at": "2026-09-22",
+  "next_review_at": "2026-10-22",
+  "license_note": "MedlinePlus XML permits download and use with attribution to MedlinePlus.gov; retain source link.",
+  "source_sha256": "58a4f6c4e50dbb5ab7e3e6344b74012ef0d2733f448c518e7d8e5893f632f4b9",
+  "source_locator": "health-topic id=208; full-summary",
+  "source_collected_at": "2026-09-22",
+  "source_version": "MedlinePlus Health Topic XML 2026-09-19",
+  "usage_scope": "Aide local research index; official English summary with Chinese retrieval labels",
+  "withdrawn": false,
+  "body": "# 皮疹（Rashes）\n\n中文检索词：皮疹、红疹、身上起疹子、皮肤发红\n\nOfficial title: Rashes\n\nAlso called: Dermatitis, Skin rash\n\nMedlinePlus summary:\n\nA rash is an area of irritated or swollen skin. Many rashes are itchy, red, painful, and irritated. Some rashes can also lead to blisters or patches of raw skin. Rashes are a symptom of many different medical problems. Other causes include irritating substances and allergies. Certain genes can make people more likely to get rashes.\nContact dermatitis is a common type of rash. It causes redness, itching, and sometimes small bumps. You get the rash where you have touched an irritant, such as a chemical, or something you are allergic to, like poison ivy.\nSome rashes develop right away. Others form over several days. Although most rashes clear up fairly quickly, others are long-lasting and need long-term treatment.\nBecause rashes can be caused by many different things, it's important to figure out what kind you have before you treat it. If it is a bad rash, if it does not go away, or if you have other symptoms, you should see your health care provider. Treatments may include moisturizers, lotions, baths, cortisone creams that relieve swelling, and antihistamines, which relieve itching."
+}

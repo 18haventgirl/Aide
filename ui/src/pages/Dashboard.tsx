@@ -184,7 +184,7 @@ const Dashboard: React.FC = () => {
           id: `${Date.now()}-${Math.random()}`,
           content: m.content, type: m.agent === 'user' ? 'user' : 'ai',
           agent: m.agent, timestamp: new Date(),
-          metadata: m.agent === 'Medical Knowledge Agent'
+          metadata: (Array.isArray(r.citations) && r.citations.length > 0) || r.knowledge_status
             ? { citations: r.citations || [], knowledge_status: r.knowledge_status }
             : {},
         }));

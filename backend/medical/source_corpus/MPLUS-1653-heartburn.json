@@ -1,0 +1,22 @@
+{
+  "doc_id": "MPLUS-1653-heartburn",
+  "version": 1,
+  "title": "烧心（Heartburn）",
+  "topic": "烧心",
+  "audience": "普通公众（官方英文资料）",
+  "source_org": "MedlinePlus, U.S. National Library of Medicine",
+  "source_url": "https://medlineplus.gov/heartburn.html",
+  "source_published_at": "2026-09-19",
+  "status": "source_checked",
+  "reviewer": "Aide MedlinePlus importer (automated source parsing; non-clinician)",
+  "reviewed_at": "2026-09-22",
+  "next_review_at": "2026-10-22",
+  "license_note": "MedlinePlus XML permits download and use with attribution to MedlinePlus.gov; retain source link.",
+  "source_sha256": "58a4f6c4e50dbb5ab7e3e6344b74012ef0d2733f448c518e7d8e5893f632f4b9",
+  "source_locator": "health-topic id=1653; full-summary",
+  "source_collected_at": "2026-09-22",
+  "source_version": "MedlinePlus Health Topic XML 2026-09-19",
+  "usage_scope": "Aide local research index; official English summary with Chinese retrieval labels",
+  "withdrawn": false,
+  "body": "# 烧心（Heartburn）\n\n中文检索词：烧心、反酸、胃酸、胸口灼热\n\nOfficial title: Heartburn\n\nAlso called: Acid indigestion, Pyrosis\n\nMedlinePlus summary:\n\nHeartburn is a painful burning feeling in your chest or throat. It happens when stomach acid backs up into your esophagus, the tube that carries food from your mouth to your stomach.\nIf you have heartburn more than twice a week, you may have GERD. But you can have GERD without having heartburn.\nPregnancy, certain foods, alcohol, and some medications can bring on heartburn. Treating heartburn is important because over time reflux can damage the esophagus.\nOver-the-counter medicines may help. If the heartburn continues, you may need prescription medicines or surgery.\nIf you have other symptoms such as crushing chest pain, it could be a heart attack. Get help immediately."
+}

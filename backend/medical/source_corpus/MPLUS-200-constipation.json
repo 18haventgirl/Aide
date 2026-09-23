@@ -1,0 +1,22 @@
+{
+  "doc_id": "MPLUS-200-constipation",
+  "version": 1,
+  "title": "便秘（Constipation）",
+  "topic": "便秘",
+  "audience": "普通公众（官方英文资料）",
+  "source_org": "MedlinePlus, U.S. National Library of Medicine",
+  "source_url": "https://medlineplus.gov/constipation.html",
+  "source_published_at": "2026-09-19",
+  "status": "source_checked",
+  "reviewer": "Aide MedlinePlus importer (automated source parsing; non-clinician)",
+  "reviewed_at": "2026-09-22",
+  "next_review_at": "2026-10-22",
+  "license_note": "MedlinePlus XML permits download and use with attribution to MedlinePlus.gov; retain source link.",
+  "source_sha256": "58a4f6c4e50dbb5ab7e3e6344b74012ef0d2733f448c518e7d8e5893f632f4b9",
+  "source_locator": "health-topic id=200; full-summary",
+  "source_collected_at": "2026-09-22",
+  "source_version": "MedlinePlus Health Topic XML 2026-09-19",
+  "usage_scope": "Aide local research index; official English summary with Chinese retrieval labels",
+  "withdrawn": false,
+  "body": "# 便秘（Constipation）\n\n中文检索词：便秘、排便困难、大便干、很久不排便\n\nOfficial title: Constipation\n\nMedlinePlus summary:\n\nConstipation means having fewer than three bowel movements a week. The stool (poop) can be hard and dry. Sometimes it is painful to pass. At one time or another, almost everyone gets constipated. In most cases, it lasts a short time and is not serious.\nThere are many things you can do to prevent constipation. They include:\n- Eating more fruits, vegetables and grains, which are high in fiber\n- Drinking plenty of water and other liquids\n- Getting enough exercise\n- Taking time to have a bowel movement when you need to\n- Using laxatives only if your health care provider says you should\n- Asking your provider if medicines you take may cause constipation\nIt's not important that you have a bowel movement every day. If your bowel habits change, however, check with your provider.\nNIH: National Institute of Diabetes and Digestive and Kidney Diseases"
+}

@@ -1,0 +1,22 @@
+{
+  "doc_id": "MPLUS-5324-fatigue",
+  "version": 1,
+  "title": "疲劳（Fatigue）",
+  "topic": "疲劳",
+  "audience": "普通公众（官方英文资料）",
+  "source_org": "MedlinePlus, U.S. National Library of Medicine",
+  "source_url": "https://medlineplus.gov/fatigue.html",
+  "source_published_at": "2026-09-19",
+  "status": "source_checked",
+  "reviewer": "Aide MedlinePlus importer (automated source parsing; non-clinician)",
+  "reviewed_at": "2026-09-22",
+  "next_review_at": "2026-10-22",
+  "license_note": "MedlinePlus XML permits download and use with attribution to MedlinePlus.gov; retain source link.",
+  "source_sha256": "58a4f6c4e50dbb5ab7e3e6344b74012ef0d2733f448c518e7d8e5893f632f4b9",
+  "source_locator": "health-topic id=5324; full-summary",
+  "source_collected_at": "2026-09-22",
+  "source_version": "MedlinePlus Health Topic XML 2026-09-19",
+  "usage_scope": "Aide local research index; official English summary with Chinese retrieval labels",
+  "withdrawn": false,
+  "body": "# 疲劳（Fatigue）\n\n中文检索词：乏力、疲倦、总觉得累、没精神\n\nOfficial title: Fatigue\n\nAlso called: Tiredness, Weariness\n\nMedlinePlus summary:\n\nWhat is fatigue?\nFatigue is a feeling of weariness, tiredness, or lack of energy. It can interfere with your usual daily activities. Fatigue can be a normal response to physical activity, emotional stress, boredom, or lack of sleep. But sometimes it can be a sign of a mental or physical condition. If you have been feeling tired for weeks, contact your health care provider. They can help you find out what's causing your fatigue and recommend ways to relieve it.\nWhat causes fatigue?\nFatigue itself is not a disease; it's a symptom. It can have many different causes, including pregnancy and various medical problems, treatments, and lifestyle habits such as:\n- Medical problems:\n- Chronic (long-lasting) diseases such as diabetes, COPD (chronic obstructive pulmonary disease), and heart, liver, kidney and thyroid diseases\n- Untreated pain and diseases like fibromyalgia\n- Anemia\n- Infections\n- Parkinson's disease\n- Sleep apnea and other sleep disorders\n- Recent stroke\n- Mental disorders such as depression and anxiety\n- Treatments:\n- Cancer treatments such as chemotherapy, radiation, and bone marrow transplants\n- Recovering from major surgery\n- Taking certain medicines, such as antidepressants, antihistamines, and medicines for nausea and pain\n- Lifestyle habits:\n- Not getting enough sleep\n- Staying up too late\n- Drinking too much alcohol\n- Substance use\n- Having too much caffeine (which can keep you from getting a good night's sleep)\n- Getting too little or too much exercise\nOverwhelming fatigue is part of a disorder called myalgic encephalomyelitis/chronic fatigue syndrome (ME/CFS). The fatigue caused by this disorder is different from a tired feeling that goes away after you rest. Instead, the fatigue in ME/CFS lasts a long time, does not get better with rest, and limits your ability to do ordinary daily activities.\nWhat can I do to manage fatigue?\nIf you've had fatigue that does not get better after several weeks, call your provider. They will ask questions about your sleep, daily activities, appetite, and exercise. They will likely do a physical exam and order lab tests. Once they decide on a diagnosis, they can tell you what treatments might help.\nYou can also make some lifestyle changes to feel less tired:\n- Get regular physical activity\n- Improve your sleep habits\n- Stop smoking (if you smoke), since smoking is linked to many diseases that can cause fatigue\n- Manage stress\n- Eat a healthy diet and avoid alcohol\nIt also may be helpful for you to keep a fatigue diary. This can help you find patterns throughout the day, such as when you feel more tired and when you have more energy. It can also help you plan for activities that may give you more energy.\nNIH: National Institute on Aging"
+}

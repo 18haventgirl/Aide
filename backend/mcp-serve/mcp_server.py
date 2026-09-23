@@ -20,6 +20,7 @@ from recipe_tools import register_recipe_tools
 from user_data_tools import register_user_data_tools
 from medical_tools import register_medical_tools
 from health_tools import register_health_tools
+from medical.runtime import warmup_medical_models
 
 # Import database initialization components
 from core.database_core import DatabaseClient
@@ -108,6 +109,14 @@ async def create_mcp_server():
     await mcp.import_server(user_data_mcp, prefix="user_data")
     await mcp.import_server(medical_mcp, prefix="medical")
     await mcp.import_server(health_mcp, prefix="health")
+
+    # Load the local embedding and reranking models before accepting health
+    # queries. A failed warmup must not prevent the other assistants starting.
+    try:
+        warmup = await asyncio.to_thread(warmup_medical_models)
+        print(f"✅ Medical retrieval warmup: {warmup}")
+    except Exception as error:
+        print(f"⚠️ Medical retrieval warmup failed; fallback remains available: {type(error).__name__}")
     
     print("📦 Registering tool modules...")
     

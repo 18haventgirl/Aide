@@ -1,0 +1,12 @@
+[
+  {"id":"E01","kind":"supported","query":"最近老觉得头晕，像周围在转，这是眩晕吗？","expected_doc_ids":["MPLUS-216-dizziness-vertigo"]},
+  {"id":"E02","kind":"supported","query":"身上突然起了一片红疹，常见情况有哪些？","expected_doc_ids":["MPLUS-208-rashes"]},
+  {"id":"E03","kind":"supported","query":"搬完东西后腰背疼，哪些变化需要注意？","expected_doc_ids":["MPLUS-157-back-pain"]},
+  {"id":"E04","kind":"supported","query":"胸口疼可能有哪些原因，什么时候需要马上求助？","expected_doc_ids":["MPLUS-4744-chest-pain","BJ-EMERG-CHEST-2022"]},
+  {"id":"E05","kind":"supported","query":"最近总觉得气短、呼吸费劲，需要留意什么？","expected_doc_ids":["MPLUS-3077-breathing-problems"]},
+  {"id":"E06","kind":"supported","query":"没有熬夜但总是乏力没精神，疲劳常见吗？","expected_doc_ids":["MPLUS-5324-fatigue"]},
+  {"id":"E07","kind":"supported","query":"大便很干而且排便困难，便秘平时该注意什么？","expected_doc_ids":["MPLUS-200-constipation"]},
+  {"id":"E08","kind":"supported","query":"吃完饭反酸，胸口有灼热感，这种烧心常见吗？","expected_doc_ids":["MPLUS-1653-heartburn"]},
+  {"id":"E09","kind":"supported","query":"小便很频繁还有刺痛，尿路感染有哪些表现？","expected_doc_ids":["MPLUS-448-urinary-tract-infections"]},
+  {"id":"E10","kind":"supported","query":"饭后胃胀还嗳气，消化不良一般是什么情况？","expected_doc_ids":["MPLUS-4293-indigestion"]}
+]

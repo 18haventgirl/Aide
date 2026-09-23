@@ -29,8 +29,8 @@ SOURCE_DATE = date(2026, 9, 19)
 SOURCE_DOWNLOAD_URL = "https://medlineplus.gov/xml/mplus_topics_compressed_2026-09-19.zip"
 SOURCE_CHECKER = "Aide MedlinePlus importer (automated source parsing; non-clinician)"
 
-# A deliberately small first batch. Chinese terms are retrieval labels rather
-# than translations of the evidence body.
+# A deliberately bounded set of common adult symptoms. Chinese terms are
+# retrieval labels rather than translations of the evidence body.
 TOPICS = {
     "3061": {"slug": "abdominal-pain", "title": "腹痛（Abdominal Pain）", "topic": "腹痛", "aliases": "肚子痛、肚子疼、腹部疼痛、胃疼"},
     "196": {"slug": "common-cold", "title": "普通感冒（Common Cold）", "topic": "普通感冒", "aliases": "感冒、鼻塞、流鼻涕"},
@@ -40,6 +40,16 @@ TOPICS = {
     "273": {"slug": "headache", "title": "头痛（Headache）", "topic": "头痛", "aliases": "头疼、头部疼痛、偏头痛"},
     "489": {"slug": "nausea-vomiting", "title": "恶心与呕吐（Nausea and Vomiting）", "topic": "恶心呕吐", "aliases": "恶心、想吐、呕吐、吐了"},
     "4748": {"slug": "sore-throat", "title": "咽痛（Sore Throat）", "topic": "咽痛", "aliases": "嗓子疼、喉咙痛、咽喉疼痛"},
+    "216": {"slug": "dizziness-vertigo", "title": "头晕与眩晕（Dizziness and Vertigo）", "topic": "头晕眩晕", "aliases": "头晕、眩晕、天旋地转、站不稳"},
+    "208": {"slug": "rashes", "title": "皮疹（Rashes）", "topic": "皮疹", "aliases": "皮疹、红疹、身上起疹子、皮肤发红"},
+    "157": {"slug": "back-pain", "title": "背痛（Back Pain）", "topic": "背痛", "aliases": "背疼、腰背痛、后背疼痛"},
+    "4744": {"slug": "chest-pain", "title": "胸痛（Chest Pain）", "topic": "胸痛", "aliases": "胸痛、胸口疼、胸部疼痛、胸闷"},
+    "3077": {"slug": "breathing-problems", "title": "呼吸问题（Breathing Problems）", "topic": "呼吸问题", "aliases": "呼吸困难、喘不过气、气短、呼吸费劲"},
+    "5324": {"slug": "fatigue", "title": "疲劳（Fatigue）", "topic": "疲劳", "aliases": "乏力、疲倦、总觉得累、没精神"},
+    "200": {"slug": "constipation", "title": "便秘（Constipation）", "topic": "便秘", "aliases": "便秘、排便困难、大便干、很久不排便"},
+    "1653": {"slug": "heartburn", "title": "烧心（Heartburn）", "topic": "烧心", "aliases": "烧心、反酸、胃酸、胸口灼热"},
+    "448": {"slug": "urinary-tract-infections", "title": "尿路感染（Urinary Tract Infections）", "topic": "尿路感染", "aliases": "尿痛、尿频、尿急、小便刺痛"},
+    "4293": {"slug": "indigestion", "title": "消化不良（Indigestion）", "topic": "消化不良", "aliases": "消化不良、饭后胀、胃胀、嗳气"},
 }
 
 
@@ -114,7 +124,10 @@ def build_documents(xml_bytes: bytes, collected_at: date) -> list[MedicalDocumen
             f"中文检索词：{config['aliases']}\n\n"
             f"Official title: {official_title}\n\n"
             + (f"Also called: {', '.join(synonyms)}\n\n" if synonyms else "")
-            + "## MedlinePlus summary\n\n"
+            # Keep retrieval labels and the evidence summary in one section.
+            # A separate heading used to produce label-only top hits that gave
+            # the answering model no actual medical source text.
+            + "MedlinePlus summary:\n\n"
             + body_text
         )
         documents.append(MedicalDocument(

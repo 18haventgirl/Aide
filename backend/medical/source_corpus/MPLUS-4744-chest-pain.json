@@ -1,0 +1,22 @@
+{
+  "doc_id": "MPLUS-4744-chest-pain",
+  "version": 1,
+  "title": "胸痛（Chest Pain）",
+  "topic": "胸痛",
+  "audience": "普通公众（官方英文资料）",
+  "source_org": "MedlinePlus, U.S. National Library of Medicine",
+  "source_url": "https://medlineplus.gov/chestpain.html",
+  "source_published_at": "2026-09-19",
+  "status": "source_checked",
+  "reviewer": "Aide MedlinePlus importer (automated source parsing; non-clinician)",
+  "reviewed_at": "2026-09-22",
+  "next_review_at": "2026-10-22",
+  "license_note": "MedlinePlus XML permits download and use with attribution to MedlinePlus.gov; retain source link.",
+  "source_sha256": "58a4f6c4e50dbb5ab7e3e6344b74012ef0d2733f448c518e7d8e5893f632f4b9",
+  "source_locator": "health-topic id=4744; full-summary",
+  "source_collected_at": "2026-09-22",
+  "source_version": "MedlinePlus Health Topic XML 2026-09-19",
+  "usage_scope": "Aide local research index; official English summary with Chinese retrieval labels",
+  "withdrawn": false,
+  "body": "# 胸痛（Chest Pain）\n\n中文检索词：胸痛、胸口疼、胸部疼痛、胸闷\n\nOfficial title: Chest Pain\n\nMedlinePlus summary:\n\nHaving a pain in your chest can be scary. It does not always mean that you are having a heart attack. There can be many other causes, including:\n- Other heart problems, such as angina\n- Panic attacks\n- Digestive problems, such as heartburn or esophagus disorders\n- Sore muscles\n- Lung diseases, such as pneumonia, pleurisy, or pulmonary embolism\n- Costochondritis - an inflammation of joints in your chest\nSome of these problems can be serious. Get immediate medical care if you have chest pain that does not go away, crushing pain or pressure in the chest, or chest pain along with nausea, sweating, dizziness or shortness of breath. Treatment depends on the cause of the pain."
+}

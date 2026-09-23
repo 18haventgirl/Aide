@@ -32,6 +32,17 @@ class MedlinePlusImportTests(unittest.TestCase):
         self.assertGreater(len(chunks), 1)
         self.assertTrue(all(chunk.text.startswith("This") for chunk in chunks))
 
+    def test_retrieval_labels_stay_with_summary_evidence(self):
+        body = (
+            "# 咽痛（Sore Throat）\n\n中文检索词：嗓子疼、喉咙痛\n\n"
+            "Official title: Sore Throat\n\nMedlinePlus summary:\n\n"
+            "A sore throat can make swallowing painful. Seek care for breathing problems."
+        )
+        chunks = chunk_document(body, "咽痛（Sore Throat）")
+        self.assertEqual(len(chunks), 1)
+        self.assertIn("中文检索词", chunks[0].text)
+        self.assertIn("Seek care", chunks[0].text)
+
 
 if __name__ == "__main__":
     unittest.main()

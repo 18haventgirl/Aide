@@ -1,0 +1,22 @@
+{
+  "doc_id": "MPLUS-4293-indigestion",
+  "version": 1,
+  "title": "消化不良（Indigestion）",
+  "topic": "消化不良",
+  "audience": "普通公众（官方英文资料）",
+  "source_org": "MedlinePlus, U.S. National Library of Medicine",
+  "source_url": "https://medlineplus.gov/indigestion.html",
+  "source_published_at": "2026-09-19",
+  "status": "source_checked",
+  "reviewer": "Aide MedlinePlus importer (automated source parsing; non-clinician)",
+  "reviewed_at": "2026-09-22",
+  "next_review_at": "2026-10-22",
+  "license_note": "MedlinePlus XML permits download and use with attribution to MedlinePlus.gov; retain source link.",
+  "source_sha256": "58a4f6c4e50dbb5ab7e3e6344b74012ef0d2733f448c518e7d8e5893f632f4b9",
+  "source_locator": "health-topic id=4293; full-summary",
+  "source_collected_at": "2026-09-22",
+  "source_version": "MedlinePlus Health Topic XML 2026-09-19",
+  "usage_scope": "Aide local research index; official English summary with Chinese retrieval labels",
+  "withdrawn": false,
+  "body": "# 消化不良（Indigestion）\n\n中文检索词：消化不良、饭后胀、胃胀、嗳气\n\nOfficial title: Indigestion\n\nAlso called: Dyspepsia, Upset stomach\n\nMedlinePlus summary:\n\nNearly everyone has had indigestion at one time. It's a feeling of discomfort or a burning feeling in your upper abdomen. You may have heartburn or belch and feel bloated. You may also feel nauseated, or even throw up.\nYou might get indigestion from eating too much or too fast, eating high-fat foods, or eating when you're stressed. Smoking, drinking too much alcohol, using some medicines, being tired, and having ongoing stress can also cause indigestion or make it worse. Sometimes the cause is a problem with the digestive tract, like an ulcer or GERD.\nAvoiding foods and situations that seem to cause it may help. Because indigestion can be a sign of a more serious problem, see your health care provider if it lasts for more than two weeks or if you have severe pain or other symptoms. Your health care provider may use x-rays, lab tests, and an upper endoscopy to diagnose the cause. You may need medicines to treat the symptoms.\nNIH: National Institute of Diabetes and Digestive and Kidney Diseases"
+}

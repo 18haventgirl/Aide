@@ -7,7 +7,7 @@ import chromadb
 from pydantic import ValidationError
 
 from medical.chunking import chunk_document
-from medical.chat import is_urgent, needs_clinical_decision
+from medical.chat import contextual_facts_query, is_urgent, needs_clinical_decision
 from medical.knowledge_base import MedicalKnowledgeBase
 from medical.schema import MedicalDocument
 
@@ -174,12 +174,27 @@ class MedicalRagTests(unittest.TestCase):
     def test_urgent_routing(self):
         self.assertTrue(is_urgent("我现在胸口痛、冒冷汗，还有点喘，先上网查查吗？"))
         self.assertTrue(is_urgent("胸口疼还冒冷汗，怎么处理？"))
+        self.assertTrue(is_urgent("胸口突然压着疼，浑身冒汗而且气不够用。"))
+        self.assertTrue(is_urgent("刚才脸歪了，一只手拿不住东西，说话也含糊。"))
+        self.assertTrue(is_urgent("刚刚突然说话不清，一边胳膊没力。"))
+        self.assertTrue(is_urgent("突然说不清话，右手也使不上劲。"))
+        self.assertTrue(is_urgent("突然出现这辈子最严重的头痛，还一直呕吐。"))
+        self.assertTrue(is_urgent("我已经准备伤害自己了，不想让家人知道。"))
         self.assertFalse(is_urgent("清淡饮食是不是只要少放盐？"))
 
     def test_personal_clinical_decisions_are_out_of_scope(self):
         self.assertTrue(needs_clinical_decision("我的降压药能停掉吗？"))
         self.assertTrue(needs_clinical_decision("请根据我的胸部 CT 影像判断是不是肺癌。"))
+        self.assertTrue(needs_clinical_decision("我家三岁孩子发烧应该吃几毫升退烧药？"))
+        self.assertTrue(needs_clinical_decision("帮我把降压药从一天两次改成一天一次。"))
+        self.assertTrue(needs_clinical_decision("我身上起了一片红疹，能确定是哪种病吗？"))
         self.assertFalse(needs_clinical_decision("高血压平时怎么自己管理？"))
+
+    def test_followup_query_uses_only_explicit_bounded_facts(self):
+        query = contextual_facts_query("那需要检查吗？", "用户说咳嗽快两周，痰里有血丝")
+        self.assertIn("咳嗽快两周", query)
+        self.assertIn("当前问题：那需要检查吗？", query)
+        self.assertLessEqual(len(query), 550)
 
 if __name__ == "__main__":
     unittest.main()

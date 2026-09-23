@@ -1,0 +1,22 @@
+{
+  "doc_id": "MPLUS-157-back-pain",
+  "version": 1,
+  "title": "背痛（Back Pain）",
+  "topic": "背痛",
+  "audience": "普通公众（官方英文资料）",
+  "source_org": "MedlinePlus, U.S. National Library of Medicine",
+  "source_url": "https://medlineplus.gov/backpain.html",
+  "source_published_at": "2026-09-19",
+  "status": "source_checked",
+  "reviewer": "Aide MedlinePlus importer (automated source parsing; non-clinician)",
+  "reviewed_at": "2026-09-22",
+  "next_review_at": "2026-10-22",
+  "license_note": "MedlinePlus XML permits download and use with attribution to MedlinePlus.gov; retain source link.",
+  "source_sha256": "58a4f6c4e50dbb5ab7e3e6344b74012ef0d2733f448c518e7d8e5893f632f4b9",
+  "source_locator": "health-topic id=157; full-summary",
+  "source_collected_at": "2026-09-22",
+  "source_version": "MedlinePlus Health Topic XML 2026-09-19",
+  "usage_scope": "Aide local research index; official English summary with Chinese retrieval labels",
+  "withdrawn": false,
+  "body": "# 背痛（Back Pain）\n\n中文检索词：背疼、腰背痛、后背疼痛\n\nOfficial title: Back Pain\n\nAlso called: Backache, Lumbago\n\nMedlinePlus summary:\n\nIf you've ever groaned, \"Oh, my aching back!\", you are not alone. Back pain is one of the most common medical problems, affecting 8 out of 10 people at some point during their lives. Back pain can range from a dull, constant ache to a sudden, sharp pain.\nAcute back pain comes on suddenly and usually lasts from a few days to a few weeks. Back pain is called chronic if it lasts for more than three months.\nMost back pain goes away on its own, though it may take awhile. Taking over-the-counter pain relievers and resting can help. However, staying in bed for more than 1 or 2 days can make it worse.\nIf your back pain is severe or doesn't improve after three days, you should call your health care provider. You should also get medical attention if you have back pain following an injury.\nTreatment for back pain depends on what kind of pain you have, and what is causing it. It may include hot or cold packs, exercise, medicines, injections, complementary treatments, and sometimes surgery.\nNIH: National Institute of Arthritis and Musculoskeletal and Skin Diseases"
+}

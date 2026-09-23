@@ -1,0 +1,22 @@
+{
+  "doc_id": "MPLUS-3077-breathing-problems",
+  "version": 1,
+  "title": "呼吸问题（Breathing Problems）",
+  "topic": "呼吸问题",
+  "audience": "普通公众（官方英文资料）",
+  "source_org": "MedlinePlus, U.S. National Library of Medicine",
+  "source_url": "https://medlineplus.gov/breathingproblems.html",
+  "source_published_at": "2026-09-19",
+  "status": "source_checked",
+  "reviewer": "Aide MedlinePlus importer (automated source parsing; non-clinician)",
+  "reviewed_at": "2026-09-22",
+  "next_review_at": "2026-10-22",
+  "license_note": "MedlinePlus XML permits download and use with attribution to MedlinePlus.gov; retain source link.",
+  "source_sha256": "58a4f6c4e50dbb5ab7e3e6344b74012ef0d2733f448c518e7d8e5893f632f4b9",
+  "source_locator": "health-topic id=3077; full-summary",
+  "source_collected_at": "2026-09-22",
+  "source_version": "MedlinePlus Health Topic XML 2026-09-19",
+  "usage_scope": "Aide local research index; official English summary with Chinese retrieval labels",
+  "withdrawn": false,
+  "body": "# 呼吸问题（Breathing Problems）\n\n中文检索词：呼吸困难、喘不过气、气短、呼吸费劲\n\nOfficial title: Breathing Problems\n\nMedlinePlus summary:\n\nWhen you're short of breath, it's hard or uncomfortable for you to take in the oxygen your body needs. You may feel as if you're not getting enough air. Sometimes you can have mild breathing problems because of a stuffy nose or intense exercise. But shortness of breath can also be a sign of a serious disease.\nMany conditions can make you feel short of breath:\n- Lung conditions such as asthma, emphysema, or pneumonia\n- Problems with your trachea or bronchi, which are part of your airway system\n- Heart disease can make you feel breathless if your heart cannot pump enough blood to supply oxygen to your body\n- Anxiety and panic attacks\n- Allergies\nIf you often have trouble breathing, it is important to find out the cause."
+}

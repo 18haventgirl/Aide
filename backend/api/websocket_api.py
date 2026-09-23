@@ -46,6 +46,7 @@ from core.web_socket_core import (
 # 导入性能管理器
 from core.performance_manager import performance_manager
 from medical.runtime import retrieval_stats
+from medical.grounding import medical_response_metadata
 
 # 配置日志
 logger = logging.getLogger(__name__)
@@ -105,6 +106,8 @@ class ChatResponse(BaseModel):
     citations: List[Dict[str, Any]] = []
     knowledge_status: Optional[str] = None
     medical_preview: bool = False
+    medical_urgency: Optional[str] = None
+    medical_scope: Optional[str] = None
 
 # =========================
 # 全局变量（从main中移过来的）
@@ -291,7 +294,15 @@ async def _process_stream_with_concurrent_handling(
             # 保存最终回复
             if assistant_messages:
                 full_assistant_response = "\n".join(assistant_messages)
-                await db_save_queue.put(("final_message", full_assistant_response))
+                await db_save_queue.put(("final_message", {
+                    "content": full_assistant_response,
+                    "extra_data": {
+                        "citations": chat_response.citations,
+                        "knowledge_status": chat_response.knowledge_status,
+                        "medical_urgency": chat_response.medical_urgency,
+                        "medical_scope": chat_response.medical_scope,
+                    } if chat_response.knowledge_status else None,
+                }))
             
             # 发送完成消息
             completion_message = WebSocketMessage(
@@ -449,7 +460,13 @@ async def _concurrent_db_saver(db_save_queue: asyncio.Queue, agent_session):
             
             save_type, data = item
             if save_type == "final_message":
-                await agent_session.save_message(data, "assistant")
+                if isinstance(data, dict):
+                    await agent_session.save_message(
+                        data.get("content", ""), "assistant",
+                        extra_data=data.get("extra_data"),
+                    )
+                else:
+                    await agent_session.save_message(data, "assistant")
             
             await asyncio.sleep(0)  # 让出控制权
             
@@ -622,6 +639,12 @@ async def _handle_stream_event_concurrent(
                 
             elif isinstance(item, ToolCallOutputItem):
                 # 处理工具调用输出项
+                medical_metadata = medical_response_metadata(item.output)
+                if medical_metadata:
+                    chat_response.knowledge_status = medical_metadata["knowledge_status"]
+                    chat_response.citations = medical_metadata["citations"]
+                    chat_response.medical_urgency = medical_metadata["medical_urgency"]
+                    chat_response.medical_scope = medical_metadata["medical_scope"]
                 tool_output_event = AgentEvent(
                     id=uuid4().hex,
                     type="tool_output",
