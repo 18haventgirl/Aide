@@ -1,0 +1,12 @@
+{
+  "dataset_id": "medlineplus_topics",
+  "source_archive_sha256": "4b52e1a2c4c499d363dfbff1776875b53a695b315e7761e1c283b223b675ed74",
+  "source_xml_sha256": "58a4f6c4e50dbb5ab7e3e6344b74012ef0d2733f448c518e7d8e5893f632f4b9",
+  "source_version": "2026-09-19",
+  "documents": 68,
+  "chunks": 562,
+  "normalized_sha256": "f4becfb5faa6d169713cca2055a13aaf20c846af903befc746a37073f9aae789",
+  "chunks_sha256": "ca7e11228855d2cfab7e576c8b8e971d12a4729d0ccf1f8d477cb59a464606d8",
+  "license_id": "medlineplus_topics",
+  "clinical_reviewed": false
+}

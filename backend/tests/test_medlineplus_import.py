@@ -15,6 +15,19 @@ class MedlinePlusImportTests(unittest.TestCase):
         element = ET.fromstring("<full-summary>&lt;p&gt;Rest&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Drink water&lt;/li&gt;&lt;/ul&gt;</full-summary>")
         self.assertEqual(summary_text(element), "Rest\n- Drink water")
 
+    def test_summary_headings_keep_adult_advice_separate(self):
+        element = ET.fromstring(
+            "<full-summary>&lt;p&gt;General overview.&lt;/p&gt;"
+            "&lt;h3&gt;For adults&lt;/h3&gt;&lt;p&gt;Adult activity guidance.&lt;/p&gt;"
+            "&lt;h3&gt;For children&lt;/h3&gt;&lt;p&gt;Child activity guidance.&lt;/p&gt;</full-summary>"
+        )
+        chunks = chunk_document("# Exercise\n" + summary_text(element), "Exercise")
+        self.assertEqual(len(chunks), 3)
+        self.assertIn("Adult activity", chunks[1].text)
+        self.assertNotIn("Child activity", chunks[1].text)
+        self.assertEqual(chunks[1].section_path, "Exercise / For adults")
+        self.assertEqual(chunks[2].section_path, "Exercise / For children")
+
     def test_import_requires_every_pinned_topic(self):
         topic_id = next(iter(TOPICS))
         xml = (

@@ -214,6 +214,8 @@ node_modules/
 backend/chroma_db/
 backend/medical/models/
 backend/medical/source_downloads/
+medical-rag-data/raw/
+medical-rag-data/staging/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

@@ -1,0 +1,12 @@
+[
+  {"id": "EX-01", "query": "成年人一周运动多长时间比较合适？", "expected_doc_ids": ["MPLUS-6603-how-much-exercise", "MPLUS-490-exercise-physical-fitness"]},
+  {"id": "EX-02", "query": "最近总是睡不好，健康睡眠有什么建议？", "expected_doc_ids": ["MPLUS-6469-healthy-sleep", "MPLUS-408-sleep-disorders"]},
+  {"id": "EX-03", "query": "怎么预防高血压？", "expected_doc_ids": ["MPLUS-6450-prevent-high-blood-pressure", "MPLUS-34-high-blood-pressure"]},
+  {"id": "EX-04", "query": "怎么减少得糖尿病的风险？", "expected_doc_ids": ["MPLUS-6661-prevent-diabetes", "MPLUS-5784-prediabetes"]},
+  {"id": "EX-05", "query": "饮食怎样帮助控制胆固醇？", "expected_doc_ids": ["MPLUS-6807-lower-cholesterol-diet", "MPLUS-26-cholesterol"]},
+  {"id": "EX-06", "query": "食物中毒后有什么表现？", "expected_doc_ids": ["MPLUS-254-foodborne-illness"]},
+  {"id": "EX-07", "query": "跑步出汗很多，脱水有哪些表现？", "expected_doc_ids": ["MPLUS-6051-dehydration"]},
+  {"id": "EX-08", "query": "食物过敏和普通不耐受有什么区别？", "expected_doc_ids": ["MPLUS-1256-food-allergy"]},
+  {"id": "EX-09", "query": "老人平时适合怎么锻炼？", "expected_doc_ids": ["MPLUS-1530-exercise-older-adults"]},
+  {"id": "EX-10", "query": "吸烟的人怎么开始戒烟？", "expected_doc_ids": ["MPLUS-1359-quitting-smoking"]}
+]
