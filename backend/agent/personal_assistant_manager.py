@@ -3,9 +3,10 @@ from __future__ import annotations as _annotations
 import os
 import sys
 import asyncio
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Any, Optional
+from zoneinfo import ZoneInfo
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 
@@ -296,6 +297,24 @@ class PersonalAssistantManager:
             instructions=self._get_medical_instructions,
             mcp_servers=self._mcp_servers(),
         )
+
+        # A handoff changes the active agent, so the triage agent cannot call
+        # another specialist after handing off. Agent tools keep triage in
+        # control for requests spanning several read-only domains.
+        coordination_tools = [
+            self.agents['weather'].as_tool(
+                tool_name="consult_weather_agent",
+                tool_description="Ask the weather specialist for a forecast or weather facts for the user's requested place and date.",
+            ),
+            self.agents['news'].as_tool(
+                tool_name="consult_news_agent",
+                tool_description="Ask the news specialist for recent news about the user's requested place or topic.",
+            ),
+            self.agents['recipe'].as_tool(
+                tool_name="consult_recipe_agent",
+                tool_description="Ask the recipe specialist for food or recipe information needed for a combined request.",
+            ),
+        ]
         
         # 任务调度中心
         self.agents['triage'] = Agent[PersonalAssistantContext](
@@ -304,6 +323,7 @@ class PersonalAssistantManager:
             model_settings=self.model_settings,
             handoff_description="An Advanced Task Dispatch Center that precisely analyzes user intent, decomposes complex requests into executable sub-tasks, and coordinates the most appropriate agents to deliver comprehensive, integrated responses.",
             instructions=self._get_triage_instructions,
+            tools=coordination_tools,
             handoffs=[
                 self.agents['weather'],
                 self.agents['news'],
@@ -339,6 +359,16 @@ class PersonalAssistantManager:
                 target_name = getattr(target, "name", agent_name)
                 if target_name not in existing_names:
                     triage.handoffs.append(target)
+
+        # If the model still chooses a direct handoff for a weather + news
+        # request, the active specialist must be able to finish the second
+        # part. Keep this limited to the two read-only specialists.
+        weather = self.agents['weather']
+        news = self.agents['news']
+        if news not in weather.handoffs:
+            weather.handoffs.append(news)
+        if weather not in news.handoffs:
+            news.handoffs.append(weather)
     
     def create_user_context(self, user_id: int) -> PersonalAssistantContext:
         """
@@ -419,18 +449,27 @@ class PersonalAssistantManager:
     def _get_weather_instructions(self, context: RunContextWrapper[PersonalAssistantContext], agent: Agent[PersonalAssistantContext]) -> str:
         """生成天气智能体指令"""
         ctx = context.context
+        today = datetime.now(ZoneInfo("Asia/Shanghai")).date()
         return (
             f"{RECOMMENDED_PROMPT_PREFIX} "
-            "You are a weather agent. You can use your tools to get the weather of a location."
+            "You are a weather agent. Use your tools to get the requested weather. "
+            f"Current date in China is {today.isoformat()}; tomorrow is {(today + timedelta(days=1)).isoformat()}. "
+            "Use these exact dates for relative-date requests such as 'tomorrow', and check the returned forecast date before answering. "
+            "If the original request also asks for news and the news part is not yet answered, hand off to News Agent after obtaining weather facts. "
+            "If news was already handled, give a concise combined answer without handing off again. "
             f"The user's location is {ctx.lat}, {ctx.lng}."
         )
     
     def _get_news_instructions(self, context: RunContextWrapper[PersonalAssistantContext], agent: Agent[PersonalAssistantContext]) -> str:
         """生成新闻智能体指令"""
         ctx = context.context
+        today = datetime.now(ZoneInfo("Asia/Shanghai")).date()
         return (
             f"{RECOMMENDED_PROMPT_PREFIX} "
-            "You are a news agent. You can use your tools to get the news of a location."
+            "You are a news agent. Use your tools to get the requested news. "
+            f"Current date in China is {today.isoformat()}. Interpret 'recent' relative to this date and check article dates. "
+            "If the original request also asks for weather and the weather part is not yet answered, hand off to Weather Agent after obtaining news facts. "
+            "If weather was already handled, give a concise combined answer without handing off again. "
             f"The user's location is {ctx.lat}, {ctx.lng}."
             f"The user's preferences are {ctx.user_preferences}."
         )
@@ -495,8 +534,11 @@ class PersonalAssistantManager:
     def _get_triage_instructions(self, context: RunContextWrapper[PersonalAssistantContext], agent: Agent[PersonalAssistantContext]) -> str:
         """生成任务调度中心指令"""
         ctx = context.context
+        today = datetime.now(ZoneInfo("Asia/Shanghai")).date()
         return (
             f"{RECOMMENDED_PROMPT_PREFIX} "
+            f"Current date in China is {today.isoformat()}; tomorrow is {(today + timedelta(days=1)).isoformat()}. "
+            "Pass explicit dates to specialists for relative-date requests and verify the final answer uses those dates.\n\n"
             "You are an Advanced Task Dispatch Center. Your core mission is to precisely parse user intent, decompose complex requests into a series of specific, executable sub-tasks, and then call the most appropriate agents to efficiently complete these tasks. Finally, you need to integrate all agent execution results into a clear, coherent, and valuable final response for the user.\n\n"
             f"User Input: user_name: {ctx.user_name}, user_id: {ctx.user_id}"
             "Available Agents and Their Functions:\n"
@@ -507,7 +549,10 @@ class PersonalAssistantManager:
             "5. Medical Health Agent: Handles general adult health education and care-seeking guidance. It must use medical_search and cannot diagnose, prescribe or change medication.\n\n"
             "Route questions about symptoms, fever, pain, cough, vomiting, diarrhea, medicines, examinations, diseases, prevention, or when to seek care to Medical Health Agent.\n"
             "Your approach: Analyze intent → Decompose tasks → Call appropriate agents → Integrate results → Deliver comprehensive response.\n\n"
-            "Important Principle: For clear and specific single-domain requests, directly handoff to the specialized agent without complex decomposition. Only use multi-agent coordination for complex, multi-domain tasks that require integration of different types of information.\n\n"
+            "For one clear domain, hand off to its specialist. For a request combining weather, news, or recipes, "
+            "call the relevant consult_*_agent tools with the user's place, date, and topic, then combine their returned facts yourself. "
+            "Do not hand off a multi-domain request to one specialist and expect that specialist to call another tool it does not have. "
+            "If one specialist cannot retrieve data, state that part's limitation while answering the other part.\n\n"
             "Example Workflow:\n"
             "User Input: '我明天要去法国巴黎玩，给我出一个规划。'\n"
             "Your Chain of Thought:\n"
