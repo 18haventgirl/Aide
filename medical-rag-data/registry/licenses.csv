@@ -14,6 +14,7 @@ dfi_corpus,UNKNOWN,UNKNOWN,https://github.com/ccadd-snu/corpus-for-DFI-extractio
 opencmkg,RESEARCH_ONLY,Research only statement,https://github.com/RuiqingDing/OpenCMKG, no,no,unknown,no,unknown,no,no,2026-09-23,Aggregated upstream source rights uncertain
 d2hkg,UNKNOWN,UNKNOWN,https://github.com/Cantaloupe-M/D2hKG_Data,unknown,unknown,unknown,unknown,unknown,unknown,no,2026-09-24,Repository located; no explicit data license found
 huatuo_26m,UNKNOWN,Apache-2.0 stated by repository,https://github.com/FreedomIntelligence/Huatuo-26M,unknown,unknown,unknown,unknown,unknown,no,no,2026-09-23,Underlying collected content requires audit; evaluation candidate only
+huatuo26m_lite,UNKNOWN,Apache-2.0 declared by dataset card,https://huggingface.co/datasets/FreedomIntelligence/Huatuo26M-Lite/blob/90ce61699e90568db82cdce4c4035c6918d70aa6/README.md,unknown,unknown,unknown,unknown,unknown,no,no,2026-09-24,User authorized local research screening; upstream rights and per-record evidence unresolved; not answer evidence
 cmedqa2,NON_COMMERCIAL,Non-commercial research,https://github.com/zhangsheng93/cMedQA2, no,unknown,unknown,no,unknown,no,no,2026-09-23,Community QA not evidence
 cmexam,UNKNOWN,UNKNOWN,https://github.com/williamliujl/CMExam,unknown,unknown,unknown,unknown,unknown,unknown,no,2026-09-23,Exam rights require audit
 mondo,OPEN,CC BY 4.0,https://github.com/monarch-initiative/mondo/blob/master/LICENSE,yes,yes,yes,yes,unknown,no,no,2026-09-23,Entity mapping only; check upstream cross-references

@@ -1,4 +1,5 @@
 dataset_id,name,category,source_url,access_method,language,jurisdiction,priority,investigation_status,intended_use,notes
+huatuo26m_lite,Huatuo26M-Lite,chinese_medical_qa,https://huggingface.co/datasets/FreedomIntelligence/Huatuo26M-Lite,pinned_jsonl,zh,CN,P1,verified,local_research_screening,Model-rewritten community answers; no record-level medical sources; isolated pilot only
 medlineplus_topics,MedlinePlus Health Topic XML,health_topics,https://medlineplus.gov/xml.html,official_xml,en|es,US,P1,verified,research_rag,Only health topic summaries; exclude linked third-party content
 nhc_health_literacy,China NHC Health Literacy 66,health_topics,https://www.nhc.gov.cn/,official_html_pdf,zh,CN,P1,partial,research_rag,Existing 66 research documents; usage terms require source-level audit
 medlineplus_encyclopedia,MedlinePlus A.D.A.M. Encyclopedia,encyclopedia,https://medlineplus.gov/encyclopedia.html,website,en,US,P3,verified,link_only,Copyrighted third-party content

@@ -216,6 +216,7 @@ backend/medical/models/
 backend/medical/source_downloads/
 medical-rag-data/raw/
 medical-rag-data/staging/
+medical-rag-data/datasets/
 medical-rag-data/structured/*.sqlite
 npm-debug.log*
 yarn-debug.log*

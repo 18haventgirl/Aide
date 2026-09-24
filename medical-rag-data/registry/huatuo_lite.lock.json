@@ -1,0 +1,16 @@
+{
+  "dataset_id": "huatuo26m_lite",
+  "repository": "FreedomIntelligence/Huatuo26M-Lite",
+  "revision": "90ce61699e90568db82cdce4c4035c6918d70aa6",
+  "modelscope_revision": "2211b63d2a8387848c6515374b0125fc5686bbaf",
+  "filename": "format_data.jsonl",
+  "bytes": 138220325,
+  "sha256": "84b849f07ab3b9517443f5efeb6c7230dcadf1f71ccaf41f3bf889e53618d4e8",
+  "language": "zh",
+  "license_declared": "Apache-2.0",
+  "license_url": "https://huggingface.co/datasets/FreedomIntelligence/Huatuo26M-Lite/blob/90ce61699e90568db82cdce4c4035c6918d70aa6/README.md",
+  "hash_source_url": "https://huggingface.co/datasets/FreedomIntelligence/Huatuo26M-Lite/commit/7dd84c9059677234d3615847fd8070c94f5d407e",
+  "usage": "local_research_candidate_screening",
+  "answer_eligible": false,
+  "reason": "Community questions with model-rewritten answers; record-level medical sources absent; screening is not clinical verification"
+}
