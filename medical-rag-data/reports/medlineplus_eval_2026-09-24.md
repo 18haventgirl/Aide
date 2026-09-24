@@ -1,5 +1,7 @@
 # MedlinePlus 扩容影子评估
 
+> 已停用：2026-09-24 用户改为仅使用中文语料。外文资料及影子索引已清理；本报告仅记录历史实验，不代表当前中文库的覆盖率。
+
 日期：2026-09-24。完整机器结果见 [`medlineplus_shadow_2026-09-24.json`](medlineplus_shadow_2026-09-24.json)。两个索引在 `backend/medical/source_downloads/medlineplus_shadow/` 独立构建，使用同一份 BGE 向量模型、BM25/RRF 和 BGE reranker，均未覆盖运行中的 Aide collection。
 
 | 指标 | 旧索引 | 新索引 |

@@ -6,11 +6,13 @@ import argparse
 from pathlib import Path
 
 import requests
+from .data_registry import assert_answer_eligible
 
 from .import_medlineplus import ARCHIVE_SHA256, DEFAULT_ARCHIVE, SOURCE_DOWNLOAD_URL, sha256_bytes
 
 
 def download(output: Path = DEFAULT_ARCHIVE) -> Path:
+    assert_answer_eligible("medlineplus_topics")
     if output.exists() and sha256_bytes(output.read_bytes()) == ARCHIVE_SHA256:
         print(f"verified existing MedlinePlus archive: {output}")
         return output

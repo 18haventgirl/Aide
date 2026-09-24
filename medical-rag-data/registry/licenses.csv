@@ -12,7 +12,7 @@ foodrugs,UNKNOWN,UNKNOWN,https://pubmed.ncbi.nlm.nih.gov/?term=FooDrugs,unknown,
 kg_dfi,UNKNOWN,UNKNOWN,https://github.com/bmil-jnu/KG-DFI,unknown,unknown,unknown,unknown,unknown,unknown,no,2026-09-23,Data rights separate from code rights
 dfi_corpus,UNKNOWN,UNKNOWN,https://github.com/ccadd-snu/corpus-for-DFI-extraction,unknown,unknown,unknown,unknown,unknown,unknown,no,2026-09-23,Review data and publication rights
 opencmkg,RESEARCH_ONLY,Research only statement,https://github.com/RuiqingDing/OpenCMKG, no,no,unknown,no,unknown,no,no,2026-09-23,Aggregated upstream source rights uncertain
-d2hkg,UNKNOWN,UNKNOWN,https://github.com/search?q=D2hKG&type=repositories,unknown,unknown,unknown,unknown,unknown,unknown,no,2026-09-23,Source pending
+d2hkg,UNKNOWN,UNKNOWN,https://github.com/Cantaloupe-M/D2hKG_Data,unknown,unknown,unknown,unknown,unknown,unknown,no,2026-09-24,Repository located; no explicit data license found
 huatuo_26m,UNKNOWN,Apache-2.0 stated by repository,https://github.com/FreedomIntelligence/Huatuo-26M,unknown,unknown,unknown,unknown,unknown,no,no,2026-09-23,Underlying collected content requires audit; evaluation candidate only
 cmedqa2,NON_COMMERCIAL,Non-commercial research,https://github.com/zhangsheng93/cMedQA2, no,unknown,unknown,no,unknown,no,no,2026-09-23,Community QA not evidence
 cmexam,UNKNOWN,UNKNOWN,https://github.com/williamliujl/CMExam,unknown,unknown,unknown,unknown,unknown,unknown,no,2026-09-23,Exam rights require audit

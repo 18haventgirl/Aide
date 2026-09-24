@@ -85,6 +85,20 @@ def document(doc_id: str, status: str = "source_checked", version: int = 1,
 
 
 class MedicalRagTests(unittest.TestCase):
+    def test_english_source_is_not_searchable_with_chinese_title(self):
+        english = document("foreign-source").model_copy(update={"language": "en"})
+        self.assertFalse(english.is_searchable(date.today(), research_mode=True))
+        self.assertTrue(document("chinese-source").is_searchable(date.today(), research_mode=True))
+
+    def test_sync_withdraws_a_document_reclassified_as_english(self):
+        kb = MedicalKnowledgeBase(chromadb.EphemeralClient(), TestEmbedding(), "test-v1", research_mode=True)
+        original = document("language-correction")
+        kb.sync([original])
+        self.assertGreater(kb.collection.count(), 0)
+        result = kb.sync([original.model_copy(update={"language": "en"})])
+        self.assertGreater(result["removed_chunks"], 0)
+        self.assertEqual(kb.collection.count(), 0)
+
     def test_sections_do_not_mix_and_chunks_are_bounded(self):
         body = "# 第一节\n" + "喝水有益。" * 100 + "\n# 第二节\n" + "规律活动。" * 100
         chunks = chunk_document(body, "测试", max_chars=120, overlap=20)

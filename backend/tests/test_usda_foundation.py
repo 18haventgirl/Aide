@@ -32,7 +32,7 @@ class USDAFoundationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             archive = Path(directory) / "fake.zip"
             archive.write_bytes(b"not the pinned source")
-            with self.assertRaisesRegex(ValueError, "SHA256 mismatch"):
+            with self.assertRaisesRegex(PermissionError, "Chinese-only"):
                 import_archive(archive=archive, data_root=Path(directory))
 
 

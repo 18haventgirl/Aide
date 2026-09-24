@@ -61,7 +61,12 @@ def validate_registry(directory: Path = REGISTRY_DIR) -> dict[str, object]:
     return {
         "dataset_count": len(datasets),
         "verified_count": sum(row.get("investigation_status") == "verified" for row in datasets),
-        "answer_eligible": sorted(row["dataset_id"] for row in licenses if row.get("answer_eligible") == "yes"),
+        "corpus_language_policy": "Chinese source text only; mixed-language sources require a separately registered Chinese subset",
+        "answer_eligible": sorted(
+            row["dataset_id"] for row in licenses if row.get("answer_eligible") == "yes"
+            and any(source["dataset_id"] == row["dataset_id"] and source.get("language") in {"zh", "zh-CN", "zh-TW", "zh-Hans", "zh-Hant"}
+                    for source in datasets)
+        ),
         "errors": errors,
     }
 
@@ -70,6 +75,9 @@ def assert_answer_eligible(dataset_id: str, directory: Path = REGISTRY_DIR) -> N
     report = validate_registry(directory)
     if report["errors"]:
         raise ValueError("invalid data registry: " + "; ".join(report["errors"]))
+    source = next((row for row in _rows(directory / "datasets.csv") if row["dataset_id"] == dataset_id), None)
+    if source and source.get("language") not in {"zh", "zh-CN", "zh-TW", "zh-Hans", "zh-Hant"}:
+        raise PermissionError(f"dataset {dataset_id} excluded by Chinese-only corpus policy")
     if dataset_id not in report["answer_eligible"]:
         raise PermissionError(f"dataset {dataset_id} is not approved for answer evidence")
 

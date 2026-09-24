@@ -5,8 +5,8 @@
 ## 数据与模型
 
 - `source_pipeline.py` 对照 2024 年正式《健康素养 66 条》与国务院网站托管的正式释义 PDF，生成 66 条记录；另有北京、广州卫健委各一条常见症状就医资料。原文及 SHA256 记在 `source_downloads/` 和 `source_corpus/source_manifest.json`。原文下载目录被 Git 忽略。
-- `source_corpus/` 当前本机研究索引包含 136 条 JSON 资料，均为 `source_checked`，表示机器核对原文，**不是医疗专业审核**。正式公共索引仅接纳 `clinician_reviewed` 且未过期、未撤回的资料。
-- `import_medlineplus.py` 从固定版本的 MedlinePlus Health Topic XML 中选择原有 18 个高频主题和新选的 50 个运动、睡眠、慢病预防、营养等主题。正文保留官方英文，中文标题与别名和官方摘要位于同一检索片段，避免召回只有标签而没有医学内容的片段。影子对照通过后已同步到本机研究索引；详见 `medical-rag-data/reports/medlineplus_eval_2026-09-24.md`。
+- `source_corpus/` 当前本机研究索引包含 68 条中文 JSON 资料、88 个切片，均为 `source_checked`，表示机器核对原文，**不是医疗专业审核**。正式公共索引仅接纳 `clinician_reviewed` 且未过期、未撤回的中文资料。
+- 2026-09-24 按用户要求改为仅使用中文原文。MedlinePlus 的 68 篇英文文档与 562 个切片已撤下，原始下载与衍生数据已清理；相关脚本保留作历史参考，下载和导入入口被语言策略阻止。原文语言需准确写入文档的 `language`，不得通过中文标题把英文正文标记为中文。
 - 向量模型为本机运行的 `BAAI/bge-small-zh-v1.5`，固定模型 revision 和权重 SHA256。模型文件在 `models/`（Git 忽略）。研究与正式索引使用分开的 Chroma collection。
 - 检索先分别取得 BGE 稠密候选和全库 jieba/BM25 关键词候选，用加权 RRF 合并后，将前 8 个片段交给本机 `BAAI/bge-reranker-base` 交叉编码器重排。最后按相关性门槛过滤，并限制单份文档最多占两个片段。重排模型固定 revision 和权重 SHA256；模型缺失或推理失败时会退回经过门槛控制的混合排序，不会让检索服务整体中断。
 - 医疗 Agent 与其他 Agent 共用 Aide 的 LiteLLM 模型配置 `OPENAI_API_KEY`、`OPENAI_API_BASE_URL` 和 `OPENAI_CHAT_MODEL`。每个健康问题先调用一次 `medical_search`，把检索证据与对话问题一起交给同一个 LLM；首次结果明确未覆盖且确需换一种含义检索时，最多再调用一次。旧的 `MEDICAL_LLM_*` 独立生成路径已移除。
@@ -42,17 +42,15 @@
 
 ## 数据扩容与影子评估
 
-仓库根目录的 `medical-rag-data/registry/datasets.csv` 列出 34 个候选源，`licenses.csv` 单独记录使用权利。候选数不等于已导入数。新增来源须通过 `medical.data_registry` 的 fail-closed 检查；当前扩容只使用 MedlinePlus 健康主题摘要，不复制其受版权保护的百科或药物专论。
+仓库根目录的 `medical-rag-data/registry/datasets.csv` 保存原候选调查台账，`licenses.csv` 单独记录使用权利。新增来源须通过 `medical.data_registry` 的许可与中文语言检查。中文候选比较见 `medical-rag-data/reports/chinese_sources_review.md`。
 
 ```powershell
 cd backend
 .\.venv\python.exe -m medical.data_registry
-.\.venv\python.exe -m medical.export_medlineplus_assets
-.\.venv\python.exe -m medical.shadow_medlineplus --report ..\medical-rag-data\reports\medlineplus_shadow_2026-09-24.json
 ```
 
-固定的 2026-09-19 官方 XML 压缩包在被 Git 忽略的 `source_downloads/`。导出器生成 68 条主题文档、`normalized/` 与 `rag/` JSONL 和 SHA256 清单；其中 50 条是新增主题。中文名称/别名只用于召回，英文官方摘要仍是证据正文。MedlinePlus 的 `source_published_at` 记录 XML `date-created`，快照日期另存 `source_version`。影子评估在独立 Chroma 目录中构建基线与扩容索引，不触碰运行中的研究 collection。
+旧 MedlinePlus 评估报告仅用于历史追溯。旧评测中的外文文档预期仍保留，不能通过修改预期掩盖中文知识覆盖缺口；扩容后的中文库需要重新评测。
 
 ## 结构化营养数据试点
 
-USDA Foundation Foods 2026-04-30 数据可用 `medical.download_usda_foundation` 下载，`medical.import_usda_foundation` 导入本地 SQLite，`medical.export_usda_graph` 导出食物与营养素关系。下载文件和数据库被 Git 忽略；版本、校验值及导入数量见 `medical-rag-data/structured/` 的清单，详细复现步骤见 `medical-rag-data/reports/usda_foundation_pilot.md`。此数据目前只供离线验证，尚未接入医疗 Agent。
+USDA 英文营养数据试点已停用并清理，历史说明见 `medical-rag-data/reports/usda_foundation_pilot.md`。后续选择中文营养资源重新开展。

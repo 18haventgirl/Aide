@@ -95,6 +95,7 @@ class MedicalKnowledgeBase:
             new_ids: set[str] = set()
             eligible = document.is_searchable(today, research_mode=self.research_mode) or (
                 self.preview and document.status == "draft"
+                and document.language in {"zh", "zh-CN", "zh-TW", "zh-Hans", "zh-Hant"}
             )
             if eligible:
                 chunks = chunk_document(document.body, document.title)
@@ -113,6 +114,7 @@ class MedicalKnowledgeBase:
                     texts.append(text)
                     metadatas.append({
                         "doc_id": document.doc_id,
+                        "language": document.language,
                         "version": document.version,
                         "title": document.title,
                         "topic": document.topic,

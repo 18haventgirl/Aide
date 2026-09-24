@@ -12,7 +12,7 @@ foodrugs,FooDrugs,food_drug_interaction,https://pubmed.ncbi.nlm.nih.gov/?term=Fo
 kg_dfi,KG-DFI,food_drug_interaction,https://github.com/bmil-jnu/KG-DFI,github,en,global,P3,partial,offline_relation_research,Predictions are not verified clinical interactions
 dfi_corpus,DFI Extraction Corpus,food_drug_interaction,https://github.com/ccadd-snu/corpus-for-DFI-extraction,github,en,global,P3,partial,offline_relation_research,Confirm exact repository and data license before use
 opencmkg,OpenCMKG,chinese_medical_graph,https://github.com/RuiqingDing/OpenCMKG,github,zh,CN,P3,verified,offline_relation_research,Research only and aggregated upstream rights
-d2hkg,D2hKG,diet_health_graph,https://github.com/search?q=D2hKG&type=repositories,discovery_search,zh|en,unknown,P3,candidate,discovery_only,Canonical repository and license unverified
+d2hkg,D2hKG,diet_health_graph,https://github.com/Cantaloupe-M/D2hKG_Data,github,zh,CN,P3,partial,discovery_only,Repository located; no explicit data license found; dietary claims need evidence
 huatuo_26m,Huatuo-26M,chinese_medical_qa,https://github.com/FreedomIntelligence/Huatuo-26M,github,zh,CN,P3,verified,offline_eval_candidate,QA corpus is not clinical evidence
 cmedqa2,cMedQA2,chinese_medical_qa,https://github.com/zhangsheng93/cMedQA2,github,zh,CN,P3,verified,offline_eval_candidate,Repository says non-commercial research only
 cmexam,CMExam,chinese_medical_exam,https://github.com/williamliujl/CMExam,github,zh,CN,P3,partial,offline_eval_candidate,Exam questions are not patient education evidence

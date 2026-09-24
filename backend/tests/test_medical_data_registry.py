@@ -11,7 +11,8 @@ class MedicalDataRegistryTests(unittest.TestCase):
         report = validate_registry(REGISTRY_DIR)
         self.assertEqual(report["errors"], [])
         self.assertGreaterEqual(report["dataset_count"], 30)
-        self.assertIn("medlineplus_topics", report["answer_eligible"])
+        self.assertNotIn("medlineplus_topics", report["answer_eligible"])
+        self.assertNotIn("usda_fdc", report["answer_eligible"])
         self.assertNotIn("opencmkg", report["answer_eligible"])
 
     def test_unknown_or_research_only_rights_fail_closed(self):
@@ -19,6 +20,13 @@ class MedicalDataRegistryTests(unittest.TestCase):
             assert_answer_eligible("opencmkg")
         with self.assertRaises(PermissionError):
             assert_answer_eligible("missing")
+
+    def test_foreign_downloads_are_blocked_before_network_or_files(self):
+        from medical.download_medlineplus import download as download_medlineplus
+        from medical.download_usda_foundation import download as download_usda
+        for download in (download_medlineplus, download_usda):
+            with self.assertRaisesRegex(PermissionError, "Chinese-only"):
+                download()
 
     def test_validator_rejects_unsupported_answer_permission(self):
         with tempfile.TemporaryDirectory() as directory:

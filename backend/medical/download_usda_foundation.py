@@ -7,6 +7,7 @@ import hashlib
 from pathlib import Path
 
 import requests
+from .data_registry import assert_answer_eligible
 
 from .import_usda_foundation import ARCHIVE, ARCHIVE_SHA256, ARCHIVE_URL
 
@@ -20,6 +21,7 @@ def _sha256_file(path: Path) -> str:
 
 
 def download(output: Path = ARCHIVE) -> Path:
+    assert_answer_eligible("usda_fdc")
     if output.exists() and _sha256_file(output) == ARCHIVE_SHA256:
         return output
     output.parent.mkdir(parents=True, exist_ok=True)

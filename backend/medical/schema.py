@@ -27,6 +27,7 @@ class MedicalDocument(BaseModel):
     source_version: str | None = None
     usage_scope: str | None = None
     withdrawn: bool = False
+    language: str = "zh"
     body: str = Field(min_length=1)
 
     @model_validator(mode="after")
@@ -42,7 +43,8 @@ class MedicalDocument(BaseModel):
 
     def is_searchable(self, today: date, research_mode: bool = False) -> bool:
         allowed = {"source_checked", "clinician_reviewed"} if research_mode else {"clinician_reviewed"}
-        return (not self.withdrawn and self.status in allowed
+        return (self.language in {"zh", "zh-CN", "zh-TW", "zh-Hans", "zh-Hant"}
+                and not self.withdrawn and self.status in allowed
                 and bool(self.next_review_at and self.next_review_at >= today))
 
 

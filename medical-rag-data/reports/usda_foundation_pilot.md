@@ -1,5 +1,7 @@
 # USDA Foundation Foods 结构化数据试点
 
+> 已停用：2026-09-24 用户改为仅使用中文语料。下载包、SQLite、导出数据和导入清单已清理；下载及导入入口已被中文来源策略阻止。以下步骤仅供历史追溯。
+
 日期：2026-09-24。数据来自 [USDA FoodData Central 下载页](https://fdc.nal.usda.gov/download-datasets/)的 2026-04-30 Foundation Foods JSON。使用条件见 [官方 API 与数据说明](https://fdc.nal.usda.gov/api-guide/)；营养量以每 100 克食物计，参见 [Foundation Foods 文档](https://fdc.nal.usda.gov/Foundation_Foods_Documentation/)。
 
 ## 复现

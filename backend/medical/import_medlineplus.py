@@ -198,6 +198,7 @@ def build_documents(xml_bytes: bytes, collected_at: date) -> list[MedicalDocumen
             + body_text
         )
         documents.append(MedicalDocument(
+            language="en",
             doc_id=f"MPLUS-{topic_id}-{config['slug']}",
             version=1,
             title=config["title"],
