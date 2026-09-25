@@ -245,3 +245,6 @@ lg-aide-chroma-db/
 
 # 本地 embedding 模型权重（由 scripts/setup_local_embedding.py 下载，不要提交）
 backend/models/
+
+# LangGraph 对话检查点（本机状态，不入库）
+backend/data/

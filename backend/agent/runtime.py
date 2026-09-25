@@ -4,7 +4,9 @@ WebSocket 层只管收发，不关心里面是 LangGraph 还是别的；ask() �
 整理成 AideAnswer，流式路径后面接在同一张图上。
 """
 
+import asyncio
 import logging
+from contextlib import AsyncExitStack
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
@@ -27,17 +29,27 @@ class AideAnswer:
 
 
 class AideRuntime:
-    """持有编译好的图；模型与 MCP 都可用时才构建，之后复用"""
+    """持有编译好的图与长开的 checkpoint 连接；模型与 MCP 都可用时才构建，之后复用"""
 
     def __init__(self):
         self._agent: Any = None
         self._has_memory: bool = False
+        self._exit_stack: Optional[AsyncExitStack] = None
+        self._lock: Optional[asyncio.Lock] = None
 
     async def ensure_ready(self) -> None:
         """懒构建。模型不可用时抛 RuntimeError，由上层转成可读错误。"""
         if self._agent is not None:
             return
+        if self._lock is None:
+            self._lock = asyncio.Lock()
+        async with self._lock:
+            if self._agent is not None:        # 等锁期间别的会话已经建好了
+                return
+            await self._build()
 
+    async def _build(self) -> None:
+        from agent.checkpoint import build_checkpointer
         from agent.graph import build_agent, default_tools
         from agent.model import build_chat_model
         from agent.tools.mcp import load_mcp_tools
@@ -48,9 +60,27 @@ class AideRuntime:
 
         mcp_tools = await load_mcp_tools()
         tools = [*default_tools(), *mcp_tools]
-        self._agent = await build_agent(model, tools=tools)
-        self._has_memory = False      # 阶段 2 接上 checkpointer 后置 True
-        logger.info(f"Aide 运行时就绪：{len(tools)} 个工具")
+
+        stack = AsyncExitStack()
+        try:
+            saver = await stack.enter_async_context(build_checkpointer())
+            agent = await build_agent(model, tools=tools, checkpointer=saver)
+        except Exception:
+            await stack.aclose()
+            raise
+
+        self._exit_stack = stack
+        self._agent = agent
+        self._has_memory = True
+        logger.info(f"Aide 运行时就绪：{len(tools)} 个工具，checkpoint 已挂载")
+
+    async def aclose(self) -> None:
+        """关掉 checkpoint 连接并丢弃图实例；下次 ask() 会重新构建"""
+        self._agent = None
+        self._has_memory = False
+        stack, self._exit_stack = self._exit_stack, None
+        if stack is not None:
+            await stack.aclose()
 
     async def _state_len(self, config: Dict[str, Any]) -> int:
         """本轮之前的消息条数，用来把历史排除在本次结果外"""
