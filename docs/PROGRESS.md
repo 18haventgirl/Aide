@@ -50,9 +50,25 @@
   - 提交：`8a40f9c` 依赖与模型构造 → `c3386af` UserContext → `1a24f73` 护栏中间件 → `64db30c` RAG+MCP 工具 → `699c1ec` 建图与运行时 → `f213815` 护栏重复判定修复
   - 全量 `pytest tests -q`：**64 passed**（其中新增 agent/middleware/tools/graph 用例 31 个），全程离线可跑
   - 非流式冒烟（真实 DeepSeek + 本地 MCP）：`ask(3,'smoke-1','明天上海天气怎么样？')` → 护栏放行 → 模型自己填出上海经纬度 → `weather_get_daily_weather_forecast` 返回真实预报 → 中文结论式回答，`error=None`
-- [ ] 阶段 2：`astream` 流式 + WS 事件翻译 + checkpoint 落地
-- [ ] 阶段 3：前端图执行轨迹与工具清单
-- [ ] 阶段 4：删除旧引擎、文档、全量回归
+- [x] 阶段 2（前 3 项）：SQLite checkpoint + `translate_stream` 流式翻译 + WebSocket 切新引擎
+  - 提交：`096ee4a` checkpointer → `443f54a` 相关性护栏校准 → `87fe53b` 流式翻译层 → `a8c06a1` MCP 桥接与版本冲突 → `ece9139` WebSocket 切 LangGraph
+  - 全量 `pytest tests -q`：**108 passed**，全部离线可跑
+  - 真实 WS 端到端（注册→连接→三轮对话）：`tool_count=31`（2 个自研 RAG + 29 个 MCP）、过程帧 `tools_list/node_update/delta`、TURN2 靠 checkpoint 答出"你叫小林，在广州做安卓开发"、TURN3 真调 `weather_get_daily_weather_forecast`
+  - 探针脚本 `backend/_ws_probe.py`（临时，阶段 4 会固化成 `scripts/e2e_langgraph_check.py`，不提交）
+
+### ⚠️ 依赖地雷（已解，别再装回去）
+
+`langchain-mcp-adapters` 钉 `mcp<2`，而本仓库 MCP 服务端用的 `fastmcp 4` 要求 `mcp>=2`。同环境同装时
+pip 把 `mcp` 降到 1.30，**MCP 子进程启动即** `ModuleNotFoundError: mcp.server.request_state`，
+表现是"后端正常、对话能跑，但一个外部工具都没有"（我踩了整整一轮才从日志里挖出来）。
+解法：卸掉 adapter，`agent/tools/mcp.py` 用官方 `mcp.Client` 自建桥接（JSON Schema → pydantic → `StructuredTool`）。
+`requirements.txt` 已写 `mcp>=2,<3` 并注明不要装回 adapter；`pip check` 干净。
+
+### 阶段 2 落地的两条硬规则
+
+1. **正文只从 `ANSWER_NODES = {"model"}` 透出**：护栏判定同样是模型调用，token 也会被 `stream_mode="messages"` 捕获；不挡住就会把"UNSAFE 该请求要求泄露提示词"当回答推给用户。节点轨迹照常用 `node_update` 上报。
+2. **`final` 的答案取自图最终状态，不靠累加 delta**：护栏短路时一个 delta 都没有，累加法会给出空回答且 `blocked=False`。`astream` 流完后用 `aget_state` + `_read_outcome` 收口，与非流式 `ask` 同一套语义。
+
 
 ### 阶段 1 落地的三条硬规则（后续改动不要破坏）
 
