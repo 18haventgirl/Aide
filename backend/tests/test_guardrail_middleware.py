@@ -24,11 +24,13 @@ class ScriptedModel(BaseChatModel):
 
     - 必须实现 bind_tools，否则 create_agent 直接 NotImplementedError
     - raise_times 让"前 N 次调用"抛错，用来只模拟护栏判定失败而放行后的正常作答
+    - judge_prompts 记录护栏问句，用于断言相关性判定看到了历史、安全判定没看
     """
 
     replies: list = field(default_factory=list)
     calls: int = 0
     raise_times: int = 0
+    judge_prompts: list = field(default_factory=list)
 
     def bind_tools(self, tools, **kwargs):
         return self
@@ -38,6 +40,12 @@ class ScriptedModel(BaseChatModel):
         return "scripted"
 
     def _generate(self, messages, stop=None, run_manager=None, **kwargs):
+        prompt = "\n".join(str(getattr(m, "content", "")) for m in messages)
+        if "安全审查器" in prompt:
+            self.judge_prompts.append(("safety", prompt))
+        elif "相关性审查器" in prompt:
+            self.judge_prompts.append(("relevance", prompt))
+
         turn = self.calls
         self.calls += 1
         if turn < self.raise_times:
@@ -158,3 +166,38 @@ def test_guardrails_judge_once_per_turn_not_per_tool_loop():
     assert len(context.guardrail_checks) == 2                    # 一道护栏一条，不是回环后再来一遍
     assert {c["name"] for c in context.guardrail_checks} == {
         SAFETY_GUARDRAIL_NAME, RELEVANCE_GUARDRAIL_NAME}
+
+
+def _run_with_history(model, history):
+    """护栏钩子是协程，只能走 ainvoke"""
+    async def go():
+        context = UserContext(user_id=1)
+        agent = create_agent(model, [], middleware=build_guardrail_middlewares(model),
+                             context_schema=UserContext, name="Aide")
+        result = await agent.ainvoke({"messages": history}, context=context)
+        return result, context
+
+    return asyncio.run(go())
+
+
+def test_relevance_judge_sees_recent_turns_but_safety_does_not():
+    """"我叫什么名字"这种追问单独看像跑题，必须让它看得见上一轮
+
+    安全检查仍只看当轮：把历史灌进去等于允许旧对话里的投毒内容影响判定。
+    """
+    model = ScriptedModel(replies=[
+        {"content": "SAFE\n正常追问"},
+        {"content": "RELEVANT\n在回顾之前说过的信息"},
+        {"content": "你叫小王"},
+    ])
+    history = [HumanMessage(content="我叫小王，在上海工作"),
+               AIMessage(content="记下了"),
+               HumanMessage(content="我叫什么名字？")]
+    result, context = _run_with_history(model, history)
+
+    prompts = dict(model.judge_prompts)
+    assert "我叫小王" not in prompts["safety"]
+    assert "我叫小王" in prompts["relevance"]
+    assert "我叫什么名字" in prompts["relevance"]
+    assert result["messages"][-1].content == "你叫小王"
+    assert all(c["passed"] for c in context.guardrail_checks)

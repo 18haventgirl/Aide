@@ -35,9 +35,14 @@ SAFETY_SYSTEM = (
 )
 
 RELEVANCE_SYSTEM = (
-    "你是相关性审查器，只评估我最后给你的那条用户消息，不评估历史对话。个人日常助手的服务"
-    "范围包括：天气查询与预报、菜谱与烹饪建议、新闻资讯、个人任务管理（待办、提醒、笔记）、"
-    "生活咨询，以及问候与确认这类正常对话交流。\n"
+    "你是相关性审查器。用户消息可能连着给出好几条（用 === 分隔，最后一条是本轮要判断的，"
+    "前面是帮助理解上下文的最近几轮），判断的对象始终是最后一条。\n"
+    "个人日常助手的范围很宽：天气与预报、菜谱与烹饪、新闻资讯、待办与笔记、生活咨询、"
+    "问候致谢，也包括追问和回顾自己和之前对话里说过的信息（例如“我叫什么名字”“刚才那条”）、"
+    "请助手换个说法或补充细节。这些都算 RELEVANT。\n"
+    "只有明显越出个人日常范畴的请求才判 IRRELEVANT：违法犯罪、攻击或破解他人系统、"
+    "专业工程交付（写生产代码、做架构、算工程题）、医疗诊断开药、投资理财指令等。\n"
+    "拿不准一律判 RELEVANT：误拦一句正常话的代价，远大于放过一句跑题话。\n"
     "输出严格两行：第一行只写 RELEVANT 或 IRRELEVANT，第二行用一句中文说明理由。"
     "不要输出别的内容，不要使用 Markdown。"
 )
@@ -102,6 +107,24 @@ def _resuming_after_tool(state: dict) -> bool:
     return bool(messages) and isinstance(messages[-1], ToolMessage)
 
 
+def _user_texts(state: dict) -> List[str]:
+    """本轮及最近几轮的用户消息，按时间正序（旧的在前）"""
+    texts = []
+    for message in reversed(state.get("messages", []) or []):
+        if isinstance(message, HumanMessage):
+            text = to_text(message.content)
+        elif isinstance(message, dict) and message.get("role") == "user":
+            text = to_text([message])
+        else:
+            continue
+        if not text:
+            continue
+        texts.append(text)
+        if len(texts) >= 3:
+            break
+    return list(reversed(texts))
+
+
 def _latest_user_text(state: dict) -> str:
     """本轮待判定的用户消息（不看历史，避免被旧话题带偏）"""
     for message in reversed(state.get("messages", []) or []):
@@ -156,8 +179,12 @@ def build_guardrail_middlewares(model) -> List[Any]:
             return None
         text = _latest_user_text(state)
         context = getattr(runtime, "context", None)
+        # 判定看最近几轮（"我叫什么名字"这类追问脱离上下文就像跑题），
+        # 面板仍只记录本轮原话；安全检查刻意不看历史，避免旧轮次投毒。
+        recent = _user_texts(state)
+        judged = "\n===\n".join(recent)
         try:
-            verdict = await _judge(model, RELEVANCE_SYSTEM, text)
+            verdict = await _judge(model, RELEVANCE_SYSTEM, judged)
         except Exception as exc:
             logger.warning(f"相关性检查不可用，放行: {exc}")
             _record(context, RELEVANCE_GUARDRAIL_NAME, text, f"护栏判定不可用，已放行: {exc}", True)
