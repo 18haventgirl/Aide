@@ -39,9 +39,10 @@ export function RunnerOutput({ runnerEvents }: RunnerOutputProps) {
   const formatTimestamp = (timestamp: number | string | Date): string => {
     try {
       if (!timestamp) return '';
-      // 确保 timestamp 是一个 Date 对象
-      const date = new Date(timestamp);
-      // 检查转换后的日期是否有效
+      // 后端事件带的是 epoch 秒（datetime.timestamp()），直接给 new Date() 会被当毫秒，
+      // 显示成 1970 年附近的钟点；小于 1e12 的数值按秒换算。
+      const value = typeof timestamp === 'number' && timestamp < 1e12 ? timestamp * 1000 : timestamp;
+      const date = new Date(value);
       if (isNaN(date.getTime())) {
         return 'Invalid Date';
       }
@@ -84,7 +85,7 @@ export function RunnerOutput({ runnerEvents }: RunnerOutputProps) {
                     by {event.agent}
                   </span>
                 </div>
-                <p className="text-xs text-gray-700">
+                <p className="max-h-24 overflow-y-auto break-all text-xs text-gray-700">
                   {event.content}
                 </p>
                 
