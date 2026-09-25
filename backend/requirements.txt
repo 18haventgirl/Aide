@@ -45,7 +45,10 @@ python-jose[cryptography]
 langgraph>=1.2,<2
 langchain>=1.4,<2
 langchain-openai>=1.6,<2
-langchain-mcp-adapters>=0.3,<1
+# 官方 mcp 客户端：MCP 工具由 agent/tools/mcp.py 自己桥接。
+# 不要装 langchain-mcp-adapters —— 它钉死 mcp<2，而 fastmcp 4（我们的 MCP 服务端）要求
+# mcp>=2；同装会让 pip 把 mcp 降到 1.30，服务端子进程启动即 ModuleNotFoundError。
+mcp>=2,<3
 langgraph-checkpoint-sqlite>=3.1,<4
 
 # Testing Dependencies

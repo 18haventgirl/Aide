@@ -118,6 +118,8 @@ class AideRuntime:
 
     def __init__(self):
         self._agent: Any = None
+        self._tools: List[Any] = []
+        self._bridge: Any = None
         self._has_memory: bool = False
         self._exit_stack: Optional[AsyncExitStack] = None
         self._lock: Optional[asyncio.Lock] = None
@@ -137,14 +139,15 @@ class AideRuntime:
         from agent.checkpoint import build_checkpointer
         from agent.graph import build_agent, default_tools
         from agent.model import build_chat_model
-        from agent.tools.mcp import load_mcp_tools
+        from agent.tools.mcp import build_mcp_bridge
 
         model = build_chat_model()
         if model is None:
             raise RuntimeError("未配置可用的对话模型（检查 OPENAI_API_KEY / OPENAI_API_BASE_URL）")
 
-        mcp_tools = await load_mcp_tools()
-        tools = [*default_tools(), *mcp_tools]
+        # MCP 连不上时 bridge 为 None：对话照常，只是没有外部工具
+        bridge = await build_mcp_bridge()
+        tools = [*default_tools(), *(bridge.tools if bridge else [])]
 
         stack = AsyncExitStack()
         try:
@@ -152,20 +155,44 @@ class AideRuntime:
             agent = await build_agent(model, tools=tools, checkpointer=saver)
         except Exception:
             await stack.aclose()
+            if bridge is not None:
+                await bridge.close()
             raise
 
         self._exit_stack = stack
         self._agent = agent
+        self._tools = tools
+        self._bridge = bridge
         self._has_memory = True
         logger.info(f"Aide 运行时就绪：{len(tools)} 个工具，checkpoint 已挂载")
 
+    def is_ready(self) -> bool:
+        """图是否已构建（给健康检查与性能统计用，不触发构建）"""
+        return self._agent is not None
+
+    def tool_count(self) -> int:
+        return len(self._tools)
+
+    def tools_manifest(self) -> List[Dict[str, str]]:
+        """这张图上的工具清单（名称 + 一行说明），给前端工具面板用"""
+        return [
+            {"name": getattr(tool, "name", str(tool)),
+             "description": (getattr(tool, "description", "") or "").strip().splitlines()[0][:120]
+                             if (getattr(tool, "description", "") or "").strip() else ""}
+            for tool in self._tools
+        ]
+
     async def aclose(self) -> None:
-        """关掉 checkpoint 连接并丢弃图实例；下次 ask() 会重新构建"""
+        """关掉 checkpoint 连接与 MCP 会话并丢弃图实例；下次 ask() 会重新构建"""
         self._agent = None
+        self._tools = []
         self._has_memory = False
+        bridge, self._bridge = self._bridge, None
         stack, self._exit_stack = self._exit_stack, None
         if stack is not None:
             await stack.aclose()
+        if bridge is not None:
+            await bridge.close()
 
     async def _state_messages(self, config: Dict[str, Any]) -> List[Any]:
         """该线程当前的消息列表；读不到按无历史处理（ checkpoint 只是慢，不是错）"""
@@ -182,18 +209,20 @@ class AideRuntime:
         return len(await self._state_messages(config))
 
     async def ask(self, user_id: int, conversation_id: str, text: str,
-                  user_name: str = "", lat: str = "", lng: str = "",
-                  city: str = "") -> AideAnswer:
-        """跑一轮对话（非流式）"""
+                  context: Optional[UserContext] = None) -> AideAnswer:
+        """跑一轮对话（非流式）
+
+        context 由调用方（WebSocket 层已经装配过一份）注入，省掉一次重复的库查询；
+        没给则按 user_id 现取。
+        """
         try:
             await self.ensure_ready()
         except Exception as exc:
             logger.warning(f"运行时不可用: {exc}")
             return AideAnswer(error=str(exc))
 
-        context: Optional[UserContext] = None
+        context = context or build_user_context(user_id)
         try:
-            context = build_user_context(user_id, user_name=user_name, lat=lat, lng=lng, city=city)
             config = {"configurable": {"thread_id": conversation_id}, "recursion_limit": 25}
             before = await self._state_len(config) if self._has_memory else 0
             state = await self._agent.ainvoke(
@@ -201,19 +230,16 @@ class AideRuntime:
             )
         except Exception as exc:
             logger.exception("图执行失败")
-            checks = context.guardrail_checks if context else []
-            return AideAnswer(error=str(exc), guardrail_checks=checks)
+            return AideAnswer(error=str(exc), guardrail_checks=context.guardrail_checks)
 
         messages = (state.get("messages") if isinstance(state, dict) else None) or []
         answer, events, blocked = _read_outcome(messages[before:])
-        checks = context.guardrail_checks if context else []
         return AideAnswer(text=answer, tool_events=events,
-                          guardrail_checks=checks, blocked=blocked)
+                          guardrail_checks=context.guardrail_checks, blocked=blocked)
 
 
     async def astream(self, user_id: int, conversation_id: str, text: str,
-                      user_name: str = "", lat: str = "", lng: str = "",
-                      city: str = "") -> AsyncIterator[Dict[str, Any]]:
+                      context: Optional[UserContext] = None) -> AsyncIterator[Dict[str, Any]]:
         """跑一轮对话（流式）
 
         逐字与节点轨迹实时透出；最后的 AideAnswer 以图的最终状态为准，不靠累加 delta，
@@ -226,10 +252,9 @@ class AideRuntime:
             yield {"kind": "final", "answer": AideAnswer(error=str(exc))}
             return
 
-        context: Optional[UserContext] = None
+        context = context or build_user_context(user_id)
         streamed = ""
         try:
-            context = build_user_context(user_id, user_name=user_name, lat=lat, lng=lng, city=city)
             config = {"configurable": {"thread_id": conversation_id}, "recursion_limit": 25}
             before = await self._state_len(config) if self._has_memory else 0
             stream = self._agent.astream(
@@ -243,14 +268,14 @@ class AideRuntime:
             messages = await self._state_messages(config)
         except Exception as exc:
             logger.exception("流式图执行失败")
-            checks = context.guardrail_checks if context else []
-            yield {"kind": "final", "answer": AideAnswer(error=str(exc), guardrail_checks=checks)}
+            yield {"kind": "final",
+                   "answer": AideAnswer(error=str(exc), guardrail_checks=context.guardrail_checks)}
             return
 
         answer, events, blocked = _read_outcome(messages[before:])
-        checks = context.guardrail_checks if context else []
         yield {"kind": "final", "answer": AideAnswer(text=answer or streamed, tool_events=events,
-                                                      guardrail_checks=checks, blocked=blocked)}
+                                                     guardrail_checks=context.guardrail_checks,
+                                                     blocked=blocked)}
 
 
 def _read_outcome(messages: List[Any]) -> tuple:

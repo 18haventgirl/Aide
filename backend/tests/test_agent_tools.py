@@ -13,7 +13,6 @@ from langchain.tools import ToolRuntime
 
 from agent.context import UserContext
 from agent.tools import notes as notes_mod
-from agent.tools.mcp import load_mcp_tools
 from agent.tools.notes import save_note, search_my_notes
 
 
@@ -158,10 +157,3 @@ def test_save_note_without_service_or_context_returns_string():
     with _service(FakeNoteService()):
         out = asyncio.run(save_note.ainvoke({"title": "t"}))   # 未注入 runtime
     assert isinstance(out, str) and "用户" in out
-
-
-def test_load_mcp_tools_returns_list_and_never_raises():
-    # MCP 服务在跑则返回真实工具列表，没跑则返回空列表；两种情况都不能抛
-    tools = asyncio.run(load_mcp_tools())
-    assert isinstance(tools, list)
-    assert all(hasattr(t, "name") for t in tools)
