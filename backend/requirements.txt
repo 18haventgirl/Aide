@@ -39,6 +39,15 @@ posthog
 # JWT Authentication Dependencies
 python-jose[cryptography]
 
+# ===== LangGraph 编排层 =====
+# openai-agents / litellm 暂时保留：旧的 agent/personal_assistant_manager.py 还在用，
+# 等阶段 4 删掉旧引擎时一并移除，保证每个提交点都是可安装状态
+langgraph>=1.2,<2
+langchain>=1.4,<2
+langchain-openai>=1.6,<2
+langchain-mcp-adapters>=0.3,<1
+langgraph-checkpoint-sqlite>=3.1,<4
+
 # Testing Dependencies
 pytest
 requests>=2.31.0
