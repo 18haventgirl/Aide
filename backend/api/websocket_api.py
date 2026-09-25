@@ -896,18 +896,13 @@ async def get_performance_stats(current_user: Dict[str, Any] = CurrentUser):
 
 @websocket_http_router.post("/performance/cleanup")
 async def cleanup_expired_caches(current_user: Dict[str, Any] = CurrentUser):
-    """清理过期缓存"""
+    """清理 service_manager 的过期缓存
+
+    旧引擎时代这里还会清用户上下文缓存；LangGraph 下上下文每轮现取，已无缓存可清。
+    """
     try:
-        # 清理性能管理器的过期缓存
-        performance_manager.cleanup_expired_caches()
-        
-        # 清理service_manager的过期缓存
         service_manager.clear_expired_cache()
-        
-        return {
-            "status": "success",
-            "message": "过期缓存已清理"
-        }
+        return {"status": "success", "message": "过期缓存已清理"}
         
     except Exception as e:
         logger.error(f"清理过期缓存失败: {e}")

@@ -55,6 +55,23 @@
   - 全量 `pytest tests -q`：**108 passed**，全部离线可跑
   - 真实 WS 端到端（注册→连接→三轮对话）：`tool_count=31`（2 个自研 RAG + 29 个 MCP）、过程帧 `tools_list/node_update/delta`、TURN2 靠 checkpoint 答出"你叫小林，在广州做安卓开发"、TURN3 真调 `weather_get_daily_weather_forecast`
   - 探针脚本 `backend/_ws_probe.py`（临时，阶段 4 会固化成 `scripts/e2e_langgraph_check.py`，不提交）
+- [x] 阶段 3：前端图执行轨迹与工具清单（`8cfe711` 过程帧接入 + `5c87241` 面板组件）
+  - 浏览器实测（5199，账号 lguser）：流式逐字正常；同一会话第二轮"你叫小陈，在杭州工作"由 checkpoint 记忆答出；
+    轨迹显示 安全护栏/相关性护栏/模型推理/工具执行（中文标签 + 原始节点名）；工具清单 31 个按来源分组；
+    护栏分区显示两条检查与理由；顺手修了时间戳（后端给 epoch 秒，前端 `new Date(秒)` → 显示在 1970 附近）
+- [ ] 阶段 4：删除旧引擎、文档、全量回归
+  - [x] 4.1 删旧引擎：删 `agent/personal_assistant_manager.py`、`agent/guardrails.py`、`tests/test_guardrails.py`
+    （12 项旧护栏用例，覆盖面已由 `test_guardrail_middleware.py` 取代）；`core/performance_manager.py`
+    从 319 行瘦到 103 行，只管会话管理器缓存；`requirements.txt` 去掉 `openai-agents` / `openai-agents[litellm]`；
+    README 新增"编排架构"一节与 `CHECKPOINT_DB` / 模型名说明。
+    **验证方式**：把 `openai-agents` 与 `litellm` 从环境里真卸掉后 `pytest tests`（100 passed）与
+    `python -c "import main"` 均通过，`pip check` 干净 —— 说明没有隐性残留依赖。
+  - 与计划的两处偏差（都有实测理由）：
+    1. 计划要删 `agent/agent_session.py` —— **不删**：它只依赖 `ChatMessageService`/`ConversationService`，
+       与 SDK 无关，且 MySQL 展示副本正是它在写（实测会话 26 有 3 human + 3 ai）；删掉等于砍掉副本写入。
+    2. 计划要让 `performance_manager` 持有 `AideRuntime` —— **不做**：`agent.runtime.aide_runtime` 已是模块级
+       单例并被直接引用，再包一层只是第二个引用点，属于无收益的间接层。
+  - [ ] 4.2 端到端会话验收脚本 + 推送
 
 ### ⚠️ 依赖地雷（已解，别再装回去）
 

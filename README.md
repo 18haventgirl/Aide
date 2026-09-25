@@ -9,10 +9,15 @@
 ```
 lg-aide/
 ├── backend/                          # Python 后端服务 (Python backend service)
-│   ├── agent/                       # AI 代理模块 (AI agent modules)
-│   │   ├── agent_session.py         # 代理会话管理
-│   │   ├── guardrails.py            # 输入护栏：安全性 + 相关性检查
-│   │   └── personal_assistant_manager.py  # 多代理装配与用户上下文
+│   ├── agent/                       # LangGraph 编排层 (orchestration)
+│   │   ├── graph.py                 # 建图：单代理 + 工具集 + 中间件
+│   │   ├── runtime.py               # 业务层唯一入口：ask() / astream()
+│   │   ├── model.py                 # ChatOpenAI(DeepSeek) 与会话标题生成
+│   │   ├── context.py               # UserContext（身份/偏好，工具与护栏共用）
+│   │   ├── middleware.py            # 输入护栏（before_model 短路）+ user_id 身份覆写
+│   │   ├── checkpoint.py            # SQLite 检查点：对话状态的唯一真相
+│   │   ├── tools/                   # 自研 RAG 笔记工具 + MCP 工具桥接
+│   │   └── agent_session.py         # MySQL 会话/消息副本（展示与检索用）
 │   ├── api/                         # API 接口 (API endpoints)
 │   │   ├── admin_api.py             # 管理员接口
 │   │   ├── auth_api.py              # 认证接口
@@ -70,6 +75,32 @@ lg-aide/
 │   └── tailwind.config.js           # Tailwind CSS 配置
 └── README.md                        # 项目说明文档
 ```
+
+## 编排架构 (Orchestration Architecture)
+
+一个 Aide 代理挂全部工具，取代原来的 6 代理 handoff 结构：
+
+```
+浏览器 ──WS chat──▶ api/websocket_api.py ──▶ agent/runtime.py (aide_runtime)
+                                                  │
+                        create_agent(model=ChatOpenAI(DeepSeek), tools=[自研 RAG + MCP],
+                                     middleware=[身份覆写, 安全护栏, 相关性护栏],
+                                     context_schema=UserContext,
+                                     checkpointer=AsyncSqliteSaver)
+```
+
+- **对话状态的真相是 SQLite 检查点**（`CHECKPOINT_DB`，默认 `backend/data/lg-aide-checkpoints.sqlite`，
+  按 `conversation_id` 作为 thread_id）。多轮记忆、线程恢复都来自它。
+- **MySQL 的 `conversations` / `chat_messages` 只是展示副本**：会话列表、历史页读它；不再回灌给模型当记忆。
+  被护栏拦下的回复会以 `extra_data.source = "guardrails"` 标记，历史里能看出不是模型正常作答。
+- **护栏**是 `before_model` 中间件：命中即 `jump_to end`，业务模型完全不被调用；判定输出用
+  "第一行结论 + 第二行理由"的纯文本协议（DeepSeek 等网关不支持 structured outputs），
+  判定自身故障一律放行并记录原因。工具回环不重复判定。
+- **身份**：`user_id` 只从 `UserContext` 取。MCP 那批带 `user_id` 入参的工具在真正执行前会被
+  登录身份强制覆写，模型填谁的 id 都没用。
+- **WebSocket 帧**：过程帧 `tools_list` / `delta` / `node_update` / `tool_call` / `tool_output`，
+  收尾一帧 `completion`（沿用 `ChatResponse` 结构）。逐字 token 只从作答节点透出，
+  护栏判定的内部 token 不会推给用户。
 
 ## 后端环境配置与运行 (Backend Environment Setup & Running)
 
@@ -143,6 +174,17 @@ JWT_SECRET_KEY=change-me   # python -c "import secrets; print(secrets.token_urls
 | ChromaDB | `CHROMA_PORT` | 8101 |
 | MySQL（宿主机映射） | `DB_PORT` | 3307 |
 | 前端开发服务器 | `UI_PORT` | 5199 |
+
+模型名与对话状态：
+
+```env
+# 编排层走 langchain-openai（OpenAI SDK），模型名写本名：deepseek-chat。
+# 迁移前 litellm 的写法 openai/deepseek-chat 也仍可用，读配置时会自动去掉 provider 前缀。
+OPENAI_CHAT_MODEL=deepseek-chat
+OPENAI_API_BASE_URL=https://api.deepseek.com
+# 多轮记忆所在的 SQLite 检查点文件；相对路径按 backend 目录解析，已在 .gitignore 内
+CHECKPOINT_DB=./data/lg-aide-checkpoints.sqlite
+```
 
 ### 5. 启动依赖服务 (Start Dependencies)
 
@@ -300,9 +342,10 @@ npm run preview
 - FastAPI + Uvicorn
 - SQLAlchemy 2 + PyMySQL
 - MySQL 8
-- ChromaDB（向量检索 / RAG）
-- OpenAI Agents SDK + LiteLLM
-- MCP（fastmcp，Streamable HTTP 传输）
+- LangGraph（单代理 + 工具图）+ LangChain `ChatOpenAI`（OpenAI 兼容端点，默认 DeepSeek）
+- 自研 RAG：ChromaDB 本地向量库 + `BAAI/bge-small-zh-v1.5` 本地 embedding（不依赖外部 embedding API）
+- MCP（fastmcp，Streamable HTTP 传输；工具由 `agent/tools/mcp.py` 桥接进 LangGraph）
+- SQLite 检查点（`langgraph-checkpoint-sqlite`）承载多轮对话状态
 
 **前端 (Frontend):**
 - React 19

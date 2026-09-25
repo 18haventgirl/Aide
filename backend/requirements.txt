@@ -1,7 +1,7 @@
-openai-agents
-openai-agents[litellm]
-# 代码用的是 FastMCP.mount()（fastmcp 4.x）。2.x 的 import_server 已被删除，
-# 且 2.x 与 mcp 1.x/2.x 之间存在互不兼容的依赖三角，不要往回降。
+# 编排层是 LangGraph（见下方"LangGraph 编排层"一节）。OpenAI Agents SDK 与 litellm
+# 已随旧引擎一起移除，不要再装回来。
+# MCP 服务端用 fastmcp 4.x 的 mount(namespace=...)；2.x 的 import_server 已被删除，
+# 且与 mcp 1.x/2.x 存在互不兼容的依赖三角，不要往回降。
 fastmcp>=4,<5
 requests
 python-dotenv
@@ -40,8 +40,6 @@ posthog
 python-jose[cryptography]
 
 # ===== LangGraph 编排层 =====
-# openai-agents / litellm 暂时保留：旧的 agent/personal_assistant_manager.py 还在用，
-# 等阶段 4 删掉旧引擎时一并移除，保证每个提交点都是可安装状态
 langgraph>=1.2,<2
 langchain>=1.4,<2
 langchain-openai>=1.6,<2

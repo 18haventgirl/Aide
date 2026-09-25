@@ -97,8 +97,9 @@ async def create_mcp_server():
         print("❌ Database initialization failed, but continuing with MCP service")
     
     # Create MCP instance
-    # fastmcp 4.x 用 mount(namespace=...) 挂载子服务，工具名会带上 "namespace_" 前缀，
-    # 后端 personal_assistant_manager 的 tool_filter 正是按这个前缀筛选各代理可见的工具
+    # fastmcp 4.x 用 mount(namespace=...) 挂载子服务，工具名会带上 "namespace_" 前缀。
+    # 后端 agent/tools/mcp.py 装载时保持这个原名（tool_name_prefix 关闭），
+    # 并按"入参带 user_id 就按登录身份覆写"的规则处理用户数据类工具
     mcp.mount(weather_mcp, namespace="weather")
     mcp.mount(news_mcp, namespace="news")
     mcp.mount(recipe_mcp, namespace="recipe")
