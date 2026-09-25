@@ -28,6 +28,7 @@ from api.ws_stream import (
     ChatResponse,
     GuardrailCheck,
     WsStreamTranslator,
+    agents_meta,
 )
 
 # 导入WebSocket核心模块
@@ -83,13 +84,7 @@ def _build_agents_list() -> List[Dict[str, Any]]:
     """
     from agent.runtime import aide_runtime
 
-    return [{
-        "name": "Aide",
-        "description": "LangGraph 单代理 + 工具图（自研 RAG 笔记 + MCP 外部数据）",
-        "handoffs": [],
-        "tools": [tool["name"] for tool in aide_runtime.tools_manifest()],
-        "input_guardrails": ["Safety Guardrail", "Relevance Guardrail"],
-    }]
+    return agents_meta(aide_runtime.tools_manifest())
 
 
 def _guardrail_checks(checks: List[Dict[str, Any]]) -> List[GuardrailCheck]:

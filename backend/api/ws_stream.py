@@ -19,6 +19,22 @@ from core.web_socket_core import MessageType, WebSocketMessage
 
 AGENT_NAME = "Aide"
 AGENT_DESCRIPTION = "LangGraph 单代理 + 工具图（自研 RAG 笔记 + MCP 外部数据）"
+GUARDRAIL_NAMES = ["Safety Guardrail", "Relevance Guardrail"]
+
+
+def agents_meta(tools_manifest: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    """单代理的元信息
+
+    handoffs 恒为空（6 代理 handoff 已被单 agent + 工具图取代），input_guardrails 要
+    带上：前端"安全护栏"分区按它判断当前代理挂了哪些护栏。
+    """
+    return [{
+        "name": AGENT_NAME,
+        "description": AGENT_DESCRIPTION,
+        "handoffs": [],
+        "tools": [tool.get("name", "") for tool in tools_manifest or []],
+        "input_guardrails": GUARDRAIL_NAMES,
+    }]
 
 
 class MessageResponse(BaseModel):
@@ -86,11 +102,15 @@ class WsStreamTranslator:
         )
 
     def tools_list_message(self) -> WebSocketMessage:
-        """开场告诉前端这张图上有谁、能用哪些工具"""
-        names = [tool.get("name", "") for tool in self.tools_manifest]
+        """开场告诉前端这张图上有谁、能用哪些工具
+
+        顺带把 conversation_id 带回去：新会话的 ID 是服务端生成的，过程帧里若不带，
+        前端要到 completion 才知道，中途刷新或切换就会接不上同一线程。
+        """
         return self._message({
             "type": "tools_list",
-            "agents": [{"name": AGENT_NAME, "description": AGENT_DESCRIPTION, "tools": names}],
+            "conversation_id": self.conversation_id,
+            "agents": agents_meta(self.tools_manifest),
             "tools": self.tools_manifest,
         })
 
@@ -153,8 +173,7 @@ class WsStreamTranslator:
             messages=[MessageResponse(content=text, agent=author)] if text else [],
             events=events,
             context=self.context,
-            agents=[{"name": AGENT_NAME, "description": AGENT_DESCRIPTION,
-                     "tools": [t.get("name", "") for t in self.tools_manifest]}],
+            agents=agents_meta(self.tools_manifest),
             tools=self.tools_manifest,
             raw_response=text,
             guardrails=guardrails,

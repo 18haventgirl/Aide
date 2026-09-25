@@ -87,7 +87,12 @@ def test_tools_list_frame_announces_single_agent_and_tools():
     assert content["type"] == "tools_list"
     assert [a["name"] for a in content["agents"]] == ["Aide"]
     assert content["agents"][0]["tools"] == ["search_my_notes", "weather_get_current_weather"]
+    # 前端"安全护栏"分区靠 input_guardrails 判断当前代理挂了哪些护栏
+    assert content["agents"][0]["input_guardrails"] == ["Safety Guardrail", "Relevance Guardrail"]
+    assert content["agents"][0]["handoffs"] == []
     assert content["tools"][0]["name"] == "search_my_notes"
+    # 新会话 ID 由服务端生成，过程首帧就要带回，否则前端要到 completion 才知道
+    assert content["conversation_id"] == "conv1"
 
 
 def test_completion_keeps_legacy_chat_response_shape():

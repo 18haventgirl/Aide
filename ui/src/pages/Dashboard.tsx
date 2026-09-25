@@ -6,7 +6,7 @@ import { Chat } from "../components/Chat";
 import { PersonDataPanel } from "../components/person-data-panel";
 
 import ErrorBoundary from "../components/ErrorBoundary";
-import type { Agent, AgentEvent, GuardrailCheck, Message } from "../lib/types";
+import type { Agent, AgentEvent, GuardrailCheck, Message, NodeUpdate, ToolInfo } from "../lib/types";
 import { createWebSocketService, getWebSocketService, type WebSocketConnectionStatus } from "../lib/websocket";
 import { Bot, MessageCircle, Wifi, WifiOff, RefreshCw, AlertTriangle, LogOut, User, Database } from "lucide-react";
 import { Button } from "../components/ui/button";
@@ -80,6 +80,9 @@ const Dashboard: React.FC = () => {
   const [streamingResponse, setStreamingResponse] = useState<string>('');
   const [wsError, setWsError] = useState<string>('');
   const [conversationListKey, setConversationListKey] = useState(0);
+  // LangGraph 执行轨迹与工具清单（来自 node_update / tools_list 过程帧）
+  const [graphNodes, setGraphNodes] = useState<NodeUpdate[]>([]);
+  const [toolInfos, setToolInfos] = useState<ToolInfo[]>([]);
 
   // 会话恢复逻辑 - 在组件初始化时尝试从localStorage恢复会话
   useEffect(() => {
@@ -272,72 +275,58 @@ const Dashboard: React.FC = () => {
             handleChatResponse(content);
           }
         } else {
-          // 流式响应更新 - 只更新流式响应文本，不更新消息列表
-          console.log('🔄 流式响应更新:', content);
-          
-          // 检查流式响应中是否包含错误
+          // 过程帧（LangGraph 协议）：delta / node_update / tools_list / tool_call / tool_output
+          switch (content.type) {
+            case "delta":
+              setStreamingResponse(content.text_so_far || "");
+              break;
+            case "node_update":
+              setGraphNodes(prev => [...prev, { node: content.node, status: content.status }]);
+              break;
+            case "tools_list":
+              setToolInfos(Array.isArray(content.tools) ? content.tools : []);
+              if (Array.isArray(content.agents)) setAgents(content.agents);
+              break;
+            case "tool_call":
+            case "tool_output":
+              setEvents(prev => [...prev, {
+                id: `${content.type}-${content.tool_call_id || Date.now()}`,
+                type: content.type as "tool_call" | "tool_output",
+                agent: "Aide",
+                content: content.type === "tool_call" ? (content.tool || "") : (content.summary || ""),
+                timestamp: new Date(),
+                metadata: content.type === "tool_call"
+                  ? { tool: content.tool, arguments: content.arguments || {} }
+                  : { tool: content.tool },
+              }]);
+              break;
+          }
+
+          // 引擎之外出错（例如会话创建失败）也会走过程帧通道，这里保持可见
           if (content.is_error) {
             console.error('🔄 流式响应中包含错误:', content.error_message);
-            
-            // 创建错误消息并添加到消息列表
-            const errorMessage: Message = {
+            setMessages(prev => [...prev, {
               id: `error-${Date.now()}-${Math.random()}`,
               content: `系统异常: ${content.error_message}`,
               type: 'ai',
               agent: content.current_agent || 'System',
               timestamp: new Date(),
-            };
-            
-            setMessages(prev => [...prev, errorMessage]);
-            
-            // 重置状态
+            } as Message]);
             setStreamingResponse('');
             setIsLoading(false);
             return;
           }
-          
-          // 更新流式响应文本
-          if (content.raw_response) {
-            setStreamingResponse(content.raw_response);
-          }
-          
-          // 实时更新会话ID和当前代理
+
+          // 实时更新会话ID（新会话的 ID 由服务端生成，tools_list 首帧就带回）
           if (content.conversation_id && !conversationId) {
-            console.log('🌟 收到新的会话ID (来自流式响应):', content.conversation_id);
+            console.log('🌟 收到新的会话ID (来自过程帧):', content.conversation_id);
             setConversationId(content.conversation_id);
             const wsService = getWebSocketService();
             if (wsService) {
-              console.log('🔄 更新WebSocket服务的会话ID:', content.conversation_id);
               wsService.setConversationId(content.conversation_id);
             }
-            // 保存新的会话ID到localStorage
             ConversationPersistence.saveCurrentConversationId(content.conversation_id);
-            // 触发会话列表刷新
             setConversationListKey(prev => prev + 1);
-          }
-          
-          // 确保实时更新当前代理，包括agent切换
-          if (content.current_agent) {
-            console.log('🔄 流式响应期间更新当前代理:', content.current_agent);
-            setCurrentAgent(content.current_agent);
-          }
-          
-          // 流式响应期间不更新消息列表，避免同时显示
-          // 只更新其他状态信息
-          if (content.events && Array.isArray(content.events)) {
-            setEvents(content.events);
-          }
-          
-          if (content.agents && Array.isArray(content.agents)) {
-            setAgents(content.agents);
-          }
-          
-          if (content.guardrails && Array.isArray(content.guardrails)) {
-            setGuardrails(content.guardrails);
-          }
-          
-          if (content.context) {
-            setContext(content.context);
           }
         }
       };
@@ -585,6 +574,8 @@ const Dashboard: React.FC = () => {
     console.log('📤 发送消息:', content, '当前会话ID:', conversationId);
     setIsLoading(true);
     setStreamingResponse('');
+    setGraphNodes([]);
+    setEvents([]);
     
     // 立即添加用户消息到UI
     const userMessage: Message = {
@@ -746,6 +737,8 @@ const Dashboard: React.FC = () => {
                 events={events}
                 guardrails={guardrails}
                 context={context}
+                graphNodes={graphNodes}
+                toolInfos={toolInfos}
               />
             </div>
 
@@ -780,6 +773,8 @@ const Dashboard: React.FC = () => {
                   events={events}
                   guardrails={guardrails}
                   context={context}
+                  graphNodes={graphNodes}
+                  toolInfos={toolInfos}
                 />
               )}
               {activeTab === 'person' && (

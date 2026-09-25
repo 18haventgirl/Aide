@@ -20,11 +20,23 @@ export interface Agent {
 
 export interface AgentEvent {
   id: string
-  type: 'tool_call' | 'handoff' | 'context_update' | 'error' | 'message'
+  type: 'tool_call' | 'tool_output' | 'handoff' | 'context_update' | 'error' | 'message'
   agent: string
   content: string
   timestamp: Date
   metadata?: any
+}
+
+/** LangGraph 节点执行轨迹（护栏判定、模型、工具各为一个节点） */
+export interface NodeUpdate {
+  node: string
+  status: 'started' | 'finished'
+}
+
+/** 图上一个工具的展示信息 */
+export interface ToolInfo {
+  name: string
+  description: string
 }
 
 export interface GuardrailCheck {
