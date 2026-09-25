@@ -19,6 +19,15 @@
 | 测试账号 | `lguser`(id1) / `short`(id2) / `uixuser`(id3) / `freshuser`(id13)，密码统一见 `backend/.env` 之外的口头交代，**不写进仓库** |
 | 启动 | 后端 `python -m uvicorn main:app --host 127.0.0.1 --port 8100`（cwd=backend，启动约需 60s：要加载 embedding 模型）；前端 `npm run dev` |
 
+## 待办：推送
+
+`dev/lg` 本地领先 `origin/dev/lg` 23 个提交（迁移全部工作都在里面）。推送时 GitHub 直连被 reset、
+本机代理 `127.0.0.1:7890` 也没起来，网络恢复后执行：
+
+```bash
+cd D:/Workplace/AIDE-LG/Aide && git push origin dev/lg      # 必要时加 -c http.proxy= -c https.proxy=
+```
+
 ## 已完成并推送的部分
 
 `origin/dev/lg` 上：`master(9b69d34)` → 4 个提交，用户已验收"完美"。
