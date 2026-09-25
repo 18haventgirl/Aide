@@ -23,9 +23,22 @@ class UserContext:
     guardrail_checks: List[Dict[str, Any]] = field(default_factory=list)
 
 
+def _profile_city(preferences: Dict[str, Any]) -> str:
+    location = preferences.get("location")
+    if isinstance(location, dict):
+        return str(location.get("city") or "")
+    if isinstance(location, str):
+        return location
+    return ""
+
+
 def build_user_context(user_id: int, user_name: str = "", lat: str = "",
                        lng: str = "", city: str = "") -> UserContext:
-    """装配上下文。偏好加载失败只记日志、按空偏好继续，不阻断对话。"""
+    """装配上下文。任何一环取不到都不阻断对话：偏好按空处理、姓名退回占位。
+
+    WebSocket 层只掌握 user_id，所以姓名与城市要自己能从库里补齐；显式传入的
+    参数优先（便于前端覆盖）。
+    """
     context = UserContext(user_id=user_id, user_name=user_name, lat=lat, lng=lng, city=city)
     try:
         from service.service_manager import service_manager
@@ -35,4 +48,21 @@ def build_user_context(user_id: int, user_name: str = "", lat: str = "",
         context.preferences = preference_service.get_all_user_preferences(user_id) or {}
     except Exception as exc:
         logger.warning(f"加载用户 {user_id} 偏好失败，按空偏好继续: {exc}")
+
+    if not context.city:
+        context.city = _profile_city(context.preferences)
+
+    if not context.user_name:
+        try:
+            from service.service_manager import service_manager
+            from service.services.user_service import UserService
+
+            user = service_manager.get_service("user_service", UserService).get_user(user_id)
+            context.user_name = (getattr(user, "name", "") or "") if user else ""
+        except Exception as exc:
+            logger.warning(f"加载用户 {user_id} 姓名失败: {exc}")
+            context.user_name = ""
+
+    if not context.user_name:
+        context.user_name = f"User {user_id}"
     return context

@@ -154,11 +154,25 @@ def _streaming_runtime(chunks, final_messages):
     return runtime
 
 
-def _drain(runtime, text="明天上海天气"):
+def _drain(runtime, text="明天上海天气", context=None):
     async def run():
-        return [e async for e in runtime.astream(3, "conv-s", text)]
+        return [e async for e in runtime.astream(3, "conv-s", text, context=context)]
 
     return asyncio.run(run())
+
+
+def test_astream_uses_the_injected_context_instead_of_rebuilding_it():
+    """WS 层已经装配过一次上下文（要查偏好与姓名），运行时不该再查一遍"""
+    from agent.context import UserContext
+
+    context = UserContext(user_id=42)
+    context.guardrail_checks.append({"name": "Safety Guardrail", "input": "hi",
+                                     "reasoning": "正常", "passed": True})
+    events = _drain(_streaming_runtime([], [AIMessage(content="在的")]), context=context)
+
+    answer = events[-1]["answer"]
+    assert events[0]["kind"] == "final"
+    assert events[0]["answer"].guardrail_checks == context.guardrail_checks
 
 
 def test_astream_streams_deltas_then_final_from_state():

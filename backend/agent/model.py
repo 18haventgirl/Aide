@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Optional
 
 from dotenv import load_dotenv
+from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
 
 # 显式定位 backend/.env：自动查找依赖调用方位置，从别的入口启动时会找不到
@@ -43,3 +44,34 @@ def build_chat_model(temperature: float = 0.6, top_p: float = 0.9) -> Optional[C
         temperature=temperature,
         top_p=top_p,
     )
+
+
+TITLE_SYSTEM = (
+    "你要为一段中文对话起标题。用不超过 10 个字概括主题，只输出标题本身，"
+    "不要引号、书名号、句号，也不要解释。"
+)
+
+_BUILD_DEFAULT = object()
+
+
+async def generate_conversation_title(user_text: str, assistant_text: str,
+                                      model=_BUILD_DEFAULT) -> Optional[str]:
+    """每轮结束后一次独立小调用；取不到标题返回 None，由调用方保留原标题。
+
+    旧引擎用 SDK 的 Runner 跑一个专门的代理来起标题，这里直接一次 ainvoke 就够了。
+    """
+    chat_model = build_chat_model(temperature=0.3) if model is _BUILD_DEFAULT else model
+    if chat_model is None:
+        return None
+    try:
+        result = await chat_model.ainvoke([
+            SystemMessage(content=TITLE_SYSTEM),
+            HumanMessage(content=f"用户：{user_text}\n助手：{assistant_text}"),
+        ])
+    except Exception as exc:
+        logger.warning(f"会话标题生成失败，保留原标题: {exc}")
+        return None
+
+    title = str(getattr(result, "content", "") or "")
+    title = title.strip().strip("\"'“”《》【】。.!！?？ \n")
+    return title[:10] or None
