@@ -59,7 +59,7 @@
   - 浏览器实测（5199，账号 lguser）：流式逐字正常；同一会话第二轮"你叫小陈，在杭州工作"由 checkpoint 记忆答出；
     轨迹显示 安全护栏/相关性护栏/模型推理/工具执行（中文标签 + 原始节点名）；工具清单 31 个按来源分组；
     护栏分区显示两条检查与理由；顺手修了时间戳（后端给 epoch 秒，前端 `new Date(秒)` → 显示在 1970 附近）
-- [ ] 阶段 4：删除旧引擎、文档、全量回归
+- [x] 阶段 4：删除旧引擎、文档、全量回归（迁移完成）
   - [x] 4.1 删旧引擎：删 `agent/personal_assistant_manager.py`、`agent/guardrails.py`、`tests/test_guardrails.py`
     （12 项旧护栏用例，覆盖面已由 `test_guardrail_middleware.py` 取代）；`core/performance_manager.py`
     从 319 行瘦到 103 行，只管会话管理器缓存；`requirements.txt` 去掉 `openai-agents` / `openai-agents[litellm]`；
@@ -71,7 +71,17 @@
        与 SDK 无关，且 MySQL 展示副本正是它在写（实测会话 26 有 3 human + 3 ai）；删掉等于砍掉副本写入。
     2. 计划要让 `performance_manager` 持有 `AideRuntime` —— **不做**：`agent.runtime.aide_runtime` 已是模块级
        单例并被直接引用，再包一层只是第二个引用点，属于无收益的间接层。
-  - [ ] 4.2 端到端会话验收脚本 + 推送
+  - [x] 4.2 端到端会话验收：`backend/scripts/e2e_langgraph_check.py`（17 项断言 + 退出码，可重复跑）
+    实跑结论 **全部通过**（真实 DeepSeek + 本地 MCP + 本地向量库，旧 SDK 已从环境卸载后重启的服务）：
+    注册/`/auth/me`/健康检查 → 过程帧工具清单 31 个 → 首帧带回 `conversation_id` → 115 个 delta 逐字 →
+    `weather_get_daily_weather_forecast` 真调用 → 轨迹含护栏/模型/工具节点 → `user_data_create_todo` 写待办 →
+    多轮记忆答出"下班买牛奶" → 提示词注入被安全护栏拦下且未套出提示词 → RAG 零词面查询"植物养护提醒"
+    命中"阳台绿萝浇水" → 代理自己用 `search_my_notes` 答出"两周一次" → 该 thread_id 已在 SQLite 检查点文件里。
+    验收中修掉的一处脚本口径：注入那句被安全护栏 `jump_to end` 后相关性护栏不再运行，"必须两条记录"的断言是错的，
+    正确口径是"有记录且 failed 与 blocked 一致"。
+  - 最终回归：`pytest backend/tests -q` → **100 passed**（旧的 12 项 SDK 护栏用例随文件删除，覆盖面在
+    `test_guardrail_middleware.py`）；`python -c "import main"` 通过；`pip check` 干净。
+
 
 ### ⚠️ 依赖地雷（已解，别再装回去）
 
@@ -97,8 +107,8 @@ pip 把 `mcp` 降到 1.30，**MCP 子进程启动即** `ModuleNotFoundError: mcp
 ## 待验证（不许当作事实使用）
 
 1. ~~`create_agent` 的 `context_schema` 如何把 `UserContext` 注入工具~~ **已实测（阶段 1）**：工具签名写 `runtime: ToolRuntime[UserContext] = None` 即可，`langchain.tools` 有再导出（实际定义在 `langgraph.prebuilt.tool_node`）；该参数会被自动排除在 `tool_call_schema` 之外，模型看不到也填不了。单独 `tool.ainvoke({...})` 时 `runtime` 为 `None`，显式传 `runtime=None` 反而被 pydantic 拒（类型是 dataclass），要省略键。
-2. `stream_mode=["messages","updates"]` 同时开启时的产出形状——阶段 2 spike
-3. `AsyncSqliteSaver` 在 uvicorn 并发下的文件锁表现——阶段 2 spike
+2. ~~`stream_mode=["messages","updates"]` 同时开启时的产出形状~~ **已实测（阶段 2）**：产出 `(mode, payload)`；`messages` 的 payload 是 `(chunk, meta)`，meta 里有 `langgraph_node`。**关键坑：护栏判定也是模型调用，它的 token 同样会进这条流**，必须按节点白名单只透出 `model`，否则内部判词会当回答推给用户。
+3. `AsyncSqliteSaver` 在 uvicorn 并发下的文件锁表现——**部分实测**：单连接多轮、跨连接同线程、进程重启后同线程均正常；多用户并发写同一库尚未压测（脚本 e2e 是单会话）。检查点文件必须长期持有上下文，建完图就退出 `async with` 会让下一轮撞在已关闭的连接上。
 4. ~~`tool_name_prefix=True` 产出的工具名~~ **已实测（阶段 1）**：用 `tool_name_prefix=False`，29 个工具名原样为 `weather_/news_/recipe_/user_data_` 前缀，与 MCP 服务端一致；`load_mcp_tools()` 对运行中的 8102 真实返回 29 个。
 5. 单 agent 挂 29+2 工具时 DeepSeek 的工具选择准确率与 token 成本——阶段 2 实测（首个冒烟选对了天气工具）
 6. 会话标题生成改为每轮后一次独立小调用，效果是否够用——阶段 4
