@@ -4,6 +4,7 @@ import asyncio
 from dataclasses import dataclass, field
 
 from langchain.agents import create_agent
+from langchain.tools import tool
 from langchain_core.language_models.chat_models import BaseChatModel
 from langchain_core.messages import AIMessage, HumanMessage
 from langchain_core.outputs import ChatGeneration, ChatResult
@@ -123,3 +124,37 @@ def test_judge_failure_fails_open_with_reason():
     for record in context.guardrail_checks:
         assert record["passed"] is True
         assert "护栏判定不可用" in record["reasoning"]
+
+
+def test_guardrails_judge_once_per_turn_not_per_tool_loop():
+    """工具回环会再次触发 before_model，同一句话不该被判第二遍
+
+    每多判一次就是多两次 LLM 往返：首 token 延迟直接翻倍，面板上还会出现重复行。
+    """
+
+    @tool
+    def echo(value: str = "ok") -> str:
+        """回显入参"""
+        return value
+
+    judge = ScriptedModel(replies=[
+        {"content": "SAFE\n正常请求"},
+        {"content": "RELEVANT\n在服务范围内"},
+        {"content": "", "tool_calls": [{"name": "echo", "args": {"value": "x"}, "id": "c1"}]},
+        {"content": "工具已经跑完"},
+    ])
+
+    async def go():
+        context = UserContext(user_id=1)
+        agent = create_agent(judge, [echo], middleware=build_guardrail_middlewares(judge),
+                             context_schema=UserContext, name="Aide")
+        state = await agent.ainvoke({"messages": [HumanMessage(content="跑一下工具")]},
+                                    context=context)
+        return state, context
+
+    state, context = asyncio.run(go())
+
+    assert state["messages"][-1].content == "工具已经跑完"
+    assert len(context.guardrail_checks) == 2                    # 一道护栏一条，不是回环后再来一遍
+    assert {c["name"] for c in context.guardrail_checks} == {
+        SAFETY_GUARDRAIL_NAME, RELEVANCE_GUARDRAIL_NAME}

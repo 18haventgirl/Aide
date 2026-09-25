@@ -10,7 +10,7 @@ import logging
 from typing import Any, List, Optional, Tuple
 
 from langchain.agents.middleware import before_model, wrap_tool_call
-from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
+from langchain_core.messages import AIMessage, HumanMessage, SystemMessage, ToolMessage
 
 from agent.context import UserContext
 
@@ -92,6 +92,16 @@ def parse_verdict(text: str, positive: str, negative: str) -> Tuple[bool, str]:
     return True, f"判定结论无法识别（原文：{head}），已放行"
 
 
+def _resuming_after_tool(state: dict) -> bool:
+    """本轮是不是工具跑完后的回环
+
+    before_model 在每次模型调用前都会触发，工具回环里再判一遍等于把同一句话判两次：
+    多两次 LLM 往返、面板重复行，而且此时最新回复已是模型自己的话。
+    """
+    messages = state.get("messages", []) or []
+    return bool(messages) and isinstance(messages[-1], ToolMessage)
+
+
 def _latest_user_text(state: dict) -> str:
     """本轮待判定的用户消息（不看历史，避免被旧话题带偏）"""
     for message in reversed(state.get("messages", []) or []):
@@ -123,6 +133,8 @@ def build_guardrail_middlewares(model) -> List[Any]:
 
     @before_model(can_jump_to=["end"], name=SAFETY_GUARDRAIL_NAME)
     async def safety_guard(state, runtime):
+        if _resuming_after_tool(state):
+            return None
         text = _latest_user_text(state)
         context = getattr(runtime, "context", None)
         try:
@@ -140,6 +152,8 @@ def build_guardrail_middlewares(model) -> List[Any]:
 
     @before_model(can_jump_to=["end"], name=RELEVANCE_GUARDRAIL_NAME)
     async def relevance_guard(state, runtime):
+        if _resuming_after_tool(state):
+            return None
         text = _latest_user_text(state)
         context = getattr(runtime, "context", None)
         try:
