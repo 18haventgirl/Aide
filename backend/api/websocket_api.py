@@ -235,7 +235,8 @@ async def _process_stream_with_concurrent_handling(
         if answer is None:
             answer = AideAnswer(error="图未产出最终结果")
         if answer.text:
-            await db_save_queue.put(("final_message", answer.text))
+            await db_save_queue.put(("final_message", answer.text,
+                                      "guardrails" if answer.blocked else "model"))
 
         await response_queue.put(_completion_frame(
             translator.build_chat_response(answer), _completion_note(answer), room_id))
@@ -280,21 +281,25 @@ async def _concurrent_response_sender(response_queue: asyncio.Queue, connection_
 
 
 async def _concurrent_db_saver(db_save_queue: asyncio.Queue, agent_session):
-    """并发数据库保存器"""
-    try:
-        while True:
-            item = await db_save_queue.get()
-            if item is None:  # 停止信号
-                break
-            
-            save_type, data = item
-            if save_type == "final_message":
-                await agent_session.save_message(data, "assistant")
-            
-            await asyncio.sleep(0)  # 让出控制权
-            
-    except Exception as e:
-        logger.error(f"数据库保存器错误: {e}")
+    """并发数据库保存器
+
+    落库失败只记日志：会话历史是展示副本，写不进去也不能把正在流式回答的连接带崩。
+    """
+    while True:
+        item = await db_save_queue.get()
+        if item is None:                      # 停止信号
+            break
+
+        _, content, source = item
+        if content:
+            try:
+                await agent_session.save_message(
+                    content, "assistant",
+                    extra_data={"source": source} if source == "guardrails" else None)
+            except Exception as exc:
+                logger.error(f"会话历史写入失败（不影响本轮回答）: {exc}")
+
+        await asyncio.sleep(0)                # 让出控制权
 
 
 async def handle_stream_chat(user_id: str, message: str, connection_id: str, authenticated_user: Optional[Dict[str, Any]] = None, conversation_id: Optional[str] = None) -> None:
