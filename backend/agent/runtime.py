@@ -8,7 +8,7 @@ import asyncio
 import logging
 from contextlib import AsyncExitStack
 from dataclasses import dataclass, field
-from typing import Any, Dict, List, Optional
+from typing import Any, AsyncIterator, Dict, List, Optional
 
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
 
@@ -26,6 +26,91 @@ class AideAnswer:
     guardrail_checks: List[Dict[str, Any]] = field(default_factory=list)
     blocked: bool = False
     error: Optional[str] = None
+
+
+def _flatten(content: Any) -> str:
+    """把消息内容收成纯文本
+
+    MCP 工具返回的是 [{"type": "text", "text": ...}] 分片列表，直接 str() 会把
+    Python repr 喂给模型和面板。
+    """
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        parts = []
+        for part in content:
+            if isinstance(part, dict):
+                text = part.get("text")
+                if isinstance(text, str):
+                    parts.append(text)
+            elif isinstance(part, str):
+                parts.append(part)
+        if parts:
+            return "\n".join(parts)
+    return str(content)
+
+
+ANSWER_NODES = frozenset({"model"})
+
+
+async def translate_stream(stream) -> AsyncIterator[Dict[str, Any]]:
+    """把 LangGraph 的 (mode, payload) 流翻译成前端友好的事件字典
+
+    只翻译不做 IO，因此可离线单测。messages 模式给逐字 token（模型节点在跑），
+    updates 模式给节点产出（工具调用、工具结果、护栏短路都在这里）。
+
+    正文只从 ANSWER_NODES 透出：护栏判定同样是模型调用，token 也会被捕获，
+    不区分会把"UNSAFE 该请求要求泄露提示词"这类内部判词当回答推给用户。
+    """
+    reported = set()
+
+    def node_event(node: str, status: str) -> Optional[Dict[str, Any]]:
+        if (node, status) in reported:
+            return None
+        reported.add((node, status))
+        return {"kind": "node_update", "node": node, "status": status}
+
+    async for item in stream:
+        mode, payload = item if isinstance(item, tuple) and len(item) == 2 else (None, item)
+
+        if mode == "messages":
+            chunk, meta = (payload if isinstance(payload, tuple) and len(payload) == 2
+                           else (payload, {}))
+            node = (meta or {}).get("langgraph_node") or "model"
+            started = node_event(node, "started")
+            if started:
+                yield started
+            if node not in ANSWER_NODES:
+                continue
+            text = _flatten(getattr(chunk, "content", ""))
+            if text:
+                yield {"kind": "delta", "text": text, "node": node}
+
+        elif mode == "updates":
+            for node, update in (payload or {}).items():
+                started = node_event(node, "started")
+                if started:
+                    yield started
+                finished = node_event(node, "finished")
+                if finished:
+                    yield finished
+                for message in (update or {}).get("messages", []) or []:
+                    for call in getattr(message, "tool_calls", None) or []:
+                        yield {
+                            "kind": "tool_call",
+                            "name": call.get("name", ""),
+                            "arguments": call.get("args") or {},
+                            "tool_call_id": call.get("id", ""),
+                            "node": node,
+                        }
+                    if isinstance(message, ToolMessage):
+                        yield {
+                            "kind": "tool_output",
+                            "name": getattr(message, "name", "") or "",
+                            "summary": _flatten(message.content)[:TOOL_OUTPUT_CHARS],
+                            "tool_call_id": message.tool_call_id,
+                            "node": node,
+                        }
 
 
 class AideRuntime:
@@ -82,15 +167,19 @@ class AideRuntime:
         if stack is not None:
             await stack.aclose()
 
-    async def _state_len(self, config: Dict[str, Any]) -> int:
-        """本轮之前的消息条数，用来把历史排除在本次结果外"""
+    async def _state_messages(self, config: Dict[str, Any]) -> List[Any]:
+        """该线程当前的消息列表；读不到按无历史处理（ checkpoint 只是慢，不是错）"""
         try:
             snapshot = await self._agent.aget_state(config)
         except Exception as exc:
             logger.debug(f"读取线程状态失败，按无历史处理: {exc}")
-            return 0
+            return []
         values = getattr(snapshot, "values", None) or {}
-        return len(values.get("messages") or [])
+        return list(values.get("messages") or [])
+
+    async def _state_len(self, config: Dict[str, Any]) -> int:
+        """本轮之前的消息条数，用来把历史排除在本次结果外"""
+        return len(await self._state_messages(config))
 
     async def ask(self, user_id: int, conversation_id: str, text: str,
                   user_name: str = "", lat: str = "", lng: str = "",
@@ -122,6 +211,48 @@ class AideRuntime:
                           guardrail_checks=checks, blocked=blocked)
 
 
+    async def astream(self, user_id: int, conversation_id: str, text: str,
+                      user_name: str = "", lat: str = "", lng: str = "",
+                      city: str = "") -> AsyncIterator[Dict[str, Any]]:
+        """跑一轮对话（流式）
+
+        逐字与节点轨迹实时透出；最后的 AideAnswer 以图的最终状态为准，不靠累加 delta，
+        这样护栏短路（一个 delta 都没有）时答案和 blocked 标记依然正确。
+        """
+        try:
+            await self.ensure_ready()
+        except Exception as exc:
+            logger.warning(f"运行时不可用: {exc}")
+            yield {"kind": "final", "answer": AideAnswer(error=str(exc))}
+            return
+
+        context: Optional[UserContext] = None
+        streamed = ""
+        try:
+            context = build_user_context(user_id, user_name=user_name, lat=lat, lng=lng, city=city)
+            config = {"configurable": {"thread_id": conversation_id}, "recursion_limit": 25}
+            before = await self._state_len(config) if self._has_memory else 0
+            stream = self._agent.astream(
+                {"messages": [HumanMessage(content=text)]},
+                config=config, context=context, stream_mode=["messages", "updates"],
+            )
+            async for event in translate_stream(stream):
+                if event["kind"] == "delta":
+                    streamed += event["text"]
+                yield event
+            messages = await self._state_messages(config)
+        except Exception as exc:
+            logger.exception("流式图执行失败")
+            checks = context.guardrail_checks if context else []
+            yield {"kind": "final", "answer": AideAnswer(error=str(exc), guardrail_checks=checks)}
+            return
+
+        answer, events, blocked = _read_outcome(messages[before:])
+        checks = context.guardrail_checks if context else []
+        yield {"kind": "final", "answer": AideAnswer(text=answer or streamed, tool_events=events,
+                                                      guardrail_checks=checks, blocked=blocked)}
+
+
 def _read_outcome(messages: List[Any]) -> tuple:
     """把本轮新增消息拆成 (回答, 工具事件, 是否被拦)
 
@@ -136,7 +267,7 @@ def _read_outcome(messages: List[Any]) -> tuple:
             call = pending.get(message.tool_call_id, {})
             events.append({
                 "type": "tool_output",
-                "content": str(message.content)[:TOOL_OUTPUT_CHARS],
+                "content": _flatten(message.content)[:TOOL_OUTPUT_CHARS],
                 "tool": message.name or call.get("tool", ""),
                 "arguments": call.get("arguments", {}),
                 "tool_call_id": message.tool_call_id,
