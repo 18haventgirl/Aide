@@ -112,8 +112,6 @@ def rag_client(tmp_path):
 import pytest
 from core.vector_core.models import VectorDocument, VectorQuery
 
-pytestmark = pytest.mark.usefixtures()
-
 CORPUS = {
     "note_gardening": "阳台绿萝浇水记录：土表发白就要浇透，冬天减少到两周一次",
     "note_milk": "超市购物：两升装脱脂牛奶，顺路买鸡蛋和酸奶",
@@ -144,24 +142,21 @@ def _hit_ids(rag_client, query):
         query_text=query, user_id="tester", limit=3, source_filter="notes",
         include_metadata=True, include_distances=True))
     return [r.id for r in results]
-
-@require_local_embedding := None  # 占位，见 Step 3 用装饰器
 ```
 
-> 上面最后一行是示意错误写法，正式实现用 Step 3 的装饰器形式；Step 2 只需确认文件已创建且未跑通。
-
-- [ ] **Step 3: 用正确的 skip 装饰器与断言收尾**
+- [ ] **Step 3: 补上三个测试用例（带 skip 装饰器）**
 
 ```python
+from tests.conftest import require_local_embedding   # 若 conftest 不便导入，则在本文件内重复定义同名 skipif 标记
+
+
 @require_local_embedding
 def test_top3_recall_is_correct(rag_client):
     _seed(rag_client)
-    misses = []
-    for query, expected in QUERIES:
-        ids = _hit_ids(rag_client, query)
-        if expected not in ids:
-            misses.append(f"{query} → 期望 {expected}，实得 {ids}")
+    misses = [f"{q} → 期望 {e}，实得 {_hit_ids(rag_client, q)}"
+              for q, e in QUERIES if e not in _hit_ids(rag_client, q)]
     assert not misses, "召回失败:\n" + "\n".join(misses)
+
 
 @require_local_embedding
 def test_update_changes_retrieval(rag_client):
@@ -170,6 +165,7 @@ def test_update_changes_retrieval(rag_client):
                                text="宠物店买猫砂和主食罐头", metadata={"note_id": "note_milk"})
     assert "note_milk" not in _hit_ids(rag_client, "乳制品采购")
     assert "note_milk" in _hit_ids(rag_client, "猫的东西")
+
 
 @require_local_embedding
 def test_delete_removes_from_index(rag_client):
@@ -710,21 +706,19 @@ def search_my_notes(query: str, top_k: int = 5,
     service = _note_service()
     if service is None:
         return "笔记服务当前不可用"
+    limit = max(1, min(top_k, 20))
     try:
-        hits = service.search_notes(user_id=runtime.context.user_id, query=query,
-                                    limit=max(1, min(top_k, 20)))
-    except TypeError:      # 旧签名兼容
-        hits = service.search_notes(runtime.context.user_id, query)
+        hits = service.search_notes_by_vector(runtime.context.user_id, query, limit=limit)
     except Exception as e:
-        logger.warning(f"笔记检索失败: {e}")
-        return "检索笔记时出错，已跳过"
+        logger.warning(f"笔记向量检索失败，回退关键词检索: {e}")
+        hits = service.search_notes(runtime.context.user_id, query, limit=limit)
     if not hits:
         return "没有找到相关笔记"
+    # 真实返回键：note_id / title / tag / score / text（见 NoteService.search_notes_by_vector）
     lines = []
-    for h in hits[: max(1, min(top_k, 20))]:
-        title = h.get("title") if isinstance(h, dict) else getattr(h, "title", "")
-        content = h.get("content") if isinstance(h, dict) else getattr(h, "content", "")
-        lines.append(f"- {title}: {(content or '')[:200]}")
+    for h in hits:
+        tag = f"（{h['tag']}）" if h.get("tag") else ""
+        lines.append(f"- {h.get('title', '无标题')}{tag}: {(h.get('text') or '')[:200]}")
     return "\n".join(lines)
 
 
@@ -854,33 +848,29 @@ SYSTEM_PROMPT = (
 async def build_agent(model, tools: Optional[Sequence[Any]] = None,
                       checkpointer: Any = None,
                       extra_middleware: Sequence[Any] = ()) -> Any:
-    """构图。model 为空时抛 ValueError，由调用方转成可读错误"""
+    """构图。model 为空时抛 ValueError，由调用方转成可读错误。
+
+    tools=None 表示"用默认工具集"（本地 RAG 工具）；传 [] 表示真的不给工具。
+    """
     if model is None:
         raise ValueError("未配置可用的对话模型（检查 OPENAI_API_KEY / OPENAI_API_BASE_URL）")
 
-    from agent.tools.notes import save_note, search_my_notes
-    from langchain_core.runnables import RunnableLambda  # noqa: F401  (类型稳定用)
-
-    tool_list: List[Any] = list(tools) if tools is not None else list(extra_tools())
-    middleware = [build_guardrail_model_holder_middleware(model), *extra_middleware]
+    tool_list: List[Any] = list(tools) if tools is not None else list(default_tools())
     return create_agent(
         model=model,
         tools=tool_list,
         system_prompt=SYSTEM_PROMPT,
-        middleware=middleware,
+        middleware=[*build_guardrail_middlewares(model), *extra_middleware],
         context_schema=UserContext,
         checkpointer=checkpointer,
         name="Aide",
     )
 
 
-def extra_tools():
+def default_tools() -> List[Any]:
+    """无 MCP 时的兜底工具集（本地 RAG）"""
     from agent.tools.notes import save_note, search_my_notes
     return [search_my_notes, save_note]
-
-
-def build_guardrail_model_holder_middleware(judge_model):
-    return build_guardrail_middlewares(judge_model)
 ```
 
 - [ ] **Step 4: 实现 runtime.py 的 `ask`（非流式，先打通）**
@@ -1451,14 +1441,24 @@ logger = logging.getLogger(__name__)
 
 
 class ChatMessageStore:
-    """默认实现：走现有会话服务"""
+    """默认实现：走 ChatMessageService（真实 API：create_message_by_id_str）
+
+    sender_type 用 ChatMessage 常量，不写字面量：
+      user -> SENDER_TYPE_HUMAN, assistant -> SENDER_TYPE_AI
+    """
 
     def append(self, conversation_id: str, role: str, content: str) -> None:
         from service.service_manager import service_manager
-        svc = service_manager.get_service("conversation_service")
+        from service.services.chat_message_service import ChatMessageService
+        from service.models.chat_message import ChatMessage
+
+        sender_type = {"user": ChatMessage.SENDER_TYPE_HUMAN,
+                       "assistant": ChatMessage.SENDER_TYPE_AI}.get(role, ChatMessage.SENDER_TYPE_HUMAN)
+        svc = service_manager.get_service("chat_message_service", ChatMessageService)
         if svc is None:
-            raise RuntimeError("会话服务不可用")
-        svc.add_message(conversation_id, role, content)
+            raise RuntimeError("消息服务不可用")
+        if not svc.create_message_by_id_str(conversation_id, sender_type, content):
+            raise RuntimeError("消息写入返回失败")
 
 
 def record_turn(conversation_id: str, user_text: str, answer_text: str,
