@@ -9,7 +9,7 @@ OpenAI 兼容网关不支持 response_format=json_schema，用了会让每次判
 import logging
 from typing import Any, List, Optional, Tuple
 
-from langchain.agents.middleware import before_model
+from langchain.agents.middleware import before_model, wrap_tool_call
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 
 from agent.context import UserContext
@@ -156,3 +156,29 @@ def build_guardrail_middlewares(model) -> List[Any]:
         return {"jump_to": "end", "messages": [AIMessage(content=REFUSAL_TEXT, name="Guardrails")]}
 
     return [safety_guard, relevance_guard]
+
+
+def build_identity_middleware():
+    """把模型填写的 user_id 强制覆写成登录上下文里的真实身份
+
+    MCP 服务端那批 user_data_* 工具的入参里带 user_id，模型填什么就能读谁的数据。
+    本地 RAG 工具不走这条路（身份取自 runtime.context，入参里没有 user_id）。
+    """
+
+    @wrap_tool_call(name="Identity Guard")
+    async def enforce_identity(request, handler):
+        context = getattr(request.runtime, "context", None)
+        user_id = getattr(context, "user_id", None)
+        args = request.tool_call.get("args") or {}
+
+        if user_id is None or "user_id" not in args or args["user_id"] == user_id:
+            return await handler(request)
+
+        logger.warning(
+            f"工具 {request.tool_call.get('name')} 收到 user_id={args['user_id']}，"
+            f"已按登录身份覆写为 {user_id}"
+        )
+        patched = {**request.tool_call, "args": {**args, "user_id": user_id}}
+        return await handler(request.override(tool_call=patched))
+
+    return enforce_identity
