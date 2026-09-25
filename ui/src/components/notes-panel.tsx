@@ -21,13 +21,7 @@ interface NotesPanelProps {
   userId: number;
 }
 
-// 预定义的标签选项
-const PREDEFINED_TAGS = [
-  { value: 'lifestyle tips', label: '生活小贴士' },
-  { value: 'cooking advice', label: '烹饪建议' },
-  { value: 'weather interpretation', label: '天气解读' },
-  { value: 'news context', label: '新闻背景' }
-];
+// 标签是自由文本，候选项来自后端返回的 availableTags
 
 export function NotesPanel({ userId }: NotesPanelProps) {
   const [notes, setNotes] = useState<Note[]>([]);
@@ -207,12 +201,6 @@ export function NotesPanel({ userId }: NotesPanelProps) {
     setFormData({ title: '', content: '', tag: '', status: 'draft' });
   };
 
-  // 获取标签显示名称
-  const getTagLabel = (tagValue: string) => {
-    const tag = PREDEFINED_TAGS.find(t => t.value === tagValue);
-    return tag ? tag.label : tagValue;
-  };
-
   // 格式化日期
   const formatDate = (dateString: string | null) => {
     if (!dateString) return '';
@@ -290,10 +278,7 @@ export function NotesPanel({ userId }: NotesPanelProps) {
             className="px-3 py-1 border rounded text-sm"
           >
             <option value="">所有标签</option>
-            {PREDEFINED_TAGS.map(tag => (
-              <option key={tag.value} value={tag.value}>{tag.label}</option>
-            ))}
-            {(availableTags || []).filter(tag => !PREDEFINED_TAGS.some(pt => pt.value === tag)).map(tag => (
+            {(availableTags || []).map(tag => (
               <option key={tag} value={tag}>{tag}</option>
             ))}
           </select>
@@ -333,7 +318,7 @@ export function NotesPanel({ userId }: NotesPanelProps) {
                       {note.tag && (
                         <span className="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 text-blue-800 rounded-full">
                           <Tag className="w-3 h-3" />
-                          {getTagLabel(note.tag)}
+                          {note.tag}
                         </span>
                       )}
                       <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(note.status)}`}>
@@ -419,16 +404,20 @@ export function NotesPanel({ userId }: NotesPanelProps) {
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     标签
                   </label>
-                  <select
+                  <input
+                    type="text"
                     value={formData.tag}
                     onChange={(e) => setFormData({ ...formData, tag: e.target.value })}
+                    maxLength={50}
+                    list="note-tag-suggestions"
+                    placeholder="自由填写，最多 50 字"
                     className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="">请选择标签</option>
-                    {PREDEFINED_TAGS.map(tag => (
-                      <option key={tag.value} value={tag.value}>{tag.label}</option>
+                  />
+                  <datalist id="note-tag-suggestions">
+                    {(availableTags || []).map(tag => (
+                      <option key={tag} value={tag} />
                     ))}
-                  </select>
+                  </datalist>
                 </div>
                 
                 <div className="flex-1">

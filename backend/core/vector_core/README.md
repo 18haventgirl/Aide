@@ -31,8 +31,8 @@ OPENAI_API_KEY=your-openai-api-key-here
 
 # 可选配置
 OPENAI_EMBEDDING_MODEL=text-embedding-3-small
-CHROMA_PERSIST_DIR=./chroma_db
-CHROMA_COLLECTION_PREFIX=ai_assistant
+CHROMA_PERSIST_DIR=./lg-aide-chroma-db
+CHROMA_COLLECTION_PREFIX=lg_aide
 VECTOR_DIMENSION=1536
 SIMILARITY_THRESHOLD=0.7
 DEFAULT_QUERY_LIMIT=10
@@ -181,24 +181,23 @@ VectorDeleteFilter(
 
 ## 完整示例
 
-查看 `example_usage.py` 文件获取完整的使用示例，包括：
+核心用法（在 `backend` 目录下）：
 
-- 文档添加和批量添加
-- 基本查询和过滤查询
-- 用户隔离测试
-- 文档更新和删除
-- 统计信息获取
-- 数据清理
+```python
+from core.vector_core.client import ChromaVectorClient
+from core.vector_core.config import VectorConfig
+from core.vector_core.models import VectorDocument, VectorQuery
 
-## 运行示例
-
-要运行示例，请从 `backend` 目录执行以下命令：
-
-```bash
-python -m core.vector_core.example_usage
+client = ChromaVectorClient(VectorConfig.from_env())
+client.add_document(VectorDocument(id="note_1", text="番茄炒蛋先炒蛋再加番茄",
+                                   user_id="1", source="notes"))
+results = client.query_documents(VectorQuery(query_text="鸡蛋做法", user_id="1", limit=5))
 ```
 
-这会将 `example_usage.py` 作为模块运行，确保所有内部导入都能正常工作。
+支持的能力：文档添加与批量添加、基本查询与过滤查询、按 user_id 隔离、文档更新与删除、
+统计信息获取、数据清理。
+
+无外部依赖的自动化检查见仓库根目录的 `backend/tests/`（`pytest tests`）。
 
 ## 注意事项
 

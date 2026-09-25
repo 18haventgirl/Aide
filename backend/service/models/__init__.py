@@ -5,6 +5,7 @@
 """
 
 from .user_preference import UserPreference
+from .user_account import UserAccount
 from .note import Note
 from .todo import Todo
 from .conversation import Conversation
@@ -12,6 +13,7 @@ from .chat_message import ChatMessage
 
 __all__ = [
     'UserPreference',
+    'UserAccount',
     'Note',
     'Todo',
     'Conversation',

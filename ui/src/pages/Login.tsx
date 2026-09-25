@@ -2,14 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { login, clearError } from '../store/slices/authSlice';
+import { login, registerAccount, clearError } from '../store/slices/authSlice';
 import type { LoginCredentials } from '../lib/types';
 import { Button } from '../components/ui/button';
 import { Card } from '../components/ui/card';
-import { Eye, EyeOff, Lock, User, AlertCircle, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Lock, User, Mail, AlertCircle, Loader2 } from 'lucide-react';
+
+interface AuthFormValues extends LoginCredentials {
+  email: string;
+}
 
 const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [mode, setMode] = useState<'login' | 'register'>('login');
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const { isLoading, error, isAuthenticated } = useAppSelector((state) => state.auth);
@@ -18,7 +23,7 @@ const Login: React.FC = () => {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginCredentials>();
+  } = useForm<AuthFormValues>({ defaultValues: { username: '', email: '', password: '' } });
 
   // 清除错误消息 - 只在组件卸载时清除
   useEffect(() => {
@@ -35,20 +40,21 @@ const Login: React.FC = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  const onSubmit = async (data: LoginCredentials) => {
-    console.log('📝 提交登录表单:', data);
-    
+  const onSubmit = async (data: AuthFormValues) => {
     // 清除之前的错误
     dispatch(clearError());
-    
+
+    const action = mode === 'login'
+      ? login({ username: data.username, password: data.password })
+      : registerAccount({ username: data.username, email: data.email, password: data.password });
+
     try {
-      const result = await dispatch(login(data)).unwrap();
-      console.log('✅ 登录成功:', result);
-      // 不需要手动导航，上面的useEffect会自动处理
-    } catch (error) {
-      // 错误已经在store中处理，不需要额外操作
-      console.error('❌ 登录失败:', error);
-      // 不要导航，让用户留在登录页面看到错误信息
+      const result = await dispatch(action).unwrap();
+      console.log(mode === 'login' ? '✅ 登录成功:' : '✅ 注册成功:', result);
+      // 不需要手动导航，isAuthenticated 的 useEffect 会自动处理
+    } catch (err) {
+      // 错误已经在store中处理，留在本页展示
+      console.error(mode === 'login' ? '❌ 登录失败:' : '❌ 注册失败:', err);
     }
   };
 
@@ -62,10 +68,10 @@ const Login: React.FC = () => {
               <User className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              AI 个人助手
+              LG-Aide 个人日常助手
             </h1>
             <p className="text-gray-600">
-              请登录您的账户
+              {mode === 'login' ? '请登录您的账户' : '注册一个新账户'}
             </p>
           </div>
 
@@ -92,8 +98,8 @@ const Login: React.FC = () => {
                   {...register('username', {
                     required: '请输入用户名',
                     minLength: {
-                      value: 2,
-                      message: '用户名至少2个字符',
+                      value: 3,
+                      message: '用户名至少3个字符',
                     },
                   })}
                   type="text"
@@ -106,6 +112,36 @@ const Login: React.FC = () => {
                 <p className="text-red-500 text-sm">{errors.username.message}</p>
               )}
             </div>
+
+            {/* 邮箱字段（仅注册） */}
+            {mode === 'register' && (
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  邮箱
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Mail className="h-5 w-5 text-gray-400" />
+                  </div>
+                  <input
+                    {...register('email', {
+                      required: '请输入邮箱',
+                      pattern: {
+                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                        message: '邮箱格式不正确',
+                      },
+                    })}
+                    type="email"
+                    className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+                    placeholder="请输入邮箱"
+                    autoComplete="email"
+                  />
+                </div>
+                {errors.email && (
+                  <p className="text-red-500 text-sm">{errors.email.message}</p>
+                )}
+              </div>
+            )}
 
             {/* 密码字段 */}
             <div className="space-y-2">
@@ -120,8 +156,8 @@ const Login: React.FC = () => {
                   {...register('password', {
                     required: '请输入密码',
                     minLength: {
-                      value: 6,
-                      message: '密码至少6个字符',
+                      value: 8,
+                      message: '密码至少8个字符',
                     },
                   })}
                   type={showPassword ? 'text' : 'password'}
@@ -156,21 +192,39 @@ const Login: React.FC = () => {
               {isLoading ? (
                 <>
                   <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  登录中...
+                  {mode === 'login' ? '登录中...' : '注册中...'}
                 </>
               ) : (
-                '登录'
+                mode === 'login' ? '登录' : '注册并登录'
               )}
             </Button>
           </form>
 
-          {/* 提示信息 */}
-          <div className="mt-8 text-center">
-            <div className="text-sm text-gray-600 space-y-1">
-              <p className="font-medium text-blue-600">测试账户：<span className="font-mono">jsonplaceholder.typicode.com</span> 获取</p>
-              <p className="text-xs">默认密码：<span className="font-mono">admin123456</span></p>
-              <p className="text-xs text-gray-500">支持任意用户名登录</p>
-            </div>
+          {/* 登录/注册切换 */}
+          <div className="mt-6 text-center text-sm text-gray-600">
+            {mode === 'login' ? (
+              <span>
+                还没有账户？
+                <button
+                  type="button"
+                  className="ml-1 text-blue-600 font-medium hover:underline"
+                  onClick={() => { setMode('register'); dispatch(clearError()); }}
+                >
+                  注册
+                </button>
+              </span>
+            ) : (
+              <span>
+                已有账户？
+                <button
+                  type="button"
+                  className="ml-1 text-blue-600 font-medium hover:underline"
+                  onClick={() => { setMode('login'); dispatch(clearError()); }}
+                >
+                  去登录
+                </button>
+              </span>
+            )}
           </div>
         </div>
       </Card>

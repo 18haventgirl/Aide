@@ -16,8 +16,8 @@ class Todo(BaseModel):
     """
     __tablename__ = 'todos'
     
-    # 用户ID（来自JSONPlaceholder API）
-    user_id = Column(Integer, nullable=False, comment='用户ID（来自JSONPlaceholder）')
+    # 用户ID（关联 users.id）
+    user_id = Column(Integer, nullable=False, comment='用户ID（关联users表）')
     
     # 待办事项标题
     title = Column(String(200), nullable=False, comment='待办事项标题')

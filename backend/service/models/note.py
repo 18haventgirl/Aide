@@ -16,20 +16,15 @@ class Note(BaseModel):
     """
     笔记模型
     
-    存储用户的笔记内容，用户信息来自JSONPlaceholder API
+    存储用户的笔记内容，用户信息来自本地 users 表
     """
     __tablename__ = 'notes'
     
-    # 允许的标签选项
-    ALLOWED_TAGS = [
-        'lifestyle tips',
-        'cooking advice',
-        'weather interpretation',
-        'news context'
-    ]
+    # 标签长度上限（与 tag 列的 String(50) 对齐）
+    TAG_MAX_LENGTH = 50
     
-    # 用户ID（来自JSONPlaceholder API）
-    user_id = Column(Integer, nullable=False, comment='用户ID（来自JSONPlaceholder）')
+    # 用户ID（关联 users.id）
+    user_id = Column(Integer, nullable=False, comment='用户ID（关联users表）')
     
     # 笔记标题
     title = Column(String(200), nullable=False, comment='笔记标题')
@@ -37,7 +32,7 @@ class Note(BaseModel):
     # 笔记内容
     content = Column(Text, comment='笔记内容')
     
-    # 笔记标签（单个标签，只允许指定选项）
+    # 笔记标签（单个标签，自由文本）
     tag = Column(String(50), comment='笔记标签')
     
     # 笔记状态（草稿、已发布、已归档等）
@@ -64,21 +59,40 @@ class Note(BaseModel):
         return super().to_dict()
     
     @classmethod
+    def normalize_tag(cls, tag):
+        """把标签规整成去首尾空白的字符串，空标签返回 None"""
+        if tag is None:
+            return None
+        cleaned = str(tag).strip()
+        return cleaned or None
+
+    @classmethod
     def validate_tag(cls, tag):
-        """验证标签是否有效"""
+        """校验标签
+
+        标签是自由文本（这个项目面向中文用户，写死的英文枚举会让笔记根本存不进去），
+        只限制非空、单行和长度不超过列宽。
+        """
         if tag is None:
             return True  # 允许空标签
-        
-        if tag not in cls.ALLOWED_TAGS:
+
+        if not isinstance(tag, str):
+            raise InvalidTagError(f"标签必须是字符串，当前类型: {type(tag).__name__}")
+
+        if len(tag) > cls.TAG_MAX_LENGTH:
             raise InvalidTagError(
-                f"Invalid tag '{tag}'. Allowed tags are: {', '.join(cls.ALLOWED_TAGS)}"
+                f"标签过长（{len(tag)} 字符），最多 {cls.TAG_MAX_LENGTH} 个字符"
             )
+
+        if any(ch in tag for ch in ('\n', '\r', '\t')):
+            raise InvalidTagError("标签不能包含换行或制表符")
+
         return True
     
     @classmethod
     def create_from_dict(cls, data):
         """从字典创建实例"""
-        tag = data.get('tag', '')
+        tag = cls.normalize_tag(data.get('tag', ''))
         
         # 验证标签
         if tag:
@@ -94,6 +108,7 @@ class Note(BaseModel):
     
     def set_tag(self, tag):
         """设置标签"""
+        tag = self.normalize_tag(tag)
         if tag:
             self.validate_tag(tag)
         self.tag = tag

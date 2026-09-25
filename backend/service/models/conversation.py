@@ -27,8 +27,8 @@ class Conversation(BaseModel):
         STATUS_ARCHIVED
     ]
     
-    # 用户ID（来自JSONPlaceholder API）
-    user_id = Column(Integer, nullable=False, comment='用户ID（来自JSONPlaceholder）')
+    # 用户ID（关联 users.id）
+    user_id = Column(Integer, nullable=False, comment='用户ID（关联users表）')
     
     # 会话字符串标识符（UUID）
     id_str = Column(String(36), unique=True, nullable=False, default=lambda: str(uuid.uuid4()), comment='会话字符串标识符（UUID）')

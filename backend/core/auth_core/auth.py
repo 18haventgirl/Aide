@@ -4,26 +4,37 @@
 提供JWT令牌生成、验证和用户认证相关功能
 """
 
+import base64
+import hashlib
+import logging
 import os
 from datetime import datetime, timedelta
+from pathlib import Path
 from typing import Optional, Dict, Any, Union
 
+import bcrypt
 from fastapi import HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 from pydantic import BaseModel
+from dotenv import load_dotenv
+
+# 必须在读取下面的环境变量之前加载 .env：本模块在 main.py 里比 runtime_config、
+# database_core 等会调 load_dotenv() 的模块更早被导入，否则 JWT_SECRET_KEY 会静默
+# 退回代码里的默认值，.env 形同不存在。
+# 这里显式给出 backend/.env 的绝对路径：load_dotenv() 的自动查找依赖调用方的文件位置，
+# 用 python -c 或从其他目录启动时会找不到，导致不同进程用到不同的密钥。
+load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
 # JWT配置
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "your-secret-key-here-change-in-production")
 JWT_ALGORITHM = "HS256"
 JWT_ACCESS_TOKEN_EXPIRE_DAYS = 7
 
-# 密码加密上下文
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-
 # HTTP Bearer 安全方案
 security = HTTPBearer()
+
+logger = logging.getLogger(__name__)
 
 
 class TokenData(BaseModel):
@@ -54,6 +65,15 @@ class AuthUtils:
     """认证工具类"""
     
     @staticmethod
+    def _bcrypt_secret(password: str) -> bytes:
+        """把任意长度密码压成固定长度再交给 bcrypt
+
+        bcrypt 只接受 <=72 字节的输入，5.x 版本超长会直接抛异常（passlib 时代是静默截断）。
+        先做 sha256 派生既不截断也不报错。
+        """
+        return base64.b64encode(hashlib.sha256(password.encode("utf-8")).digest())
+
+    @staticmethod
     def verify_password(plain_password: str, hashed_password: str) -> bool:
         """
         验证密码
@@ -65,7 +85,13 @@ class AuthUtils:
         Returns:
             是否验证成功
         """
-        return pwd_context.verify(plain_password, hashed_password)
+        try:
+            return bcrypt.checkpw(
+                AuthUtils._bcrypt_secret(plain_password), hashed_password.encode("utf-8")
+            )
+        except ValueError:
+            # 存储的哈希格式不对（例如脏数据），按验证失败处理
+            return False
     
     @staticmethod
     def get_password_hash(password: str) -> str:
@@ -78,7 +104,9 @@ class AuthUtils:
         Returns:
             哈希密码
         """
-        return pwd_context.hash(password)
+        return bcrypt.hashpw(
+            AuthUtils._bcrypt_secret(password), bcrypt.gensalt()
+        ).decode("utf-8")
     
     @staticmethod
     def create_access_token(data: dict, expires_delta: Optional[timedelta] = None) -> str:
@@ -164,76 +192,34 @@ class AuthUtils:
     @staticmethod
     def authenticate_user(username: str, password: str) -> Optional[Dict[str, Any]]:
         """
-        用户认证（优化版本，使用缓存）
-        
+        用户认证：查本地 users 表并校验 bcrypt 密码哈希
+
         Args:
-            username: 用户名
-            password: 密码
-            
+            username: 用户名或邮箱
+            password: 明文密码
+
         Returns:
             用户信息字典或None
         """
-        # 固定密码验证
-        if password != "admin123456":
-            return None
-        
-        # 使用全局服务管理器获取缓存的用户信息
+        from service.services.user_account_service import UserAccountService
+
         try:
-            from service.service_manager import service_manager
-            
-            # 使用缓存的用户信息查找
-            user_info = service_manager.get_user_cached(
-                user_id=username,  # 使用用户名作为缓存key的一部分
-                username=username
-            )
-            
-            if user_info:
-                return user_info
-            
-            # 如果缓存中没有找到，回退到原始方法
-            from service.services.user_service import UserService
-            user_service = UserService()
-            
-            # 尝试通过用户名查找用户
-            users = user_service.search_users_by_username(username)
-            if not users:
-                # 如果按名称找不到，尝试按邮箱查找
-                users = user_service.search_users_by_email(username)
-            
-            if not users:
-                return None
-            
-            # 取第一个匹配的用户
-            user = users[0]
-            return {
-                "user_id": str(user.id),
-                "username": user.username,
-                "email": user.email,
-                "name": user.name
-            }
-            
+            service = UserAccountService()
+            account = service.get_by_username(username) or service.get_by_email(username)
         except Exception as e:
-            # 如果优化版本出错，回退到原始方法
-            from service.services.user_service import UserService
-            user_service = UserService()
-            
-            # 尝试通过用户名查找用户
-            users = user_service.search_users_by_name(username)
-            if not users:
-                # 如果按名称找不到，尝试按邮箱查找
-                users = user_service.search_users_by_email(username)
-            
-            if not users:
-                return None
-            
-            # 取第一个匹配的用户
-            user = users[0]
-            return {
-                "user_id": str(user.id),
-                "username": user.username,
-                "email": user.email,
-                "name": user.name
-            }
+            logger.error(f"账号查询失败: {e}")
+            return None
+
+        if not account or not AuthUtils.verify_password(password, account.password_hash):
+            # 用户不存在与密码错误返回同样的结果，避免用户名枚举
+            return None
+
+        return {
+            "user_id": str(account.id),
+            "username": account.username,
+            "email": account.email,
+            "name": account.name,
+        }
 
 
 class AuthService:
@@ -257,44 +243,75 @@ class AuthService:
         user = AuthUtils.authenticate_user(username, password)
         if not user:
             return None
-        
-        # 创建令牌数据
+
+        return self.issue_token(user)
+    
+    def register(self, username: str, email: str, password: str,
+                 name: str = '') -> Token:
+        """
+        注册新账号并直接返回令牌
+
+        Args:
+            username: 用户名
+            email: 邮箱
+            password: 明文密码（只存 bcrypt 哈希）
+            name: 展示名，缺省用用户名
+
+        Returns:
+            令牌对象
+
+        Raises:
+            DuplicateUserError: 用户名或邮箱已被占用
+            ValueError: 密码长度不足
+        """
+        from service.services.user_account_service import UserAccountService
+
+        if len(password) < 8:
+            raise ValueError("密码至少 8 位")
+
+        account = UserAccountService().create_user(
+            username=username,
+            email=email,
+            password_hash=AuthUtils.get_password_hash(password),
+            name=name or username,
+        )
+
+        return self.issue_token({
+            "user_id": str(account.id),
+            "username": account.username,
+            "email": account.email,
+            "name": account.name,
+        })
+
+    def issue_token(self, user: Dict[str, Any]) -> Token:
+        """按用户信息签发令牌"""
         token_data = {
             "user_id": user["user_id"],
             "username": user["username"],
             "email": user["email"]
         }
-        
-        # 创建访问令牌
-        access_token = AuthUtils.create_access_token(data=token_data)
-        
-        # 计算过期时间
-        expires_in = int(timedelta(days=JWT_ACCESS_TOKEN_EXPIRE_DAYS).total_seconds())
-        
         return Token(
-            access_token=access_token,
+            access_token=AuthUtils.create_access_token(data=token_data),
             token_type="bearer",
-            expires_in=expires_in,
+            expires_in=int(timedelta(days=JWT_ACCESS_TOKEN_EXPIRE_DAYS).total_seconds()),
             user_info=user
         )
-    
+
     def verify_token(self, token: str) -> Optional[Dict[str, Any]]:
         """
-        验证令牌（优化版本，使用缓存）
-        
+        验证令牌
+
         Args:
             token: JWT令牌字符串
-            
+
         Returns:
             用户信息字典或None
         """
-        try:
-            # 使用服务管理器的缓存验证
-            from service.service_manager import service_manager
-            return service_manager.verify_token_cached(token)
-        except Exception:
-            # 如果缓存验证失败，回退到原始方法
-            return AuthUtils.get_current_user_from_token(token)
+        # 直接解码：这里不能再回调 service_manager.verify_token_cached，
+        # 后者又会调回本方法，形成无限递归（以前靠 RecursionError 被 except 吞掉才勉强返回，
+        # 栈一深就退化成 None，所有带鉴权的接口全部 401）。
+        # 需要缓存的调用方请直接用 service_manager.verify_token_cached()。
+        return AuthUtils.get_current_user_from_token(token)
     
     def refresh_token(self, token: str) -> Optional[Token]:
         """

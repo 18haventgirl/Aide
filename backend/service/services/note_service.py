@@ -69,7 +69,8 @@ class NoteService:
                 return None
             
             # 验证标签
-            if tag is not None and tag != '':
+            tag = Note.normalize_tag(tag)
+            if tag:
                 Note.validate_tag(tag)
             
             with self.db_client.get_session() as session:
@@ -260,9 +261,11 @@ class NoteService:
                 if not note:
                     return None
                 
-                # 验证标签
+                # 验证标签（空串表示清除标签）
                 if tag is not None:
-                    Note.validate_tag(tag)
+                    tag = Note.normalize_tag(tag)
+                    if tag:
+                        Note.validate_tag(tag)
                 
                 # 更新字段
                 if title is not None:
@@ -560,7 +563,7 @@ class NoteService:
                 query_text=query,
                 user_id=str(user_id),
                 limit=limit,
-                similarity_threshold=0.1,  # 降低阈值以获得更多结果
+                similarity_threshold=self.vector_client.config.similarity_threshold,
                 source_filter="notes",
                 metadata_filter=None,
                 include_metadata=True,

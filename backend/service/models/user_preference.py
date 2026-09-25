@@ -11,12 +11,12 @@ class UserPreference(BaseModel):
     """
     用户偏好设置模型
     
-    存储用户的个人偏好设置，用户信息来自JSONPlaceholder API
+    存储用户的个人偏好设置，用户信息来自本地 users 表
     """
     __tablename__ = 'user_preferences'
     
     # 用户ID（来自JSONPlaceholder API，不存储用户信息）
-    user_id = Column(Integer, nullable=False, comment='用户ID（来自JSONPlaceholder）')
+    user_id = Column(Integer, nullable=False, comment='用户ID（关联users表）')
     
     # 偏好设置内容（JSON字符串）
     preferences = Column(Text, nullable=False, comment='偏好设置内容（JSON字符串）')

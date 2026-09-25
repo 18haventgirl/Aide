@@ -13,6 +13,7 @@ from chromadb.utils import embedding_functions
 import openai
 
 from .config import VectorConfig
+from .local_embeddings import LocalSentenceTransformerEmbeddingFunction
 from .models import (
     VectorDocument,
     VectorQuery,
@@ -101,17 +102,25 @@ class ChromaVectorClient:
             raise
     
     def _init_embedding_function(self):
-        """Initialize OpenAI embedding function"""
+        """Initialize embedding function (local model or OpenAI API)"""
         try:
-            self._embedding_function = embedding_functions.OpenAIEmbeddingFunction(
-                api_key=self.config.openai_api_key,
-                model_name=self.config.openai_embedding_model,
-            )
-            
-            logger.info(f"OpenAI embedding function initialized with model: {self.config.openai_embedding_model}")
+            if self.config.embedding_provider == "local":
+                self._embedding_function = LocalSentenceTransformerEmbeddingFunction(
+                    model_name=self.config.local_embedding_model,
+                    device=self.config.embedding_device,
+                )
+                logger.info(
+                    f"Local embedding function initialized with model: {self.config.local_embedding_model}"
+                )
+            else:
+                self._embedding_function = embedding_functions.OpenAIEmbeddingFunction(
+                    api_key=self.config.openai_api_key,
+                    model_name=self.config.openai_embedding_model,
+                )
+                logger.info(f"OpenAI embedding function initialized with model: {self.config.openai_embedding_model}")
             
         except Exception as e:
-            logger.error(f"Failed to initialize OpenAI embedding function: {e}")
+            logger.error(f"Failed to initialize embedding function: {e}")
             raise
     
     def _get_collection(self, user_id: str):
@@ -129,10 +138,17 @@ class ChromaVectorClient:
                 
             except Exception:
                 # Create new collection if it doesn't exist
+                # hnsw:space 必须显式设为 cosine：chroma 默认是 l2，而下面的结果打分
+                # 按 score = 1 - distance 当余弦相似度用，用默认距离会让真实匹配算出
+                # 接近 0 的分数，检索直接被阈值过滤光。
                 collection = self._client.create_collection(
                     name=collection_name,
                     embedding_function=self._embedding_function,
-                    metadata={"user_id": user_id, "created_at": datetime.now().isoformat()}
+                    metadata={
+                        "user_id": user_id,
+                        "created_at": datetime.now().isoformat(),
+                        "hnsw:space": "cosine",
+                    }
                 )
                 logger.info(f"Created new collection: {collection_name}")
             

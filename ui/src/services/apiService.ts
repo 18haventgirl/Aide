@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { AxiosInstance, AxiosError, AxiosResponse } from 'axios';
 import { API_BASE_URL, API_ENDPOINTS, REQUEST_TIMEOUT } from '../lib/config';
-import type { LoginCredentials, AuthToken, User } from '../lib/types';
+import type { LoginCredentials, RegisterCredentials, AuthToken, User } from '../lib/types';
 import { AuthManager } from '../lib/auth';
 
 // 通用API响应类型
@@ -256,21 +256,6 @@ export const conversationAPI = {
   async getConversation(conversationId: string): Promise<ApiResponse<any>> {
     return apiService.get(API_ENDPOINTS.CONVERSATION.DETAIL(conversationId));
   },
-
-  // 创建会话
-  async createConversation(data: any): Promise<ApiResponse<any>> {
-    return apiService.post(API_ENDPOINTS.CONVERSATION.CREATE, data);
-  },
-
-  // 更新会话
-  async updateConversation(conversationId: string, data: any): Promise<ApiResponse<any>> {
-    return apiService.put(API_ENDPOINTS.CONVERSATION.UPDATE(conversationId), data);
-  },
-
-  // 删除会话
-  async deleteConversation(conversationId: string): Promise<ApiResponse<any>> {
-    return apiService.delete(API_ENDPOINTS.CONVERSATION.DELETE(conversationId));
-  },
 };
 
 // 消息相关API
@@ -278,19 +263,6 @@ export const messageAPI = {
   // 获取消息列表 - 修复返回类型
   async getMessages(conversationId: string, limit: number = 10, offset: number = 0): Promise<ApiResponse<any[]>> {
     return apiService.get(API_ENDPOINTS.MESSAGE.LIST(conversationId), { limit, offset });
-  },
-
-  // 发送消息
-  async sendMessage(data: any): Promise<ApiResponse<any>> {
-    return apiService.post(API_ENDPOINTS.MESSAGE.CREATE, data);
-  },
-};
-
-// 聊天相关API
-export const chatAPI = {
-  // 发送聊天消息
-  async sendChatMessage(data: { conversation_id: string; message: string }): Promise<ApiResponse<any>> {
-    return apiService.post(API_ENDPOINTS.CHAT.SEND, data);
   },
 };
 
@@ -363,35 +335,16 @@ export const todoAPI = {
   async getStats(userId: string): Promise<ApiResponse<{data: any}>> {
     return apiService.get(API_ENDPOINTS.TODO.STATS(userId));
   },
-
-  // 获取关联笔记的待办事项 - 后端返回包含data字段的结构
-  async getTodosByNote(userId: string, noteId: string): Promise<ApiResponse<{data: any[], total: number}>> {
-    return apiService.get(API_ENDPOINTS.TODO.BY_NOTE(userId, noteId));
-  },
-};
-
-// 用户相关API
-export const userAPI = {
-  // 获取用户信息
-  async getProfile(): Promise<ApiResponse<any>> {
-    return apiService.get(API_ENDPOINTS.USER.PROFILE);
-  },
-
-  // 获取用户偏好设置
-  async getPreferences(): Promise<ApiResponse<any>> {
-    return apiService.get(API_ENDPOINTS.USER.PREFERENCES);
-  },
-
-  // 更新用户偏好设置
-  async updatePreferences(data: any): Promise<ApiResponse<any>> {
-    return apiService.put(API_ENDPOINTS.USER.PREFERENCES, data);
-  },
 };
 
 // 认证相关API
 export const authAPI = {
   async login(credentials: LoginCredentials): Promise<ApiResponse<AuthToken>> {
     return apiService.post(API_ENDPOINTS.AUTH.LOGIN, credentials);
+  },
+
+  async register(credentials: RegisterCredentials): Promise<ApiResponse<AuthToken>> {
+    return apiService.post(API_ENDPOINTS.AUTH.REGISTER, credentials);
   },
 
   async logout(): Promise<ApiResponse<any>> {

@@ -8,7 +8,7 @@ import logging
 from typing import Optional, Dict, Any, List
 from datetime import datetime
 from fastapi import APIRouter, HTTPException, Path, Query, Body
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 # 导入认证核心模块
 from core.auth_core import CurrentUser, success_response, error_response, not_found_response, validation_error_response, internal_error_response
@@ -18,6 +18,21 @@ from service.service_manager import service_manager
 
 # 导入服务类
 from service.services.note_service import NoteService
+from service.models.note import Note
+
+
+def _clean_tag(tag: Optional[str]) -> Optional[str]:
+    """标签是自由文本，只在边界上做规范化与长度校验，让非法输入得到 422 而不是 500"""
+    if tag is None:
+        return None
+    cleaned = str(tag).strip()
+    if not cleaned:
+        return None
+    if len(cleaned) > Note.TAG_MAX_LENGTH:
+        raise ValueError(f"标签过长，最多 {Note.TAG_MAX_LENGTH} 个字符")
+    if any(ch in cleaned for ch in ('\n', '\r', '\t')):
+        raise ValueError("标签不能包含换行或制表符")
+    return cleaned
 
 # 配置日志
 logger = logging.getLogger(__name__)
@@ -33,16 +48,26 @@ class NoteCreateRequest(BaseModel):
     """创建笔记请求模型"""
     title: str = Field(..., min_length=1, max_length=200, description="笔记标题")
     content: str = Field(default="", max_length=10000, description="笔记内容")
-    tag: Optional[str] = Field(default=None, description="笔记标签")
+    tag: Optional[str] = Field(default=None, max_length=Note.TAG_MAX_LENGTH, description="笔记标签（自由文本）")
     status: str = Field(default="draft", description="笔记状态")
+
+    @field_validator("tag", mode="before")
+    @classmethod
+    def _validate_tag(cls, tag):
+        return _clean_tag(tag)
 
 
 class NoteUpdateRequest(BaseModel):
     """更新笔记请求模型"""
     title: Optional[str] = Field(None, min_length=1, max_length=200, description="笔记标题")
     content: Optional[str] = Field(None, max_length=10000, description="笔记内容")
-    tag: Optional[str] = Field(None, description="笔记标签")
+    tag: Optional[str] = Field(None, max_length=Note.TAG_MAX_LENGTH, description="笔记标签（自由文本）")
     status: Optional[str] = Field(None, description="笔记状态")
+
+    @field_validator("tag", mode="before")
+    @classmethod
+    def _validate_tag(cls, tag):
+        return _clean_tag(tag)
 
 
 

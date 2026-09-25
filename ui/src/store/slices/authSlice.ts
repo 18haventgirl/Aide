@@ -1,6 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import type { PayloadAction } from '@reduxjs/toolkit';
-import type { AuthState, User, LoginCredentials, AuthToken } from '../../lib/types';
+import type { AuthState, User, LoginCredentials, RegisterCredentials, AuthToken } from '../../lib/types';
 import { authAPI } from '../../services/apiService';
 import { AuthManager } from '../../lib/auth';
 
@@ -28,6 +27,22 @@ export const login = createAsyncThunk<AuthToken, LoginCredentials, { rejectValue
         return response.data;
       }
       return rejectWithValue(response.message || '登录失败');
+    } catch (error: any) {
+      return rejectWithValue(error.message);
+    }
+  }
+);
+
+export const registerAccount = createAsyncThunk<AuthToken, RegisterCredentials, { rejectValue: string }>(
+  'auth/register',
+  async (credentials, { rejectWithValue }) => {
+    try {
+      const response = await authAPI.register(credentials);
+      if (response.success && response.data) {
+        AuthManager.saveAuth(response.data);
+        return response.data;
+      }
+      return rejectWithValue(response.message || '注册失败');
     } catch (error: any) {
       return rejectWithValue(error.message);
     }
@@ -178,10 +193,6 @@ const authSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
-    setUser: (state, action: PayloadAction<User>) => {
-      state.user = action.payload;
-      state.isAuthenticated = true;
-    },
     clearAuth: (state) => {
       state.user = null;
       state.token = null;
@@ -218,6 +229,24 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.error = action.payload as string;
         state.isAuthenticated = false;
+      })
+      // 注册成功后同样直接进入已登录状态
+      .addCase(registerAccount.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(registerAccount.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.error = null;
+        if (action.payload.access_token && action.payload.user_info) {
+          state.token = action.payload.access_token;
+          state.user = action.payload.user_info;
+          state.isAuthenticated = true;
+        }
+      })
+      .addCase(registerAccount.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload as string;
       })
       // 登出
       .addCase(logout.pending, (state) => {
@@ -327,5 +356,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearError, setUser, clearAuth, restoreAuth } = authSlice.actions;
+export const { clearError, clearAuth, restoreAuth } = authSlice.actions;
 export default authSlice.reducer; 

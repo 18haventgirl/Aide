@@ -16,13 +16,12 @@ from fastmcp import FastMCP
 backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, backend_dir)
 
-# Import JSONPlaceholder client for user data
-from remote_api.jsonplaceholder import JSONPlaceholderClient
 
 # Import service layer components
 from service.services.user_service import UserService
 from service.services.preference_service import PreferenceService
 from service.services.note_service import NoteService
+from service.models.note import Note
 from service.services.todo_service import TodoService
 
 # Import database initialization
@@ -30,7 +29,6 @@ from core.database_core import DatabaseClient
 from core.vector_core import ChromaVectorClient, VectorConfig
 
 # Initialize clients
-jsonplaceholder_client = JSONPlaceholderClient()
 user_service = UserService()
 preference_service = None
 note_service = None
@@ -89,35 +87,25 @@ def register_user_data_tools(mcp: FastMCP):
     if not initialize_services():
         print("❌ Failed to initialize services, some tools may not work")
     
-    # ========== JSONPlaceholder User Tools ==========
+    # ========== 用户信息工具（数据来自本地 users 表） ==========
     
     @mcp.tool
     def get_user(user_id: int) -> str:
         """
-        Get specific user information by ID from JSONPlaceholder API
+        Get a registered user's information by ID
         
         Args:
-            user_id: User ID (1-10)
+            user_id: User ID of a registered user
             
         Returns:
-            JSON string containing user information including:
-            - id: User ID
-            - name: User full name
-            - username: Username
-            - email: User email
-            - address: User address with city, street, zipcode, geo coordinates
-            - phone: User phone number
-            - website: User website
-            - company: User company information
+            JSON string containing user information:
+            id, username, email, name, created_at, updated_at
         """
         try:
-            if user_id < 1 or user_id > 10:
-                return json.dumps({"error": "User ID must be between 1 and 10"}, ensure_ascii=False)
-            
-            result = jsonplaceholder_client.get_user(user_id)
-            if result:
-                return json.dumps(result.model_dump(), ensure_ascii=False)
-            return json.dumps({"error": f"User {user_id} not found"}, ensure_ascii=False)
+            user = user_service.get_user(user_id)
+            if not user:
+                return json.dumps({"error": f"User {user_id} is not a registered user"}, ensure_ascii=False)
+            return json.dumps(user.to_public_dict(), ensure_ascii=False)
         except Exception as e:
             return json.dumps({"error": f"Error getting user {user_id}: {str(e)}"}, ensure_ascii=False)
     
@@ -126,7 +114,7 @@ def register_user_data_tools(mcp: FastMCP):
     @mcp.tool
     def search_users_by_name(name: str) -> str:
         """
-        Search users by name from JSONPlaceholder API
+        Search registered users by username or display name
         
         Args:
             name: Name to search for (partial match supported)
@@ -137,7 +125,7 @@ def register_user_data_tools(mcp: FastMCP):
         try:
             users = user_service.search_users_by_name(name)
             return json.dumps({
-                "users": [user.model_dump() for user in users],
+                "users": [user.to_public_dict() for user in users],
                 "count": len(users)
             }, ensure_ascii=False)
         except Exception as e:
@@ -149,15 +137,15 @@ def register_user_data_tools(mcp: FastMCP):
         Get user summary information
         
         Args:
-            user_id: User ID (1-10)
+            user_id: User ID of a registered user
             
         Returns:
             JSON string containing user summary with essential information:
             - id, name, username, email, phone, website, company, address
         """
         try:
-            if user_id < 1 or user_id > 10:
-                return json.dumps({"error": "User ID must be between 1 and 10"}, ensure_ascii=False)
+            if not user_service.validate_user_exists(user_id):
+                return json.dumps({"error": f"User {user_id} is not a registered user"}, ensure_ascii=False)
             
             summary = user_service.get_user_summary(user_id)
             if summary:
@@ -174,15 +162,15 @@ def register_user_data_tools(mcp: FastMCP):
         Get user preferences by category
         
         Args:
-            user_id: User ID (1-10)
+            user_id: User ID of a registered user
             category: Preference category (default: 'general')
             
         Returns:
             JSON string containing user preferences for the specified category
         """
         try:
-            if user_id < 1 or user_id > 10:
-                return json.dumps({"error": "User ID must be between 1 and 10"}, ensure_ascii=False)
+            if not user_service.validate_user_exists(user_id):
+                return json.dumps({"error": f"User {user_id} is not a registered user"}, ensure_ascii=False)
             
             if preference_service is None:
                 return json.dumps({"error": "Preference service not initialized"}, ensure_ascii=False)
@@ -204,7 +192,7 @@ def register_user_data_tools(mcp: FastMCP):
         Save user preferences
         
         Args:
-            user_id: User ID (must be between 1 and 10)
+            user_id: User ID (must be a registered user)
             preferences: JSON string containing preferences data (must be valid JSON format, e.g., '{"theme": "dark", "language": "en"}')
             category: Preference category (optional, max 50 characters, default: 'general')
             
@@ -214,8 +202,8 @@ def register_user_data_tools(mcp: FastMCP):
             Error format: {"error": "error description"}
         """
         try:
-            if user_id < 1 or user_id > 10:
-                return json.dumps({"error": "User ID must be between 1 and 10"}, ensure_ascii=False)
+            if not user_service.validate_user_exists(user_id):
+                return json.dumps({"error": f"User {user_id} is not a registered user"}, ensure_ascii=False)
             
             if preference_service is None:
                 return json.dumps({"error": "Preference service not initialized"}, ensure_ascii=False)
@@ -246,14 +234,14 @@ def register_user_data_tools(mcp: FastMCP):
         Get all user preferences across all categories
         
         Args:
-            user_id: User ID (1-10)
+            user_id: User ID of a registered user
             
         Returns:
             JSON string containing all preferences organized by category
         """
         try:
-            if user_id < 1 or user_id > 10:
-                return json.dumps({"error": "User ID must be between 1 and 10"}, ensure_ascii=False)
+            if not user_service.validate_user_exists(user_id):
+                return json.dumps({"error": f"User {user_id} is not a registered user"}, ensure_ascii=False)
             
             if preference_service is None:
                 return json.dumps({"error": "Preference service not initialized"}, ensure_ascii=False)
@@ -275,10 +263,10 @@ def register_user_data_tools(mcp: FastMCP):
         Create a new note for user
         
         Args:
-            user_id: User ID (must be between 1 and 10)
+            user_id: User ID (must be a registered user)
             title: Note title (required, max 200 characters)
             content: Note content (optional, text content)
-            tag: Note tag (optional, must be one of: 'lifestyle tips', 'cooking advice', 'weather interpretation', 'news context', or empty string)
+            tag: Note tag (optional, free text, max 50 characters)
             status: Note status (must be one of: 'draft', 'published', 'archived'. Default: 'draft')
             
         Returns:
@@ -287,8 +275,8 @@ def register_user_data_tools(mcp: FastMCP):
             Error format: {"error": "error description"}
         """
         try:
-            if user_id < 1 or user_id > 10:
-                return json.dumps({"error": "User ID must be between 1 and 10"}, ensure_ascii=False)
+            if not user_service.validate_user_exists(user_id):
+                return json.dumps({"error": f"User {user_id} is not a registered user"}, ensure_ascii=False)
             
             if note_service is None:
                 return json.dumps({"error": "Note service not initialized"}, ensure_ascii=False)
@@ -297,11 +285,10 @@ def register_user_data_tools(mcp: FastMCP):
             if status not in ['draft', 'published', 'archived']:
                 return json.dumps({"error": "Status must be 'draft', 'published', or 'archived'"}, ensure_ascii=False)
             
-            # Validate tag
-            allowed_tags = ['lifestyle tips', 'cooking advice', 'weather interpretation', 'news context']
-            if tag and tag not in allowed_tags:
+            # Validate tag: free text, only length/whitespace constrained (same rule as the REST API)
+            if tag and len(tag.strip()) > Note.TAG_MAX_LENGTH:
                 return json.dumps({
-                    "error": f"Invalid tag '{tag}'. Allowed tags are: {', '.join(allowed_tags)}"
+                    "error": f"Tag must be {Note.TAG_MAX_LENGTH} characters or less"
                 }, ensure_ascii=False)
             
             # Validate title length
@@ -333,7 +320,7 @@ def register_user_data_tools(mcp: FastMCP):
         Get user's notes with optional filtering
         
         Args:
-            user_id: User ID (1-10)
+            user_id: User ID of a registered user
             status: Filter by status ('draft', 'published', 'archived', or empty for all)
             limit: Maximum number of notes to return (default: 20)
             offset: Number of notes to skip (default: 0)
@@ -380,7 +367,7 @@ def register_user_data_tools(mcp: FastMCP):
         Search user's notes by content
         
         Args:
-            user_id: User ID (1-10)
+            user_id: User ID of a registered user
             query: Search query text
             limit: Maximum number of results (default: 20)
             
@@ -388,8 +375,8 @@ def register_user_data_tools(mcp: FastMCP):
             JSON string containing search results
         """
         try:
-            if user_id < 1 or user_id > 10:
-                return json.dumps({"error": "User ID must be between 1 and 10"}, ensure_ascii=False)
+            if not user_service.validate_user_exists(user_id):
+                return json.dumps({"error": f"User {user_id} is not a registered user"}, ensure_ascii=False)
             
             if note_service is None:
                 return json.dumps({"error": "Note service not initialized"}, ensure_ascii=False)
@@ -428,7 +415,7 @@ def register_user_data_tools(mcp: FastMCP):
             note_id: Note ID (required, must be a valid note ID)
             title: New title (optional, leave empty to keep current, max 200 characters)
             content: New content (optional, leave empty to keep current)
-            tag: New tag (optional, leave empty to keep current, must be one of: 'lifestyle tips', 'cooking advice', 'weather interpretation', 'news context', or empty string)
+            tag: New tag (optional, free text, max 50 characters; empty keeps current)
             status: New status (optional, leave empty to keep current, must be one of: 'draft', 'published', 'archived')
             
         Returns:
@@ -444,11 +431,10 @@ def register_user_data_tools(mcp: FastMCP):
             if status and status not in ['draft', 'published', 'archived']:
                 return json.dumps({"error": "Status must be 'draft', 'published', or 'archived'"}, ensure_ascii=False)
             
-            # Validate tag if provided
-            allowed_tags = ['lifestyle tips', 'cooking advice', 'weather interpretation', 'news context']
-            if tag and tag not in allowed_tags:
+            # Validate tag if provided: free text, same length rule as the REST API
+            if tag and len(tag.strip()) > Note.TAG_MAX_LENGTH:
                 return json.dumps({
-                    "error": f"Invalid tag '{tag}'. Allowed tags are: {', '.join(allowed_tags)}"
+                    "error": f"Tag must be {Note.TAG_MAX_LENGTH} characters or less"
                 }, ensure_ascii=False)
             
             # Validate title length if provided
@@ -496,7 +482,7 @@ def register_user_data_tools(mcp: FastMCP):
         Create a new todo item for user
         
         Args:
-            user_id: User ID (must be between 1 and 10)
+            user_id: User ID (must be a registered user)
             title: Todo title (required, max 200 characters)
             description: Todo description (optional, text content)
             priority: Priority level (must be one of: 'high', 'medium', 'low'. Default: 'medium')
@@ -509,8 +495,8 @@ def register_user_data_tools(mcp: FastMCP):
             Error format: {"error": "error description"}
         """
         try:
-            if user_id < 1 or user_id > 10:
-                return json.dumps({"error": "User ID must be between 1 and 10"}, ensure_ascii=False)
+            if not user_service.validate_user_exists(user_id):
+                return json.dumps({"error": f"User {user_id} is not a registered user"}, ensure_ascii=False)
             
             if todo_service is None:
                 return json.dumps({"error": "Todo service not initialized"}, ensure_ascii=False)
@@ -561,7 +547,7 @@ def register_user_data_tools(mcp: FastMCP):
         Get user's todos with optional filtering
         
         Args:
-            user_id: User ID (1-10)
+            user_id: User ID of a registered user
             completed: Filter by completion status ('true', 'false', or empty for all)
             priority: Filter by priority ('high', 'medium', 'low', or empty for all)
             limit: Maximum number of todos to return (default: 20)
@@ -571,8 +557,8 @@ def register_user_data_tools(mcp: FastMCP):
             JSON string containing list of todos and metadata
         """
         try:
-            if user_id < 1 or user_id > 10:
-                return json.dumps({"error": "User ID must be between 1 and 10"}, ensure_ascii=False)
+            if not user_service.validate_user_exists(user_id):
+                return json.dumps({"error": f"User {user_id} is not a registered user"}, ensure_ascii=False)
             
             if todo_service is None:
                 return json.dumps({"error": "Todo service not initialized"}, ensure_ascii=False)
@@ -649,7 +635,7 @@ def register_user_data_tools(mcp: FastMCP):
         Search user's todos by title and description
         
         Args:
-            user_id: User ID (1-10)
+            user_id: User ID of a registered user
             query: Search query text
             limit: Maximum number of results (default: 20)
             
@@ -657,8 +643,8 @@ def register_user_data_tools(mcp: FastMCP):
             JSON string containing search results
         """
         try:
-            if user_id < 1 or user_id > 10:
-                return json.dumps({"error": "User ID must be between 1 and 10"}, ensure_ascii=False)
+            if not user_service.validate_user_exists(user_id):
+                return json.dumps({"error": f"User {user_id} is not a registered user"}, ensure_ascii=False)
             
             if todo_service is None:
                 return json.dumps({"error": "Todo service not initialized"}, ensure_ascii=False)

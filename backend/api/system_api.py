@@ -8,6 +8,7 @@ import logging
 from datetime import datetime
 from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
+from sqlalchemy import text
 
 # 导入WebSocket核心模块
 from core.web_socket_core import connection_manager
@@ -39,46 +40,64 @@ async def root():
 
 @system_router.get("/health")
 async def health_check():
-    """健康检查端点"""
+    """健康检查端点
+
+    每一项都做真实探测：数据库跑一次 SELECT 1、向量库调 health_check、
+    WebSocket 取连接管理器的实际状态。原来只判断 client 对象是否存在，
+    MySQL 挂了也会回 healthy，故障时反而误导排查。
+    """
+    services = {}
+
+    # 关系型数据库：真实建一次连接执行查询
     try:
-        # 检查数据库连接
-        db_status = "healthy"
-        try:
-            db_client = service_manager.get_db_client()
-            if not db_client:
-                db_status = "unhealthy"
-        except Exception:
-            db_status = "unhealthy"
-        
-        # 检查向量数据库连接
-        vector_status = "healthy"
-        try:
-            vector_client = service_manager.get_vector_client()
-            if not vector_client:
-                vector_status = "not_configured"
-            else:
-                health = vector_client.health_check()
-                if health.get('status') != 'healthy':
-                    vector_status = "unhealthy"
-        except Exception:
-            vector_status = "unhealthy"
-        
-        overall_status = "healthy" if db_status == "healthy" else "degraded"
-        
-        return {
-            "status": overall_status,
-            "timestamp": datetime.now().isoformat(),
-            "services": {
-                "database": db_status,
-                "vector_database": vector_status,
-                "websocket": "healthy"
-            }
-        }
+        db_client = service_manager.get_db_client()
+        if not db_client or db_client.engine is None:
+            services["database"] = "unhealthy"
+        else:
+            with db_client.engine.connect() as connection:
+                connection.execute(text("SELECT 1"))
+            services["database"] = "healthy"
     except Exception as e:
-        return {
-            "status": "unhealthy",
-            "error": str(e)
-        }
+        logger.warning(f"数据库健康检查失败: {e}")
+        services["database"] = "unhealthy"
+
+    # 向量数据库
+    try:
+        vector_client = service_manager.get_vector_client()
+        if not vector_client:
+            services["vector_database"] = "not_configured"
+        else:
+            health = vector_client.health_check()
+            services["vector_database"] = "healthy" if health.get('status') == 'healthy' else "unhealthy"
+    except Exception as e:
+        logger.warning(f"向量数据库健康检查失败: {e}")
+        services["vector_database"] = "unhealthy"
+
+    # WebSocket：心跳任务在跑且能取到连接数，才算 healthy
+    try:
+        active_connections = len(connection_manager.active_connections)
+        services["websocket"] = "healthy" if connection_manager.heartbeat_task else "not_running"
+    except Exception as e:
+        logger.warning(f"WebSocket 健康检查失败: {e}")
+        services["websocket"] = "unhealthy"
+        active_connections = 0
+
+    unhealthy = [name for name, state in services.items() if state != "healthy"]
+    if not unhealthy:
+        overall_status = "healthy"
+    elif services["database"] == "unhealthy":
+        # 核心存储不可用，整个服务算不健康
+        overall_status = "unhealthy"
+    else:
+        overall_status = "degraded"
+
+    return {
+        "status": overall_status,
+        "timestamp": datetime.now().isoformat(),
+        "services": services,
+        "issues": unhealthy,
+        "active_connections": active_connections
+    }
 
 
 @system_router.get("/test")
@@ -157,7 +176,9 @@ async def test_page():
                     return;
                 }
                 
-                let wsUrl = `ws://localhost:8000/ws`;
+                // 由当前页面地址推导，避免后端换端口后测试页失效
+                const wsProto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+                let wsUrl = `${wsProto}//${location.host}/ws`;
                 const params = new URLSearchParams();
                 params.append('user_id', userId);
                 if (username) params.append('username', username);

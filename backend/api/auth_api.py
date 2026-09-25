@@ -17,8 +17,13 @@ from core.auth_core import (
     CurrentUserOptional,
     success_response,
     invalid_credentials_response,
+    validation_error_response,
     internal_error_response
 )
+
+# 导入服务类
+# 模块级导入，确保启动时 users 表已注册到 metadata 并被 create_all 建出来
+from service.services.user_account_service import DuplicateUserError
 
 # 配置日志
 logger = logging.getLogger(__name__)
@@ -100,6 +105,69 @@ async def login(response: Response, login_request: LoginRequest):
         return internal_error_response("服务器内部错误")
 
 
+class RegisterRequest(BaseModel):
+    """注册请求模型"""
+    username: str
+    email: str
+    password: str
+    name: Optional[str] = None
+
+
+@auth_router.post("/register")
+async def register(response: Response, register_request: RegisterRequest):
+    """
+    用户注册接口：写入本地 users 表并直接返回令牌
+
+    Args:
+        response: FastAPI响应对象
+        register_request: 注册请求
+
+    Returns:
+        统一API响应格式
+    """
+    username = register_request.username.strip()
+    email = register_request.email.strip()
+
+    if len(username) < 3:
+        return validation_error_response("用户名至少 3 个字符")
+    if "@" not in email or "." not in email.split("@")[-1]:
+        return validation_error_response("邮箱格式不正确")
+    if len(register_request.password) < 8:
+        return validation_error_response("密码至少 8 位")
+
+    try:
+        token = auth_service.register(
+            username=username,
+            email=email,
+            password=register_request.password,
+            name=(register_request.name or "").strip(),
+        )
+
+        response.set_cookie(
+            key="access_token",
+            value=token.access_token,
+            max_age=token.expires_in,
+            httponly=True,
+            secure=False,  # 在生产环境中应该设置为True
+            samesite="lax"
+        )
+
+        logger.info(f"新用户注册成功: {username} (id={token.user_info['user_id']})")
+
+        return success_response({
+            "access_token": token.access_token,
+            "token_type": token.token_type,
+            "expires_in": token.expires_in,
+            "user_info": token.user_info
+        }, "注册成功")
+
+    except DuplicateUserError as e:
+        return validation_error_response(str(e))
+    except Exception as e:
+        logger.error(f"注册失败: {str(e)}")
+        return internal_error_response("服务器内部错误")
+
+
 @auth_router.post("/logout", response_model=LogoutResponse)
 async def logout(response: Response, current_user: Dict[str, Any] = CurrentUserOptional):
     """
@@ -145,15 +213,9 @@ async def refresh_token(response: Response, current_user: Dict[str, Any] = Curre
         新的令牌信息
     """
     try:
-        # 重新生成令牌
-        token_data = {
-            "user_id": current_user["user_id"],
-            "username": current_user["username"],
-            "email": current_user["email"]
-        }
-        
-        new_token = auth_service.login(current_user["username"], "admin123456")
-        
+        # 直接依据已验证的令牌签一张新票（旧实现是拿用户名 + 硬编码密码去"登录"）
+        new_token = auth_service.issue_token(current_user)
+
         if not new_token:
             raise HTTPException(status_code=401, detail="令牌刷新失败")
         

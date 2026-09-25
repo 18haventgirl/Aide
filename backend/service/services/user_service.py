@@ -1,213 +1,155 @@
 """
 用户服务
 
-整合JSONPlaceholder API用户数据，提供用户相关业务逻辑
+用户身份统一来自本地 users 表。此前取自公共演示站 JSONPlaceholder（只有 10 个假用户），
+导致第 11 个之后注册的账号被 validate_user_exists 判为"用户不存在"，
+笔记/待办/偏好全都写不进去。
 """
 
 from typing import Optional, List
-from remote_api.jsonplaceholder.client import JSONPlaceholderClient
-from remote_api.jsonplaceholder.models import User
+
+from sqlalchemy import or_
+
+from ..models.user_account import UserAccount
 
 
 class UserService:
     """
     用户服务类
-    
-    提供用户相关的业务逻辑，用户数据来自JSONPlaceholder API
+
+    提供用户相关的业务逻辑，数据来源为本地 users 表
     """
-    
-    def __init__(self):
-        """初始化用户服务"""
-        self.client = JSONPlaceholderClient()
-    
-    def get_user(self, user_id: int) -> Optional[User]:
+
+    def __init__(self, db_client=None):
+        """
+        初始化用户服务
+
+        Args:
+            db_client: 数据库客户端；缺省时在首次使用时取全局单例，
+                       避免与 service_manager 形成导入环
+        """
+        self._db_client = db_client
+
+    @property
+    def db_client(self):
+        if self._db_client is None:
+            from service.service_manager import service_manager
+            self._db_client = service_manager.get_db_client()
+        return self._db_client
+
+    def get_user(self, user_id: int) -> Optional[UserAccount]:
         """
         获取用户信息
-        
+
         Args:
             user_id: 用户ID
-            
+
         Returns:
-            用户信息或None
+            用户对象或None
         """
         try:
-            user_response = self.client.get_user(user_id)
-            if user_response:
-                return user_response.user
-            return None
+            with self.db_client.get_session() as session:
+                user = session.query(UserAccount).filter(UserAccount.id == user_id).first()
+                if user:
+                    session.expunge(user)
+                return user
         except Exception as e:
             print(f"获取用户信息失败: {e}")
             return None
-    
-    def get_all_users(self) -> List[User]:
+
+    def get_all_users(self) -> List[UserAccount]:
         """
         获取所有用户信息
-        
+
         Returns:
             用户列表
         """
         try:
-            users_response = self.client.get_users()
-            if users_response:
-                return users_response.users
-            return []
+            with self.db_client.get_session() as session:
+                users = session.query(UserAccount).order_by(UserAccount.id).all()
+                for user in users:
+                    session.expunge(user)
+                return users
         except Exception as e:
             print(f"获取所有用户失败: {e}")
             return []
-    
-    def get_user_posts(self, user_id: int):
-        """
-        获取用户的帖子
-        
-        Args:
-            user_id: 用户ID
-            
-        Returns:
-            帖子列表
-        """
-        try:
-            posts_response = self.client.get_user_posts(user_id)
-            if posts_response:
-                return posts_response.posts
-            return []
-        except Exception as e:
-            print(f"获取用户帖子失败: {e}")
-            return []
-    
-    def get_user_todos(self, user_id: int):
-        """
-        获取用户的待办事项（JSONPlaceholder API）
-        
-        Args:
-            user_id: 用户ID
-            
-        Returns:
-            待办事项列表
-        """
-        try:
-            todos_response = self.client.get_user_todos(user_id)
-            if todos_response:
-                return todos_response.todos
-            return []
-        except Exception as e:
-            print(f"获取用户待办事项失败: {e}")
-            return []
-    
+
     def validate_user_exists(self, user_id: int) -> bool:
         """
         验证用户是否存在
-        
+
         Args:
             user_id: 用户ID
-            
+
         Returns:
             是否存在
         """
-        user = self.get_user(user_id)
-        return user is not None
-    
-    def get_user_display_name(self, user_id: int) -> str:
-        """
-        获取用户显示名称
-        
-        Args:
-            user_id: 用户ID
-            
-        Returns:
-            用户显示名称
-        """
-        user = self.get_user(user_id)
-        if user:
-            return user.name
-        return f"用户 {user_id}"
-    
-    def get_user_email(self, user_id: int) -> Optional[str]:
-        """
-        获取用户邮箱
-        
-        Args:
-            user_id: 用户ID
-            
-        Returns:
-            用户邮箱或None
-        """
-        user = self.get_user(user_id)
-        if user:
-            return user.email
-        return None
-    
-    def search_users_by_name(self, name: str) -> List[User]:
-        """
-        根据姓名搜索用户
-        
-        Args:
-            name: 搜索的姓名
-            
-        Returns:
-            匹配的用户列表
-        """
-        all_users = self.get_all_users()
-        return [
-            user for user in all_users 
-            if name.lower() in user.name.lower()
-        ]
+        return self.get_user(user_id) is not None
 
-    def search_users_by_username(self, username: str) -> List[User]:
+    def search_users_by_name(self, name: str) -> List[UserAccount]:
         """
-        根据姓名搜索用户
-        
+        按用户名或展示名模糊搜索用户
+
         Args:
-            name: 搜索的姓名
-            
+            name: 搜索的关键字
+
         Returns:
             匹配的用户列表
         """
-        all_users = self.get_all_users()
-        return [
-            user for user in all_users 
-            if username.lower() in user.username.lower()
-        ]
-    
-    def search_users_by_email(self, email: str) -> List[User]:
+        if not name:
+            return []
+        pattern = f"%{name}%"
+        try:
+            with self.db_client.get_session() as session:
+                users = session.query(UserAccount).filter(
+                    or_(UserAccount.name.like(pattern), UserAccount.username.like(pattern))
+                ).all()
+                for user in users:
+                    session.expunge(user)
+                return users
+        except Exception as e:
+            print(f"搜索用户失败: {e}")
+            return []
+
+    def search_users_by_email(self, email: str) -> List[UserAccount]:
         """
         根据邮箱搜索用户
-        
+
         Args:
             email: 搜索的邮箱
-            
+
         Returns:
             匹配的用户列表
         """
-        all_users = self.get_all_users()
-        return [
-            user for user in all_users 
-            if email.lower() in user.email.lower()
-        ]
-    
+        if not email:
+            return []
+        try:
+            with self.db_client.get_session() as session:
+                users = session.query(UserAccount).filter(UserAccount.email == email).all()
+                for user in users:
+                    session.expunge(user)
+                return users
+        except Exception as e:
+            print(f"搜索用户邮箱失败: {e}")
+            return []
+
     def get_user_summary(self, user_id: int) -> dict:
         """
         获取用户概要信息
-        
+
         Args:
             user_id: 用户ID
-            
+
         Returns:
-            用户概要信息字典
+            用户概要信息字典（用户不存在时为空字典）
         """
         user = self.get_user(user_id)
         if not user:
             return {}
-        
+
         return {
             'id': user.id,
             'name': user.name,
             'username': user.username,
             'email': user.email,
-            'phone': user.phone,
-            'website': user.website,
-            'company': user.company.name if user.company else None,
-            'address': {
-                'city': user.address.city if user.address else None,
-                'zipcode': user.address.zipcode if user.address else None
-            }
-        } 
+        }
