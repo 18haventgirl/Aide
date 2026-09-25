@@ -45,20 +45,33 @@
 
 ### 进度
 
-- [ ] 阶段 0：`tests/test_rag_recall.py` 离线召回验证
-- [ ] 阶段 1：`context.py` / `graph.py` / `middleware.py` / `tools/notes.py` / 依赖增删 / 非流式 `runtime.ask()`
+- [x] 阶段 0：`tests/test_rag_recall.py` 离线召回验证（5 文档 / 8 组查询，top-3 命中、更新后相关性反转、删除后不出索引）
+- [x] 阶段 1：`context.py` / `graph.py` / `middleware.py` / `tools/notes.py` / `tools/mcp.py` / 依赖增删 / 非流式 `runtime.ask()`
+  - 提交：`8a40f9c` 依赖与模型构造 → `c3386af` UserContext → `1a24f73` 护栏中间件 → `64db30c` RAG+MCP 工具 → `699c1ec` 建图与运行时 → `f213815` 护栏重复判定修复
+  - 全量 `pytest tests -q`：**64 passed**（其中新增 agent/middleware/tools/graph 用例 31 个），全程离线可跑
+  - 非流式冒烟（真实 DeepSeek + 本地 MCP）：`ask(3,'smoke-1','明天上海天气怎么样？')` → 护栏放行 → 模型自己填出上海经纬度 → `weather_get_daily_weather_forecast` 返回真实预报 → 中文结论式回答，`error=None`
 - [ ] 阶段 2：`astream` 流式 + WS 事件翻译 + checkpoint 落地
 - [ ] 阶段 3：前端图执行轨迹与工具清单
 - [ ] 阶段 4：删除旧引擎、文档、全量回归
 
+### 阶段 1 落地的三条硬规则（后续改动不要破坏）
+
+1. **身份不接受模型填写**：MCP 的 11 个 `user_data_*` 工具入参带 `user_id`，`build_identity_middleware()`（`wrap_tool_call`）在真正执行前用 `runtime.context.user_id` 覆写并 WARNING。本地 RAG 工具压根没有 `user_id` 入参，身份只从 context 取。
+2. **护栏每轮只判一次**：`before_model` 在工具回环里会再次触发，`_resuming_after_tool()` 检测最后一条是 `ToolMessage` 时直接返回 `None`。否则同句话判两遍：多两次 LLM 往返、面板重复行，且第二遍会把模型自己的回答当成判定结论。
+3. **工具异常必须变成字符串**：`search_my_notes`/`save_note` 对"服务不可用/无上下文/无命中/向量库挂了"都返回中文句子，其中向量检索失败会回退关键词检索；`load_mcp_tools()` 连不上返回 `[]`，对话继续只是没外部工具。
+
+
 ## 待验证（不许当作事实使用）
 
-1. `create_agent` 的 `context_schema` 如何把 `UserContext` 注入工具（`ToolRuntime`?）——阶段 1 首个 spike
+1. ~~`create_agent` 的 `context_schema` 如何把 `UserContext` 注入工具~~ **已实测（阶段 1）**：工具签名写 `runtime: ToolRuntime[UserContext] = None` 即可，`langchain.tools` 有再导出（实际定义在 `langgraph.prebuilt.tool_node`）；该参数会被自动排除在 `tool_call_schema` 之外，模型看不到也填不了。单独 `tool.ainvoke({...})` 时 `runtime` 为 `None`，显式传 `runtime=None` 反而被 pydantic 拒（类型是 dataclass），要省略键。
 2. `stream_mode=["messages","updates"]` 同时开启时的产出形状——阶段 2 spike
 3. `AsyncSqliteSaver` 在 uvicorn 并发下的文件锁表现——阶段 2 spike
-4. `tool_name_prefix=True` 产出的工具名是否与现有 29 个完全一致——阶段 1 spike
-5. 单 agent 挂 29+ 工具时 DeepSeek 的工具选择准确率与 token 成本——阶段 2 实测
+4. ~~`tool_name_prefix=True` 产出的工具名~~ **已实测（阶段 1）**：用 `tool_name_prefix=False`，29 个工具名原样为 `weather_/news_/recipe_/user_data_` 前缀，与 MCP 服务端一致；`load_mcp_tools()` 对运行中的 8102 真实返回 29 个。
+5. 单 agent 挂 29+2 工具时 DeepSeek 的工具选择准确率与 token 成本——阶段 2 实测（首个冒烟选对了天气工具）
 6. 会话标题生成改为每轮后一次独立小调用，效果是否够用——阶段 4
+7. **新发现，待阶段 2 处理**：MCP 工具的 `ToolMessage.content` 不是纯文本，而是 `[{'type': 'text', 'text': '<json 字符串>'}]` 列表；直接 `str(m.content)` 会把 Python repr 灌给模型和面板，翻译层要取 `part["text"]` 再裁剪。
+8. **新发现，遗留风险**：MCP 侧 `user_data_update_note / delete_note / update_todo / complete_todo / delete_todo` 只按 `note_id/todo_id` 定位记录，服务端不校验归属，所以"猜别人的 id 改别人的数据"这条路径仍然开着——身份覆写只挡得住带 `user_id` 入参的工具。旧引擎的 `tool_filter` 同样放行 `user_data_` 前缀，因此不是本次迁移引入的回归；修法应在 MCP 服务端按登录身份加归属校验，记入阶段 4 遗留清单交用户决定。
+
 
 ## 已知遗留（用户判定为开发阶段可暂缓，本期不动）
 
