@@ -14,11 +14,12 @@ class DatabaseConfig:
     
     def __init__(self):
         """初始化数据库配置"""
-        self.host = os.getenv('DB_HOST', 'localhost')
-        self.port = int(os.getenv('DB_PORT', '3306'))
-        self.username = os.getenv('DB_USERNAME', 'root')
-        self.password = os.getenv('DB_PASSWORD', '')
-        self.database = os.getenv('DB_DATABASE', 'personal_assistant')
+        self.host = os.getenv('DB_HOST', '127.0.0.1')
+        # 默认值即本分支的隔离配置：即使忘记建 .env，也不会连到另一个 Aide 实例的 MySQL
+        self.port = int(os.getenv('DB_PORT', '3307'))
+        self.username = os.getenv('DB_USERNAME', 'lg_aide')
+        self.password = os.getenv('DB_PASSWORD', 'lg_aide')
+        self.database = os.getenv('DB_DATABASE', 'lg_aide')
         self.charset = os.getenv('DB_CHARSET', 'utf8mb4')
         self.pool_size = int(os.getenv('DB_POOL_SIZE', '5'))
         self.max_overflow = int(os.getenv('DB_MAX_OVERFLOW', '10'))

@@ -92,11 +92,8 @@ class PerformanceManager:
             if not db_client:
                 raise RuntimeError("无法获取数据库客户端")
             
-            # 创建assistant manager
-            self._assistant_manager = PersonalAssistantManager(
-                db_client=db_client,
-                mcp_server_url="http://localhost:8002/mcp"
-            )
+            # 创建assistant manager（MCP 地址由 MCP_SERVER_URL 环境变量决定）
+            self._assistant_manager = PersonalAssistantManager(db_client=db_client)
             
             # 初始化assistant manager
             success = await self._assistant_manager.initialize()

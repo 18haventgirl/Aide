@@ -31,6 +31,9 @@ from api import (
 # 导入WebSocket核心模块
 from core.web_socket_core import connection_manager, WebSocketConfig
 
+# 导入运行时配置
+from core.runtime_config import RuntimeConfig, cors_origins
+
 # 导入服务管理器
 from service.service_manager import service_manager
 
@@ -58,11 +61,14 @@ async def start_mcp_server():
         mcp_server_path = os.path.join(current_dir, "mcp-serve", "mcp_server.py")
         
         # 启动子进程
+        # stdout/stderr 是管道时，Python 会按系统区域设置选编码（中文 Windows 上是 GBK），
+        # 子进程里 print("✅ …") 会直接 UnicodeEncodeError 崩掉，所以显式要求 UTF-8
         mcp_server_process = await asyncio.create_subprocess_exec(
             sys.executable, mcp_server_path,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
-            cwd=current_dir
+            cwd=current_dir,
+            env={**os.environ, "PYTHONIOENCODING": "utf-8"}
         )
         
         print(f"✅ MCP服务器进程已启动 (PID: {mcp_server_process.pid})")
@@ -103,23 +109,29 @@ async def stop_mcp_server():
             mcp_server_process = None
 
 async def monitor_mcp_server_output():
-    """监控MCP服务器进程的输出"""
+    """监控MCP服务器进程的输出
+
+    stdout 和 stderr 都必须持续排空：任一管道写满，子进程就会卡死在写日志上。
+    """
     global mcp_server_process
-    
-    if not mcp_server_process or not mcp_server_process.stdout:
+
+    process = mcp_server_process
+    if not process:
         return
-    
-    try:
-        # 监控stdout
-        while True:
-            line = await mcp_server_process.stdout.readline()
-            if not line:
-                break
-            # 将MCP服务器的输出添加前缀后打印
-            print(f"[MCP] {line.decode().strip()}")
-            
-    except Exception as e:
-        logger.error(f"监控MCP服务器输出时发生错误: {e}")
+
+    async def drain(stream, prefix):
+        if not stream:
+            return
+        try:
+            while True:
+                line = await stream.readline()
+                if not line:
+                    break
+                print(f"[MCP{prefix}] {line.decode('utf-8', 'replace').strip()}")
+        except Exception as e:
+            logger.error(f"监控MCP服务器输出时发生错误: {e}")
+
+    await asyncio.gather(drain(process.stdout, ""), drain(process.stderr, ":err"))
 
 # =========================
 # 初始化函数（从原文件移过来的）
@@ -226,7 +238,7 @@ async def lifespan(app: FastAPI):
 # 创建 FastAPI 应用
 # =========================
 app = FastAPI(
-    title="AI 个人日常助手服务",
+    title="LG-Aide 个人日常助手服务 (dev/lg)",
     description="提供认证、会话管理、WebSocket通信等功能的智能助手服务",
     version="1.0.0",
     lifespan=lifespan
@@ -237,7 +249,8 @@ app = FastAPI(
 # =========================
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "*"],
+    # 启用了 allow_credentials，因此不能用通配符来源；白名单由 CORS_ORIGINS 配置
+    allow_origins=cors_origins(),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -317,8 +330,8 @@ if __name__ == "__main__":
     # 启动服务器
     uvicorn.run(
         "main:app",
-        host="0.0.0.0",
-        port=WebSocketConfig.DEFAULT_PORT,
+        host=RuntimeConfig.API_HOST,
+        port=RuntimeConfig.API_PORT,
         log_level="info",
         reload=True
     ) 

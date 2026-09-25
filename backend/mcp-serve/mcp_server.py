@@ -22,6 +22,7 @@ from user_data_tools import register_user_data_tools
 # Import database initialization components
 from core.database_core import DatabaseClient
 from core.vector_core import ChromaVectorClient, VectorConfig
+from core.runtime_config import RuntimeConfig
 
 # =============================================================================
 # MCP Service Configuration and Initialization
@@ -96,10 +97,12 @@ async def create_mcp_server():
         print("❌ Database initialization failed, but continuing with MCP service")
     
     # Create MCP instance
-    await mcp.import_server(weather_mcp, prefix="weather")
-    await mcp.import_server(news_mcp, prefix="news")
-    await mcp.import_server(recipe_mcp, prefix="recipe")
-    await mcp.import_server(user_data_mcp, prefix="user_data")
+    # fastmcp 4.x 用 mount(namespace=...) 挂载子服务，工具名会带上 "namespace_" 前缀，
+    # 后端 personal_assistant_manager 的 tool_filter 正是按这个前缀筛选各代理可见的工具
+    mcp.mount(weather_mcp, namespace="weather")
+    mcp.mount(news_mcp, namespace="news")
+    mcp.mount(recipe_mcp, namespace="recipe")
+    mcp.mount(user_data_mcp, namespace="user_data")
     
     print("📦 Registering tool modules...")
     
@@ -118,13 +121,14 @@ def main():
     """
     try:    
         # Start server
-        print("🔌 Starting MCP server...")
+        host, port, path = RuntimeConfig.mcp_bind()
+        print(f"🔌 Starting MCP server on http://{host}:{port}{path} ...")
         asyncio.run(create_mcp_server())
         mcp.run(
             transport="http",
-            host="127.0.0.1", 
-            port=8002,
-            path="/mcp"
+            host=host,
+            port=port,
+            path=path
         )
         
     except Exception as e:

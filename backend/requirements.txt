@@ -1,6 +1,8 @@
 openai-agents
 openai-agents[litellm]
-fastmcp
+# 代码用的是 FastMCP.mount()（fastmcp 4.x）。2.x 的 import_server 已被删除，
+# 且 2.x 与 mcp 1.x/2.x 之间存在互不兼容的依赖三角，不要往回降。
+fastmcp>=4,<5
 requests
 python-dotenv
 fastapi
@@ -15,14 +17,17 @@ alembic>=1.12.0
 
 # Vector Database Dependencies (OpenAI only)
 chromadb==1.0.15
+# 本地向量化 (EMBEDDING_PROVIDER=local)。torch 请先装 CPU 版，否则默认 wheel 会拖进 CUDA：
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+sentence-transformers
 numpy>=1.26.0
 openai>=1.0.0
 # Add required dependencies for the newer version of ChromaDB
 #duckdb<0.10.4
 pyarrow
 pydantic<3
-# bcrypt is needed for newer Chroma versions
-bcrypt
+# 密码哈希与 Chroma 都依赖 bcrypt；不要引入 passlib（1.7.4 与 bcrypt>=4.1 不兼容）
+bcrypt>=4.0
 # protobuf is sometimes needed for newer Chroma versions
 protobuf==4.25.3
 # opentelemetry-api, opentelemetry-exporter-otlp-proto-http, opentelemetry-sdk are needed by chromadb
@@ -33,9 +38,9 @@ posthog
 
 # JWT Authentication Dependencies
 python-jose[cryptography]
-passlib[bcrypt]
 
 # Testing Dependencies
+pytest
 requests>=2.31.0
 websockets>=11.0.0
 python-socks[asyncio]>=2.3.0
