@@ -24,6 +24,8 @@ from service.services.preference_service import PreferenceService
 from service.services.todo_service import TodoService
 from core.database_core import DatabaseClient
 from core.vector_core.client import ChromaVectorClient
+from core.runtime_config import RuntimeConfig
+from agent.guardrails import build_input_guardrails
 
 from agents import (
     Agent,
@@ -46,6 +48,8 @@ class PersonalAssistantContext(BaseModel):
     lng: str  # 经度
     user_preferences: Dict[str, Dict[str, Any]]  # 用户偏好
     todos: List[Todo]  # 待办事项
+    # 本轮输入的护栏检查记录，由 WebSocket 层取出后回传前端展示
+    guardrail_checks: List[Dict[str, Any]] = []
     
     def model_dump(self, **kwargs) -> Dict[str, Any]:
         """重写序列化方法，确保Todo对象可以被正确序列化"""
@@ -88,13 +92,13 @@ class PersonalAssistantContext(BaseModel):
 class PersonalAssistantManager:
     """个人助手管理器类 - 统一管理所有智能体和相关功能"""
     
-    def __init__(self, db_client: DatabaseClient, mcp_server_url: str = "http://127.0.0.1:8002/mcp"):
+    def __init__(self, db_client: DatabaseClient, mcp_server_url: Optional[str] = None):
         """
         初始化个人助手管理器
         
         Args:
             db_client: 数据库客户端（从外部传入）
-            mcp_server_url: MCP服务器URL地址
+            mcp_server_url: MCP服务器URL地址，缺省时读取 MCP_SERVER_URL 环境变量
         """
         # 加载环境变量
         load_dotenv()
@@ -103,7 +107,7 @@ class PersonalAssistantManager:
         # 核心组件
         self.db_client = db_client
         self.vector_client = None
-        self.mcp_server_url = mcp_server_url
+        self.mcp_server_url = mcp_server_url or RuntimeConfig.MCP_SERVER_URL
         
         # 模型配置
         self.model = self._create_model()
@@ -261,6 +265,7 @@ class PersonalAssistantManager:
             model_settings=self.model_settings,
             handoff_description="An Advanced Task Dispatch Center that precisely analyzes user intent, decomposes complex requests into executable sub-tasks, and coordinates the most appropriate agents to deliver comprehensive, integrated responses.",
             instructions=self._get_triage_instructions,
+            input_guardrails=build_input_guardrails(self.model, self.model_settings),
             handoffs=[
                 self.agents['weather'],
                 self.agents['news'],

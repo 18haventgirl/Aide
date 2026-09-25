@@ -8,37 +8,6 @@ export interface WebSocketMessage {
   timestamp?: string;
 }
 
-export interface ChatResponse {
-  conversation_id: string;
-  current_agent: string;
-  messages: Array<{
-    content: string;
-    agent: string;
-  }>;
-  events: Array<{
-    id: string;
-    type: string;
-    agent: string;
-    content: string;
-    metadata?: any;
-    timestamp?: number;
-  }>;
-  context: Record<string, any>;
-  agents: Array<Record<string, any>>;
-  raw_response: string;
-  is_finished: boolean;
-  is_error: boolean;
-  error_message: string;
-  guardrails: Array<{
-    id: string;
-    name: string;
-    input: string;
-    reasoning: string;
-    passed: boolean;
-    timestamp: number;
-  }>;
-}
-
 export type WebSocketConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error';
 
 export type WebSocketEventHandler = (data: any) => void;
@@ -117,11 +86,7 @@ export class WebSocketService {
         wsUrl.searchParams.set('token', this.token);
       }
       
-      // 如果是开发环境，使用固定端口
-      if (import.meta.env.DEV) {
-        wsUrl.host = 'localhost:8000';
-      }
-      
+      // 同源 /ws：开发环境由 vite 代理转发到后端，无需在此写死后端端口
       console.log('🌐 WebSocket URL:', wsUrl.toString());
       console.log('🔐 连接参数详情:', {
         userId: this._userId,

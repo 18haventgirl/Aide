@@ -18,8 +18,6 @@ export interface Agent {
   input_guardrails: string[]
 }
 
-export type EventType = "message" | "handoff" | "tool_call" | "tool_output" | "context_update"
-
 export interface AgentEvent {
   id: string
   type: 'tool_call' | 'handoff' | 'context_update' | 'error' | 'message'
@@ -35,17 +33,8 @@ export interface GuardrailCheck {
   input: string
   reasoning: string
   passed: boolean
-  timestamp: Date
-}
-
-export interface Conversation {
-  id: string
-  title: string
-  description: string
-  status: 'active' | 'inactive' | 'archived'
-  last_active: string
-  created_at: string
-  updated_at: string
+  // 后端下发的是 epoch 秒（数字），不要当成 Date 使用
+  timestamp: number | string
 }
 
 // =========================
@@ -77,29 +66,6 @@ export interface NoteUpdateRequest {
   content?: string
   tag?: string
   status?: string
-}
-
-export interface NoteListResponse {
-  success: boolean
-  message: string
-  data: Note[]
-  total: number
-  user_id: number
-}
-
-export interface NoteResponse {
-  success: boolean
-  message: string
-  data: Note | null
-}
-
-export interface NoteSearchResponse {
-  success: boolean
-  message: string
-  data: Note[]
-  search_query: string
-  total: number
-  user_id: number
 }
 
 // =========================
@@ -140,35 +106,6 @@ export interface TodoUpdateRequest {
   completed?: boolean
 }
 
-export interface TodoListResponse {
-  success: boolean
-  message: string
-  data: Todo[]
-  total: number
-  user_id: number
-}
-
-export interface TodoResponse {
-  success: boolean
-  message: string
-  data: Todo | null
-}
-
-export interface TodoStatsResponse {
-  success: boolean
-  message: string
-  data: {
-    total: number
-    completed: number
-    pending: number
-    overdue: number
-    high_priority: number
-    medium_priority: number
-    low_priority: number
-  }
-  user_id: number
-}
-
 // =========================
 // Person Data 相关类型定义
 // =========================
@@ -202,6 +139,13 @@ export interface AuthToken {
 export interface LoginCredentials {
   username: string
   password: string
+}
+
+export interface RegisterCredentials {
+  username: string
+  email: string
+  password: string
+  name?: string
 }
 
 export interface AuthState {

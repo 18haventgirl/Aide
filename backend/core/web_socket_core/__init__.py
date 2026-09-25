@@ -12,7 +12,7 @@ AI 个人日常助手项目的 WebSocket 核心功能模块
 
 使用示例 (Usage Example):
 ```python
-from backend.core.web_socket_core import (
+from core.web_socket_core import (
     connection_manager,
     WebSocketMessageHandler,
     WebSocketMessage,
@@ -35,6 +35,9 @@ message = WebSocketMessage(
 ```
 """
 
+# 运行时配置 (Runtime configuration)
+from core.runtime_config import RuntimeConfig
+
 # 导入数据模型 (Import data models)
 from .models import (
     MessageType,
@@ -55,30 +58,17 @@ from .manager import (
 
 # 导入消息处理器 (Import message handler)
 from .handler import (
-    WebSocketMessageHandler,
-    create_message_handler
+    WebSocketMessageHandler
 )
 
 # 导入工具函数 (Import utility functions)
 from .utils import (
     generate_connection_id,
-    generate_room_id,
     validate_message,
     parse_websocket_message,
-    serialize_message,
     extract_query_params,
-    validate_user_info,
     create_error_message,
-    format_connection_info,
-    calculate_connection_duration,
-    is_connection_healthy,
-    generate_message_hash,
-    filter_connections_by_criteria,
-    create_system_notification,
-    sanitize_user_input,
-    get_client_info_from_headers,
-    create_message_from_template,
-    MESSAGE_TEMPLATES
+    sanitize_user_input
 )
 
 # 模块版本信息 (Module version info)
@@ -101,27 +91,14 @@ __all__ = [
     "WebSocketConnectionManager",
     "connection_manager",
     "WebSocketMessageHandler",
-    "create_message_handler",
     
     # 工具函数 (Utility Functions)
     "generate_connection_id",
-    "generate_room_id",
     "validate_message",
     "parse_websocket_message",
-    "serialize_message",
     "extract_query_params",
-    "validate_user_info",
     "create_error_message",
-    "format_connection_info",
-    "calculate_connection_duration",
-    "is_connection_healthy",
-    "generate_message_hash",
-    "filter_connections_by_criteria",
-    "create_system_notification",
     "sanitize_user_input",
-    "get_client_info_from_headers",
-    "create_message_from_template",
-    "MESSAGE_TEMPLATES",
     
     # 版本信息 (Version Info)
     "__version__",
@@ -133,50 +110,12 @@ import logging
 logger = logging.getLogger(__name__)
 logger.info(f"WebSocket 核心模块已加载 (WebSocket Core Module loaded) - Version {__version__}")
 
-# 快速启动函数 (Quick start functions)
-def create_websocket_server_components():
-    """
-    创建 WebSocket 服务器所需的核心组件 (Create core components for WebSocket server)
-    
-    Returns:
-        tuple: (连接管理器, 消息处理器) (Connection manager, Message handler)
-    """
-    manager = connection_manager
-    handler = create_message_handler(manager)
-    
-    logger.info("WebSocket 服务器组件已创建 (WebSocket server components created)")
-    return manager, handler
-
-
-def get_default_message_handlers():
-    """
-    获取默认的消息处理器映射 (Get default message handler mappings)
-    
-    Returns:
-        dict: 消息类型到处理函数的映射 (Message type to handler function mapping)
-    """
-    manager, handler = create_websocket_server_components()
-    return {
-        MessageType.PING: handler.handle_ping,
-        MessageType.PONG: handler.handle_pong,
-        MessageType.CONNECT: handler.handle_connect,
-        MessageType.DISCONNECT: handler.handle_disconnect,
-        MessageType.CHAT: handler.handle_chat,
-        MessageType.NOTIFICATION: handler.handle_notification,
-        MessageType.COMMAND: handler.handle_command,
-        MessageType.DATA: handler.handle_data,
-        MessageType.AI_RESPONSE: handler.handle_ai_response,
-        MessageType.AI_THINKING: handler.handle_ai_thinking,
-        MessageType.AI_ERROR: handler.handle_ai_error
-    }
-
-
 # 常用配置常量 (Common configuration constants)
 class WebSocketConfig:
     """WebSocket 配置常量 (WebSocket configuration constants)"""
     
-    # 默认端口 (Default port)
-    DEFAULT_PORT = 8000
+    # 默认端口 (Default port) —— 与 API 服务同端口，由 API_PORT 环境变量决定
+    DEFAULT_PORT = RuntimeConfig.API_PORT
     
     # 心跳间隔（秒）(Heartbeat interval in seconds)
     HEARTBEAT_INTERVAL = 30

@@ -11,6 +11,15 @@ export function Guardrails({ guardrails, inputGuardrails }: GuardrailsProps) {
     inputGuardrails.includes(g.name) || inputGuardrails.includes(g.id)
   );
 
+  // 后端下发 epoch 秒；小于 1e12 视为秒，否则按毫秒处理
+  const formatTimestamp = (timestamp: number | string): string => {
+    if (!timestamp) return "";
+    const value =
+      typeof timestamp === "number" && timestamp < 1e12 ? timestamp * 1000 : timestamp;
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? "" : date.toLocaleTimeString();
+  };
+
   return (
     <div className="space-y-3">
       <div className="flex items-center gap-2">
@@ -54,7 +63,7 @@ export function Guardrails({ guardrails, inputGuardrails }: GuardrailsProps) {
             </div>
           </div>
           <div className="text-xs text-gray-400 mt-2">
-            检查时间: {check.timestamp.toLocaleTimeString()}
+            检查时间: {formatTimestamp(check.timestamp)}
           </div>
         </div>
       ))}
@@ -78,7 +87,7 @@ export function Guardrails({ guardrails, inputGuardrails }: GuardrailsProps) {
                   )}
                   <span className="font-medium">{check.name}</span>
                   <span className="text-gray-500 ml-auto">
-                    {check.timestamp.toLocaleTimeString()}
+                    {formatTimestamp(check.timestamp)}
                   </span>
                 </div>
               </div>

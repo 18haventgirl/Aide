@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import type { Message } from "../lib/types";
 import ReactMarkdown from "react-markdown";
-import { SeatMap } from "./seat-map";
 import type { WebSocketConnectionStatus } from "../lib/websocket";
 import { Wifi, WifiOff, RefreshCw, Send, AlertCircle, Menu } from "lucide-react";
 import { ConversationList } from "./ConversationList";
@@ -57,8 +56,6 @@ export function Chat({
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [inputText, setInputText] = useState("");
   const [isComposing, setIsComposing] = useState(false);
-  const [showSeatMap, setShowSeatMap] = useState(false);
-  const [selectedSeat, setSelectedSeat] = useState<string | undefined>(undefined);
   const [isSending, setIsSending] = useState(false);
   const [lastError, setLastError] = useState<string>("");
   const [showConversationList, setShowConversationList] = useState(false);
@@ -67,17 +64,6 @@ export function Chat({
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "instant" });
   }, [messages, isLoading]);
-
-  // Watch for special seat map trigger message (anywhere in list) and only if a seat has not been picked yet
-  useEffect(() => {
-    const hasTrigger = messages.some(
-      (m) => m.type === "ai" && m.content === "DISPLAY_SEAT_MAP"
-    );
-    // Show map if trigger exists and seat not chosen yet
-    if (hasTrigger && !selectedSeat) {
-      setShowSeatMap(true);
-    }
-  }, [messages, selectedSeat]);
 
   const handleSend = useCallback(async () => {
     if (!inputText.trim()) return;
@@ -100,15 +86,6 @@ export function Chat({
       setIsSending(false);
     }
   }, [inputText, onSendMessage, wsStatus]);
-
-  const handleSeatSelect = useCallback(
-    (seat: string) => {
-      setSelectedSeat(seat);
-      setShowSeatMap(false);
-      onSendMessage(`I would like seat ${seat}`);
-    },
-    [onSendMessage]
-  );
 
   const handleConversationSelect = useCallback(
     (selectedConversationId: string) => {
@@ -208,7 +185,6 @@ export function Chat({
       {/* Messages */}
       <div className="flex-1 overflow-y-auto min-h-0 px-4 pt-4 pb-20 bg-gray-50 md:bg-white">
         {messages.map((msg, idx) => {
-          if (msg.content === "DISPLAY_SEAT_MAP") return null; // Skip rendering marker message
           return (
             <div
               key={idx}
@@ -231,16 +207,6 @@ export function Chat({
             </div>
           );
         })}
-        {showSeatMap && (
-          <div className="flex justify-start mb-5">
-            <div className="mr-4 rounded-[16px] rounded-bl-[4px] md:mr-24">
-              <SeatMap
-                onSeatSelect={handleSeatSelect}
-                selectedSeat={selectedSeat}
-              />
-            </div>
-          </div>
-        )}
         {streamingResponse && (
           <div className="flex mb-6 text-sm justify-start">
             <div className={`mr-4 rounded-2xl rounded-bl-md px-5 py-3 md:mr-24 font-medium max-w-[80%] shadow-md border transform hover:scale-[1.02] transition-all duration-200 ${

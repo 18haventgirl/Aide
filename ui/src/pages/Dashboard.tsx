@@ -62,6 +62,8 @@ const ConversationPersistence = {
 const Dashboard: React.FC = () => {
   const dispatch = useAppDispatch();
   const { user, token } = useAppSelector((state) => state.auth);
+  // 用户信息缺失时不加载个人数据，避免退化成 userId=1 而看到别人的笔记与待办
+  const currentUserId = user?.user_id ? Number(user.user_id) : null;
   
   const [messages, setMessages] = useState<Message[]>([]);
   const [events, setEvents] = useState<AgentEvent[]>([]);
@@ -749,7 +751,7 @@ const Dashboard: React.FC = () => {
 
             {/* 中间面板 - Person Data (40%) */}
             <div className="w-2/5 bg-white/80 backdrop-blur-sm border border-gray-200/50 rounded-xl shadow-sm flex flex-col">
-              <PersonDataPanel userId={parseInt(user?.user_id || "1")} />
+              {currentUserId !== null ? <PersonDataPanel userId={currentUserId} /> : <></>}
             </div>
 
                          {/* 右侧聊天区域 - Assistant View (30%) */}
@@ -781,7 +783,7 @@ const Dashboard: React.FC = () => {
                 />
               )}
               {activeTab === 'person' && (
-                <PersonDataPanel userId={parseInt(user?.user_id || "1")} />
+                currentUserId !== null ? <PersonDataPanel userId={currentUserId} /> : <></>
               )}
               {activeTab === 'customer' && (
                 <Chat

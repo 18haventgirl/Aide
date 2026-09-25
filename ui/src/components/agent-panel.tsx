@@ -11,13 +11,8 @@ interface AgentPanelProps {
   currentAgent: string;
   events: AgentEvent[];
   guardrails: GuardrailCheck[];
-  context: {
-    passenger_name?: string;
-    confirmation_number?: string;
-    seat_number?: string;
-    flight_number?: string;
-    account_number?: string;
-  };
+  // 上下文键由后端 PersonalAssistantContext 决定，前端只做通用展示
+  context: Record<string, unknown>;
 }
 
 export function AgentPanel({
@@ -45,15 +40,12 @@ export function AgentPanel({
           <AgentsList agents={agents} currentAgent={currentAgent} />
         </PanelSection>
 
-        {/* 安全护栏功能已暂时隐藏 */}
-        {/*
         <PanelSection title="安全护栏" defaultOpen={true}>
           <Guardrails
             guardrails={guardrails}
             inputGuardrails={activeAgent?.input_guardrails ?? []}
           />
         </PanelSection>
-        */}
 
         <PanelSection title="对话上下文" defaultOpen={true}>
           <ConversationContext context={context} />

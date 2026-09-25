@@ -3,8 +3,6 @@ WebSocket 消息处理器 (WebSocket Message Handler)
 处理不同类型的 WebSocket 消息，包括系统消息、用户消息、AI 消息等
 """
 
-import asyncio
-import json
 import logging
 from datetime import datetime
 from typing import Dict, Any, Optional, List
@@ -526,14 +524,3 @@ class WebSocketMessageHandler:
 
 
 # 创建默认消息处理器实例的工厂函数 (Factory function to create default message handler instance)
-def create_message_handler(connection_manager: WebSocketConnectionManager) -> WebSocketMessageHandler:
-    """
-    创建消息处理器实例 (Create message handler instance)
-    
-    Args:
-        connection_manager: WebSocket 连接管理器 (WebSocket connection manager)
-        
-    Returns:
-        WebSocketMessageHandler: 消息处理器实例 (Message handler instance)
-    """
-    return WebSocketMessageHandler(connection_manager) 

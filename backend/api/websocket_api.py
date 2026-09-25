@@ -26,6 +26,7 @@ from agent.personal_assistant_manager import PersonalAssistantManager, PersonalA
 from agent.agent_session import AgentSessionManager
 from core.database_core import DatabaseClient
 from agents import Runner
+from agents.exceptions import InputGuardrailTripwireTriggered
 from openai.types.responses import ResponseTextDeltaEvent
 from agents.items import ItemHelpers, MessageOutputItem, HandoffOutputItem, ToolCallItem, ToolCallOutputItem
 from agents import Handoff
@@ -152,6 +153,26 @@ def _get_guardrail_name(g) -> str:
         return fn_name.replace("_", " ").title()
     return str(g)
 
+def _sync_guardrail_checks(chat_response: ChatResponse, context) -> None:
+    """把本轮护栏记录写入待下发的响应
+
+    护栏函数在 agent/guardrails.py 中执行时把结果累积到运行上下文里，
+    这里统一取出，避免依赖 SDK 内部的异常字段。
+    """
+    checks = getattr(context, "guardrail_checks", None) or []
+    now = datetime.now().timestamp()
+    chat_response.guardrails = [
+        GuardrailCheck(
+            id=f"guardrail-{index}",
+            name=str(check.get("name", "Guardrail")),
+            input=str(check.get("input", "")),
+            reasoning=str(check.get("reasoning", "")),
+            passed=bool(check.get("passed", True)),
+            timestamp=now,
+        )
+        for index, check in enumerate(checks)
+    ]
+
 def _get_agent_by_name(name: str):
     """Return the agent object by name."""
     try:
@@ -188,6 +209,9 @@ async def _process_stream_with_concurrent_handling(
     
     将流式处理进一步细化，减少阻塞时间，提高并发性能
     """
+    # 用户上下文按缓存复用，每轮重新累积护栏检查记录
+    context.guardrail_checks = []
+
     try:
         # 初始化响应对象
         chat_response = ChatResponse(
@@ -265,6 +289,7 @@ async def _process_stream_with_concurrent_handling(
                 await asyncio.sleep(0)
             
             # 标记完成
+            _sync_guardrail_checks(chat_response, context)
             chat_response.is_finished = True
             
             # 保存最终回复
@@ -314,12 +339,27 @@ async def _process_stream_with_concurrent_handling(
             logger.info(f"✅ 用户 {user_id} 流式处理完成")
             
         except Exception as stream_error:
-            logger.error(f"❌ 用户 {user_id} 流式处理错误: {stream_error}")
-            
-            # 设置错误状态到ChatResponse
-            chat_response.is_error = True
-            chat_response.error_message = str(stream_error)
+            # 护栏 tripwire 不是故障：正常回一条拒绝消息，让前端展示是哪道护栏拦下的
+            blocked_by_guardrail = isinstance(stream_error, InputGuardrailTripwireTriggered)
+            _sync_guardrail_checks(chat_response, context)
             chat_response.is_finished = True
+
+            if blocked_by_guardrail:
+                logger.info(f"🛑 用户 {user_id} 的输入被护栏拦截，未进入业务代理")
+                refusal = (
+                    "抱歉，这个请求超出了我的服务范围，或者涉及不安全的内容，我无法继续处理。"
+                    "你可以换个话题，例如天气、菜谱、新闻，或者让我记一条待办和笔记。"
+                )
+                chat_response.messages = [MessageResponse(content=refusal, agent="Guardrails")]
+                chat_response.raw_response = refusal
+                chat_response.is_error = False
+                chat_response.error_message = ""
+                failure_note = "输入被护栏拦截"
+            else:
+                logger.error(f"❌ 用户 {user_id} 流式处理错误: {stream_error}")
+                chat_response.is_error = True
+                chat_response.error_message = str(stream_error)
+                failure_note = "处理过程中发生错误"
             
             # 直接发送错误响应，不依赖可能已失败的队列
             error_message = WebSocketMessage(
@@ -327,7 +367,7 @@ async def _process_stream_with_concurrent_handling(
                 content={
                     "type": "completion",
                     "final_response": chat_response.model_dump(),
-                    "message": "处理过程中发生错误"
+                    "message": failure_note
                 },
                 sender_id="system",
                 receiver_id=None,
@@ -387,6 +427,7 @@ async def _process_stream_with_concurrent_handling(
             error_message=str(e),
             is_finished=True
         )
+        _sync_guardrail_checks(error_chat_response, context)
         
         # 发送错误消息
         room_id = f"user_{user_id}_room"
@@ -589,14 +630,6 @@ async def _handle_stream_event_concurrent(
                     metadata={"tool_args": tool_args}
                 )
                 chat_response.events.append(tool_call_event)
-                
-                # 特殊处理display_seat_map
-                if tool_name == "display_seat_map":
-                    seat_map_message = MessageResponse(
-                        content="DISPLAY_SEAT_MAP",
-                        agent=item.agent.name,
-                    )
-                    chat_response.messages.append(seat_map_message)
                 
                 response_message = WebSocketMessage(
                     type=MessageType.AI_RESPONSE,

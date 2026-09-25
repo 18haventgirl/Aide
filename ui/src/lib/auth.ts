@@ -140,16 +140,4 @@ export class AuthManager {
     const thirtyMinutes = 30 * 60 * 1000;
     return now >= (expiresAt - thirtyMinutes);
   }
-}
-
-// 便捷的导出函数
-export const {
-  saveAuth,
-  getToken,
-  getUser,
-  hasValidAuth,
-  getAuthState,
-  clearAuth,
-  isTokenExpired,
-  isTokenExpiringSoon,
-} = AuthManager; 
+} 
