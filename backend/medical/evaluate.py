@@ -52,21 +52,24 @@ def evaluate(kb, cases: list[dict], k: int = 3) -> dict:
             forbidden_hits += bool(forbidden.intersection(retrieved[:k]))
         if kind == "followup":
             followup += 1
-            followup_recall_k += bool(rank and rank <= k)
+            followup_recall_k += len(expected.intersection(retrieved[:k])) / len(expected)
             rows.append({"id": case["id"], "kind": kind, "expected": sorted(expected),
                          "retrieved": retrieved[:k], "first_match_rank": rank})
             continue
         supported += 1
-        recall_1 += bool(rank and rank <= 1)
-        recall_k += bool(rank and rank <= k)
+        recall_1 += len(expected.intersection(retrieved[:1])) / len(expected)
+        recall_k += len(expected.intersection(retrieved[:k])) / len(expected)
         reciprocal_rank += 1 / rank if rank else 0
-        ndcg_k += (1 / math.log2(rank + 1)) if rank and rank <= k else 0
+        dcg = sum(1 / math.log2(i + 2) for i, doc_id in enumerate(retrieved[:k]) if doc_id in expected)
+        ideal = sum(1 / math.log2(i + 2) for i in range(min(k, len(expected))))
+        ndcg_k += dcg / ideal
         rows.append({"id": case["id"], "kind": kind, "expected": sorted(expected),
                      "retrieved": retrieved[:k], "first_match_rank": rank,
                      "forbidden_retrieved": sorted(forbidden.intersection(retrieved[:k]))})
     sorted_latency = sorted(retrieval_latencies)
     p95_index = max(0, math.ceil(len(sorted_latency) * 0.95) - 1)
     return {
+        "metric_version": "multi_relevant_v2",
         "cases": len(cases), "supported_cases": supported,
         "unanswerable_cases": unanswered, "urgent_cases": urgent, "followup_cases": followup,
         "recall_at_1": round(recall_1 / supported, 3) if supported else None,

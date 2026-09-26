@@ -1,6 +1,7 @@
 """Import and retrieve reviewed public medical knowledge from Chroma."""
 
 import hashlib
+import math
 import json
 import os
 import threading
@@ -162,6 +163,8 @@ class MedicalKnowledgeBase:
         return dict(getattr(self._search_state, "metrics", {}))
 
     def _metadata_is_current(self, metadata: dict, today: date) -> bool:
+        if metadata.get("language", "zh") not in {"zh", "zh-CN", "zh-TW", "zh-Hans", "zh-Hant"}:
+            return False
         if self.preview:
             return True
         valid_status = ({"source_checked", "clinician_reviewed"} if self.research_mode
@@ -292,15 +295,15 @@ class MedicalKnowledgeBase:
             if item["chunk_id"] not in selected_ids:
                 selected_ids.add(item["chunk_id"])
                 preselected.append(item)
-        ranked = preselected[:pre_limit]
+        ranked = sorted(preselected[:pre_limit], key=lambda item: item["fusion_score"], reverse=True)
 
         rerank_started = time.perf_counter()
         reranker_status = "unavailable" if self.reranker_requested and self.reranker is None else "disabled"
         if self.reranker is not None and ranked:
             try:
                 scores = self.reranker.score(query, [item["text"] for item in ranked])
-                if len(scores) != len(ranked):
-                    raise ValueError("reranker returned an unexpected score count")
+                if len(scores) != len(ranked) or any(not math.isfinite(score) or not 0 <= score <= 1 for score in scores):
+                    raise ValueError("reranker returned invalid scores")
                 for candidate, score in zip(ranked, scores):
                     candidate["rerank_score"] = score
                 ranked.sort(key=lambda item: (item["rerank_score"], item["fusion_score"]), reverse=True)

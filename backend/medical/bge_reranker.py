@@ -8,7 +8,6 @@ fallback when the optional reranker is not installed.
 from __future__ import annotations
 
 import hashlib
-import math
 import os
 import threading
 from pathlib import Path
@@ -99,5 +98,6 @@ class BGEReranker:
                 )
                 with self._torch.inference_mode():
                     logits = self._model(**tokens, return_dict=True).logits.view(-1)
-                scores.extend(1.0 / (1.0 + math.exp(-float(value))) for value in logits.cpu())
+                # Stable sigmoid avoids overflow for large negative logits.
+                scores.extend(self._torch.sigmoid(logits.float()).cpu().tolist())
         return scores

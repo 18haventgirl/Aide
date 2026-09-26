@@ -1,0 +1,12 @@
+{
+  "checked_at": "2026-09-26",
+  "status": "discovered_not_imported",
+  "answer_eligible": false,
+  "download_result": "HTTP 403 from public page downloads; no original snapshot accepted",
+  "sources": [
+    {"topic": "头痛就医信号", "title": "什么情况下的头痛有危险，需去医院看急诊", "published": "2014-08-25", "url": "https://wjw.beijing.gov.cn/bmfw_20143/jkzs/jbzs/201912/t20191217_1250306.html", "note": "来源较旧，需进一步核对适用性，不把发布日期改成采集日期"},
+    {"topic": "腹泻和脱水", "title": "天坛科普——请您重视腹泻", "published": "2021-04-06", "url": "https://wjw.beijing.gov.cn/bmfw_20143/jkzs/jksh/202104/t20210406_2345583.html", "note": "需按成人一般就医引导范围选取，不能自动导入整篇治疗建议"},
+    {"topic": "咽痛危险信号", "title": "北京朝阳医院多学科成功救治急性会厌炎危重患者", "published": "2025-09-09", "url": "https://wjw.beijing.gov.cn/xwzx_20031/jcdt/202509/t20250909_4197596.html", "note": "病例报道不能泛化诊断，仅研究明确的一般就医提醒"},
+    {"topic": "聚餐后腹痛", "title": "别再乱扛！聚餐后腹痛 怎么区分急性胃肠炎和急性胰腺炎？", "published": "2026-09-24", "url": "https://www.beijing.gov.cn/fuwu/bmfw/sy/jrts/202609/t20260924_4879387.html", "note": "不能引导聊天自诊，需核对原文、使用条件及筛选范围"}
+  ]
+}

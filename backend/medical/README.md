@@ -24,8 +24,6 @@
 .\.venv\python.exe -m medical.download_reranker
 .\.venv\python.exe -m medical.download_sources
 .\.venv\python.exe -m medical.source_pipeline
-.\.venv\python.exe -m medical.download_medlineplus
-.\.venv\python.exe -m medical.import_medlineplus
 .\.venv\python.exe -m medical.cli validate --corpus medical/source_corpus
 .\.venv\python.exe -m medical.cli sync --research --corpus medical/source_corpus
 .\.venv\python.exe -m medical.evaluate --cases medical/eval_cases_research.json --k 5
@@ -41,6 +39,22 @@
 可调参数：`MEDICAL_DENSE_CANDIDATES`、`MEDICAL_LEXICAL_CANDIDATES`、`MEDICAL_RERANK_CANDIDATES`、`MEDICAL_RERANK_MIN_SCORE`、`MEDICAL_MAX_CHUNKS_PER_DOCUMENT`、`MEDICAL_RETRIEVAL_CACHE_TTL_SECONDS` 和 `MEDICAL_RETRIEVAL_CACHE_SIZE`。`MEDICAL_USE_RERANKER=false` 可验证降级路径。
 
 ## 数据扩容与影子评估
+
+### 华佗 Lite 离线试验（2026-09-26）
+
+5,000 条候选已经完成 SQLite FTS5 与 BGE 向量建库。候选缺少逐条医学原始来源，均为 `answer_eligible=false`，不注册到 Medical Agent，不进入既有回答 collection。完整报告见仓库 `medical-rag-data/reports/huatuo_lite_pilot.md`。
+
+可重复执行以下命令完成来源审计、BGE/BM25 加权 RRF、BGE cross-encoder 重排对照：
+
+```powershell
+.\.venv\python.exe -X utf8 -m medical.pilot_evaluate audit
+.\.venv\python.exe -X utf8 -m medical.pilot_evaluate collect
+.\.venv\python.exe -X utf8 -m medical.pilot_evaluate score
+```
+
+召回和重排分进程执行，释放 embedding 模型后再加载 reranker，降低同时驻留内存。重排使用已有固定版本 BGE-reranker-base，batch=1，最多 12 个候选。异常分数或推理失败明确标记为 fallback，不能报告成重排成功。模型分数不是医疗可信度。
+
+`eval_cases_huatuo_v1.json` 的 50 道题是根据候选问题人工式改写的开发集，相关 ID 表示问题匹配，不认可其回答。正例不穷尽、同一主题有两种问法；不能作为独立盲测或临床效果报告。原有包含已删除英文文档的评估集保持原样，以暴露覆盖缺口。
 
 仓库根目录的 `medical-rag-data/registry/datasets.csv` 保存原候选调查台账，`licenses.csv` 单独记录使用权利。新增来源须通过 `medical.data_registry` 的许可与中文语言检查。中文候选比较见 `medical-rag-data/reports/chinese_sources_review.md`。
 

@@ -196,6 +196,19 @@ class MedicalRagTests(unittest.TestCase):
         self.assertTrue(is_urgent("我已经准备伤害自己了，不想让家人知道。"))
         self.assertFalse(is_urgent("清淡饮食是不是只要少放盐？"))
 
+    def test_non_chinese_stale_metadata_is_rejected_at_query_time(self):
+        from types import SimpleNamespace
+        state = SimpleNamespace(preview=True)
+        self.assertFalse(MedicalKnowledgeBase._metadata_is_current(state, {"language": "en"}, date.today()))
+
+    def test_nan_reranker_falls_back(self):
+        from types import SimpleNamespace
+        kb = MedicalKnowledgeBase(chromadb.EphemeralClient(), ConstantEmbedding(), "test-v1", research_mode=True,
+                                  reranker=SimpleNamespace(score=lambda q, p: [float("nan")]*len(p), name=lambda: "invalid"))
+        kb.sync([document("nan-test")])
+        self.assertTrue(kb.search("饮水", limit=1))
+        self.assertEqual(kb.search_metrics()["reranker_status"], "fallback:ValueError")
+
     def test_personal_clinical_decisions_are_out_of_scope(self):
         self.assertTrue(needs_clinical_decision("我的降压药能停掉吗？"))
         self.assertTrue(needs_clinical_decision("请根据我的胸部 CT 影像判断是不是肺癌。"))
