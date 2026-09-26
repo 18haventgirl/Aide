@@ -1,8 +1,11 @@
 # 编排层是 LangGraph（见下方"LangGraph 编排层"一节）。OpenAI Agents SDK 与 litellm
 # 已随旧引擎一起移除，不要再装回来。
-# MCP 服务端用 fastmcp 4.x 的 mount(namespace=...)；2.x 的 import_server 已被删除，
-# 且与 mcp 1.x/2.x 存在互不兼容的依赖三角，不要往回降。
-fastmcp>=4,<5
+#
+# MCP 服务端与客户端的约束组合（改动前先跑 pip check，这一组是实测过的）：
+#   fastmcp 3.4.7 要求 mcp>=1.24,<2；langchain-mcp-adapters 0.3.2 同样要求 mcp<2。
+#   不要升 fastmcp 4（它要求 mcp>=2）：那样与 adapters 无法共存，只能像之前那样手写桥接。
+#   也不要降 fastmcp 到 2.x：那里 import_server 已被删除，且 mount(namespace=...) 签名不同。
+fastmcp>=3.4.7,<4
 requests
 python-dotenv
 fastapi
@@ -47,10 +50,10 @@ langchain-huggingface>=1.2,<2
 langgraph>=1.2,<2
 langchain>=1.4,<2
 langchain-openai>=1.6,<2
-# 官方 mcp 客户端：MCP 工具由 agent/tools/mcp.py 自己桥接。
-# 不要装 langchain-mcp-adapters —— 它钉死 mcp<2，而 fastmcp 4（我们的 MCP 服务端）要求
-# mcp>=2；同装会让 pip 把 mcp 降到 1.30，服务端子进程启动即 ModuleNotFoundError。
-mcp>=2,<3
+# MCP 工具装载用官方适配器 langchain-mcp-adapters（MultiServerMCPClient），
+# 它要求 mcp<2，所以下面这行不能升回 2.x（见文件开头那组约束）。
+mcp>=1.24,<2
+langchain-mcp-adapters>=0.3,<1
 langgraph-checkpoint-sqlite>=3.1,<4
 
 # Testing Dependencies
