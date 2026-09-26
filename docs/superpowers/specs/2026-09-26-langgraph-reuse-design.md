@@ -77,10 +77,13 @@
 
 ### 5.2 必须处理的既有事实
 
-1. **索引重建**：现有集合由旧封装写入，文档字段布局与 `langchain-chroma` 不同，需要一次性重算。
-   交付 `backend/scripts/reindex_notes.py`：按用户遍历 MySQL 全部笔记 → 清空该用户的集合
-   （**集合名保持不变**，`{prefix}_user_{uid}`）→ 按新布局写入 → 打印每个集合的条数与总数对比。
-   旧向量不迁移，直接重算（本地模型，量级为个人笔记）。脚本要求可重复执行（幂等）。
+1. **索引重建脚本（运维工具，不是迁移前提）**：本文初稿写的是"旧集合字段布局与
+   `langchain-chroma` 不同，必须重算"，**该判断已被实测推翻**：现有集合本来就是
+   `hnsw:space=cosine`、id 已是 `note_{id}`、文档已是"标题\n正文"、metadata 键也一致
+   （实测 `lg_aide_user_1` 9 条可直接被新代码读出）。
+   仍然交付 `backend/scripts/reindex_notes.py`，但定位是"换 embedding 模型或索引与
+   数据库对不上时重算"，集合名保持不变（`{prefix}_user_{uid}`），幂等可重跑
+   （实测跑两次都是 11 个用户 17 条）。
 2. **召回质量门禁**：`tests/test_rag_recall.py` 现有 8 组查询断言（top-3 命中、更新后相关性反转、
    删除后不出索引）必须在新实现上原样通过；该测试是"没把检索改坏"的唯一判据，不允许改弱。
 3. **REST 契约不变**：`POST /api/notes/{user_id}/search` 的响应结构保持
@@ -152,10 +155,15 @@
 ## 11. 已知风险与未验证项
 
 - fastmcp 3.4.7 与现有服务端其余 API 的兼容性只验证了 `mount` 签名，其余需第 3 步冒烟。
-- `langchain-chroma` 的相似度阈值语义（cosine distance vs similarity）与旧封装的换算是否等价，
-  未实测；由召回测试兜底，若阈值需重调，以测试断言为准并回写本文。
-- `HuggingFaceEmbeddings` 加载本地目录的行为（离线、device=cpu）未实测。
-- 前置检索每轮都跑，会给每轮增加一次 embedding 计算（本地 CPU，量级小，但未计时）。
+- ~~`langchain-chroma` 的相似度阈值语义~~ **已实测**：`similarity_search_with_relevance_scores`
+  在 cosine 集合上返回 `1 - 余弦距离`，零词面查询"植物养护提醒"命中"绿萝浇水"得 0.54，
+  与既有阈值 0.35 语义一致，不需要重标定。
+- ~~`HuggingFaceEmbeddings` 加载本地目录的行为~~ **已实测并修掉一个真实缺陷**：检索层原先
+  不自己 `load_dotenv`，导入顺序不对时 `local_embedding_model` 退回数据类默认的 HF hub 模型名，
+  离线环境会触发五次联网重试、长时间挂起（实测卡住一次任务）。现由
+  `core/retrieval/config.py` 显式加载 `backend/.env`，且 `build_embeddings` 对"像路径但目录不存在"
+  的配置直接报错，只有 `org/name` 形式的 hub 模型名才允许联网。
+- 前置检索每轮都跑，会给每轮增加一次 embedding 计算（本地 CPU，实测单条约几十毫秒，量级可接受）。
 
 ## 12. 不在本次范围
 
