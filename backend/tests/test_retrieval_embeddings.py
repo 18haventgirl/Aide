@@ -39,3 +39,28 @@ def test_unknown_provider_raises_valueerror():
     config = VectorConfig.from_env().model_copy(update={"embedding_provider": "bogus"})
     with pytest.raises(ValueError, match="embedding provider"):
         build_embeddings(config)
+
+
+def test_env_is_loaded_without_caller_importing_it():
+    """检索层必须自己加载 backend/.env
+
+    只靠别的模块顺带 load_dotenv，会让导入顺序决定配置是否可见：顺序不对时
+    local_embedding_model 退回数据类默认的 HF hub 模型名，离线机器上变成
+    五次网络重试的长时间挂起（实测踩过）。
+    """
+    import os
+
+    from core.retrieval import config as config_module
+
+    assert os.getenv("LOCAL_EMBEDDING_MODEL"), "core.retrieval.config 导入后应已读到 backend/.env"
+    assert config_module.__file__.endswith("config.py")
+
+
+def test_missing_local_model_dir_fails_fast_instead_of_reaching_the_hub(tmp_path):
+    """配置写的是本地目录却不存在时，直接报错，不去连 huggingface.co"""
+    config = VectorConfig.from_env().model_copy(update={
+        "embedding_provider": "local",
+        "local_embedding_model": str(tmp_path / "no-such-model")})
+
+    with pytest.raises(ValueError, match="本地向量模型"):
+        build_embeddings(config)

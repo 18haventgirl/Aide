@@ -3,8 +3,15 @@ Vector Database Configuration
 """
 
 import os
+from pathlib import Path
 from typing import Optional
+
+from dotenv import load_dotenv
 from pydantic import BaseModel
+
+# 显式定位 backend/.env：以前只靠其它模块顺带加载，导入顺序不对时
+# local_embedding_model 会退回数据类里的 HF hub 模型名，离线机器上变成五次网络重试。
+load_dotenv(Path(__file__).resolve().parents[2] / ".env")
 
 
 class VectorConfig(BaseModel):
