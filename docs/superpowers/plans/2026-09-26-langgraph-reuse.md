@@ -34,7 +34,7 @@
 - Consumes: `core.vector_core.config.VectorConfig`（本任务不搬动，Task 1.4 才搬）
 - Produces: `build_embeddings(config) -> Embeddings`、`get_embeddings() -> Embeddings`（进程内单例）
 
-- [ ] **Step 1: 装依赖**
+- [x] **Step 1: 装依赖**
 
 ```bash
 cd backend && /c/Users/HONOR/.conda/envs/lg-aide/python.exe -m pip install \
@@ -44,7 +44,7 @@ cd backend && /c/Users/HONOR/.conda/envs/lg-aide/python.exe -m pip install \
 ```
 Expected: `No broken requirements found`（此时 fastmcp 仍是 4.0.9、mcp 仍是 2.2.0，本任务不碰）
 
-- [ ] **Step 2: 写失败测试**
+- [x] **Step 2: 写失败测试**
 
 ```python
 # backend/tests/test_retrieval_embeddings.py
@@ -89,12 +89,12 @@ def test_unknown_provider_raises_valueerror():
         build_embeddings(config)
 ```
 
-- [ ] **Step 3: 跑测试确认失败**
+- [x] **Step 3: 跑测试确认失败**
 
 Run: `cd backend && python -X utf8 -m pytest tests/test_retrieval_embeddings.py -q`
 Expected: FAIL — `ModuleNotFoundError: No module named 'core.retrieval'`
 
-- [ ] **Step 4: 实现**
+- [x] **Step 4: 实现**
 
 ```python
 # backend/core/retrieval/embeddings.py
@@ -151,12 +151,12 @@ def get_embeddings() -> Embeddings:
 """检索层：LangChain 标准件（Embeddings / VectorStore / Retriever）"""
 ```
 
-- [ ] **Step 5: 跑测试**
+- [x] **Step 5: 跑测试**
 
 Run: `cd backend && python -X utf8 -m pytest tests/test_retrieval_embeddings.py -q`
 Expected: 3 passed（模型缺失时第 1 条 skip，仍算通过）
 
-- [ ] **Step 6: 在 `requirements.txt` 记录并在向量依赖附近加注释**
+- [x] **Step 6: 在 `requirements.txt` 记录并在向量依赖附近加注释**
 
 ```
 # 检索层用 LangChain 标准件：Chroma 向量库 + 本地/远端 Embeddings
@@ -164,7 +164,7 @@ langchain-chroma>=1.1,<2
 langchain-huggingface>=1.2,<2
 ```
 
-- [ ] **Step 7: 提交**
+- [x] **Step 7: 提交**
 
 ```bash
 git add backend/requirements.txt backend/core/retrieval backend/tests/test_retrieval_embeddings.py
@@ -187,7 +187,7 @@ git commit -m "feat: 检索层引入 langchain-chroma 与 langchain-huggingface�
   - `vector_health() -> dict`（给 `/api/health` 用）
   - `note_document(note) -> Document`、`documents_to_rows(pairs, threshold) -> list[dict]`
 
-- [ ] **Step 1: 写失败测试**
+- [x] **Step 1: 写失败测试**
 
 ```python
 # backend/tests/test_retrieval_store.py
@@ -273,12 +273,12 @@ def test_http_mode_is_warned_once(fake_store, monkeypatch, caplog):
 
 补一行 import：文件顶部加 `from types import SimpleNamespace`。
 
-- [ ] **Step 2: 跑测试确认失败**
+- [x] **Step 2: 跑测试确认失败**
 
 Run: `cd backend && python -X utf8 -m pytest tests/test_retrieval_store.py -q`
 Expected: FAIL — `ModuleNotFoundError: No module named 'core.retrieval.store'`
 
-- [ ] **Step 3: 实现 documents.py**
+- [x] **Step 3: 实现 documents.py**
 
 ```python
 # backend/core/retrieval/documents.py
@@ -329,7 +329,7 @@ def documents_to_rows(pairs: Iterable[Tuple[Document, float]],
     return rows
 ```
 
-- [ ] **Step 4: 实现 store.py**
+- [x] **Step 4: 实现 store.py**
 
 ```python
 # backend/core/retrieval/store.py
@@ -427,12 +427,12 @@ def vector_health() -> dict:
 在 `note_store` 与 `_warn_if_http` 之间不需要额外声明：`_stores` 与 `_http_warned` 已在模块顶部定义，
 测试里 `store_mod._stores.clear()` 依赖的就是这个名字。
 
-- [ ] **Step 5: 跑测试**
+- [x] **Step 5: 跑测试**
 
 Run: `cd backend && python -X utf8 -m pytest tests/test_retrieval_store.py -q`
 Expected: 7 passed
 
-- [ ] **Step 6: 提交**
+- [x] **Step 6: 提交**
 
 ```bash
 git add backend/core/retrieval backend/tests/test_retrieval_store.py
@@ -451,14 +451,14 @@ git commit -m "feat: 笔记向量库工厂（每用户一个 cosine 集合）与
 - Consumes: `note_store(user_id)`、`note_document(note)`、`documents_to_rows(pairs, threshold)`
 - Produces: `NoteService.search_notes_by_vector(user_id: int, query: str, limit: int = 10) -> list[dict]`（键不变）、`NoteService` 不再持有 `vector_client`
 
-- [ ] **Step 1: 先枚举全部触点（不靠记忆）**
+- [x] **Step 1: 先枚举全部触点（不靠记忆）**
 
 ```bash
 cd backend && grep -n "vector_client\|VectorDocument\|VectorQuery\|VectorDeleteFilter" service/services/note_service.py
 ```
 Expected: 至少出现 `__init__`、创建后索引、更新后重算、删除、`search_notes_by_vector` 五处；逐处替换，一处不留。
 
-- [ ] **Step 2: 写失败测试**
+- [x] **Step 2: 写失败测试**
 
 ```python
 # backend/tests/test_note_service_vector.py
@@ -542,12 +542,12 @@ from langchain_core.embeddings import DeterministicFakeEmbedding
 import core.retrieval.store as store_mod
 ```
 
-- [ ] **Step 3: 跑测试确认失败**
+- [x] **Step 3: 跑测试确认失败**
 
 Run: `cd backend && python -X utf8 -m pytest tests/test_note_service_vector.py -q`
 Expected: FAIL（`vector_client` 参数仍在 / `_index_note` 不存在）
 
-- [ ] **Step 4: 实现**
+- [x] **Step 4: 实现**
 
 在 `note_service.py` 顶部加：
 
@@ -616,12 +616,12 @@ def _search_rows(store, query: str, threshold: float, limit: int = 10):
 删除 `VectorDocument/VectorQuery/VectorDeleteFilter/ChromaVectorClient` 的 import 与
 `_add_to_vector_db` 旧函数本体。
 
-- [ ] **Step 5: 跑测试**
+- [x] **Step 5: 跑测试**
 
 Run: `cd backend && python -X utf8 -m pytest tests/test_note_service_vector.py -q`
 Expected: 4 passed
 
-- [ ] **Step 6: 提交**
+- [x] **Step 6: 提交**
 
 ```bash
 git add backend/service/services/note_service.py backend/tests/test_note_service_vector.py
@@ -642,7 +642,7 @@ git commit -m "refactor: 笔记服务的向量写入/更新/删除/检索改走 
 - Consumes: `core.retrieval.config.VectorConfig`、`core.retrieval.store.vector_health`
 - Produces: 仓库里不再有自写 Chroma 封装
 
-- [ ] **Step 1: 迁移配置并改所有引用**
+- [x] **Step 1: 迁移配置并改所有引用**
 
 ```bash
 cd backend && git mv core/vector_core/config.py core/retrieval/config.py
@@ -652,14 +652,14 @@ grep -rn "core.vector_core\|VectorConfig" --include=*.py . | grep -v __pycache__
 `core/retrieval/store.py` 与 `embeddings.py` 里的 `from core.vector_core.config import VectorConfig`
 也一并改掉。
 
-- [ ] **Step 2: service_manager 去掉向量客户端**
+- [x] **Step 2: service_manager 去掉向量客户端**
 
 `service/service_manager.py`：删掉 `from core.vector_core import ChromaVectorClient, VectorConfig`、
 `self._vector_client` 的创建（约 63-66 行）、`get_vector_client()`（约 85-89 行）、
 `get_service` 里 `if 'vector_client' in sig.parameters` 分支（约 112 行）、
 统计里的 `vector_client_active`（约 239 行）。
 
-- [ ] **Step 3: 健康检查改指向 Chroma**
+- [x] **Step 3: 健康检查改指向 Chroma**
 
 `api/system_api.py` 约 66-74 行改为：
 
@@ -672,7 +672,7 @@ grep -rn "core.vector_core\|VectorConfig" --include=*.py . | grep -v __pycache__
             issues.append(f"向量库不可用: {health.get('error', '未知原因')}")
 ```
 
-- [ ] **Step 4: 召回测试换 API、断言原样保留**
+- [x] **Step 4: 召回测试换 API、断言原样保留**
 
 `tests/conftest.py` 的 `rag_client` fixture 换成"给一个用户返回 Chroma 句柄"的 fixture：
 
@@ -781,7 +781,7 @@ def test_delete_removes_from_index(rag_store):
     assert "note_milk" not in _hit_ids(rag_store, "超市要买什么")
 ```
 
-- [ ] **Step 5: 删掉旧包并跑全量**
+- [x] **Step 5: 删掉旧包并跑全量**
 
 ```bash
 cd backend && git rm -r core/vector_core
@@ -789,7 +789,7 @@ python -X utf8 -m pytest tests -q
 ```
 Expected: 全绿（召回 3 项走新 API，断言与迁移前一致）
 
-- [ ] **Step 6: 提交**
+- [x] **Step 6: 提交**
 
 ```bash
 git add -A backend/core backend/service backend/api backend/tests
@@ -808,7 +808,7 @@ git commit -m "refactor: 删除自写 Chroma 封装，检索层统一到 langcha
 - Consumes: `NoteService`（读笔记）、`note_store`、`note_document`
 - Produces: `reindex_user(user_id, notes) -> int`（写入条数）、命令行入口（幂等，可重复执行）
 
-- [ ] **Step 1: 写失败测试**
+- [x] **Step 1: 写失败测试**
 
 ```python
 # backend/tests/test_reindex_script.py
@@ -850,9 +850,9 @@ def test_reindex_drops_stale_documents(store):
     assert len(store.get()["ids"]) == 1
 ```
 
-- [ ] **Step 2: 跑测试确认失败** → Expected: FAIL（模块不存在）
+- [x] **Step 2: 跑测试确认失败** → Expected: FAIL（模块不存在）
 
-- [ ] **Step 3: 实现**
+- [x] **Step 3: 实现**
 
 ```python
 # backend/scripts/reindex_notes.py
@@ -930,7 +930,7 @@ if __name__ == "__main__":
 `NoteService.get_user_notes(user_id, status=None, tag=None, search_query=None, limit=50, offset=0)`
 是实测签名，默认只给 50 条，所以重建必须分页取，否则笔记多的用户会被静默截断。
 
-- [ ] **Step 4: 跑测试 + 真实重建**
+- [x] **Step 4: 跑测试 + 真实重建**
 
 ```bash
 cd backend && python -X utf8 -m pytest tests/test_reindex_script.py -q
@@ -939,7 +939,7 @@ python -X utf8 scripts/reindex_notes.py            # 再跑一次，条数必须
 ```
 Expected: 4 passed；两次脚本输出每个用户的条数相同
 
-- [ ] **Step 5: 手工验证检索仍准（真实语义，不用假向量）**
+- [x] **Step 5: 手工验证检索仍准（真实语义，不用假向量）**
 
 ```bash
 cd backend && python -X utf8 -c "
@@ -950,7 +950,7 @@ for doc, s in note_store(1).similarity_search_with_relevance_scores('植物养�
 ```
 Expected: 第一条是与绿萝/浇水相关的笔记
 
-- [ ] **Step 6: 全量回归 + 提交**
+- [x] **Step 6: 全量回归 + 提交**
 
 ```bash
 python -X utf8 -m pytest tests -q
@@ -970,7 +970,7 @@ git commit -m "feat: 笔记向量索引重建脚本（幂等）并完成重建"
 - Consumes: `note_store`、`UserContext`
 - Produces: `AideState`（`messages` + `retrieved: list`）、`build_retrieval_middleware() -> AgentMiddleware`（`before_agent`，节点名 `note_retrieval.before_agent`，写入 `state["retrieved"]`，每项 `{id,title,score,text}`）
 
-- [ ] **Step 1: 写失败测试**
+- [x] **Step 1: 写失败测试**
 
 ```python
 # backend/tests/test_agent_retrieval.py
@@ -1073,9 +1073,9 @@ def test_injector_adds_block_to_model_call_but_not_state(store):
     assert not any("笔记检索结果" in str(m.content) for m in state["messages"])  # 但没落进状态
 ```
 
-- [ ] **Step 2: 跑测试确认失败** → Expected: FAIL（`agent.state` / `agent.retrieval` 不存在）
+- [x] **Step 2: 跑测试确认失败** → Expected: FAIL（`agent.state` / `agent.retrieval` 不存在）
 
-- [ ] **Step 3: 实现 state.py**
+- [x] **Step 3: 实现 state.py**
 
 ```python
 # backend/agent/state.py
@@ -1094,7 +1094,7 @@ class AideState(AgentState):
     retrieved: List[Dict[str, Any]]
 ```
 
-- [ ] **Step 4: 实现 retrieval.py**
+- [x] **Step 4: 实现 retrieval.py**
 
 ```python
 # backend/agent/retrieval.py
@@ -1182,12 +1182,12 @@ def build_retrieval_injector():
     return inject
 ```
 
-- [ ] **Step 5: 跑测试**
+- [x] **Step 5: 跑测试**
 
 Run: `cd backend && python -X utf8 -m pytest tests/test_agent_retrieval.py -q`
 Expected: 4 passed
 
-- [ ] **Step 6: 提交**
+- [x] **Step 6: 提交**
 
 ```bash
 git add backend/agent/state.py backend/agent/retrieval.py backend/tests/test_agent_retrieval.py
@@ -1206,7 +1206,7 @@ git commit -m "feat: 图状态与笔记检索前置钩子（before_agent 检索 
 - Consumes: `build_retrieval_middleware()`、`build_retrieval_injector()`（Task 2.1）
 - Produces: `translate_stream` 新增事件 `{"kind":"retrieval","hits":[{id,title,score,text}],"node":...}`；`WsStreamTranslator` 下发 `{"type":"retrieval","hits":...}`；`AideAnswer.retrieval: List[dict]`
 
-- [ ] **Step 1: 加失败测试（三处）**
+- [x] **Step 1: 加失败测试（三处）**
 
 `tests/test_graph_build.py` 追加：
 
@@ -1257,9 +1257,9 @@ def test_retrieval_event_becomes_a_retrieval_frame():
     assert msg.content["hits"][0]["title"] == "绿萝"
 ```
 
-- [ ] **Step 2: 跑三处测试确认失败** → Expected: FAIL（节点缺失 / `KeyError: 'retrieval'`）
+- [x] **Step 2: 跑三处测试确认失败** → Expected: FAIL（节点缺失 / `KeyError: 'retrieval'`）
 
-- [ ] **Step 3: 建图接入**
+- [x] **Step 3: 建图接入**
 
 `agent/graph.py` 的 `build_agent` 中，middleware 顺序改为"检索 → 注入 → 护栏 → 身份"：
 
@@ -1300,7 +1300,7 @@ SYSTEM_PROMPT = (
 )
 ```
 
-- [ ] **Step 4: translate_stream 透出检索**
+- [x] **Step 4: translate_stream 透出检索**
 
 `agent/runtime.py` 的 `translate_stream` 在 `mode == "updates"` 分支里，节点遍历开头加：
 
@@ -1326,7 +1326,7 @@ class AideAnswer:
 `ask`/`astream` 里从最终 state 取：`retrieval = (state_values.get("retrieved") or [])`，
 构造 `AideAnswer(..., retrieval=retrieval)`。
 
-- [ ] **Step 5: ws_stream 下发检索帧**
+- [x] **Step 5: ws_stream 下发检索帧**
 
 `api/ws_stream.py` 的 `feed` 增加分支：
 
@@ -1347,7 +1347,7 @@ class AideAnswer:
 
 `AgentEvent.type` 联合里加 `'retrieval'`（`ui/src/lib/types.ts` 同步）。
 
-- [ ] **Step 6: 跑全量 + 前端类型检查**
+- [x] **Step 6: 跑全量 + 前端类型检查**
 
 ```bash
 cd backend && python -X utf8 -m pytest tests -q
@@ -1355,7 +1355,7 @@ cd ../ui && npx tsc -b
 ```
 Expected: 后端全绿；tsc 无输出
 
-- [ ] **Step 7: 提交**
+- [x] **Step 7: 提交**
 
 ```bash
 git add backend/agent backend/api/ws_stream.py backend/tests ui/src/lib/types.ts
@@ -1374,7 +1374,7 @@ git commit -m "feat: 检索节点接入建图并透出 retrieval 事件帧"
 - Consumes: 无
 - Produces: 面板分区标题 `执行节点 / 笔记检索命中 / 工具 / 护栏 / 上下文 / 运行输出`；节点标签显示原始节点名；工具分组标签 `笔记检索 / 天气 / 菜谱 / 新闻 / 用户数据`
 
-- [ ] **Step 1: 后端文案**
+- [x] **Step 1: 后端文案**
 
 `api/ws_stream.py`：
 
@@ -1389,7 +1389,7 @@ AGENT_DESCRIPTION = "LangGraph 单代理，工具调用 + 笔记检索"
     """新建一条属于当前用户的笔记（标题必填，标签为自由文本，最多 50 字）"""
 ```
 
-- [ ] **Step 2: 前端去掉中文美化映射**
+- [x] **Step 2: 前端去掉中文美化映射**
 
 `ui/src/components/graph-trace.tsx`：删除 `NODE_LABELS` 与 `nodeLabel()`，列表项直接渲染 `node`；
 新增"笔记检索命中"分区组件（同文件导出 `RetrievalHits`）：
@@ -1419,7 +1419,7 @@ export function RetrievalHits({ hits }: { hits: RetrievalHit[] }) {
 `ui/src/components/tool-list.tsx` 分组标签改为 `笔记检索 / 天气 / 菜谱 / 新闻 / 用户数据`。
 `ui/src/components/agent-panel.tsx` 分区标题改为上述中性名，并在"执行节点"下加"笔记检索命中"。
 
-- [ ] **Step 3: Dashboard 处理 retrieval 帧**
+- [x] **Step 3: Dashboard 处理 retrieval 帧**
 
 `ui/src/pages/Dashboard.tsx` 的过程帧 switch 加：
 
@@ -1432,12 +1432,12 @@ export function RetrievalHits({ hits }: { hits: RetrievalHit[] }) {
 状态 `const [retrievalHits, setRetrievalHits] = useState<RetrievalHit[]>([])`，
 `handleSendMessage` 里与 `graphNodes` 一起清空，并作为 `retrievalHits` prop 传给两处 `AgentPanel`。
 
-- [ ] **Step 4: 文档措辞**
+- [x] **Step 4: 文档措辞**
 
 `README.md`：把"自研 RAG"改为"笔记语义检索（ChromaDB + bge-small-zh）"；技术栈一节同步。
 `docs/PROGRESS.md`：新增一节记录本次重构，并把旧条目里的"自研 RAG"改为中性表述。
 
-- [ ] **Step 5: 构建校验 + 提交**
+- [x] **Step 5: 构建校验 + 提交**
 
 ```bash
 cd ui && npm run build
@@ -1456,7 +1456,7 @@ git commit -m "refactor: 措辞与面板文案改为中性技术名，显示真�
 - Consumes: `retrieval` 帧（Task 2.2）
 - Produces: 两项新断言（检索帧出现、不调工具也能答对笔记内容）
 
-- [ ] **Step 1: 在 `converse()` 里收集检索帧**
+- [x] **Step 1: 在 `converse()` 里收集检索帧**
 
 ```python
 @dataclass
@@ -1472,7 +1472,7 @@ class Turn:
                 turn.retrieval = content.get("hits", [])
 ```
 
-- [ ] **Step 2: 加两项断言（放在"代理能用检索工具查自己的笔记"之后）**
+- [x] **Step 2: 加两项断言（放在"代理能用检索工具查自己的笔记"之后）**
 
 ```python
     note_turn = await converse(token, user_id, conversation_id,
@@ -1484,7 +1484,7 @@ class Turn:
           f"calls={note_turn.tool_calls} 答={note_turn.text[:50]}")
 ```
 
-- [ ] **Step 3: 实跑**
+- [x] **Step 3: 实跑**
 
 ```bash
 cd backend && python -X utf8 scripts/e2e_langgraph_check.py
@@ -1493,7 +1493,7 @@ Expected: 全部 PASS，退出码 0。若"不调工具"那条失败（模型仍�
 把该断言改成"`retrieval` 命中且答案含两周"，并在 `docs/PROGRESS.md` 记下模型行为差异，
 不要为了让测试通过而删掉检索节点。
 
-- [ ] **Step 4: 提交**
+- [x] **Step 4: 提交**
 
 ```bash
 git add backend/scripts/e2e_langgraph_check.py
@@ -1512,7 +1512,7 @@ git commit -m "test: e2e 增加前置检索断言（检索帧与不依赖工具�
 - Consumes: 无
 - Produces: 环境为 fastmcp 3.4.7 + mcp 1.30.x + langchain-mcp-adapters 0.3.2，且 MCP 服务端在 8102 可用
 
-- [ ] **Step 1: 换依赖**
+- [x] **Step 1: 换依赖**
 
 ```bash
 cd backend && /c/Users/HONOR/.conda/envs/lg-aide/python.exe -m pip install \
@@ -1522,7 +1522,7 @@ cd backend && /c/Users/HONOR/.conda/envs/lg-aide/python.exe -m pip install \
 ```
 Expected: `No broken requirements found`
 
-- [ ] **Step 2: 服务端冒烟（工具名与参数不能变）**
+- [x] **Step 2: 服务端冒烟（工具名与参数不能变）**
 
 ```bash
 cd backend && python -X utf8 mcp-serve/mcp_server.py > /tmp/mcp3.log 2>&1 &
@@ -1540,7 +1540,7 @@ asyncio.run(main())
 Expected: `count 29`，名字仍带 `weather_/news_/recipe_/user_data_` 前缀。若数量或名字变了，
 先停下改服务端，不要继续下一步。
 
-- [ ] **Step 3: requirements 记录约束组合**
+- [x] **Step 3: requirements 记录约束组合**
 
 ```
 # MCP 服务端与客户端的约束组合（改动前先跑 pip check）：
@@ -1551,7 +1551,7 @@ mcp>=1.24,<2
 langchain-mcp-adapters>=0.3,<1
 ```
 
-- [ ] **Step 4: 提交**
+- [x] **Step 4: 提交**
 
 ```bash
 git add backend/requirements.txt
@@ -1572,7 +1572,7 @@ git commit -m "chore: MCP 依赖降级到 fastmcp 3.4.7 + mcp 1.x 以启用标�
 - Consumes: `MultiServerMCPClient`
 - Produces: `async load_mcp_tools() -> list`（失败返回 `[]`）、`MCPConnection`（带 `aclose()`，供 runtime 持有）
 
-- [ ] **Step 1: 写失败测试**
+- [x] **Step 1: 写失败测试**
 
 ```python
 # backend/tests/test_mcp_tools.py
@@ -1614,9 +1614,9 @@ def test_tool_name_prefix_is_disabled(monkeypatch):
     assert captured["tool_name_prefix"] is False
 ```
 
-- [ ] **Step 2: 跑测试确认失败** → Expected: FAIL（`load_mcp_tools` 不存在）
+- [x] **Step 2: 跑测试确认失败** → Expected: FAIL（`load_mcp_tools` 不存在）
 
-- [ ] **Step 3: 重写 mcp.py**
+- [x] **Step 3: 重写 mcp.py**
 
 ```python
 # backend/agent/tools/mcp.py
@@ -1653,7 +1653,7 @@ async def load_mcp_tools(url: Optional[str] = None) -> List[Any]:
     return tools
 ```
 
-- [ ] **Step 4: runtime 改回无状态装载**
+- [x] **Step 4: runtime 改回无状态装载**
 
 `agent/runtime.py` 的 `_build` 中：
 
@@ -1667,7 +1667,7 @@ async def load_mcp_tools(url: Optional[str] = None) -> List[Any]:
 删掉 `self._bridge` 的创建/持有与 `aclose()` 里对 bridge 的关闭（adapters 自己管理连接生命周期），
 `__init__` 里去掉 `self._bridge`。
 
-- [ ] **Step 5: 跑测试 + 全量**
+- [x] **Step 5: 跑测试 + 全量**
 
 ```bash
 cd backend && python -X utf8 -m pytest tests/test_mcp_tools.py -q
@@ -1676,7 +1676,7 @@ python -X utf8 -m pytest tests -q
 ```
 Expected: 新测试 3 passed；全量绿（MCP 未起时 `load_mcp_tools` 返回 `[]`，测试仍过）
 
-- [ ] **Step 6: 提交**
+- [x] **Step 6: 提交**
 
 ```bash
 git add -A backend/agent/tools/mcp.py backend/agent/runtime.py backend/tests
@@ -1694,14 +1694,14 @@ git commit -m "refactor: MCP 工具装载改用 langchain-mcp-adapters，删除�
 - Consumes: 前两个步骤的全部产出
 - Produces: 可交付状态（离线全绿 + 端到端全绿 + 文档一致）
 
-- [ ] **Step 1: 重启后端并跑离线全量**
+- [x] **Step 1: 重启后端并跑离线全量**
 
 ```bash
 cd backend && python -X utf8 -m pytest tests -q
 ```
 Expected: 全绿
 
-- [ ] **Step 2: 端到端**
+- [x] **Step 2: 端到端**
 
 ```bash
 python -X utf8 scripts/e2e_langgraph_check.py
@@ -1709,7 +1709,7 @@ python -X utf8 scripts/e2e_langgraph_check.py
 Expected: 全部 PASS、退出码 0；其中"待办写入调用 user_data_create_todo"与"天气问答调用 MCP 天气工具"
 两项证明 MCP 降级后外部工具仍可用。
 
-- [ ] **Step 3: 身份覆写回归（不能因为换适配器而失效）**
+- [x] **Step 3: 身份覆写回归（不能因为换适配器而失效）**
 
 ```bash
 python -X utf8 -c "
@@ -1724,12 +1724,12 @@ asyncio.run(main())
 Expected: 回答针对当前登录用户（id=3），不返回用户 999 的数据；日志里出现
 "已按登录身份覆写为 3" 的 WARNING。
 
-- [ ] **Step 4: 文档收口**
+- [x] **Step 4: 文档收口**
 
 `docs/PROGRESS.md` 记录：本次重构的提交列表、端到端各项实测结果、`pip check` 结论、
 以及第 3 步身份覆写的实测输出。`README.md` 技术栈与"编排架构"一节按新依赖改写。
 
-- [ ] **Step 5: 提交并推送**
+- [x] **Step 5: 提交并推送**
 
 ```bash
 git add docs README.md && git commit -m "docs: 检索层与 MCP 重构收口"
@@ -1754,7 +1754,7 @@ Expected: 推送成功（网络不通时保留本地提交并在 PROGRESS 标注
 **实测依据**：该中间件在接近阈值时把较早消息压成摘要，保证 AI/Tool 消息成对不被拆散；
 瞬时失败最多重试 3 次，仍失败则抛出而不是伪造摘要。
 
-- [ ] **Step 1: 写失败测试**
+- [x] **Step 1: 写失败测试**
 
 ```python
 def test_summarization_middleware_is_registered(tmp_path, monkeypatch):
@@ -1765,12 +1765,12 @@ def test_summarization_middleware_is_registered(tmp_path, monkeypatch):
     assert any("summarization" in n.lower() for n in nodes), nodes
 ```
 
-- [ ] **Step 2: 跑测试确认失败**
+- [x] **Step 2: 跑测试确认失败**
 
 Run: `cd backend && python -X utf8 -m pytest tests/test_graph_build.py -q`
 Expected: FAIL（节点列表里没有 summarization 节点）
 
-- [ ] **Step 3: 实现**
+- [x] **Step 3: 实现**
 
 `agent/graph.py` 增加：
 
@@ -1793,7 +1793,7 @@ SUMMARIZE_TRIGGER_TOKENS=6000
 SUMMARIZE_KEEP_MESSAGES=8
 ```
 
-- [ ] **Step 4: 跑测试 + 全量 + 提交**
+- [x] **Step 4: 跑测试 + 全量 + 提交**
 
 ```bash
 cd backend && python -X utf8 -m pytest tests -q
@@ -1826,7 +1826,7 @@ git commit -m "feat: 接入 SummarizationMiddleware 给短期记忆设上限"
 **实测依据**：`aput/aget/asearch` 可用；必须用异步接口（同步 `put` 在事件循环里抛
 `InvalidStateError`）；`asearch(("user","3","memory"), ...)` 不会返回 user 9 的条目。
 
-- [ ] **Step 1: 写失败测试**
+- [x] **Step 1: 写失败测试**
 
 ```python
 """长期记忆：跨会话记住用户的长期事实
@@ -1947,12 +1947,12 @@ def test_other_users_memories_are_not_visible(any_store):
     assert not any("成都" in str(m.content) for m in seen)
 ```
 
-- [ ] **Step 2: 跑测试确认失败**
+- [x] **Step 2: 跑测试确认失败**
 
 Run: `cd backend && python -X utf8 -m pytest tests/test_agent_memory.py -q`
 Expected: FAIL（`agent.memory` 不存在）
 
-- [ ] **Step 3: 实现 memory.py**
+- [x] **Step 3: 实现 memory.py**
 
 ```python
 """长期记忆：LangGraph Store + 语义索引
@@ -2076,7 +2076,7 @@ async def save_memory(text: str, runtime: ToolRuntime[UserContext] = None) -> st
 
 （`notes.py` 顶部需要 `from uuid import uuid4`。）
 
-- [ ] **Step 4: 建图与运行时接线**
+- [x] **Step 4: 建图与运行时接线**
 
 `build_agent` 增加 `store` 参数并透传给 `create_agent`，middleware 顺序：
 检索 → 记忆检索 → 摘要 → 注入（笔记）→ 注入（记忆）→ 身份 → 护栏。
@@ -2095,7 +2095,7 @@ MEMORY_DB=./data/lg-aide-memory.sqlite
 
 系统提示词补一条：`save_memory` 只用于长期有效的事实；写资料用 `save_note`。
 
-- [ ] **Step 5: 跑测试 + 全量**
+- [x] **Step 5: 跑测试 + 全量**
 
 ```bash
 cd backend && python -X utf8 -m pytest tests/test_agent_memory.py -q
@@ -2103,7 +2103,7 @@ python -X utf8 -m pytest tests -q
 ```
 Expected: 记忆 6 项通过；全量绿
 
-- [ ] **Step 6: 端到端补跨会话断言**
+- [x] **Step 6: 端到端补跨会话断言**
 
 `scripts/e2e_langgraph_check.py` 里，在 `save_memory` 相关一轮之后，**换一个新的
 conversation_id** 提问"我是做什么的？"，断言回答里出现上一会话记下的事实、且没有调用笔记工具：
