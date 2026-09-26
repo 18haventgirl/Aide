@@ -6,7 +6,7 @@ Embeddings 统一由 LangChain 抽象提供，检索层不再自己调 sentence-
 import pytest
 
 from core.retrieval.embeddings import build_embeddings
-from core.vector_core.config import VectorConfig
+from core.retrieval.config import VectorConfig
 
 
 def test_local_provider_uses_huggingface_embeddings():

@@ -10,7 +10,7 @@ from functools import lru_cache
 
 from langchain_core.embeddings import Embeddings
 
-from core.vector_core.config import VectorConfig
+from core.retrieval.config import VectorConfig
 
 logger = logging.getLogger(__name__)
 

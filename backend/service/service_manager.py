@@ -9,7 +9,6 @@ from typing import Optional, Dict, Any
 from datetime import datetime, timedelta
 from threading import RLock
 from core.database_core import DatabaseClient
-from core.vector_core import ChromaVectorClient, VectorConfig
 from core.auth_core.auth import AuthService
 
 
@@ -19,7 +18,6 @@ class ServiceManager:
     def __init__(self):
         self._lock = RLock()
         self._db_client: Optional[DatabaseClient] = None
-        self._vector_client: Optional[ChromaVectorClient] = None
         self._auth_service: Optional[AuthService] = None
         self._services: Dict[str, Any] = {}
         
@@ -57,14 +55,6 @@ class ServiceManager:
                 self._db_client.initialize()
                 self._db_client.create_tables()
                 
-                # 初始化向量数据库客户端
-                try:
-                    config = VectorConfig.from_env()
-                    self._vector_client = ChromaVectorClient(config)
-                except Exception as e:
-                    self._logger.warning(f"向量数据库初始化失败: {e}")
-                    self._vector_client = None
-                
                 # 初始化认证服务
                 self._auth_service = AuthService()
                 
@@ -81,12 +71,6 @@ class ServiceManager:
         if not self._initialized:
             self.initialize()
         return self._db_client
-    
-    def get_vector_client(self) -> Optional[ChromaVectorClient]:
-        """获取向量数据库客户端（单例）"""
-        if not self._initialized:
-            self.initialize()
-        return self._vector_client
     
     def get_auth_service(self) -> Optional[AuthService]:
         """获取认证服务（单例）"""
@@ -108,8 +92,6 @@ class ServiceManager:
                         sig = inspect.signature(service_class.__init__)
                         if 'db_client' in sig.parameters:
                             kwargs['db_client'] = self.get_db_client()
-                        if 'vector_client' in sig.parameters:
-                            kwargs['vector_client'] = self.get_vector_client()
                     
                     self._services[service_name] = service_class(**kwargs)
                     self._logger.info(f"创建服务实例: {service_name}")
@@ -236,7 +218,6 @@ class ServiceManager:
         return {
             "initialized": self._initialized,
             "db_client_active": self._db_client is not None,
-            "vector_client_active": self._vector_client is not None,
             "services_count": len(self._services),
             "user_cache_size": len(self._user_cache),
             "token_cache_size": len(self._token_cache),
@@ -253,16 +234,6 @@ class ServiceManager:
                     self._logger.info("数据库连接已关闭")
                 except Exception as e:
                     self._logger.error(f"关闭数据库连接失败: {e}")
-            
-            # 关闭向量数据库连接
-            if self._vector_client:
-                try:
-                    # 尝试关闭，如果没有close方法则忽略
-                    if hasattr(self._vector_client, 'close'):
-                        getattr(self._vector_client, 'close')()
-                    self._logger.info("向量数据库连接已关闭")
-                except Exception as e:
-                    self._logger.error(f"关闭向量数据库连接失败: {e}")
             
             # 清理缓存
             self.clear_cache()

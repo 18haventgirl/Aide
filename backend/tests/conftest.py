@@ -30,23 +30,32 @@ require_local_embedding = pytest.mark.skipif(
 
 
 @pytest.fixture
-def rag_client(tmp_path):
-    """指向临时目录的独立 Chroma + 本地向量模型，避免污染 backend/lg-aide-chroma-db
+def rag_store(tmp_path, monkeypatch):
+    """临时目录里的 Chroma 集合 + 本地 bge 向量；模型缺失则 skip
 
-    模型没下载时直接 skip（向量检索必须有 embedding 来源，用远端 OpenAI 会让测试依赖外网）。
+    断言基线（5 语料 / 8 组查询 / 更新反转 / 删除生效）与换成标准件之前完全一致，
+    这是"重构没把检索改坏"的唯一判据。
     """
     if not local_embedding_available():
         pytest.skip(f"缺少本地 embedding 模型 {LOCAL_MODEL_DIR}，按 README「5.1 本地向量化」下载后重跑")
 
-    from core.vector_core.client import ChromaVectorClient
-    from core.vector_core.config import VectorConfig
+    import core.retrieval.store as store_mod
 
-    config = VectorConfig.from_env().model_copy(update={
-        "chroma_client_mode": "local",
-        "chroma_persist_directory": str(tmp_path / "chroma"),
-        "chroma_collection_prefix": "lg_aide_test",
-        "embedding_provider": "local",
-        "local_embedding_model": LOCAL_MODEL_DIR,
-        "similarity_threshold": 0.3,
-    })
-    return ChromaVectorClient(config)
+    monkeypatch.setattr(store_mod, "_persist_dir", lambda: str(tmp_path / "chroma"))
+    monkeypatch.setattr(store_mod, "_prefix", lambda: "lg_aide_test")
+    monkeypatch.setattr(store_mod, "_mode", lambda: "local")
+    monkeypatch.setattr(store_mod, "_embeddings", lambda: local_embeddings())
+    store_mod._stores.clear()
+    yield store_mod.note_store("tester")
+    store_mod._stores.clear()
+
+
+def local_embeddings():
+    from langchain_core.embeddings import Embeddings
+    from langchain_huggingface import HuggingFaceEmbeddings
+
+    return HuggingFaceEmbeddings(
+        model_name=LOCAL_MODEL_DIR,
+        model_kwargs={"device": "cpu"},
+        encode_kwargs={"normalize_embeddings": True},
+    )

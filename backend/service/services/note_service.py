@@ -11,7 +11,7 @@ from sqlalchemy import or_, and_, func
 from core.database_core import DatabaseClient
 from core.retrieval.documents import documents_to_rows, note_document
 from core.retrieval.store import note_store
-from core.vector_core import VectorConfig
+from core.retrieval.config import VectorConfig
 from ..models.note import Note, InvalidTagError
 from .user_service import UserService
 

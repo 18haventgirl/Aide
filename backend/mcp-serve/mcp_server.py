@@ -21,7 +21,6 @@ from user_data_tools import register_user_data_tools
 
 # Import database initialization components
 from core.database_core import DatabaseClient
-from core.vector_core import ChromaVectorClient, VectorConfig
 from core.runtime_config import RuntimeConfig
 
 # =============================================================================
@@ -63,12 +62,12 @@ def initialize_databases():
         
         print("✅ MySQL database initialized successfully")
         
-        # Initialize vector database
-        print("🔍 Initializing vector database...")
+        # 向量库自检：集合由 core.retrieval.store 按用户惰性创建
+        print("🔍 Checking vector database...")
         try:
-            vector_config = VectorConfig.from_env()
-            vector_client = ChromaVectorClient(vector_config)
-            health = vector_client.health_check()
+            from core.retrieval.store import vector_health
+
+            health = vector_health()
             if health.get('status') != 'healthy':
                 print("⚠️  Vector database health check failed")
             else:

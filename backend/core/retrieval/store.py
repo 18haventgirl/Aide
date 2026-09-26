@@ -27,7 +27,7 @@ def _embeddings() -> Embeddings:
 
 
 def _config():
-    from core.vector_core.config import VectorConfig
+    from core.retrieval.config import VectorConfig
 
     return VectorConfig.from_env()
 

@@ -61,17 +61,13 @@ async def health_check():
         logger.warning(f"数据库健康检查失败: {e}")
         services["database"] = "unhealthy"
 
-    # 向量数据库
-    try:
-        vector_client = service_manager.get_vector_client()
-        if not vector_client:
-            services["vector_database"] = "not_configured"
-        else:
-            health = vector_client.health_check()
-            services["vector_database"] = "healthy" if health.get('status') == 'healthy' else "unhealthy"
-    except Exception as e:
-        logger.warning(f"向量数据库健康检查失败: {e}")
-        services["vector_database"] = "unhealthy"
+    # 向量数据库：集合由 core.retrieval.store 按用户惰性创建，这里只做连通性自检
+    from core.retrieval.store import vector_health
+
+    health = vector_health()
+    services["vector_database"] = health.get("status", "unhealthy")
+    if health.get("status") != "healthy":
+        logger.warning(f"向量数据库健康检查失败: {health.get('error', '未知原因')}")
 
     # WebSocket：心跳任务在跑且能取到连接数，才算 healthy
     try:
