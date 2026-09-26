@@ -77,7 +77,7 @@ def test_build_agent_requires_model():
 def test_build_agent_returns_runnable_with_default_tools():
     agent = asyncio.run(build_agent(ScriptedModel(), tools=[fake_user_todos]))
     assert hasattr(agent, "ainvoke")
-    assert {t.name for t in default_tools()} == {"search_my_notes", "save_note"}
+    assert {t.name for t in default_tools()} == {"search_my_notes", "save_note", "save_memory"}
 
 
 def test_tools_without_user_id_are_untouched():

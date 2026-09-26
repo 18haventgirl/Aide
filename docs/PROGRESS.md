@@ -149,8 +149,21 @@ MCP 装载都是我手写的。本轮目标=能复用库的地方换成库，并
     - 面板实测（5199，浏览器结构快照）：分区标题与表头副标题已是中性名，空态文案正常。
       节点行与命中行的**填充态没做视觉确认**（in-app 浏览器拿不到可视视口，截屏不可用），
       只有协议单测 + e2e 帧捕获覆盖，需要人眼确认时再开浏览器看一次
-  - [ ] 2.5 短期记忆上限：`SummarizationMiddleware`
-  - [ ] 2.6 长期记忆：`AsyncSqliteStore` + `save_memory`，跨会话按用户隔离
+  - [x] 2.5 短期记忆上限：`SummarizationMiddleware`（`0280079`）
+    - 节点位置实测：`note_retrieval.before_agent → SummarizationMiddleware.before_model →
+      Safety/Relevance Guardrail.before_model → model`，也就是压缩发生在护栏与业务模型之前
+    - 阈值 `SUMMARIZE_TRIGGER_TOKENS=6000` / `SUMMARIZE_KEEP_MESSAGES=8`，都可用环境变量覆盖
+    - **压缩真正触发的长会话还没实测**（e2e 的会话远不到 6000 token），只验证了挂载与阈值读取
+  - [x] 2.6 长期记忆：`agent/memory.py`（AsyncSqliteStore + 语义索引，复用本地 bge）
+    - 写入只由 `save_memory` 工具决定（`agent/tools/memory.py`，身份与 store 都取自 runtime）；
+      召回走 `before_agent` + `wrap_model_call` 临时注入，和笔记检索同一个模式
+    - 单测 6 项：命名空间隔离（user 3 看不到 user 9 的条目）、注入但不落历史、无 store 时降级
+    - **实跑中发现并修掉一个真 bug**：新会话第一句"我是做什么工作的"被相关性护栏判为跑题拦下——
+      判词只看到孤零一句话，不知道助手本来就该记得用户的事实。修法是把范围写清
+      （`agent/middleware.py`：跨会话的个人信息询问属正常范围），不是删护栏
+    - e2e 补两项后 **22 项全通过，退出码 0**：`save_memory` 被调用 → 换一个 conversation_id
+      再问 → 答"安卓开发。"，且 `calls=[]`、新线程无任何历史可依赖
+    - 存储文件 `backend/data/lg-aide-memory.sqlite`（`MEMORY_DB` 可覆盖，`data/` 已在 .gitignore）
 - [ ] 第 3 步 MCP 换官方适配器：降 fastmcp 3.4.7 + mcp 1.x + `langchain-mcp-adapters`，删 `MCPBridge`
 
 ### 本轮新增的硬规则（后续改动不要破坏）

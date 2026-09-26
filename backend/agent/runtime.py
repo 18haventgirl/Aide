@@ -118,7 +118,7 @@ async def translate_stream(stream) -> AsyncIterator[Dict[str, Any]]:
 
 
 class AideRuntime:
-    """持有编译好的图与长开的 checkpoint 连接；模型与 MCP 都可用时才构建，之后复用"""
+    """持有编译好的图与长开的 checkpoint/记忆存储连接；模型与 MCP 都可用时才构建，之后复用"""
 
     def __init__(self):
         self._agent: Any = None
@@ -142,6 +142,7 @@ class AideRuntime:
     async def _build(self) -> None:
         from agent.checkpoint import build_checkpointer
         from agent.graph import build_agent, default_tools
+        from agent.memory import build_memory_store
         from agent.model import build_chat_model
         from agent.tools.mcp import build_mcp_bridge
 
@@ -156,7 +157,8 @@ class AideRuntime:
         stack = AsyncExitStack()
         try:
             saver = await stack.enter_async_context(build_checkpointer())
-            agent = await build_agent(model, tools=tools, checkpointer=saver)
+            store = await stack.enter_async_context(build_memory_store())
+            agent = await build_agent(model, tools=tools, checkpointer=saver, store=store)
         except Exception:
             await stack.aclose()
             if bridge is not None:
@@ -187,7 +189,7 @@ class AideRuntime:
         ]
 
     async def aclose(self) -> None:
-        """关掉 checkpoint 连接与 MCP 会话并丢弃图实例；下次 ask() 会重新构建"""
+        """关掉 checkpoint 与记忆存储的连接、MCP 会话并丢弃图实例；下次 ask() 会重新构建"""
         self._agent = None
         self._tools = []
         self._has_memory = False

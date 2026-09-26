@@ -208,7 +208,18 @@ async def main() -> int:
           "两周" in note_turn.text and not note_turn.tool_calls,
           f"calls={note_turn.tool_calls} 答={note_turn.text[:50]}")
 
-    # 6) 检查点确实落盘（不是只在进程内存里）
+    # 7) 长期记忆：写入 + 换一个会话再问
+    remember = await converse(token, user_id, conversation_id,
+                              "记一下：我是做安卓开发的，主力机是 HONOR。以后都按这个来")
+    check("长期记忆写入调用 save_memory", "save_memory" in remember.tool_calls,
+          f"calls={remember.tool_calls}")
+
+    cross = await converse(token, user_id, f"{conversation_id}-next",
+                           "我是做什么工作的？只回答职业")
+    check("跨会话长期记忆生效", "安卓" in cross.text,
+          f"答={cross.text[:60]}")
+
+    # 8) 检查点确实落盘（不是只在进程内存里）
     checkpoint_db = os.getenv("CHECKPOINT_DB", "data/lg-aide-checkpoints.sqlite")
     if not os.path.exists(checkpoint_db):
         os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
