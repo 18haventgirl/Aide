@@ -161,7 +161,9 @@ MCP 装载都是我手写的。本轮目标=能复用库的地方换成库，并
     - 节点位置实测：`note_retrieval.before_agent → SummarizationMiddleware.before_model →
       Safety/Relevance Guardrail.before_model → model`，也就是压缩发生在护栏与业务模型之前
     - 阈值 `SUMMARIZE_TRIGGER_TOKENS=6000` / `SUMMARIZE_KEEP_MESSAGES=8`，都可用环境变量覆盖
-    - **压缩真正触发的长会话还没实测**（e2e 的会话远不到 6000 token），只验证了挂载与阈值读取
+    - **压缩真的会发生**（`test_summarization_replaces_early_history`）：把阈值调到最低、喂 13 条
+      历史后，状态里只剩 1 条带 `lc_source=summarization` 的摘要消息，最早那条提问已不在，
+      本轮作答仍是最后一条。默认阈值下的长会话（>6000 token）仍未跑过，但触发逻辑已被锁住
   - [x] 2.6 长期记忆：`agent/memory.py`（AsyncSqliteStore + 语义索引，复用本地 bge）
     - 写入只由 `save_memory` 工具决定（`agent/tools/memory.py`，身份与 store 都取自 runtime）；
       召回走 `before_agent` + `wrap_model_call` 临时注入，和笔记检索同一个模式
@@ -206,7 +208,7 @@ MCP 装载都是我手写的。本轮目标=能复用库的地方换成库，并
 | 4 | 编译出的图里有 `note_retrieval.before_agent` 且排在最前 | 实测 | 单测断言入口边；e2e 轨迹 `nodes[0]='note_retrieval.before_agent'` |
 | 5 | 端到端全通过，含"不调工具也能答对笔记" | 实测 | 23 项全 PASS、退出码 0，`calls=[]` 且答案含"两周一次" |
 | 6 | UI 与文档无宣传式措辞，节点显示真实名字 | 实测 | 全仓库 `自研/卖点` 零命中；浏览器实测节点行显示 `note_retrieval.before_agent` 等原始名 |
-| 7 | 短期记忆有界 | **部分** | 中间件挂载与阈值有单测；**真正触发压缩的长会话（>6000 token）没实测过** |
+| 7 | 短期记忆有界 | 实测 | 阈值调到最低跑 13 条历史：状态里只剩 **1 条** `lc_source=summarization` 的摘要，最早的提问已不在，本轮作答仍是最后一条（`test_summarization_replaces_early_history`） |
 | 8 | 长期记忆跨会话生效且按用户隔离 | 实测 | e2e 换新 conversation_id 答出"安卓开发"；单测断言 user 3 看不到 user 9 的条目 |
 
 ### 本轮重构的提交（`306312d` 之后，均已推送）
@@ -235,8 +237,8 @@ dfbfc33 docs: 检索层与 MCP 重构收口（含健康检查空闲态修复）
 
 - `docker-compose.yml` 里那个 8101 的 Chroma 服务已经没人连了（检索统一走进程内持久化），
   要么删掉要么在注释里说明保留原因——留给用户定。
-- 摘要中间件真正触发的长会话（>6000 token）还没实测过。
 - 面板上"长期记忆注入了什么"目前没有分区显示（只走日志），需要的话按 `retrieval` 帧同一套加。
+- 默认阈值（6000 token）下的真实长会话仍未跑过；触发逻辑由单测把阈值调到最低来证明。
 
 ### 本轮新增的硬规则（后续改动不要破坏）
 

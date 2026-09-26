@@ -39,10 +39,22 @@ class ScriptedModel(BaseChatModel):
 
     def _generate(self, messages, stop=None, run_manager=None, **kwargs):
         prompt = " ".join(str(getattr(m, "content", "")) for m in messages)
+        if "Context Extraction Assistant" in prompt:
+            # 摘要中间件自己的提示词（DEFAULT_SUMMARY_PROMPT 里的 role）。给它一句假摘要，
+            # 否则这句会被当成业务作答消耗掉 replies，断言就测不到压缩了。
+            return ChatResult(generations=[
+                ChatGeneration(message=AIMessage(content="（早先对话已压缩为摘要）"))
+            ])
         if "安全审查器" in prompt:
             verdict = "SAFE\n日常请求，不涉及风险"
         elif "相关性审查器" in prompt:
             verdict = "RELEVANT\n在助手服务范围内"
+        elif "Context Extraction Assistant" in prompt:
+            # 摘要中间件自己的提示词（DEFAULT_SUMMARY_PROMPT 的 role），给它一句假摘要，
+            # 这样才能断言"早先历史真的被替换掉了"而不是只挂上了中间件
+            return ChatResult(generations=[
+                ChatGeneration(message=AIMessage(content="（早先对话已压缩为摘要）"))
+            ])
         else:
             verdict_payload = self.replies[min(self.calls, len(self.replies) - 1)]
             self.calls += 1
@@ -202,6 +214,32 @@ def test_ask_reports_retrieval_hits_from_state():
     answer = asyncio.run(runtime.ask(3, "conv-1", "体检"))
 
     assert answer.retrieval == hits
+
+
+def test_summarization_replaces_early_history(monkeypatch):
+    """阈值调低后真跑一遍：早先历史必须被摘要替换掉
+
+    只断言"中间件挂上了"不算数——压缩没真发生的话，长会话的 token 依然随轮数线性涨。
+    这里给 12 条历史 + keep=4，要求最早的几条已不在状态里，原位留下带
+    lc_source=summarization 标记的摘要条目。
+    """
+    monkeypatch.setenv("SUMMARIZE_TRIGGER_TOKENS", "1")
+    monkeypatch.setenv("SUMMARIZE_KEEP_MESSAGES", "4")
+
+    agent = asyncio.run(build_agent(ScriptedModel(replies=[{"content": "在的"}]), tools=[]))
+    history = []
+    for index in range(6):
+        history.append(HumanMessage(content=f"第{index}问 请原样记住这句话{index}"))
+        history.append(AIMessage(content=f"第{index}答"))
+
+    state = asyncio.run(agent.ainvoke({"messages": history}, context=UserContext(user_id=7)))
+    marked = [m for m in state["messages"]
+              if (m.additional_kwargs or {}).get("lc_source") == "summarization"]
+    texts = [str(m.content) for m in state["messages"]]
+
+    assert len(marked) == 1, texts
+    assert "第0问 请原样记住这句话0" not in texts, texts
+    assert texts[-1] == "在的"
 
 
 def test_ask_survives_graph_exceptions():
