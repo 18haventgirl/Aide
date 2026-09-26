@@ -20,7 +20,7 @@ export interface Agent {
 
 export interface AgentEvent {
   id: string
-  type: 'tool_call' | 'tool_output' | 'handoff' | 'context_update' | 'error' | 'message'
+  type: 'tool_call' | 'tool_output' | 'retrieval' | 'handoff' | 'context_update' | 'error' | 'message'
   agent: string
   content: string
   timestamp: Date

@@ -29,6 +29,26 @@ require_local_embedding = pytest.mark.skipif(
 )
 
 
+@pytest.fixture(autouse=True)
+def fake_retrieval_backend(monkeypatch, tmp_path):
+    """默认把笔记向量库换成假向量 + 临时目录
+
+    图一构建就会挂上真实的检索钩子，钩子里又要取 Chroma 句柄；不挡掉的话，任何跑图
+    的单测都会加载几百 MB 的本地模型，还可能往真实数据目录里写。需要真向量的测试
+    自己再 patch 一次（后申请者生效，如本文件的 rag_store）。
+    """
+    import core.retrieval.store as store_mod
+    from langchain_core.embeddings import DeterministicFakeEmbedding
+
+    monkeypatch.setattr(store_mod, "_embeddings", lambda: DeterministicFakeEmbedding(size=64))
+    monkeypatch.setattr(store_mod, "_persist_dir", lambda: str(tmp_path / "chroma-fake"))
+    monkeypatch.setattr(store_mod, "_prefix", lambda: "lg_aide_fake")
+    monkeypatch.setattr(store_mod, "_mode", lambda: "local")
+    store_mod._stores.clear()
+    yield store_mod
+    store_mod._stores.clear()
+
+
 @pytest.fixture
 def rag_store(tmp_path, monkeypatch):
     """临时目录里的 Chroma 集合 + 本地 bge 向量；模型缺失则 skip

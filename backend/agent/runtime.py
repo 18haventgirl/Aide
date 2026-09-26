@@ -24,6 +24,7 @@ class AideAnswer:
     text: str = ""
     tool_events: List[Dict[str, Any]] = field(default_factory=list)
     guardrail_checks: List[Dict[str, Any]] = field(default_factory=list)
+    retrieval: List[Dict[str, Any]] = field(default_factory=list)
     blocked: bool = False
     error: Optional[str] = None
 
@@ -91,6 +92,9 @@ async def translate_stream(stream) -> AsyncIterator[Dict[str, Any]]:
                 started = node_event(node, "started")
                 if started:
                     yield started
+                hits = (update or {}).get("retrieved")
+                if hits:
+                    yield {"kind": "retrieval", "hits": hits, "node": node}
                 finished = node_event(node, "finished")
                 if finished:
                     yield finished
@@ -194,15 +198,17 @@ class AideRuntime:
         if bridge is not None:
             await bridge.close()
 
-    async def _state_messages(self, config: Dict[str, Any]) -> List[Any]:
-        """该线程当前的消息列表；读不到按无历史处理（ checkpoint 只是慢，不是错）"""
+    async def _state_values(self, config: Dict[str, Any]) -> Dict[str, Any]:
+        """该线程当前的状态字段；读不到按空处理（checkpoint 只是慢，不是错）"""
         try:
             snapshot = await self._agent.aget_state(config)
         except Exception as exc:
             logger.debug(f"读取线程状态失败，按无历史处理: {exc}")
-            return []
-        values = getattr(snapshot, "values", None) or {}
-        return list(values.get("messages") or [])
+            return {}
+        return getattr(snapshot, "values", None) or {}
+
+    async def _state_messages(self, config: Dict[str, Any]) -> List[Any]:
+        return list((await self._state_values(config)).get("messages") or [])
 
     async def _state_len(self, config: Dict[str, Any]) -> int:
         """本轮之前的消息条数，用来把历史排除在本次结果外"""
@@ -235,7 +241,9 @@ class AideRuntime:
         messages = (state.get("messages") if isinstance(state, dict) else None) or []
         answer, events, blocked = _read_outcome(messages[before:])
         return AideAnswer(text=answer, tool_events=events,
-                          guardrail_checks=context.guardrail_checks, blocked=blocked)
+                          guardrail_checks=context.guardrail_checks,
+                          retrieval=(state.get("retrieved") if isinstance(state, dict) else None) or [],
+                          blocked=blocked)
 
 
     async def astream(self, user_id: int, conversation_id: str, text: str,
@@ -265,7 +273,9 @@ class AideRuntime:
                 if event["kind"] == "delta":
                     streamed += event["text"]
                 yield event
-            messages = await self._state_messages(config)
+            values = await self._state_values(config)
+            messages = list(values.get("messages") or [])
+            retrieved = list(values.get("retrieved") or [])
         except Exception as exc:
             logger.exception("流式图执行失败")
             yield {"kind": "final",
@@ -275,6 +285,7 @@ class AideRuntime:
         answer, events, blocked = _read_outcome(messages[before:])
         yield {"kind": "final", "answer": AideAnswer(text=answer or streamed, tool_events=events,
                                                      guardrail_checks=context.guardrail_checks,
+                                                     retrieval=retrieved,
                                                      blocked=blocked)}
 
 

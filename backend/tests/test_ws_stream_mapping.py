@@ -95,6 +95,31 @@ def test_tools_list_frame_announces_single_agent_and_tools():
     assert content["conversation_id"] == "conv1"
 
 
+def test_retrieval_event_becomes_a_retrieval_frame():
+    _, (msg,) = _feed({"kind": "retrieval", "node": "note_retrieval.before_agent",
+                       "hits": [{"id": "1", "title": "绿萝", "score": 0.7,
+                                 "text": "土表发白就浇透"}]})
+
+    assert msg.content["type"] == "retrieval"
+    assert msg.content["hits"][0]["title"] == "绿萝"
+
+
+def test_retrieval_hits_are_kept_in_the_final_chat_response():
+    """过程帧只在本次连接里存在，历史与面板要看 completion 帧的 events"""
+    from agent.runtime import AideAnswer
+
+    translator = _translator()
+    answer = AideAnswer(text="土表发白就浇透",
+                        retrieval=[{"id": "1", "title": "绿萝", "score": 0.7,
+                                    "text": "土表发白就浇透"}])
+    response = translator.build_chat_response(answer)
+    hits = [event for event in response.events if event.type == "retrieval"]
+
+    assert len(hits) == 1
+    assert hits[0].content == "绿萝"
+    assert hits[0].metadata == {"note_id": "1", "score": 0.7}
+
+
 def test_completion_keeps_legacy_chat_response_shape():
     from agent.runtime import AideAnswer
 

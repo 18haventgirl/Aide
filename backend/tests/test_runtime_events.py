@@ -104,6 +104,29 @@ def test_tool_call_events_carry_name_and_arguments():
     assert tool_call["tool_call_id"] == "c9"
 
 
+def test_retrieval_hits_become_a_retrieval_event():
+    """检索节点每轮产出一次命中列表，面板靠它显示命中了哪几条笔记"""
+    events = _collect(_feed([
+        ("updates", {"note_retrieval.before_agent": {"retrieved": [
+            {"id": "1", "title": "阳台绿萝浇水", "score": 0.71, "text": "土表发白就浇透"}]}}),
+    ]))
+
+    retrieval = next(e for e in events if e["kind"] == "retrieval")
+    assert retrieval["hits"][0]["title"] == "阳台绿萝浇水"
+    assert retrieval["hits"][0]["score"] == 0.71
+    assert retrieval["node"] == "note_retrieval.before_agent"
+
+
+def test_empty_retrieval_does_not_emit_a_frame():
+    """没命中就不下发：一轮一个空检索帧只会让面板多一行噪声"""
+    events = _collect(_feed([
+        ("updates", {"note_retrieval.before_agent": {"retrieved": []}}),
+        ("messages", (AIMessageChunk(content="没找到相关笔记"), {"langgraph_node": "model"})),
+    ]))
+
+    assert [e["kind"] for e in events if e["kind"] == "retrieval"] == []
+
+
 def test_guardrail_nodes_are_reported_once_per_status():
     events = _collect(_feed([
         ("updates", {"Safety Guardrail.before_model": {"messages": []}}),
@@ -127,9 +150,10 @@ from agent.runtime import AideRuntime                            # noqa: E402
 
 
 class StubAgent:
-    def __init__(self, chunks, final_messages):
+    def __init__(self, chunks, final_messages, retrieved=None):
         self.chunks = chunks
         self.final_messages = final_messages
+        self.retrieved = retrieved or []
         self.stream_kwargs = None
 
     async def astream(self, payload, config=None, context=None, stream_mode=None):
@@ -138,12 +162,13 @@ class StubAgent:
             yield chunk
 
     async def aget_state(self, config):
-        return SimpleNamespace(values={"messages": self.final_messages})
+        return SimpleNamespace(values={"messages": self.final_messages,
+                                       "retrieved": self.retrieved})
 
 
-def _streaming_runtime(chunks, final_messages):
+def _streaming_runtime(chunks, final_messages, retrieved=None):
     runtime = AideRuntime()
-    runtime._agent = StubAgent(chunks, final_messages)
+    runtime._agent = StubAgent(chunks, final_messages, retrieved)
     runtime._has_memory = True
 
     async def zero(config):
@@ -202,6 +227,22 @@ def test_astream_streams_deltas_then_final_from_state():
     assert answer.error is None and answer.blocked is False
     assert [e["type"] for e in answer.tool_events] == ["tool_call", "tool_output"]
     assert answer.tool_events[1]["arguments"] == {"city": "上海"}
+
+
+def test_astream_final_keeps_retrieval_hits_for_the_panel():
+    """收尾的 AideAnswer 要带上命中：历史与面板只在 completion 帧里读得到全量"""
+    hits = [{"id": "9", "title": "体检安排", "score": 0.66, "text": "下周三空腹"}]
+    chunks = [
+        ("updates", {"note_retrieval.before_agent": {"retrieved": hits}}),
+        ("messages", (AIMessageChunk(content="你下周三空腹"), {"langgraph_node": "model"})),
+    ]
+    final_messages = [HumanMessage(content="笔记里关于体检有什么"),
+                      AIMessage(content="你下周三空腹去。")]
+    events = _drain(_streaming_runtime(chunks, final_messages, retrieved=hits))
+
+    answer = events[-1]["answer"]
+    assert answer.retrieval == hits
+    assert answer.text == "你下周三空腹去。"
 
 
 def test_astream_final_carries_refusal_even_with_no_deltas():

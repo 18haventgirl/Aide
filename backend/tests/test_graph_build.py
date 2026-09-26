@@ -108,7 +108,7 @@ def test_model_supplied_user_id_is_overwritten_by_context():
     assert tool_msg.content == "saw user_id=7"      # 模型填的 999 被丢掉
 
 
-def _runtime_with(messages, has_memory=False):
+def _runtime_with(messages, has_memory=False, retrieved=None):
     class StubAgent:
         def __init__(self, messages):
             self.messages = messages
@@ -116,7 +116,7 @@ def _runtime_with(messages, has_memory=False):
 
         async def ainvoke(self, payload, config=None, context=None):
             self.kwargs = {"payload": payload, "config": config, "context": context}
-            return {"messages": self.messages}
+            return {"messages": self.messages, "retrieved": retrieved or []}
 
     runtime = AideRuntime()
     runtime._agent = StubAgent(messages)
@@ -194,6 +194,16 @@ def test_ask_returns_error_when_the_graph_is_unavailable():
     assert answer.text == ""
 
 
+def test_ask_reports_retrieval_hits_from_state():
+    """非流式路径同样要带出命中，REST/脚本调用才能和 WebSocket 看到同一份数据"""
+    hits = [{"id": "9", "title": "体检安排", "score": 0.66, "text": "下周三空腹"}]
+    runtime = _runtime_with([HumanMessage(content="体检"), AIMessage(content="下周三空腹。")],
+                            retrieved=hits)
+    answer = asyncio.run(runtime.ask(3, "conv-1", "体检"))
+
+    assert answer.retrieval == hits
+
+
 def test_ask_survives_graph_exceptions():
     class ExplodingAgent:
         async def ainvoke(self, payload, config=None, context=None):
@@ -203,3 +213,17 @@ def test_ask_survives_graph_exceptions():
     runtime._agent = ExplodingAgent()
     answer = asyncio.run(runtime.ask(3, "conv-1", "hi"))
     assert "图炸了" in answer.error
+
+
+def test_build_agent_runs_retrieval_first():
+    """图的入口边必须指向检索节点：每轮先召回笔记，再进护栏与模型
+
+    wrap_model_call 不产生节点（它是包住模型调用的包装器），所以这里只断言
+    before_agent 节点与入口边，不去猜注入钩子的节点名。
+    """
+    agent = asyncio.run(build_agent(ScriptedModel(replies=[{"content": "在的"}]), tools=[]))
+    graph = agent.get_graph()
+    entry = [edge.target for edge in graph.edges if edge.source == "__start__"]
+
+    assert "note_retrieval.before_agent" in list(graph.nodes)
+    assert entry == ["note_retrieval.before_agent"]

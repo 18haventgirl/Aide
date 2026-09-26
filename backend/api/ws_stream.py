@@ -4,7 +4,7 @@
 出来才能离线测试。
 
 两种帧：
-- 过程帧（delta / node_update / tool_call / tool_output / tools_list）载荷很小，
+- 过程帧（delta / node_update / tool_call / tool_output / retrieval / tools_list）载荷很小，
   旧引擎每个 token 下发一整份 ChatResponse，raw_response 越攒越长，一帧比一帧大；
 - 收尾的 completion 帧沿用 ChatResponse 形状，前端读取历史与面板的方式不用改。
 """
@@ -126,6 +126,8 @@ class WsStreamTranslator:
         if kind == "node_update":
             return self._message({"type": "node_update", "node": event.get("node", ""),
                                   "status": event.get("status", "")})
+        if kind == "retrieval":
+            return self._message({"type": "retrieval", "hits": event.get("hits", [])})
         if kind == "tool_call":
             return self._message({"type": "tool_call", "tool": event.get("name", ""),
                                   "arguments": event.get("arguments") or {},
@@ -143,6 +145,16 @@ class WsStreamTranslator:
         now = datetime.now().timestamp()
 
         events = [
+            AgentEvent(
+                id=uuid4().hex,
+                type="retrieval",
+                agent=AGENT_NAME,
+                content=str(hit.get("title", "")),
+                metadata={"note_id": hit.get("id"), "score": hit.get("score")},
+                timestamp=now,
+            )
+            for hit in (answer.retrieval or [])
+        ] + [
             AgentEvent(
                 id=uuid4().hex,
                 type=item.get("type", "tool_call"),
