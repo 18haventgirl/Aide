@@ -152,7 +152,45 @@
 3. **MCP 标准件**：降 fastmcp 3.4.7 / mcp 1.30，换 `langchain-mcp-adapters`，删手写桥接，
    冒烟 29 工具与身份覆写。
 
-## 11. 已知风险与未验证项
+## 11. 记忆架构（本轮新增目标，选型由实现方决定）
+
+目标：短期记忆能撑住长会话不爆上下文，长期记忆能跨会话记住"用户告诉过我的长期事实"。
+实测过的现状缺口：新开一个会话后助手答不出用户之前说过的名字（浏览器实测确认）。
+
+### 11.1 选型与理由
+
+| 层 | 选型 | 理由 |
+| --- | --- | --- |
+| 短期（同一会话多轮） | `AsyncSqliteSaver` checkpoint（已实现）+ `SummarizationMiddleware` | 都是官方件。摘要中间件在接近阈值时压缩较早的消息，且保证 AI/Tool 消息成对不被拆散，瞬时失败自带重试 |
+| 长期（跨会话，按用户） | `langgraph.store.sqlite.AsyncSqliteStore` + `IndexConfig` | LangGraph 官方的跨线程记忆存储，自带语义索引；`index.embed` 接受 LangChain `Embeddings`，直接复用本地 bge，不需要再引一个向量库 |
+| 向量 | 继续用 Chroma（笔记）+ store 内置索引（记忆） | 两套各有归属：笔记是用户资料、可被 REST 增删改查；记忆是助手沉淀的事实，只在图内使用 |
+| Embedding | 继续用 `backend/models/bge-small-zh-v1.5`（512 维、归一化、cosine） | 已下载、离线可用、召回质量有测试基线；不新增模型下载 |
+| 数据库 | 不引入新系统：checkpoint 与 store 各自一个 SQLite 文件，业务数据仍在 MySQL | 个人助手量级下，多引一个服务只增加运维面与故障面 |
+
+### 11.2 边界与规则
+
+- **笔记 vs 记忆的界限**：笔记是用户自己写、或明确要求"记一条笔记"的资料，走 MySQL + Chroma，
+  在笔记面板可见可编辑；记忆是助手从对话中沉淀的长期事实与偏好（例如"用户在做安卓开发"），
+  只在图内注入，不进笔记面板。这条界限写进系统提示词，避免模型把两者混用。
+- **命名空间**：`("user", str(user_id), "memory")`。写入与检索都强制带 user 前缀，
+  跨用户读取在结构上不可能。
+- **写入触发**：只由模型显式调用 `save_memory` 工具决定，不做"每轮自动抽取"的自创管线
+  （那会引入不可控的写放大与隐私问题）。工具描述里限定只存长期有效的事实。
+- **读取触发**：与笔记检索同一模式——`before_agent` 每轮一次异步 `store.asearch(namespace, query, limit)`，
+  命中经 `wrap_model_call` 临时注入，不落 checkpoint 历史。
+- **摘要阈值**：`trigger=("tokens", 6000)`、`keep=("messages", 8)`。数值给默认值并可用环境变量覆盖，
+  因为 DeepSeek 上下文窗口与成本比例在这里是经验值，需要实测后再定（见 §12）。
+
+### 11.3 落地顺序
+
+1. 短期：`SummarizationMiddleware` 进 `build_agent` 的 middleware 列表（放在检索注入之后）。
+2. 长期：`agent/memory.py` 提供 store 工厂（含 `IndexConfig`）+ `save_memory` 工具 +
+   `before_agent` 记忆检索；store 生命周期与 checkpoint 一样由 `AideRuntime` 用
+   `AsyncExitStack` 长期持有。
+3. 配置：新增 `MEMORY_DB`（默认 `data/lg-aide-memory.sqlite`）与摘要阈值环境变量，写进
+   `env.example`；`data/` 已在 `.gitignore`。
+
+## 12. 已知风险与未验证项
 
 - fastmcp 3.4.7 与现有服务端其余 API 的兼容性只验证了 `mount` 签名，其余需第 3 步冒烟。
 - ~~`langchain-chroma` 的相似度阈值语义~~ **已实测**：`similarity_search_with_relevance_scores`
@@ -165,8 +203,9 @@
   的配置直接报错，只有 `org/name` 形式的 hub 模型名才允许联网。
 - 前置检索每轮都跑，会给每轮增加一次 embedding 计算（本地 CPU，实测单条约几十毫秒，量级可接受）。
 
-## 12. 不在本次范围
+## 13. 不在本次范围
 
-- 多代理/子代理（deepagents 式 subagents）、长期记忆 store、跨会话用户画像。
+- 多代理/子代理（deepagents 式 subagents）。
+- 记忆的智能治理：自动合并/去重/过期清理、记忆面板 UI、每轮自动抽取（只保留显式 `save_memory`）。
 - MCP 服务端的资源归属校验（`note_id/todo_id` 越权问题，另案）。
 - `AsyncSqliteSaver` 多用户并发压测。

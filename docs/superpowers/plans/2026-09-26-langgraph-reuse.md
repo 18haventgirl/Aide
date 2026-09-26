@@ -1739,6 +1739,391 @@ Expected: 推送成功（网络不通时保留本地提交并在 PROGRESS 标注
 
 ---
 
+### Task 2.5: 短期记忆有界（会话历史压缩）
+
+**Files:**
+- Modify: `backend/agent/graph.py`、`backend/env.example`
+- Test: `backend/tests/test_graph_build.py`
+
+**Interfaces:**
+- Consumes: `langchain.agents.middleware.SummarizationMiddleware`（实测签名
+  `SummarizationMiddleware(model, *, trigger, keep, ...)`）
+- Produces: `build_agent(...)` 自动挂载摘要中间件；阈值来自
+  `SUMMARIZE_TRIGGER_TOKENS`（默认 6000）与 `SUMMARIZE_KEEP_MESSAGES`（默认 8）
+
+**实测依据**：该中间件在接近阈值时把较早消息压成摘要，保证 AI/Tool 消息成对不被拆散；
+瞬时失败最多重试 3 次，仍失败则抛出而不是伪造摘要。
+
+- [ ] **Step 1: 写失败测试**
+
+```python
+def test_summarization_middleware_is_registered(tmp_path, monkeypatch):
+    """长会话必须有界：不压缩历史会让 token 随轮数线性膨胀"""
+    agent = asyncio.run(build_agent(ScriptedModel(replies=[{"content": "在的"}]), tools=[]))
+    nodes = list(agent.get_graph().nodes)
+
+    assert any("summarization" in n.lower() for n in nodes), nodes
+```
+
+- [ ] **Step 2: 跑测试确认失败**
+
+Run: `cd backend && python -X utf8 -m pytest tests/test_graph_build.py -q`
+Expected: FAIL（节点列表里没有 summarization 节点）
+
+- [ ] **Step 3: 实现**
+
+`agent/graph.py` 增加：
+
+```python
+def _summarization_middleware(model):
+    """会话历史压缩：官方中间件，阈值可调"""
+    from langchain.agents.middleware import SummarizationMiddleware
+
+    trigger = int(os.getenv("SUMMARIZE_TRIGGER_TOKENS", "6000"))
+    keep = int(os.getenv("SUMMARIZE_KEEP_MESSAGES", "8"))
+    return SummarizationMiddleware(model, trigger=("tokens", trigger), keep=("messages", keep))
+```
+
+放进 `middleware` 列表（检索注入之后、护栏之前），文件顶部 `import os`。
+`backend/env.example` 增补：
+
+```env
+# 短期记忆上限：会话历史超过该 token 数时把较早消息压成摘要，保留最近 N 条
+SUMMARIZE_TRIGGER_TOKENS=6000
+SUMMARIZE_KEEP_MESSAGES=8
+```
+
+- [ ] **Step 4: 跑测试 + 全量 + 提交**
+
+```bash
+cd backend && python -X utf8 -m pytest tests -q
+git add backend/agent/graph.py backend/tests/test_graph_build.py backend/env.example
+git commit -m "feat: 接入 SummarizationMiddleware 给短期记忆设上限"
+```
+
+---
+
+### Task 2.6: 长期记忆（跨会话，按用户）
+
+**Files:**
+- Create: `backend/agent/memory.py`
+- Modify: `backend/agent/graph.py`、`backend/agent/runtime.py`、`backend/agent/state.py`、
+  `backend/agent/tools/notes.py`、`backend/env.example`
+- Test: `backend/tests/test_agent_memory.py`
+
+**Interfaces:**
+- Consumes: `langgraph.store.sqlite.AsyncSqliteStore`、
+  `langgraph.store.memory.IndexConfig(dims, embed, fields)`、`get_embeddings()`
+- Produces:
+  - `memory_path() -> str`（`MEMORY_DB`，默认 `data/lg-aide-memory.sqlite`）
+  - `memory_namespace(user_id) -> tuple` → `("user", str(user_id), "memory")`
+  - `build_memory_store()` 异步上下文管理器（带语义索引）
+  - `build_memory_middleware(limit=3)` → `before_agent`，写 `state["memories"]`
+  - `build_memory_injector()` → 异步 `wrap_model_call`，注入 `[长期记忆]` 块
+  - `save_memory` 工具（`agent/tools/notes.py`），返回 `"已记住"`
+  - `AideState.memories: List[Dict[str, Any]]`
+
+**实测依据**：`aput/aget/asearch` 可用；必须用异步接口（同步 `put` 在事件循环里抛
+`InvalidStateError`）；`asearch(("user","3","memory"), ...)` 不会返回 user 9 的条目。
+
+- [ ] **Step 1: 写失败测试**
+
+```python
+"""长期记忆：跨会话记住用户的长期事实
+
+与笔记的界限：笔记是用户自己写或明确要求写的资料（MySQL + Chroma，面板可见）；
+记忆是助手从对话里沉淀的事实，只在图内注入。写入只由模型显式调 save_memory 决定，
+不做每轮自动抽取（写放大与隐私都不可控）。
+"""
+
+import asyncio
+from types import SimpleNamespace
+
+import pytest
+from langchain.agents import create_agent
+from langchain_core.embeddings import DeterministicFakeEmbedding
+from langchain_core.language_models.chat_models import BaseChatModel
+from langchain_core.messages import AIMessage, HumanMessage
+from langchain_core.outputs import ChatGeneration, ChatResult
+from pydantic import Field as PField
+
+from agent.context import UserContext
+from agent.memory import (build_memory_injector, build_memory_middleware,
+                          memory_namespace, memory_path)
+from agent.state import AideState
+
+
+class StubModel(BaseChatModel):
+    reply: str = "好的"
+    seen: list = PField(default_factory=list)
+
+    def bind_tools(self, tools, **kwargs):
+        return self
+
+    @property
+    def _llm_type(self):
+        return "stub"
+
+    def _generate(self, messages, stop=None, run_manager=None, **kwargs):
+        self.seen.append(list(messages))
+        return ChatResult(generations=[ChatGeneration(message=AIMessage(content=self.reply))])
+
+
+@pytest.fixture
+def any_store(tmp_path):
+    """真 store（临时文件 + 假向量），验证 aput/asearch 与命名空间隔离"""
+    from contextlib import AsyncExitStack
+    from langgraph.store.memory import IndexConfig
+    from langgraph.store.sqlite import AsyncSqliteStore
+
+    async def make():
+        stack = AsyncExitStack()
+        return await stack.enter_async_context(AsyncSqliteStore.from_conn_string(
+            str(tmp_path / "mem.sqlite"),
+            index=IndexConfig(dims=64, embed=DeterministicFakeEmbedding(size=64),
+                              fields=["text"])))
+
+    return make
+
+
+def test_memory_path_honours_env(tmp_path, monkeypatch):
+    monkeypatch.setenv("MEMORY_DB", str(tmp_path / "mem.sqlite"))
+    assert memory_path().endswith("mem.sqlite")
+
+
+def test_namespace_is_per_user():
+    assert memory_namespace(3) == ("user", "3", "memory")
+    assert memory_namespace(4) != memory_namespace(3)
+
+
+def test_save_memory_tool_writes_into_user_namespace(any_store):
+    from agent.tools.notes import save_memory
+
+    async def run():
+        store = await any_store()
+        runtime = SimpleNamespace(context=UserContext(user_id=3), store=store)
+        out = await save_memory.ainvoke({"text": "用户在做安卓开发", "runtime": runtime})
+        items = await store.asearch(memory_namespace(3), limit=5)
+        return out, [i.value["text"] for i in items]
+
+    out, texts = asyncio.run(run())
+    assert "已记住" in out and "用户在做安卓开发" in texts
+
+
+def test_memory_search_is_injected_but_not_persisted(any_store):
+    async def run():
+        store = await any_store()
+        await store.aput(memory_namespace(3), "job", {"text": "用户在做安卓开发"})
+        model = StubModel(reply="你在做安卓开发")
+        agent = create_agent(model, [],
+                             middleware=[build_memory_middleware(limit=3),
+                                         build_memory_injector()],
+                             state_schema=AideState, context_schema=UserContext,
+                             store=store, name="Aide")
+        state = await agent.ainvoke({"messages": [HumanMessage(content="我是做什么的？")]},
+                                    context=UserContext(user_id=3))
+        return model.seen[0], state
+
+    seen, state = asyncio.run(run())
+
+    assert any("长期记忆" in str(m.content) for m in seen)              # 模型看到了
+    assert not any("长期记忆" in str(m.content) for m in state["messages"])   # 不进历史
+
+
+def test_other_users_memories_are_not_visible(any_store):
+    async def run():
+        store = await any_store()
+        await store.aput(memory_namespace(9), "city", {"text": "用户住在成都"})
+        model = StubModel(reply="不知道")
+        agent = create_agent(model, [],
+                             middleware=[build_memory_middleware(limit=3), build_memory_injector()],
+                             state_schema=AideState, context_schema=UserContext,
+                             store=store, name="Aide")
+        await agent.ainvoke({"messages": [HumanMessage(content="我住在哪")]},
+                            context=UserContext(user_id=3))
+        return model.seen[0]
+
+    seen = asyncio.run(run())
+    assert not any("成都" in str(m.content) for m in seen)
+```
+
+- [ ] **Step 2: 跑测试确认失败**
+
+Run: `cd backend && python -X utf8 -m pytest tests/test_agent_memory.py -q`
+Expected: FAIL（`agent.memory` 不存在）
+
+- [ ] **Step 3: 实现 memory.py**
+
+```python
+"""长期记忆：LangGraph Store + 语义索引
+
+不引新数据库（SQLite 一个文件）、不引新模型（复用本地 bge）。
+必须用异步接口：同步 put 在事件循环里会抛 InvalidStateError（实测）。
+"""
+
+import logging
+import os
+from contextlib import asynccontextmanager
+from pathlib import Path
+from typing import Any, AsyncIterator, Dict, List, Optional
+
+from langchain.agents.middleware import before_agent, wrap_model_call
+from langchain_core.messages import HumanMessage, SystemMessage
+
+from agent.state import AideState
+
+logger = logging.getLogger(__name__)
+
+DEFAULT_PATH = "data/lg-aide-memory.sqlite"
+MEMORY_NAME = "user_memory"
+INJECT_NAME = "memory_context"
+MAX_LIMIT = 10
+
+
+def memory_path() -> str:
+    return os.getenv("MEMORY_DB", DEFAULT_PATH)
+
+
+def memory_namespace(user_id: Any) -> tuple:
+    return ("user", str(user_id), "memory")
+
+
+@asynccontextmanager
+async def build_memory_store() -> AsyncIterator[Any]:
+    from langgraph.store.memory import IndexConfig
+    from langgraph.store.sqlite import AsyncSqliteStore
+
+    from core.retrieval.embeddings import get_embeddings
+
+    path = memory_path()
+    Path(path).expanduser().resolve().parent.mkdir(parents=True, exist_ok=True)
+    embeddings = get_embeddings()
+    index = IndexConfig(dims=getattr(embeddings, "vector_dimension", 512) or 512,
+                        embed=embeddings, fields=["text"])
+    async with AsyncSqliteStore.from_conn_string(path, index=index) as store:
+        logger.info(f"长期记忆存储就绪: {path}")
+        yield store
+
+
+def _last_human_text(messages: List[Any]) -> str:
+    for message in reversed(messages):
+        if isinstance(message, HumanMessage):
+            return str(message.content or "").strip()
+    return ""
+
+
+def build_memory_middleware(limit: int = 3):
+    @before_agent(state_schema=AideState, name=MEMORY_NAME)
+    async def recall(state, runtime):
+        user_id = getattr(getattr(runtime, "context", None), "user_id", None)
+        store = getattr(runtime, "store", None)
+        query = _last_human_text(state.get("messages", []) or [])
+        if user_id is None or store is None or not query:
+            return {"memories": []}
+
+        try:
+            items = await store.asearch(memory_namespace(user_id), query=query,
+                                        limit=max(1, min(limit, MAX_LIMIT)))
+        except Exception as exc:
+            logger.warning(f"长期记忆检索不可用，本轮不注入: {exc}")
+            return {"memories": []}
+
+        return {"memories": [{"key": item.key, "text": str(item.value.get("text", ""))}
+                             for item in items]}
+
+    return recall
+
+
+def build_memory_injector():
+    @wrap_model_call(state_schema=AideState, name=INJECT_NAME)
+    async def inject(request, handler):
+        memories: List[Dict[str, Any]] = request.state.get("memories") or []
+        if not memories:
+            return await handler(request)
+
+        block = "\n".join(f"- {memory['text']}" for memory in memories)
+        message = SystemMessage(content=f"[长期记忆] 关于该用户的既有事实：\n{block}")
+        messages = list(request.messages)
+        for index in range(len(messages) - 1, -1, -1):
+            if isinstance(messages[index], HumanMessage):
+                messages.insert(index, message)
+                break
+        else:
+            messages.append(message)
+        return await handler(request.override(messages=messages))
+
+    return inject
+```
+
+`AideState` 增加 `memories: List[Dict[str, Any]]`。
+
+`agent/tools/notes.py` 追加工具（身份与 store 都来自 runtime，模型无法指定别人）：
+
+```python
+@tool
+async def save_memory(text: str, runtime: ToolRuntime[UserContext] = None) -> str:
+    """记住一条关于用户的长期事实或偏好（跨会话有效；只存长期有效内容，一次性问题不要存）"""
+    user_id = _user_id(runtime)
+    store = getattr(runtime, "store", None)
+    if user_id is None or store is None:
+        return "缺少用户身份或记忆存储，未能记住"
+
+    from agent.memory import memory_namespace
+
+    await store.aput(memory_namespace(user_id), f"mem_{uuid4().hex[:8]}", {"text": text})
+    return "已记住"
+```
+
+（`notes.py` 顶部需要 `from uuid import uuid4`。）
+
+- [ ] **Step 4: 建图与运行时接线**
+
+`build_agent` 增加 `store` 参数并透传给 `create_agent`，middleware 顺序：
+检索 → 记忆检索 → 摘要 → 注入（笔记）→ 注入（记忆）→ 身份 → 护栏。
+实际实现按钩子类型排：`before_agent` 两个（笔记、记忆）、`wrap_model_call` 两个注入器、
+`SummarizationMiddleware`、`wrap_tool_call` 身份、`before_model` 护栏。
+
+`AideRuntime._build` 用同一个 `AsyncExitStack` 打开 `build_memory_store()`，
+把 store 传给 `build_agent`；`aclose()` 统一关闭。`default_tools()` 加入 `save_memory`。
+
+`env.example` 增补：
+
+```env
+# 长期记忆（跨会话）：LangGraph Store 的 SQLite 文件，带语义索引
+MEMORY_DB=./data/lg-aide-memory.sqlite
+```
+
+系统提示词补一条：`save_memory` 只用于长期有效的事实；写资料用 `save_note`。
+
+- [ ] **Step 5: 跑测试 + 全量**
+
+```bash
+cd backend && python -X utf8 -m pytest tests/test_agent_memory.py -q
+python -X utf8 -m pytest tests -q
+```
+Expected: 记忆 6 项通过；全量绿
+
+- [ ] **Step 6: 端到端补跨会话断言**
+
+`scripts/e2e_langgraph_check.py` 里，在 `save_memory` 相关一轮之后，**换一个新的
+conversation_id** 提问"我是做什么的？"，断言回答里出现上一会话记下的事实、且没有调用笔记工具：
+
+```python
+    cross = await converse(token, user_id, f"{conversation_id}-next", "我是做什么工作的？")
+    check("跨会话长期记忆生效", "安卓" in cross.text and not cross.tool_calls,
+          f"calls={cross.tool_calls} 答={cross.text[:50]}")
+```
+
+```bash
+python -X utf8 scripts/e2e_langgraph_check.py
+git add backend/agent backend/tests/test_agent_memory.py backend/scripts backend/env.example docs
+git commit -m "feat: 长期记忆（LangGraph Store + 语义索引，按用户命名空间隔离）"
+```
+
+---
+
+---
+
 ## 验收清单（全部满足才算完成）
 
 1. `pytest backend/tests -q` 全绿，且 `tests/test_rag_recall.py` 的 8 组查询断言与迁移前一致。
@@ -1747,3 +2132,5 @@ Expected: 推送成功（网络不通时保留本地提交并在 PROGRESS 标注
 4. `create_agent` 编译出的图里能看到 `note_retrieval.before_agent` 节点。
 5. 端到端脚本全部通过，含"不调工具也能答对笔记内容"。
 6. UI 与文档无"自研/卖点"类措辞，节点标签显示真实节点名。
+7. 短期记忆有界：长会话触发 `SummarizationMiddleware` 后历史不再无限膨胀。
+8. 长期记忆跨会话生效：新会话未调工具即答出上一会话记下的事实，且其他用户看不到。
