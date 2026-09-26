@@ -9,9 +9,17 @@ from datetime import datetime
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, and_, func
 from core.database_core import DatabaseClient
-from core.vector_core import ChromaVectorClient, VectorConfig, VectorDocument, VectorDeleteFilter
+from core.retrieval.documents import documents_to_rows, note_document
+from core.retrieval.store import note_store
+from core.vector_core import VectorConfig
 from ..models.note import Note, InvalidTagError
 from .user_service import UserService
+
+
+def _search_rows(store, query: str, threshold: float, limit: int = 10) -> List[Dict[str, Any]]:
+    """向量检索 + REST 形状转换，一处定义，测试也打这一层"""
+    return documents_to_rows(store.similarity_search_with_relevance_scores(query, k=limit),
+                             threshold)
 
 
 class NoteService:
@@ -21,27 +29,22 @@ class NoteService:
     管理用户的笔记数据，并同步到向量数据库
     """
     
-    def __init__(self, db_client: Optional[DatabaseClient] = None, vector_client: Optional[ChromaVectorClient] = None):
+    def __init__(self, db_client: Optional[DatabaseClient] = None):
         """
         初始化笔记服务
         
         Args:
             db_client: 数据库客户端，如果未提供则创建新实例
-            vector_client: 向量数据库客户端，如果未提供则创建新实例
         """
         self.db_client = db_client or DatabaseClient()
         self.user_service = UserService()
-        
-        # 初始化向量数据库客户端
+
+        # 向量配置：读不到就退回"只存 MySQL、不做语义检索"，不影响笔记本身
         try:
-            if vector_client:
-                self.vector_client = vector_client
-            else:
-                config = VectorConfig.from_env()
-                self.vector_client = ChromaVectorClient(config)
+            self.vector_config = VectorConfig.from_env()
         except Exception as e:
-            print(f"警告：向量数据库初始化失败: {e}")
-            self.vector_client = None
+            print(f"警告：向量配置读取失败，笔记检索退回关键词方式: {e}")
+            self.vector_config = None
         
         # 确保数据库初始化
         if not self.db_client._initialized:
@@ -86,10 +89,8 @@ class NoteService:
                 session.commit()
                 session.refresh(note)
                 
-                # 添加到向量数据库
-                note_content = getattr(note, 'content', '') or ''
-                if self.vector_client and note_content:
-                    self._add_to_vector_db(note)
+                # 写入向量索引（无正文时 _index_note 内部会跳过）
+                self._index_note(note)
                 
                 return note
                 
@@ -100,82 +101,30 @@ class NoteService:
             print(f"创建笔记失败: {e}")
             return None
     
-    def _add_to_vector_db(self, note: Note):
-        """添加笔记到向量数据库"""
+    def _index_note(self, note: Note) -> None:
+        """写入或覆盖向量索引
+
+        Chroma 按 id 做 upsert，更新笔记不需要"先删再加"。
+        没有正文的笔记不进索引：空文档只会污染检索结果（与迁移前行为一致）。
+        """
         try:
-            if not self.vector_client:
+            if not self.vector_config or not (getattr(note, 'content', '') or ''):
                 return
-            
-            # 获取实际的值
-            note_content = getattr(note, 'content', '') or ''
-            note_title = getattr(note, 'title', '') or ''
-            note_tag = getattr(note, 'tag', '') or ''
-            
-            # 准备向量文档
-            vector_doc = VectorDocument(
-                id=f"note_{note.id}",
-                text=f"{note_title}\n{note_content}",
-                metadata={
-                    "user_id": str(note.user_id),
-                    "note_id": str(note.id),
-                    "tag": note_tag,
-                    "status": note.status,
-                    "title": note_title
-                },
-                user_id=str(note.user_id),
-                source="notes"
-            )
-            
-            # 添加到向量数据库
-            self.vector_client.add_document(vector_doc)
-            print(f"笔记 {note.id} 已添加到向量数据库")
-            
+            if getattr(note, 'id', None) is None or getattr(note, 'user_id', None) is None:
+                return
+            note_store(note.user_id).add_documents([note_document(note)])
+            print(f"笔记 {note.id} 已写入向量索引")
         except Exception as e:
-            print(f"添加笔记到向量数据库失败: {e}")
-    
-    def _update_vector_db(self, note: Note):
-        """更新向量数据库中的笔记"""
+            print(f"笔记向量索引写入失败（不影响数据库已保存）: {e}")
+
+    def _drop_index(self, user_id: int, note_id: int) -> None:
+        """从向量索引里移除一条笔记"""
         try:
-            if not self.vector_client:
+            if not self.vector_config:
                 return
-            
-            # 获取实际的值
-            note_id = getattr(note, 'id', None)
-            user_id = getattr(note, 'user_id', None)
-            note_content = getattr(note, 'content', '') or ''
-            
-            if note_id is None or user_id is None:
-                return
-                
-            # 删除旧的向量文档
-            self._delete_from_vector_db(note_id, user_id)
-            
-            # 添加新的向量文档
-            if note_content:
-                self._add_to_vector_db(note)
-            
+            note_store(user_id).delete(ids=[f"note_{note_id}"])
         except Exception as e:
-            print(f"更新向量数据库失败: {e}")
-    
-    def _delete_from_vector_db(self, note_id: int, user_id: int):
-        """从向量数据库中删除笔记"""
-        try:
-            if not self.vector_client:
-                return
-            
-            # 使用文档ID删除
-            delete_filter = VectorDeleteFilter(
-                user_id=str(user_id),
-                document_ids=[f"note_{note_id}"],
-                source_filter=None,
-                metadata_filter=None
-            )
-            
-            deleted_count = self.vector_client.delete_documents(delete_filter)
-            print(f"从向量数据库中删除了 {deleted_count} 个文档")
-            
-        except Exception as e:
-            print(f"从向量数据库删除笔记失败: {e}")
+            print(f"笔记向量索引删除失败: {e}")
     
     def get_note(self, note_id: int) -> Optional[Note]:
         """
@@ -280,9 +229,8 @@ class NoteService:
                 session.commit()
                 session.refresh(note)
                 
-                # 更新向量数据库
-                if self.vector_client:
-                    self._update_vector_db(note)
+                # 更新向量索引：Chroma 按 id upsert
+                self._index_note(note)
                 
                 return note
                 
@@ -308,9 +256,8 @@ class NoteService:
                 note = session.query(Note).filter(Note.id == note_id).first()
                 
                 if note:
-                    # 先从向量数据库中删除
-                    if self.vector_client:
-                        self._delete_from_vector_db(note.id, note.user_id)
+                    # 先从向量索引里移除
+                    self._drop_index(note.user_id, note.id)
                     
                     # 再从关系数据库中删除
                     session.delete(note)
@@ -553,40 +500,15 @@ class NoteService:
             搜索结果列表
         """
         try:
-            if not self.vector_client:
+            if not self.vector_config:
                 return []
-            
-            from core.vector_core import VectorQuery
-            
-            # 创建向量查询
-            vector_query = VectorQuery(
-                query_text=query,
-                user_id=str(user_id),
-                limit=limit,
-                similarity_threshold=self.vector_client.config.similarity_threshold,
-                source_filter="notes",
-                metadata_filter=None,
-                include_metadata=True,
-                include_distances=True
-            )
-            
-            # 执行查询
-            results = self.vector_client.query_documents(vector_query)
-            
-            # 转换结果
-            search_results = []
-            for result in results:
-                metadata = result.metadata or {}
-                search_results.append({
-                    'note_id': metadata.get('note_id'),
-                    'title': metadata.get('title'),
-                    'tag': metadata.get('tag'),
-                    'score': result.score,
-                    'text': result.text
-                })
-            
-            return search_results
-            
+            store = note_store(user_id)
+        except Exception as e:
+            print(f"向量库不可用，本次检索退回空结果: {e}")
+            return []
+
+        try:
+            return _search_rows(store, query, self.vector_config.similarity_threshold, limit)
         except Exception as e:
             print(f"向量搜索失败: {e}")
             return []

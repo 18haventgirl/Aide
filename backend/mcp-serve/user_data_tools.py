@@ -26,7 +26,6 @@ from service.services.todo_service import TodoService
 
 # Import database initialization
 from core.database_core import DatabaseClient
-from core.vector_core import ChromaVectorClient, VectorConfig
 
 # Initialize clients
 user_service = UserService()
@@ -53,19 +52,19 @@ def initialize_services():
         
         print("✅ MySQL database initialized successfully")
         
-        # Initialize vector database
-        print("🔄 Initializing vector database...")
+        # 向量库自检：NoteService 自己按用户取集合，这里只确认可用性
+        print("🔄 Checking vector database...")
         try:
-            vector_config = VectorConfig.from_env()
-            vector_client = ChromaVectorClient(vector_config)
-            print("✅ Vector database initialized successfully")
+            from core.retrieval.store import vector_health
+
+            health = vector_health()
+            print(f"✅ Vector database ready: {health.get('collections', 0)} collections")
         except Exception as e:
-            print(f"⚠️  Vector database initialization failed: {e}")
-            vector_client = None
-        
+            print(f"⚠️  Vector database unavailable, note search falls back to keywords: {e}")
+
         # Initialize services
         preference_service = PreferenceService(db_client)
-        note_service = NoteService(db_client, vector_client)
+        note_service = NoteService(db_client)
         todo_service = TodoService(db_client)
         
         print("✅ All services initialized successfully")
