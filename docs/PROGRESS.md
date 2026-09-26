@@ -21,12 +21,8 @@
 
 ## 待办：推送
 
-`dev/lg` 本地领先 `origin/dev/lg` 23 个提交（迁移全部工作都在里面）。推送时 GitHub 直连被 reset、
-本机代理 `127.0.0.1:7890` 也没起来，网络恢复后执行：
-
-```bash
-cd D:/Workplace/AIDE-LG/Aide && git push origin dev/lg      # 必要时加 -c http.proxy= -c https.proxy=
-```
+已推送完成（2026-09-26）：`306312d..dfbfc33 dev/lg -> dev/lg`，43 个提交上了 origin。
+后续改动照常 commit + push 工作分支即可，不走 PR。
 
 ## 已完成并推送的部分
 
@@ -92,13 +88,25 @@ cd D:/Workplace/AIDE-LG/Aide && git push origin dev/lg      # 必要时加 -c ht
     `test_guardrail_middleware.py`）；`python -c "import main"` 通过；`pip check` 干净。
 
 
-### ⚠️ 依赖地雷（已解，别再装回去）
+### ⚠️ 依赖地雷（已解，改 MCP 依赖前先看这段）
 
-`langchain-mcp-adapters` 钉 `mcp<2`，而本仓库 MCP 服务端用的 `fastmcp 4` 要求 `mcp>=2`。同环境同装时
-pip 把 `mcp` 降到 1.30，**MCP 子进程启动即** `ModuleNotFoundError: mcp.server.request_state`，
-表现是"后端正常、对话能跑，但一个外部工具都没有"（我踩了整整一轮才从日志里挖出来）。
-解法：卸掉 adapter，`agent/tools/mcp.py` 用官方 `mcp.Client` 自建桥接（JSON Schema → pydantic → `StructuredTool`）。
-`requirements.txt` 已写 `mcp>=2,<3` 并注明不要装回 adapter；`pip check` 干净。
+`langchain-mcp-adapters` 钉 `mcp<2`，而 `fastmcp 4` 要求 `mcp>=2` —— **这两者不能共存**。
+同环境同装时 pip 会把 `mcp` 降到 1.30，而 fastmcp 4 的代码用到 mcp 2.x 才有的符号，
+表现为"MCP 子进程启动即 `ModuleNotFoundError: mcp.server.request_state`"，
+看上去"后端正常、对话能跑"，实际一个外部工具都没有（我踩了整整一轮才从日志里挖出来）。
+
+当时为了保住 fastmcp 4 而手写过一版桥接；**后来证实那是绕远路**：真正的解法是把服务端降到
+`fastmcp 3.4.7`，与 `mcp 1.30` + `langchain-mcp-adapters 0.3.2` 组成实测通过的三角，
+手写桥接已删除（见第 3 步）。所以现在这套约束是：
+
+```
+fastmcp>=3.4.7,<4      # 服务端：mount(namespace=...) 在 3.x 与 4.x 都可用，2.x 没有
+mcp>=1.24,<2           # adapters 的上限；fastmcp 3.4.7 也接受
+langchain-mcp-adapters>=0.3,<1
+```
+
+要动其中任何一个，先 `pip check`，再单独起 8102 数一遍工具数（应为 29，名字带
+`weather_/news_/recipe_/user_data_` 前缀）。**不要**只升 `fastmcp` 到 4：那会重新撞上开头那个死结。
 
 ### 阶段 2 落地的两条硬规则
 
@@ -108,7 +116,7 @@ pip 把 `mcp` 降到 1.30，**MCP 子进程启动即** `ModuleNotFoundError: mcp
 
 ### 阶段 1 落地的三条硬规则（后续改动不要破坏）
 
-1. **身份不接受模型填写**：MCP 的 11 个 `user_data_*` 工具入参带 `user_id`，`build_identity_middleware()`（`wrap_tool_call`）在真正执行前用 `runtime.context.user_id` 覆写并 WARNING。笔记工具压根没有 `user_id` 入参，身份只从 context 取。
+1. **身份不接受模型填写**：MCP 那批 `user_data_*` 工具（实测 17 个）入参带 `user_id`，`build_identity_middleware()`（`wrap_tool_call`）在真正执行前用 `runtime.context.user_id` 覆写并 WARNING。笔记工具压根没有 `user_id` 入参，身份只从 context 取。换成官方适配器后这条仍然生效（e2e 日志可见 `收到 user_id=1，已按登录身份覆写为 28`）。
 2. **护栏每轮只判一次**：`before_model` 在工具回环里会再次触发，`_resuming_after_tool()` 检测最后一条是 `ToolMessage` 时直接返回 `None`。否则同句话判两遍：多两次 LLM 往返、面板重复行，且第二遍会把模型自己的回答当成判定结论。
 3. **工具异常必须变成字符串**：`search_my_notes`/`save_note` 对"服务不可用/无上下文/无命中/向量库挂了"都返回中文句子，其中向量检索失败会回退关键词检索；`load_mcp_tools()` 连不上返回 `[]`，对话继续只是没外部工具。
 
@@ -188,13 +196,47 @@ MCP 装载都是我手写的。本轮目标=能复用库的地方换成库，并
 2. **相关性护栏拦住跨记忆提问**（见 2.6）：新会话第一句"我是做什么工作的"被拦，
    因为判词只看到孤零一句话。修法是把范围写清，不是删护栏。
 
+### 验收清单逐条对账（计划文件末尾那 8 条）
+
+| # | 条目 | 状态 | 证据 |
+| --- | --- | --- | --- |
+| 1 | 离线全量绿，且召回断言与迁移前一致 | 实测 | `145 passed`；`tests/test_rag_recall.py` 8 组零词面查询断言逐条未改 |
+| 2 | `pip check` 干净，requirements 写明约束组合 | 实测 | `No broken requirements found`；约束块写在 `requirements.txt` 开头 |
+| 3 | 不再有自写 Chroma 封装与自写 MCP schema 桥接 | 实测 | `core/vector_core` 源码与残留 `__pycache__` 均已删除；`MCPBridge`/`args_model_from_schema` 全仓库零引用 |
+| 4 | 编译出的图里有 `note_retrieval.before_agent` 且排在最前 | 实测 | 单测断言入口边；e2e 轨迹 `nodes[0]='note_retrieval.before_agent'` |
+| 5 | 端到端全通过，含"不调工具也能答对笔记" | 实测 | 23 项全 PASS、退出码 0，`calls=[]` 且答案含"两周一次" |
+| 6 | UI 与文档无宣传式措辞，节点显示真实名字 | 实测 | 全仓库 `自研/卖点` 零命中；浏览器实测节点行显示 `note_retrieval.before_agent` 等原始名 |
+| 7 | 短期记忆有界 | **部分** | 中间件挂载与阈值有单测；**真正触发压缩的长会话（>6000 token）没实测过** |
+| 8 | 长期记忆跨会话生效且按用户隔离 | 实测 | e2e 换新 conversation_id 答出"安卓开发"；单测断言 user 3 看不到 user 9 的条目 |
+
+### 本轮重构的提交（`306312d` 之后，均已推送）
+
+```
+e93f7ec feat: 检索层引入 langchain-chroma 与 langchain-huggingface，统一 Embeddings 来源
+ecd2040 refactor: 笔记服务的向量写入/更新/删除/检索改走 langchain-chroma
+a5e4df9 refactor: 删除自写 Chroma 封装，检索层统一到 langchain-chroma
+800ea55 fix: 检索层自己加载 .env 并对缺失的本地模型目录快速失败（离线不再挂起联网重试）
+949f610 feat: 笔记向量索引重建脚本（幂等，实测两次均 11 用户 17 条）
+ed6e724 feat: 图状态与笔记检索前置钩子（before_agent 检索 + 异步 wrap_model_call 注入）
+58d2827 docs: 记忆架构选型（短期压缩 + 长期 Store）与设计依据
+0363214 feat: 检索节点接入建图并透出 retrieval 事件帧
+592e174 refactor: 措辞与面板文案改为中性技术名，显示真实节点名
+275b926 test: e2e 增加前置检索断言（检索帧与不依赖工具的召回）
+0280079 feat: 接入 SummarizationMiddleware 给短期记忆设上限
+5eb2094 feat: 长期记忆（Store + save_memory，跨会话按用户隔离）
+812513a chore: MCP 依赖降到 fastmcp 3.4.7 + mcp 1.x 以启用官方适配器
+1371740 refactor: MCP 工具装载改用 langchain-mcp-adapters，删除自写桥接
+dfbfc33 docs: 检索层与 MCP 重构收口（含健康检查空闲态修复）
+```
+
+（`fa0b642` 是给旧向量层适配 chromadb 1.3+ 协议的过渡提交，随 `core/vector_core` 一起删除了。）
+
 ### 待办（本轮没做，别当成已完成）
 
 - `docker-compose.yml` 里那个 8101 的 Chroma 服务已经没人连了（检索统一走进程内持久化），
   要么删掉要么在注释里说明保留原因——留给用户定。
 - 摘要中间件真正触发的长会话（>6000 token）还没实测过。
 - 面板上"长期记忆注入了什么"目前没有分区显示（只走日志），需要的话按 `retrieval` 帧同一套加。
-- `dev/lg` 推送：网络通的时候 `git push origin dev/lg`。
 
 ### 本轮新增的硬规则（后续改动不要破坏）
 
