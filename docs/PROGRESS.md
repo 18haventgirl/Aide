@@ -131,7 +131,7 @@ MCP 装载都是我手写的。本轮目标=能复用库的地方换成库，并
     实跑两次总量一致：**11 个用户 / 17 篇笔记**
   - 召回闸门 `tests/test_rag_recall.py`：沿用同一份 5 文档语料 + 8 组零词面查询，断言与换件前一致，实跑绿
   - 实测数字：零词面查询「植物养护提醒」→「绿萝浇水」相关度 **0.54**
-- [ ] 第 2 步 图内检索、事件帧与措辞
+- [x] 第 2 步 图内检索、事件帧与措辞（`ed6e724` `0363214` `592e174` `275b926` `0280079` `5eb2094`）
   - [x] 2.1 `AideState` + `before_agent` 检索 + 异步 `wrap_model_call` 注入（`ed6e724`）
   - [x] 2.2 建图挂载 + `retrieval` 事件帧（`0363214`）：入口边 `__start__ → note_retrieval.before_agent`
     由测试断言；`AideAnswer.retrieval` → `{"type":"retrieval","hits":[...]}` 帧 → 面板分区
@@ -164,7 +164,37 @@ MCP 装载都是我手写的。本轮目标=能复用库的地方换成库，并
     - e2e 补两项后 **22 项全通过，退出码 0**：`save_memory` 被调用 → 换一个 conversation_id
       再问 → 答"安卓开发。"，且 `calls=[]`、新线程无任何历史可依赖
     - 存储文件 `backend/data/lg-aide-memory.sqlite`（`MEMORY_DB` 可覆盖，`data/` 已在 .gitignore）
-- [ ] 第 3 步 MCP 换官方适配器：降 fastmcp 3.4.7 + mcp 1.x + `langchain-mcp-adapters`，删 `MCPBridge`
+- [x] 第 3 步 MCP 换官方适配器（`812513a` 依赖 → `1371740` 装载）
+  - 降级实测：`fastmcp 3.4.7 + fastmcp-slim 3.4.7 + mcp 1.30.0 + langchain-mcp-adapters 0.3.2`，
+    `pip check` → **No broken requirements found**（回退锚点：升级前是 fastmcp 4.0.9 + mcp 2.2.0）
+  - 服务端冒烟：8102 在 fastmcp 3.4.7 下启动正常，`MultiServerMCPClient(tool_name_prefix=False)`
+    取到 **29 个工具，名字与降级前逐一位一致**（对照基线 `mcp_baseline.json` 比对 same: True）
+  - 删掉自写桥接：`agent/tools/mcp.py` 从 155 行（JSON Schema→pydantic→StructuredTool 手写）
+    缩到 36 行；`MCPBridge`、`args_model_from_schema`、`tests/test_mcp_bridge.py` 一并删除；
+    runtime 不再持有 MCP 连接（适配器每次调用自开会话），`self._bridge` 全清
+  - 新增 `tests/test_mcp_tools.py` 5 项：装载结果、连不上降级成 `[]`、`tool_name_prefix=False`、
+    URL 只从 `RuntimeConfig` 来、可覆盖
+  - **身份覆写没因换适配器失效**（实测日志）：
+    `WARNING:agent.middleware:工具 user_data_get_user_notes 收到 user_id=1，已按登录身份覆写为 28`
+    `WARNING:agent.middleware:工具 user_data_create_todo 收到 user_id=1，已按登录身份覆写为 28`
+- [x] 收尾：离线全量 **145 passed**；端到端 **23 项全通过、退出码 0**（连跑两轮稳定）
+
+### 收尾时顺手修掉的两个真问题（都是实跑撞出来的）
+
+1. **`/api/health` 空闲时误报 degraded**：最后一个 WS 连接断开时心跳任务会被取消，
+   旧逻辑据此判 `websocket: not_running` → 整体 degraded。表现为"没人聊天的时候服务看起来是坏的"，
+   而且 e2e 是否通过取决于当时有没有别的客户端连着（浏览器标签开着就过，关掉就挂）。
+   改成：有连接却没心跳才算故障，空闲算健康。`tests/test_system_health.py` 4 项锁住这个语义。
+2. **相关性护栏拦住跨记忆提问**（见 2.6）：新会话第一句"我是做什么工作的"被拦，
+   因为判词只看到孤零一句话。修法是把范围写清，不是删护栏。
+
+### 待办（本轮没做，别当成已完成）
+
+- `docker-compose.yml` 里那个 8101 的 Chroma 服务已经没人连了（检索统一走进程内持久化），
+  要么删掉要么在注释里说明保留原因——留给用户定。
+- 摘要中间件真正触发的长会话（>6000 token）还没实测过。
+- 面板上"长期记忆注入了什么"目前没有分区显示（只走日志），需要的话按 `retrieval` 帧同一套加。
+- `dev/lg` 推送：网络通的时候 `git push origin dev/lg`。
 
 ### 本轮新增的硬规则（后续改动不要破坏）
 

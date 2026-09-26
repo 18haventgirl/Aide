@@ -11,14 +11,15 @@ lg-aide/
 ├── backend/                          # Python 后端服务 (Python backend service)
 │   ├── agent/                       # LangGraph 编排层 (orchestration)
 │   │   ├── graph.py                 # 建图：单代理 + 工具集 + 中间件
-│   │   ├── state.py                 # AideState（messages + 本轮检索命中）
+│   │   ├── state.py                 # AideState（messages + 本轮检索命中 + 本轮记忆）
 │   │   ├── retrieval.py             # 笔记检索前置钩子 + 临时注入
+│   │   ├── memory.py                # 长期记忆：Store 工厂 + 记忆召回 + 临时注入
 │   │   ├── runtime.py               # 业务层唯一入口：ask() / astream()
 │   │   ├── model.py                 # ChatOpenAI(DeepSeek) 与会话标题生成
 │   │   ├── context.py               # UserContext（身份/偏好，工具与护栏共用）
 │   │   ├── middleware.py            # 输入护栏（before_model 短路）+ user_id 身份覆写
 │   │   ├── checkpoint.py            # SQLite 检查点：对话状态的唯一真相
-│   │   ├── tools/                   # 笔记检索工具 + MCP 工具装载
+│   │   ├── tools/                   # 笔记与记忆工具 + MCP 工具装载（官方适配器）
 │   │   └── agent_session.py         # MySQL 会话/消息副本（展示与检索用）
 │   ├── api/                         # API 接口 (API endpoints)
 │   │   ├── admin_api.py             # 管理员接口
@@ -85,17 +86,28 @@ lg-aide/
 ```
 浏览器 ──WS chat──▶ api/websocket_api.py ──▶ agent/runtime.py (aide_runtime)
                                                   │
-                        create_agent(model=ChatOpenAI(DeepSeek), tools=[笔记检索 + MCP],
-                                     middleware=[笔记检索 + 临时注入, 身份覆写,
-                                                  安全护栏, 相关性护栏],
+                        create_agent(model=ChatOpenAI(DeepSeek),
+                                     tools=[笔记检索/新建, 长期记忆写入, MCP 29 个工具],
+                                     middleware=[笔记检索 + 记忆召回（before_agent）,
+                                                  历史压缩（SummarizationMiddleware）,
+                                                  检索注入 + 记忆注入（wrap_model_call）,
+                                                  身份覆写（wrap_tool_call）,
+                                                  安全护栏 + 相关性护栏（before_model）],
                                      state_schema=AideState, context_schema=UserContext,
-                                     checkpointer=AsyncSqliteSaver)
+                                     checkpointer=AsyncSqliteSaver,   # 短期：同一会话
+                                     store=AsyncSqliteStore)          # 长期：跨会话按用户
 ```
 
 - **每轮先检索**：`before_agent` 钩子在进入模型前查一次该用户的笔记向量集合（每轮一次，
   工具回环不重复查），命中写进 `AideState.retrieved`；`wrap_model_call` 把命中临时拼在最新
   一条用户消息之前给模型看，不写进 `messages`——写进去会被 checkpoint 永久保留，多轮下来
   历史里堆满检索片段。
+- **两层记忆**：短期＝同一会话的多轮，靠 `AsyncSqliteSaver` 检查点，超过
+  `SUMMARIZE_TRIGGER_TOKENS` 时由官方 `SummarizationMiddleware` 把较早的消息压成摘要；
+  长期＝跨会话、按用户隔离的事实，靠 `AsyncSqliteStore`（`MEMORY_DB`，带语义索引，复用本地
+  embedding），写入只由模型显式调用 `save_memory` 决定。
+  与笔记的分界：笔记是用户自己的资料（MySQL + Chroma，面板可见可编辑），记忆是助手沉淀的
+  关于该用户的事实（只在图内注入，不进面板）。
 - **对话状态的真相是 SQLite 检查点**（`CHECKPOINT_DB`，默认 `backend/data/lg-aide-checkpoints.sqlite`，
   按 `conversation_id` 作为 thread_id）。多轮记忆、线程恢复都来自它。
 - **MySQL 的 `conversations` / `chat_messages` 只是展示副本**：会话列表、历史页读它；不再回灌给模型当记忆。
@@ -105,8 +117,11 @@ lg-aide/
   判定自身故障一律放行并记录原因。工具回环不重复判定。
 - **身份**：`user_id` 只从 `UserContext` 取。MCP 那批带 `user_id` 入参的工具在真正执行前会被
   登录身份强制覆写，模型填谁的 id 都没用。
-- **WebSocket 帧**：过程帧 `tools_list` / `delta` / `node_update` / `tool_call` / `tool_output`，
-  收尾一帧 `completion`（沿用 `ChatResponse` 结构）。逐字 token 只从作答节点透出，
+- **MCP 工具装载**：`langchain-mcp-adapters` 的 `MultiServerMCPClient(tool_name_prefix=False)`，
+  工具名与服务端一致（`weather_` / `news_` / `recipe_` / `user_data_` 前缀）。连不上时返回空清单，
+  对话继续，只是这一轮没有外部工具。
+- **WebSocket 帧**：过程帧 `tools_list` / `delta` / `node_update` / `tool_call` / `tool_output` /
+  `retrieval`，收尾一帧 `completion`（沿用 `ChatResponse` 结构）。逐字 token 只从作答节点透出，
   护栏判定的内部 token 不会推给用户。
 
 ## 后端环境配置与运行 (Backend Environment Setup & Running)
@@ -351,8 +366,10 @@ npm run preview
 - MySQL 8
 - LangGraph（`create_agent` 单代理图）+ LangChain `ChatOpenAI`（OpenAI 兼容端点，默认 DeepSeek）
 - 笔记语义检索：`langchain-chroma` 本地向量库 + `BAAI/bge-small-zh-v1.5` 本地 embedding（不依赖外部 embedding API）
-- MCP（fastmcp，Streamable HTTP 传输；工具由 `agent/tools/mcp.py` 装载进 LangGraph）
-- SQLite 检查点（`langgraph-checkpoint-sqlite`）承载多轮对话状态
+- 记忆：短期＝`langgraph-checkpoint-sqlite` 检查点 + 官方 `SummarizationMiddleware`；
+  长期＝`AsyncSqliteStore`（带语义索引，复用同一套本地 embedding）
+- MCP（fastmcp 3.4.7，Streamable HTTP 传输；工具由 `langchain-mcp-adapters` 的
+  `MultiServerMCPClient` 装载进 LangGraph。依赖约束见 `backend/requirements.txt` 开头）
 
 **前端 (Frontend):**
 - React 19

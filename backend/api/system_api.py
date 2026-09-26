@@ -69,10 +69,13 @@ async def health_check():
     if health.get("status") != "healthy":
         logger.warning(f"向量数据库健康检查失败: {health.get('error', '未知原因')}")
 
-    # WebSocket：心跳任务在跑且能取到连接数，才算 healthy
+    # WebSocket：有连接却没有心跳任务才是故障；空闲时心跳本来就被取消，那不算问题
     try:
         active_connections = len(connection_manager.active_connections)
-        services["websocket"] = "healthy" if connection_manager.heartbeat_task else "not_running"
+        heartbeat_ok = bool(connection_manager.heartbeat_task) or active_connections == 0
+        services["websocket"] = "healthy" if heartbeat_ok else "unhealthy"
+        if not heartbeat_ok:
+            logger.warning(f"有 {active_connections} 个连接但心跳任务未运行")
     except Exception as e:
         logger.warning(f"WebSocket 健康检查失败: {e}")
         services["websocket"] = "unhealthy"

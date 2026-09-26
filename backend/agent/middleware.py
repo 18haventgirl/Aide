@@ -204,7 +204,7 @@ def build_identity_middleware():
     """把模型填写的 user_id 强制覆写成登录上下文里的真实身份
 
     MCP 服务端那批 user_data_* 工具的入参里带 user_id，模型填什么就能读谁的数据。
-    本地 RAG 工具不走这条路（身份取自 runtime.context，入参里没有 user_id）。
+    笔记工具不走这条路（身份取自 runtime.context，入参里没有 user_id）。
     """
 
     @wrap_tool_call(name="Identity Guard")
