@@ -62,7 +62,7 @@ cd D:/Workplace/AIDE-LG/Aide && git push origin dev/lg      # 必要时加 -c ht
 - [x] 阶段 2（前 3 项）：SQLite checkpoint + `translate_stream` 流式翻译 + WebSocket 切新引擎
   - 提交：`096ee4a` checkpointer → `443f54a` 相关性护栏校准 → `87fe53b` 流式翻译层 → `a8c06a1` MCP 桥接与版本冲突 → `ece9139` WebSocket 切 LangGraph
   - 全量 `pytest tests -q`：**108 passed**，全部离线可跑
-  - 真实 WS 端到端（注册→连接→三轮对话）：`tool_count=31`（2 个自研 RAG + 29 个 MCP）、过程帧 `tools_list/node_update/delta`、TURN2 靠 checkpoint 答出"你叫小林，在广州做安卓开发"、TURN3 真调 `weather_get_daily_weather_forecast`
+  - 真实 WS 端到端（注册→连接→三轮对话）：`tool_count=31`（2 个笔记工具 + 29 个 MCP）、过程帧 `tools_list/node_update/delta`、TURN2 靠 checkpoint 答出"你叫小林，在广州做安卓开发"、TURN3 真调 `weather_get_daily_weather_forecast`
   - 探针脚本 `backend/_ws_probe.py`（临时，阶段 4 会固化成 `scripts/e2e_langgraph_check.py`，不提交）
 - [x] 阶段 3：前端图执行轨迹与工具清单（`8cfe711` 过程帧接入 + `5c87241` 面板组件）
   - 浏览器实测（5199，账号 lguser）：流式逐字正常；同一会话第二轮"你叫小陈，在杭州工作"由 checkpoint 记忆答出；
@@ -108,10 +108,47 @@ pip 把 `mcp` 降到 1.30，**MCP 子进程启动即** `ModuleNotFoundError: mcp
 
 ### 阶段 1 落地的三条硬规则（后续改动不要破坏）
 
-1. **身份不接受模型填写**：MCP 的 11 个 `user_data_*` 工具入参带 `user_id`，`build_identity_middleware()`（`wrap_tool_call`）在真正执行前用 `runtime.context.user_id` 覆写并 WARNING。本地 RAG 工具压根没有 `user_id` 入参，身份只从 context 取。
+1. **身份不接受模型填写**：MCP 的 11 个 `user_data_*` 工具入参带 `user_id`，`build_identity_middleware()`（`wrap_tool_call`）在真正执行前用 `runtime.context.user_id` 覆写并 WARNING。笔记工具压根没有 `user_id` 入参，身份只从 context 取。
 2. **护栏每轮只判一次**：`before_model` 在工具回环里会再次触发，`_resuming_after_tool()` 检测最后一条是 `ToolMessage` 时直接返回 `None`。否则同句话判两遍：多两次 LLM 往返、面板重复行，且第二遍会把模型自己的回答当成判定结论。
 3. **工具异常必须变成字符串**：`search_my_notes`/`save_note` 对"服务不可用/无上下文/无命中/向量库挂了"都返回中文句子，其中向量检索失败会回退关键词检索；`load_mcp_tools()` 连不上返回 `[]`，对话继续只是没外部工具。
 
+
+## 当前任务：底层复用重构（用标准件替换我手写的部分）
+
+起因：用户读源码发现 `backend/agent/*.py` 里几乎没引用 LangGraph/LangChain 标准件——检索层与
+MCP 装载都是我手写的。本轮目标=能复用库的地方换成库，并把宣传式措辞改成工程描述。
+设计 `docs/superpowers/specs/2026-09-26-langgraph-reuse-design.md`，计划
+`docs/superpowers/plans/2026-09-26-langgraph-reuse.md`（13 个任务）。
+
+### 进度
+
+- [x] 第 1 步 检索层换标准件（`8d8f1a4` … `ed6e724`，共 6 次提交）
+  - 新增 `core/retrieval/{config,embeddings,store,documents}.py`：`HuggingFaceEmbeddings`（本地 bge，
+    `normalize_embeddings=True`）+ `langchain_chroma.Chroma`（每用户一个集合，显式 `hnsw:space=cosine`）
+  - 删除 `core/vector_core/`（自写 Chroma 封装）；`service_manager`、`/api/health`、MCP 服务端探针
+    同步改走 `vector_health()`
+  - `note_service` 的创建/更新/删除/检索四条路径改走标准件；`scripts/reindex_notes.py` 幂等重建，
+    实跑两次总量一致：**11 个用户 / 17 篇笔记**
+  - 召回闸门 `tests/test_rag_recall.py`：沿用同一份 5 文档语料 + 8 组零词面查询，断言与换件前一致，实跑绿
+  - 实测数字：零词面查询「植物养护提醒」→「绿萝浇水」相关度 **0.54**
+- [ ] 第 2 步 图内检索、事件帧与措辞
+  - [x] 2.1 `AideState` + `before_agent` 检索 + 异步 `wrap_model_call` 注入（`ed6e724`）
+  - [x] 2.2 建图挂载 + `retrieval` 事件帧（`0363214`）：入口边 `__start__ → note_retrieval.before_agent`
+    由测试断言；`AideAnswer.retrieval` → `{"type":"retrieval","hits":[...]}` 帧 → 面板分区
+  - [ ] 2.3 措辞与面板文案中性化（进行中）
+  - [ ] 2.4 e2e 增加"不调工具也能答对笔记"断言并实跑
+  - [ ] 2.5 短期记忆上限：`SummarizationMiddleware`
+  - [ ] 2.6 长期记忆：`AsyncSqliteStore` + `save_memory`，跨会话按用户隔离
+- [ ] 第 3 步 MCP 换官方适配器：降 fastmcp 3.4.7 + mcp 1.x + `langchain-mcp-adapters`，删 `MCPBridge`
+
+### 本轮新增的硬规则（后续改动不要破坏）
+
+1. **检索命中不进 `messages`**：只写 `AideState.retrieved`，给模型看靠 `wrap_model_call` 临时插入的
+   SystemMessage。写进 messages 会被 checkpoint 永久保留，多轮后历史堆满检索片段。
+2. **`tests/conftest.py::fake_retrieval_backend` 是 autouse**：任何跑图的单测都不会加载本地 bge，
+   也不会往真实 Chroma 目录写。要真向量的测试自己再 patch 同一批函数（后申请者生效）。
+3. **本地 embedding 只允许指向工作区目录**：`core/retrieval/embeddings.py` 对不存在的本地目录直接抛错，
+   只有 `org/name` 形式的 hub 模型名才放行联网（离线时曾挂 5 次网络重试）。
 
 ## 待验证（不许当作事实使用）
 

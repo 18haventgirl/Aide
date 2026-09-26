@@ -33,6 +33,14 @@ export interface NodeUpdate {
   status: 'started' | 'finished'
 }
 
+/** 本轮前置检索命中的笔记片段 */
+export interface RetrievalHit {
+  id?: string | null
+  title: string
+  score: number
+  text: string
+}
+
 /** 图上一个工具的展示信息 */
 export interface ToolInfo {
   name: string

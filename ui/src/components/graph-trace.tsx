@@ -1,18 +1,6 @@
 import { GitBranch } from "lucide-react";
 import type { NodeUpdate } from "../lib/types";
 
-/** 节点名到中文标签：后端上报的是 LangGraph 节点标识，直接摊给用户读不懂 */
-const NODE_LABELS: Record<string, string> = {
-  "Safety Guardrail.before_model": "安全护栏",
-  "Relevance Guardrail.before_model": "相关性护栏",
-  model: "模型推理",
-  tools: "工具执行",
-};
-
-export function nodeLabel(node: string): string {
-  return NODE_LABELS[node] ?? node;
-}
-
 interface GraphTraceProps {
   nodes: NodeUpdate[];
 }
@@ -61,8 +49,7 @@ export function GraphTrace({ nodes }: GraphTraceProps) {
                     running ? "animate-pulse bg-blue-500" : "bg-green-500"
                   }`}
                 />
-                <span className="font-medium text-gray-900">{nodeLabel(node)}</span>
-                <span className="truncate font-mono text-[10px] text-gray-500">{node}</span>
+                <span className="truncate font-mono text-[11px] text-gray-900">{node}</span>
                 <span className="ml-auto flex-shrink-0 text-gray-600">
                   {running ? "执行中" : "已完成"}
                 </span>

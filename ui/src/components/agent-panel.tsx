@@ -1,6 +1,7 @@
 import { Bot } from "lucide-react";
-import type { Agent, AgentEvent, GuardrailCheck, NodeUpdate, ToolInfo } from "../lib/types";
+import type { Agent, AgentEvent, GuardrailCheck, NodeUpdate, RetrievalHit, ToolInfo } from "../lib/types";
 import { GraphTrace } from "./graph-trace";
+import { RetrievalHits } from "./retrieval-hits";
 import { ToolList } from "./tool-list";
 import { Guardrails } from "./guardrails";
 import { ConversationContext } from "./conversation-context";
@@ -16,6 +17,7 @@ interface AgentPanelProps {
   context: Record<string, unknown>;
   graphNodes: NodeUpdate[];
   toolInfos: ToolInfo[];
+  retrievalHits: RetrievalHit[];
 }
 
 export function AgentPanel({
@@ -26,9 +28,11 @@ export function AgentPanel({
   context,
   graphNodes,
   toolInfos,
+  retrievalHits,
 }: AgentPanelProps) {
   const activeAgent = agents.find((a) => a.name === currentAgent);
-  const runnerEvents = events.filter((e) => e.type !== "message");
+  // 检索命中有独立分区，不再在运行输出里重复一行
+  const runnerEvents = events.filter((e) => e.type !== "message" && e.type !== "retrieval");
 
   return (
     <div className="w-full h-full flex flex-col bg-transparent">
@@ -36,27 +40,31 @@ export function AgentPanel({
         <Bot className="h-5 w-5" />
         <h1 className="font-semibold text-sm sm:text-base lg:text-lg">Agent View</h1>
         <span className="ml-auto text-xs font-light tracking-wide opacity-80">
-          LangGraph · 单代理 + 工具图
+          LangGraph 单代理
         </span>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 md:p-6 bg-gray-50 space-y-4 md:space-y-6">
-        <PanelSection title="图执行轨迹" defaultOpen={true}>
+        <PanelSection title="执行节点" defaultOpen={true}>
           <GraphTrace nodes={graphNodes} />
         </PanelSection>
 
-        <PanelSection title="可用工具" defaultOpen={false}>
+        <PanelSection title="笔记检索命中" defaultOpen={true}>
+          <RetrievalHits hits={retrievalHits} />
+        </PanelSection>
+
+        <PanelSection title="工具" defaultOpen={false}>
           <ToolList tools={toolInfos} />
         </PanelSection>
 
-        <PanelSection title="安全护栏" defaultOpen={true}>
+        <PanelSection title="护栏" defaultOpen={true}>
           <Guardrails
             guardrails={guardrails}
             inputGuardrails={activeAgent?.input_guardrails ?? []}
           />
         </PanelSection>
 
-        <PanelSection title="对话上下文" defaultOpen={true}>
+        <PanelSection title="上下文" defaultOpen={true}>
           <ConversationContext context={context} />
         </PanelSection>
 

@@ -1,6 +1,6 @@
 # lg-aide — 智能个人日常助手（dev/lg 改造线）
 
-一个基于 Python 后端和 React 前端的多智能体个人日常助手，集成 MCP 协议与 RAG 知识检索，帮助用户管理日常任务、笔记、对话，并提供智能化服务。
+基于 Python 后端与 React 前端的个人日常助手：LangGraph 单代理编排、MCP 工具调用、笔记语义检索，用于管理日常任务、笔记与对话。
 
 > 本分支（`dev/lg`）与原 Aide 实例并行开发，凡是能在宿主机上留下痕迹的名字都带 `lg` / `lg-aide` 前缀：Docker 容器与数据卷、MySQL 库名与账号、Chroma 集合前缀、npm 包名、FastAPI 文档标题，端口也整体挪到 8100/8102/8101/3307/5199。这样两个实例同时运行不会抢端口、抢容器名，也不会读到对方的数据。
 
@@ -11,12 +11,14 @@ lg-aide/
 ├── backend/                          # Python 后端服务 (Python backend service)
 │   ├── agent/                       # LangGraph 编排层 (orchestration)
 │   │   ├── graph.py                 # 建图：单代理 + 工具集 + 中间件
+│   │   ├── state.py                 # AideState（messages + 本轮检索命中）
+│   │   ├── retrieval.py             # 笔记检索前置钩子 + 临时注入
 │   │   ├── runtime.py               # 业务层唯一入口：ask() / astream()
 │   │   ├── model.py                 # ChatOpenAI(DeepSeek) 与会话标题生成
 │   │   ├── context.py               # UserContext（身份/偏好，工具与护栏共用）
 │   │   ├── middleware.py            # 输入护栏（before_model 短路）+ user_id 身份覆写
 │   │   ├── checkpoint.py            # SQLite 检查点：对话状态的唯一真相
-│   │   ├── tools/                   # 自研 RAG 笔记工具 + MCP 工具桥接
+│   │   ├── tools/                   # 笔记检索工具 + MCP 工具装载
 │   │   └── agent_session.py         # MySQL 会话/消息副本（展示与检索用）
 │   ├── api/                         # API 接口 (API endpoints)
 │   │   ├── admin_api.py             # 管理员接口
@@ -30,7 +32,7 @@ lg-aide/
 │   │   ├── auth_core/               # 认证核心
 │   │   ├── database_core/           # 数据库核心
 │   │   ├── http_core/               # HTTP 核心
-│   │   ├── vector_core/             # 向量数据库核心
+│   │   ├── retrieval/               # 笔记语义检索（Chroma + 本地 embedding）
 │   │   ├── web_socket_core/         # WebSocket 核心
 │   │   ├── runtime_config.py        # 端口 / 地址 / CORS 集中配置
 │   │   └── performance_manager.py   # 性能管理器
@@ -83,12 +85,17 @@ lg-aide/
 ```
 浏览器 ──WS chat──▶ api/websocket_api.py ──▶ agent/runtime.py (aide_runtime)
                                                   │
-                        create_agent(model=ChatOpenAI(DeepSeek), tools=[自研 RAG + MCP],
-                                     middleware=[身份覆写, 安全护栏, 相关性护栏],
-                                     context_schema=UserContext,
+                        create_agent(model=ChatOpenAI(DeepSeek), tools=[笔记检索 + MCP],
+                                     middleware=[笔记检索 + 临时注入, 身份覆写,
+                                                  安全护栏, 相关性护栏],
+                                     state_schema=AideState, context_schema=UserContext,
                                      checkpointer=AsyncSqliteSaver)
 ```
 
+- **每轮先检索**：`before_agent` 钩子在进入模型前查一次该用户的笔记向量集合（每轮一次，
+  工具回环不重复查），命中写进 `AideState.retrieved`；`wrap_model_call` 把命中临时拼在最新
+  一条用户消息之前给模型看，不写进 `messages`——写进去会被 checkpoint 永久保留，多轮下来
+  历史里堆满检索片段。
 - **对话状态的真相是 SQLite 检查点**（`CHECKPOINT_DB`，默认 `backend/data/lg-aide-checkpoints.sqlite`，
   按 `conversation_id` 作为 thread_id）。多轮记忆、线程恢复都来自它。
 - **MySQL 的 `conversations` / `chat_messages` 只是展示副本**：会话列表、历史页读它；不再回灌给模型当记忆。
@@ -342,9 +349,9 @@ npm run preview
 - FastAPI + Uvicorn
 - SQLAlchemy 2 + PyMySQL
 - MySQL 8
-- LangGraph（单代理 + 工具图）+ LangChain `ChatOpenAI`（OpenAI 兼容端点，默认 DeepSeek）
-- 自研 RAG：ChromaDB 本地向量库 + `BAAI/bge-small-zh-v1.5` 本地 embedding（不依赖外部 embedding API）
-- MCP（fastmcp，Streamable HTTP 传输；工具由 `agent/tools/mcp.py` 桥接进 LangGraph）
+- LangGraph（`create_agent` 单代理图）+ LangChain `ChatOpenAI`（OpenAI 兼容端点，默认 DeepSeek）
+- 笔记语义检索：`langchain-chroma` 本地向量库 + `BAAI/bge-small-zh-v1.5` 本地 embedding（不依赖外部 embedding API）
+- MCP（fastmcp，Streamable HTTP 传输；工具由 `agent/tools/mcp.py` 装载进 LangGraph）
 - SQLite 检查点（`langgraph-checkpoint-sqlite`）承载多轮对话状态
 
 **前端 (Frontend):**

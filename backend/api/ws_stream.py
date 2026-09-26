@@ -18,7 +18,7 @@ from pydantic import BaseModel
 from core.web_socket_core import MessageType, WebSocketMessage
 
 AGENT_NAME = "Aide"
-AGENT_DESCRIPTION = "LangGraph 单代理 + 工具图（自研 RAG 笔记 + MCP 外部数据）"
+AGENT_DESCRIPTION = "LangGraph 单代理，工具调用 + 笔记检索"
 GUARDRAIL_NAMES = ["Safety Guardrail", "Relevance Guardrail"]
 
 

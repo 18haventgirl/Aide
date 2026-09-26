@@ -1,4 +1,4 @@
-"""自研 RAG 暴露给模型的工具
+"""笔记工具：暴露给模型的检索与新建
 
 工具不接受 user_id 参数，身份一律取自 runtime.context：把 user_id 交给模型填，
 等于允许它检索或写入别人的笔记。
@@ -17,7 +17,7 @@ SNIPPET_CHARS = 200
 
 
 def _note_service():
-    """取笔记服务单例；它同时拿到共享的 db_client 和 vector_client"""
+    """取笔记服务单例（写入与检索都在它内部走向量库）"""
     try:
         from service.service_manager import service_manager
         from service.services.note_service import NoteService
@@ -53,7 +53,7 @@ def _format_hits(hits: List[Any]) -> str:
 @tool
 def search_my_notes(query: str, top_k: int = 5,
                     runtime: ToolRuntime[UserContext] = None) -> str:
-    """用语义检索查找我自己的笔记，返回命中的标题、标签与正文片段（按相关度排序）"""
+    """检索我的笔记，按相关度返回标题、标签与正文片段"""
     service = _note_service()
     if service is None:
         return "笔记服务当前不可用"

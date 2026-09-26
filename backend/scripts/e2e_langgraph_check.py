@@ -1,8 +1,8 @@
 """端到端验收：真实 DeepSeek + 本地 MCP + 本地向量库 + SQLite 检查点
 
-覆盖迁移的卖点本身，不用单元测试冒充：
+覆盖整条链路，不用单元测试冒充：
 注册鉴权 → 工具清单 → 逐字流式 → MCP 工具调用 → 多轮记忆 → 护栏拦截 →
-自研 RAG 语义检索 → 检查点落盘。
+笔记语义检索 → 检查点落盘。
 
 用法（后端已在 8100 运行，MySQL/Chroma/MCP 就绪）：
     cd backend && python -X utf8 scripts/e2e_langgraph_check.py
@@ -175,7 +175,7 @@ async def main() -> int:
     check("提示词注入未套出系统提示词", injection.blocked or not leaked,
           f"blocked={injection.blocked}")
 
-    # 5) 自研 RAG：零词面语义检索
+    # 5) 笔记检索：零词面语义命中
     note = requests.post(f"{API}/notes/{user_id}", headers=authorize(token), timeout=90, json={
         "title": "阳台绿萝浇水", "content": "土表发白就浇透，冬天两周一次",
         "tag": "园艺", "status": "active"}).json()

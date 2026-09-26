@@ -1,7 +1,7 @@
-"""单 agent + 工具图
+"""单代理图：一个 agent 挂全部工具
 
-取代原来的 6 代理 handoff 结构：一个 Aide agent 挂全部工具（MCP 外部数据 + 本地 RAG
-笔记），护栏与身份覆写走 middleware，多轮状态交给 checkpointer。
+取代原来的 6 代理 handoff 结构：一个 Aide agent 挂全部工具（MCP 外部数据 + 笔记检索），
+护栏与身份覆写走 middleware，多轮状态交给 checkpointer。
 """
 
 import logging

@@ -6,7 +6,7 @@ import { Chat } from "../components/Chat";
 import { PersonDataPanel } from "../components/person-data-panel";
 
 import ErrorBoundary from "../components/ErrorBoundary";
-import type { Agent, AgentEvent, GuardrailCheck, Message, NodeUpdate, ToolInfo } from "../lib/types";
+import type { Agent, AgentEvent, GuardrailCheck, Message, NodeUpdate, RetrievalHit, ToolInfo } from "../lib/types";
 import { createWebSocketService, getWebSocketService, type WebSocketConnectionStatus } from "../lib/websocket";
 import { Bot, MessageCircle, Wifi, WifiOff, RefreshCw, AlertTriangle, LogOut, User, Database } from "lucide-react";
 import { Button } from "../components/ui/button";
@@ -80,9 +80,10 @@ const Dashboard: React.FC = () => {
   const [streamingResponse, setStreamingResponse] = useState<string>('');
   const [wsError, setWsError] = useState<string>('');
   const [conversationListKey, setConversationListKey] = useState(0);
-  // LangGraph 执行轨迹与工具清单（来自 node_update / tools_list 过程帧）
+  // LangGraph 过程帧：执行节点、工具清单、检索命中
   const [graphNodes, setGraphNodes] = useState<NodeUpdate[]>([]);
   const [toolInfos, setToolInfos] = useState<ToolInfo[]>([]);
+  const [retrievalHits, setRetrievalHits] = useState<RetrievalHit[]>([]);
 
   // 会话恢复逻辑 - 在组件初始化时尝试从localStorage恢复会话
   useEffect(() => {
@@ -275,13 +276,16 @@ const Dashboard: React.FC = () => {
             handleChatResponse(content);
           }
         } else {
-          // 过程帧（LangGraph 协议）：delta / node_update / tools_list / tool_call / tool_output
+          // 过程帧（LangGraph 协议）：delta / node_update / tools_list / tool_call / tool_output / retrieval
           switch (content.type) {
             case "delta":
               setStreamingResponse(content.text_so_far || "");
               break;
             case "node_update":
               setGraphNodes(prev => [...prev, { node: content.node, status: content.status }]);
+              break;
+            case "retrieval":
+              setRetrievalHits(Array.isArray(content.hits) ? content.hits : []);
               break;
             case "tools_list":
               setToolInfos(Array.isArray(content.tools) ? content.tools : []);
@@ -575,6 +579,7 @@ const Dashboard: React.FC = () => {
     setIsLoading(true);
     setStreamingResponse('');
     setGraphNodes([]);
+    setRetrievalHits([]);
     setEvents([]);
     
     // 立即添加用户消息到UI
@@ -739,6 +744,7 @@ const Dashboard: React.FC = () => {
                 context={context}
                 graphNodes={graphNodes}
                 toolInfos={toolInfos}
+                retrievalHits={retrievalHits}
               />
             </div>
 
@@ -775,6 +781,7 @@ const Dashboard: React.FC = () => {
                   context={context}
                   graphNodes={graphNodes}
                   toolInfos={toolInfos}
+                  retrievalHits={retrievalHits}
                 />
               )}
               {activeTab === 'person' && (

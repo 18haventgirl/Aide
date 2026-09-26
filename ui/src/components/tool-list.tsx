@@ -7,13 +7,13 @@ interface ToolGroup {
   test: (name: string) => boolean;
 }
 
-/** 按来源分组：自研 RAG 与 MCP 外部工具分开，用户能一眼看出哪部分是本项目实现的 */
+/** 按来源分组：笔记工具与 MCP 外部工具分开 */
 const GROUPS: ToolGroup[] = [
-  { key: "rag", label: "自研 RAG（笔记）", test: (n) => n === "search_my_notes" || n === "save_note" },
-  { key: "weather", label: "天气（MCP）", test: (n) => n.startsWith("weather_") },
-  { key: "recipe", label: "菜谱（MCP）", test: (n) => n.startsWith("recipe_") },
-  { key: "news", label: "新闻（MCP）", test: (n) => n.startsWith("news_") },
-  { key: "user", label: "用户数据（MCP）", test: (n) => n.startsWith("user_data_") },
+  { key: "note", label: "笔记检索", test: (n) => n === "search_my_notes" || n === "save_note" },
+  { key: "weather", label: "天气", test: (n) => n.startsWith("weather_") },
+  { key: "recipe", label: "菜谱", test: (n) => n.startsWith("recipe_") },
+  { key: "news", label: "新闻", test: (n) => n.startsWith("news_") },
+  { key: "user", label: "用户数据", test: (n) => n.startsWith("user_data_") },
 ];
 
 function groupOf(name: string): string {
