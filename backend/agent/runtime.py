@@ -123,7 +123,6 @@ class AideRuntime:
     def __init__(self):
         self._agent: Any = None
         self._tools: List[Any] = []
-        self._bridge: Any = None
         self._has_memory: bool = False
         self._exit_stack: Optional[AsyncExitStack] = None
         self._lock: Optional[asyncio.Lock] = None
@@ -144,15 +143,14 @@ class AideRuntime:
         from agent.graph import build_agent, default_tools
         from agent.memory import build_memory_store
         from agent.model import build_chat_model
-        from agent.tools.mcp import build_mcp_bridge
+        from agent.tools.mcp import load_mcp_tools
 
         model = build_chat_model()
         if model is None:
             raise RuntimeError("未配置可用的对话模型（检查 OPENAI_API_KEY / OPENAI_API_BASE_URL）")
 
-        # MCP 连不上时 bridge 为 None：对话照常，只是没有外部工具
-        bridge = await build_mcp_bridge()
-        tools = [*default_tools(), *(bridge.tools if bridge else [])]
+        # MCP 连不上时返回 []：对话照常，只是没有外部工具
+        tools = [*default_tools(), *await load_mcp_tools()]
 
         stack = AsyncExitStack()
         try:
@@ -161,16 +159,13 @@ class AideRuntime:
             agent = await build_agent(model, tools=tools, checkpointer=saver, store=store)
         except Exception:
             await stack.aclose()
-            if bridge is not None:
-                await bridge.close()
             raise
 
         self._exit_stack = stack
         self._agent = agent
         self._tools = tools
-        self._bridge = bridge
         self._has_memory = True
-        logger.info(f"Aide 运行时就绪：{len(tools)} 个工具，checkpoint 已挂载")
+        logger.info(f"Aide 运行时就绪：{len(tools)} 个工具，checkpoint 与长期记忆已挂载")
 
     def is_ready(self) -> bool:
         """图是否已构建（给健康检查与性能统计用，不触发构建）"""
@@ -193,12 +188,9 @@ class AideRuntime:
         self._agent = None
         self._tools = []
         self._has_memory = False
-        bridge, self._bridge = self._bridge, None
         stack, self._exit_stack = self._exit_stack, None
         if stack is not None:
             await stack.aclose()
-        if bridge is not None:
-            await bridge.close()
 
     async def _state_values(self, config: Dict[str, Any]) -> Dict[str, Any]:
         """该线程当前的状态字段；读不到按空处理（checkpoint 只是慢，不是错）"""

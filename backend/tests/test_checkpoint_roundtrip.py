@@ -159,11 +159,11 @@ def test_runtime_wires_the_checkpointer_and_keeps_the_connection(tmp_path, monke
     import agent.tools.mcp as mcp_module
 
     async def no_mcp(*args, **kwargs):
-        return None          # MCP 未连接时 runtime 照样能以纯对话模式建图
+        return []            # MCP 未连接时 runtime 照样能以纯对话模式建图
 
     model = EchoModel(replies=["第一轮", "第二轮"])
     monkeypatch.setattr(agent_model, "build_chat_model", lambda *a, **k: model)
-    monkeypatch.setattr(mcp_module, "build_mcp_bridge", no_mcp)
+    monkeypatch.setattr(mcp_module, "load_mcp_tools", no_mcp)
 
     from agent.runtime import AideRuntime
 
@@ -189,11 +189,11 @@ def test_runtime_recovers_after_close(tmp_path, monkeypatch):
     import agent.tools.mcp as mcp_module
 
     async def no_mcp(*args, **kwargs):
-        return None          # MCP 未连接时 runtime 照样能以纯对话模式建图
+        return []            # MCP 未连接时 runtime 照样能以纯对话模式建图
 
     model = EchoModel(replies=["答一", "答二"])
     monkeypatch.setattr(agent_model, "build_chat_model", lambda *a, **k: model)
-    monkeypatch.setattr(mcp_module, "build_mcp_bridge", no_mcp)
+    monkeypatch.setattr(mcp_module, "load_mcp_tools", no_mcp)
 
     from agent.runtime import AideRuntime
 
