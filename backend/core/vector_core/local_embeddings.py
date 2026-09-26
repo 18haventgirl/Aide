@@ -42,5 +42,10 @@ class LocalSentenceTransformerEmbeddingFunction:
     def embed_documents(self, texts: List[str]) -> List[List[float]]:
         return self(texts)
 
-    def embed_query(self, text: str) -> List[float]:
-        return self([text])[0]
+    def embed_query(self, text=None, *, input=None, **kwargs) -> List[float]:
+        # chromadb 1.3+ 改成以 input= 关键字调用本方法，两种拼法都收下。
+        # 这一层是过渡实现，检索层切到 langchain-chroma 后整包删除。
+        value = text if text is not None else input
+        if isinstance(value, (list, tuple)):
+            value = value[0]
+        return self([str(value)])[0]

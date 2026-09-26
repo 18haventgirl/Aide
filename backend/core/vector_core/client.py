@@ -123,6 +123,11 @@ class ChromaVectorClient:
             logger.error(f"Failed to initialize embedding function: {e}")
             raise
     
+    def _query_vector(self, text: str) -> List[float]:
+        """用当前 provider 算查询向量（chromadb 1.3+ 要求调用方自己准备向量）"""
+        vector = self._embedding_function.embed_query(text)
+        return [float(value) for value in vector]
+
     def _get_collection(self, user_id: str):
         """Get or create collection for user"""
         collection_name = create_collection_name(self.config.chroma_collection_prefix, user_id)
@@ -254,8 +259,10 @@ class ChromaVectorClient:
             )
             
             # Perform query
+            # chromadb 1.3+ 不再按旧协议自动调用 embed_query，向量自己算好显式传入。
+            # 本层是过渡实现，检索层切到 langchain-chroma 后整包删除。
             results = collection.query(
-                query_texts=[query.query_text],
+                query_embeddings=[self._query_vector(query.query_text)],
                 n_results=query.limit,
                 where=where_filter,
                 include=["documents", "metadatas", "distances"]
