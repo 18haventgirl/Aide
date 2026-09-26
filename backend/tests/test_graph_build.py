@@ -227,3 +227,21 @@ def test_build_agent_runs_retrieval_first():
 
     assert "note_retrieval.before_agent" in list(graph.nodes)
     assert entry == ["note_retrieval.before_agent"]
+def test_summarization_middleware_is_registered():
+    """长会话必须有界：不压缩历史会让 token 随轮数线性膨胀"""
+    agent = asyncio.run(build_agent(ScriptedModel(replies=[{"content": "在的"}]), tools=[]))
+    nodes = list(agent.get_graph().nodes)
+
+    assert any("summariz" in n.lower() for n in nodes), nodes
+
+
+def test_summarization_threshold_follows_env(monkeypatch):
+    """阈值要可调：不同模型的上下文窗口与成本比例不一样"""
+    from agent.graph import _summarization_middleware
+
+    monkeypatch.setenv("SUMMARIZE_TRIGGER_TOKENS", "1234")
+    monkeypatch.setenv("SUMMARIZE_KEEP_MESSAGES", "5")
+    middleware = _summarization_middleware(ScriptedModel(replies=[]))
+
+    assert middleware.trigger == ("tokens", 1234)
+    assert middleware.keep == ("messages", 5)

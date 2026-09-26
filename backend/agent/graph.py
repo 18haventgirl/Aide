@@ -5,6 +5,7 @@
 """
 
 import logging
+import os
 from typing import Any, List, Optional, Sequence
 
 from langchain.agents import create_agent
@@ -35,6 +36,20 @@ def default_tools() -> List[Any]:
     return [search_my_notes, save_note]
 
 
+def _summarization_middleware(model) -> Any:
+    """会话历史压缩：超过阈值时把较早的消息换成一段摘要
+
+    阈值给默认值并可按环境变量覆盖，因为触发点取决于所用模型的上下文窗口与成本，
+    是经验值而不是架构约束。
+    """
+    from langchain.agents.middleware import SummarizationMiddleware
+
+    trigger = int(os.getenv("SUMMARIZE_TRIGGER_TOKENS", "6000"))
+    keep = int(os.getenv("SUMMARIZE_KEEP_MESSAGES", "8"))
+    return SummarizationMiddleware(model, trigger=("tokens", trigger),
+                                   keep=("messages", keep))
+
+
 async def build_agent(model,
                       tools: Optional[Sequence[Any]] = None,
                       checkpointer: Any = None,
@@ -52,6 +67,7 @@ async def build_agent(model,
     middleware = [
         build_retrieval_middleware(),          # 每轮先召回笔记
         build_retrieval_injector(),
+        _summarization_middleware(model),      # 压缩历史，护栏和模型都少读一截
         build_identity_middleware(),
         *build_guardrail_middlewares(model),
         *extra_middleware,
