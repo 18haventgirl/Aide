@@ -135,8 +135,20 @@ MCP 装载都是我手写的。本轮目标=能复用库的地方换成库，并
   - [x] 2.1 `AideState` + `before_agent` 检索 + 异步 `wrap_model_call` 注入（`ed6e724`）
   - [x] 2.2 建图挂载 + `retrieval` 事件帧（`0363214`）：入口边 `__start__ → note_retrieval.before_agent`
     由测试断言；`AideAnswer.retrieval` → `{"type":"retrieval","hits":[...]}` 帧 → 面板分区
-  - [ ] 2.3 措辞与面板文案中性化（进行中）
-  - [ ] 2.4 e2e 增加"不调工具也能答对笔记"断言并实跑
+  - [x] 2.3 措辞与面板文案中性化（`592e174`）：删掉 `NODE_LABELS`/`nodeLabel` 的中文美化映射，
+    节点行直接显示真实节点名；分区标题改为 执行节点/笔记检索命中/工具/护栏/上下文/运行输出；
+    `AGENT_DESCRIPTION`、工具说明、README 里的"自研 RAG"全部换成中性技术名
+  - [x] 2.4 e2e 实跑：**20 项全通过，退出码 0**（真实 DeepSeek + 本地 Chroma + 8102 MCP）
+    - 检索节点确实排在最前：`nodes=['note_retrieval.before_agent', 'Safety Guardrail.before_model',
+      'Relevance Guardrail.before_model', 'model', 'tools']`
+    - 前置检索命中 `('阳台绿萝浇水', 0.67)`，模型**一次工具都没调**（`calls=[]`）就答出
+      "土表发白就浇透，冬天两周一次"，并按系统提示词注明了来源是笔记
+    - 因此把原来那条"必须调 `search_my_notes`"的断言改成"能答对自己笔记里的内容"：架构变了，
+      旧断言考的是已经不必要的路径；工具路径仍由 `tests/test_agent_retrieval.py` 等覆盖，
+      这一轮实际走了哪条路打在 detail 里给人看
+    - 面板实测（5199，浏览器结构快照）：分区标题与表头副标题已是中性名，空态文案正常。
+      节点行与命中行的**填充态没做视觉确认**（in-app 浏览器拿不到可视视口，截屏不可用），
+      只有协议单测 + e2e 帧捕获覆盖，需要人眼确认时再开浏览器看一次
   - [ ] 2.5 短期记忆上限：`SummarizationMiddleware`
   - [ ] 2.6 长期记忆：`AsyncSqliteStore` + `save_memory`，跨会话按用户隔离
 - [ ] 第 3 步 MCP 换官方适配器：降 fastmcp 3.4.7 + mcp 1.x + `langchain-mcp-adapters`，删 `MCPBridge`

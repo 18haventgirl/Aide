@@ -45,6 +45,7 @@ class Turn:
     tool_calls: List[str] = field(default_factory=list)
     tool_outputs: List[str] = field(default_factory=list)
     tools_list: List[Dict[str, Any]] = field(default_factory=list)
+    retrieval: List[Dict[str, Any]] = field(default_factory=list)
     conversation_id: str = ""
     note: str = ""
     response: Dict[str, Any] = field(default_factory=dict)
@@ -86,6 +87,8 @@ async def converse(token: str, user_id: str, conversation_id: str, text: str) ->
                 turn.tool_calls.append(content.get("tool", ""))
             elif kind == "tool_output":
                 turn.tool_outputs.append(content.get("tool", ""))
+            elif kind == "retrieval":
+                turn.retrieval = content.get("hits", [])
             elif kind == "tools_list":
                 turn.tools_list = content.get("tools", [])
                 turn.conversation_id = content.get("conversation_id", "")
@@ -153,6 +156,8 @@ async def main() -> int:
     check("图执行轨迹含护栏/模型/工具节点",
           {"Safety Guardrail.before_model", "model", "tools"}.issubset(set(weather.nodes)),
           f"nodes={weather.nodes}")
+    check("检索节点排在最前", weather.nodes[:1] == ["note_retrieval.before_agent"],
+          f"nodes={weather.nodes[:3]}")
 
     # 2) 待办写入（MCP 用户数据工具 + 身份覆写）
     todo = await converse(token, user_id, conversation_id, "帮我记一条待办：下班买牛奶")
@@ -189,9 +194,19 @@ async def main() -> int:
 
     agent_search = await converse(token, user_id, conversation_id,
                                   "我之前记的关于绿植的笔记，多久浇一次水？")
-    check("代理能用语义检索工具查自己的笔记",
-          "search_my_notes" in agent_search.tool_calls and "两周" in agent_search.text,
+    # 只断言"答得对"：前置检索已经把命中喂给模型，所以调不调 search_my_notes 都算通过，
+    # 走哪条路打在 detail 里给人看（工具路径由 tests/test_tools_rag.py 覆盖）。
+    check("能答对自己笔记里的内容", "两周" in agent_search.text,
           f"calls={agent_search.tool_calls} 答={agent_search.text[:50]}")
+
+    # 前置检索：不进 tools 节点也该答对（命中靠 wrap_model_call 临时注入）
+    note_turn = await converse(token, user_id, conversation_id,
+                               "我笔记里绿植多久浇一次水？不要调用工具，直接回答")
+    check("前置检索帧带命中", bool(note_turn.retrieval),
+          f"hits={[(h.get('title'), round(h.get('score', 0), 2)) for h in note_turn.retrieval][:3]}")
+    check("明确要求不调工具时仍答对",
+          "两周" in note_turn.text and not note_turn.tool_calls,
+          f"calls={note_turn.tool_calls} 答={note_turn.text[:50]}")
 
     # 6) 检查点确实落盘（不是只在进程内存里）
     checkpoint_db = os.getenv("CHECKPOINT_DB", "data/lg-aide-checkpoints.sqlite")
