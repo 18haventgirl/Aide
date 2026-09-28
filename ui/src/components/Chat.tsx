@@ -1,10 +1,52 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import type { Message } from "../lib/types";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneLight } from "react-syntax-highlighter/dist/esm/styles/prism";
+import type { Components } from "react-markdown";
 import type { WebSocketConnectionStatus } from "../lib/websocket";
 import { Wifi, WifiOff, RefreshCw, Send, AlertCircle, Menu } from "lucide-react";
 import { ConversationList } from "./ConversationList";
 import { useAppSelector } from "../store/hooks";
+
+const markdownComponents: Components = {
+  table({ children }) {
+    return (
+      <div className="my-3 overflow-x-auto rounded-lg border border-gray-200">
+        <table className="min-w-full text-left text-sm">{children}</table>
+      </div>
+    );
+  },
+  thead({ children }) {
+    return <thead className="bg-gray-100 text-xs font-semibold uppercase tracking-wide text-gray-600">{children}</thead>;
+  },
+  th({ children }) {
+    return <th className="px-3 py-2 whitespace-nowrap border-b border-gray-200">{children}</th>;
+  },
+  td({ children }) {
+    return <td className="px-3 py-2 border-b border-gray-100 align-top">{children}</td>;
+  },
+  code({ className, children, ...rest }) {
+    const match = /language-(\w+)/.exec(className || "");
+    const codeStr = String(children).replace(/\n$/, "");
+    if (match) {
+      return (
+        <SyntaxHighlighter style={oneLight} language={match[1]} PreTag="div" className="my-3 rounded-lg text-sm">
+          {codeStr}
+        </SyntaxHighlighter>
+      );
+    }
+    return (
+      <code className="rounded bg-gray-200 px-1.5 py-0.5 text-xs font-mono text-gray-800" {...rest}>
+        {children}
+      </code>
+    );
+  },
+  pre({ children }) {
+    return <>{children}</>;
+  },
+};
 
 // 打字机效果的样式
 const typewriterStyles = `
@@ -193,15 +235,15 @@ export function Chat({
             >
               {msg.type === "user" ? (
                 <div className="ml-4 rounded-2xl rounded-br-md px-5 py-3 md:ml-24 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium max-w-[80%] shadow-lg border border-blue-600 transform hover:scale-[1.02] transition-all duration-200">
-                  <ReactMarkdown>{msg.content}</ReactMarkdown>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>{msg.content}</ReactMarkdown>
                 </div>
               ) : (
                 <div className={`mr-4 rounded-2xl rounded-bl-md px-5 py-3 md:mr-24 font-medium max-w-[80%] shadow-md border transform hover:scale-[1.02] transition-all duration-200 ${
-                  msg.content.startsWith('系统异常:') 
-                    ? 'text-red-800 bg-gradient-to-r from-red-50 to-red-100 border-red-300' 
+                  msg.content.startsWith('系统异常:')
+                    ? 'text-red-800 bg-gradient-to-r from-red-50 to-red-100 border-red-300'
                     : 'text-gray-800 bg-gradient-to-r from-gray-50 to-gray-100 border-gray-300'
                 }`}>
-                  <ReactMarkdown>{msg.content}</ReactMarkdown>
+                  <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>{msg.content}</ReactMarkdown>
                 </div>
               )}
             </div>
@@ -227,7 +269,7 @@ export function Chat({
                 {streamingResponse.startsWith('系统异常:') ? '系统错误' : 'AI 正在回复...'}
               </div>
               <div className="typewriter-content">
-                <ReactMarkdown>{streamingResponse}</ReactMarkdown>
+                <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>{streamingResponse}</ReactMarkdown>
                 {!streamingResponse.startsWith('系统异常:') && (
                   <span className="typewriter-cursor inline-block w-0.5 h-4 bg-blue-500 ml-1"></span>
                 )}
