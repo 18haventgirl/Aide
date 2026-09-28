@@ -12,6 +12,8 @@ export interface Message {
 export interface Agent {
   name: string
   description: string
+  /** 当前对话使用的模型名（如 deepseek-chat），由后端从环境变量透出 */
+  model?: string
   handoffs: string[]
   tools: string[]
   /** List of input guardrail identifiers for this agent */

@@ -10,6 +10,7 @@
 """
 
 from datetime import datetime
+import os
 from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
@@ -18,19 +19,29 @@ from pydantic import BaseModel
 from core.web_socket_core import MessageType, WebSocketMessage
 
 AGENT_NAME = "Aide"
-AGENT_DESCRIPTION = "LangGraph 单代理，工具调用 + 笔记检索"
+AGENT_DESCRIPTION = "工具调用 + 笔记检索 + 长期记忆"
 GUARDRAIL_NAMES = ["Safety Guardrail", "Relevance Guardrail"]
+
+
+def _resolve_model_name() -> str:
+    """从环境变量读当前对话模型名；与 agent/model.py 保持一致的去前缀逻辑"""
+    raw = (os.getenv("OPENAI_CHAT_MODEL") or "deepseek-chat").strip()
+    if raw.startswith("openai/"):
+        return raw.split("/", 1)[1]
+    return raw
 
 
 def agents_meta(tools_manifest: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """单代理的元信息
 
     handoffs 恒为空（6 代理 handoff 已被单 agent + 工具图取代），input_guardrails 要
-    带上：前端"安全护栏"分区按它判断当前代理挂了哪些护栏。
+    带上：前端"安全护栏"分区按它判断当前代理挂了哪些护栏。model 字段供面板右上角展示
+    实际模型名，避免把架构标签暴露给用户。
     """
     return [{
         "name": AGENT_NAME,
         "description": AGENT_DESCRIPTION,
+        "model": _resolve_model_name(),
         "handoffs": [],
         "tools": [tool.get("name", "") for tool in tools_manifest or []],
         "input_guardrails": GUARDRAIL_NAMES,

@@ -40,7 +40,7 @@ export function AgentPanel({
         <Bot className="h-5 w-5" />
         <h1 className="font-semibold text-sm sm:text-base lg:text-lg">Agent View</h1>
         <span className="ml-auto text-xs font-light tracking-wide opacity-80">
-          LangGraph 单代理
+          {activeAgent?.model || "Aide"}
         </span>
       </div>
 
