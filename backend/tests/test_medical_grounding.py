@@ -37,6 +37,15 @@ class MedicalGroundingTests(unittest.TestCase):
     def test_ignores_non_medical_tool_output(self):
         self.assertIsNone(medical_response_metadata('{"temperature": 25}'))
 
+    def test_understands_serialized_mcp_text_dict(self):
+        payload = {"knowledge_status": "grounded", "hits": [
+            {"doc_id": "CN", "title": "中文资料", "source_url": "https://example.org/cn"}
+        ]}
+        block = {"type": "text", "text": json.dumps(payload)}
+        for output in (block, [block], {"content": [block]}, json.dumps(block)):
+            with self.subTest(output=output):
+                self.assertEqual(medical_response_metadata(output)["citations"][0]["doc_id"], "CN")
+
 
 if __name__ == "__main__":
     unittest.main()

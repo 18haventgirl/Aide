@@ -11,7 +11,7 @@ def register_medical_tools(mcp):
     @mcp.tool
     def search(query: str, top_k: int = 5, audience: str = "adult", region: str = "CN",
                prior_user_facts: str = "") -> str:
-        """Search reviewed health evidence. For a short follow-up, prior_user_facts may contain only facts explicitly stated by the user; never add assistant inferences."""
+        """Search health evidence; respect each hit's usage_scope and never generalize beyond it. For a short follow-up, prior_user_facts may contain only facts explicitly stated by the user; never add assistant inferences."""
         started = time.perf_counter()
         if audience != "adult" or region != "CN":
             return json.dumps({
@@ -45,6 +45,7 @@ def register_medical_tools(mcp):
                 "evidence_id": f"E{i}", "doc_id": hit.doc_id, "title": hit.title,
                 "section_path": hit.section_path, "text": hit.text[:1600],
                 "source_url": hit.source_url, "source_org": hit.source_org,
+                "usage_scope": hit.usage_scope,
                 "reviewed_at": hit.reviewed_at.isoformat() if hit.reviewed_at else None,
                 "status": hit.status,
                 "relevance_score": (round(hit.rerank_score, 4)

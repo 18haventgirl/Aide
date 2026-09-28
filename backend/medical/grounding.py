@@ -15,7 +15,7 @@ def _as_payload(value: Any) -> dict | None:
     if isinstance(value, dict):
         if "knowledge_status" in value and "hits" in value:
             return value
-        for key in ("data", "result", "structured_content", "structuredContent"):
+        for key in ("data", "result", "structured_content", "structuredContent", "content", "text"):
             nested = _as_payload(value.get(key))
             if nested:
                 return nested

@@ -180,6 +180,7 @@ class MedicalKnowledgeBase:
             chunk_id=candidate["chunk_id"], doc_id=metadata["doc_id"],
             title=metadata["title"], section_path=metadata["section_path"],
             text=candidate["text"], source_org=metadata["source_org"],
+            usage_scope=metadata.get("usage_scope") or None,
             source_url=metadata["source_url"],
             source_locator=metadata.get("source_locator") or None,
             source_published_at=date.fromisoformat(metadata["source_published_at"]),

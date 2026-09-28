@@ -1,0 +1,23 @@
+{
+  "doc_id": "NHC-FLU-CARE-20250117",
+  "version": 1,
+  "title": "流感发热期间的居家休息与就医信号",
+  "topic": "流感发热就医引导",
+  "audience": "中文成年人；仅本机研究",
+  "source_org": "国家卫生健康委员会",
+  "source_url": "https://www.nhc.gov.cn/xcs/c100122/202501/4c0f023143ae4fd39b1a0339dd6bdecb.shtml",
+  "source_published_at": "2025-01-17",
+  "status": "source_checked",
+  "reviewer": "Aide browser source comparison (non-clinician)",
+  "reviewed_at": "2026-09-28",
+  "next_review_at": "2027-03-28",
+  "license_note": "官方网页公开可读不等于开放许可；仅本机研究，禁止据此宣称可全文再分发。",
+  "source_sha256": "1a974fe6b7e2b979a5a4dd90d8110c6d26e7345db07156c78d0536720c3d8c65",
+  "source_locator": "新华社记者关于流感居家与就医的提问；李侗曾答复中以‘如果在居家隔离期间’和‘充分的休息’开头的两段",
+  "source_collected_at": "2026-09-28",
+  "source_version": "Browser-verified UTF-8 excerpt snapshot; hash is of excerpt, not full HTML",
+  "usage_scope": "仅流感居家休息与就医信号；不能凭发热诊断流感，不能把39℃或5天理解为其他情况无需就医的门槛。",
+  "withdrawn": false,
+  "language": "zh",
+  "body": "# 流感发热：需要就医的变化\n如果在居家隔离期间，出现了39℃以上的高热，使用退热药物效果不佳，建议及时就医。如果在生病过程当中出现了剧烈的咳嗽、呼吸急促、胸闷、憋气这些严重的症状，或者有剧烈的头痛、频繁呕吐、意识模糊，都需要及时就医。发病以后如果超过5天症状没有缓解趋势，也建议及时就医。\n# 流感期间的休息与防传播\n充分的休息可以更快的康复，不建议带病上班上学、探亲访友、参加聚会，也不建议在生病期间接待来访的亲友，避免传感给他人。居家休息的同时，也要避免传染给家人，有条件的可以在单独的房间，如果没有条件也要尽量的和家人保持距离，多开窗通风，和家人接触的时候戴口罩，都可以减少传播风险。当我们打喷嚏、咳嗽的时候用纸巾或者肘部遮住口鼻，使用过的纸巾立即扔进带盖的垃圾桶，并且及时洗手。"
+}

@@ -1,0 +1,82 @@
+[
+  {
+    "id": "CN01",
+    "kind": "supported",
+    "query": "流感发烧在家休息需要注意什么？",
+    "expected_doc_ids": [
+      "NHC-FLU-CARE-20250117"
+    ]
+  },
+  {
+    "id": "CN02",
+    "kind": "supported",
+    "query": "得流感以后哪些变化要去医院？",
+    "expected_doc_ids": [
+      "NHC-FLU-CARE-20250117"
+    ]
+  },
+  {
+    "id": "CN03",
+    "kind": "supported",
+    "query": "天气干燥，张嘴呼吸以后嗓子不舒服是什么原因？",
+    "expected_doc_ids": [
+      "NHC-THROAT-20240821"
+    ]
+  },
+  {
+    "id": "CN04",
+    "kind": "supported",
+    "query": "咽喉反流会引起嗓子不舒服吗？",
+    "expected_doc_ids": [
+      "NHC-THROAT-20240821"
+    ]
+  },
+  {
+    "id": "CN05",
+    "kind": "supported",
+    "query": "头痛时可以怎么休息和记录？",
+    "expected_doc_ids": [
+      "FJ-HEADACHE-20260626"
+    ]
+  },
+  {
+    "id": "CN06",
+    "kind": "supported",
+    "query": "反复头疼时头痛日记应该记什么？",
+    "expected_doc_ids": [
+      "FJ-HEADACHE-20260626"
+    ]
+  },
+  {
+    "id": "CN07",
+    "kind": "supported",
+    "query": "腹泻的时候怎么防止身体缺水？",
+    "expected_doc_ids": [
+      "BJ-DIARRHEA-20210406"
+    ]
+  },
+  {
+    "id": "CN08",
+    "kind": "supported",
+    "query": "拉肚子还发热、反复吐，要不要就医？",
+    "expected_doc_ids": [
+      "BJ-DIARRHEA-20210406"
+    ]
+  },
+  {
+    "id": "CN09",
+    "kind": "supported",
+    "query": "聚餐后肚子越来越痛还频繁呕吐，该怎么办？",
+    "expected_doc_ids": [
+      "GZ-POSTMEAL-ABDOMEN-2026"
+    ]
+  },
+  {
+    "id": "CN10",
+    "kind": "supported",
+    "query": "聚餐后腹痛同时胸闷冷汗要注意什么？",
+    "expected_doc_ids": [
+      "GZ-POSTMEAL-ABDOMEN-2026"
+    ]
+  }
+]

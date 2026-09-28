@@ -55,6 +55,7 @@ class MedicalHit(BaseModel):
     section_path: str
     text: str
     source_org: str
+    usage_scope: str | None = None
     source_url: str
     source_locator: str | None = None
     source_published_at: date | None = None

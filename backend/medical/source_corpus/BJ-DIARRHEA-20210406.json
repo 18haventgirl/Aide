@@ -1,0 +1,23 @@
+{
+  "doc_id": "BJ-DIARRHEA-20210406",
+  "version": 1,
+  "title": "腹泻的脱水风险与及时就医信号",
+  "topic": "腹泻拉肚子就医引导",
+  "audience": "中文成年人；仅本机研究",
+  "source_org": "北京市卫生健康委员会（北京天坛医院）",
+  "source_url": "https://wjw.beijing.gov.cn/bmfw_20143/jkzs/jksh/202104/t20210406_2345583.html",
+  "source_published_at": "2021-04-06",
+  "status": "source_checked",
+  "reviewer": "Aide browser source comparison (non-clinician)",
+  "reviewed_at": "2026-09-28",
+  "next_review_at": "2027-03-28",
+  "license_note": "官方网页公开可读不等于开放许可；仅本机研究，禁止据此宣称可全文再分发。",
+  "source_sha256": "d3b31d779b87b194cbb14aafcd10808e8b42030912cdda18286e2143c9000314",
+  "source_locator": "天坛科普——请您重视腹泻；第3自然段（以‘腹泻病情轻重缓急差异较大’开头）",
+  "source_collected_at": "2026-09-28",
+  "source_version": "Browser-verified UTF-8 excerpt snapshot; hash is of excerpt, not full HTML",
+  "usage_scope": "腹泻补液与就医警示科普，不提供个体补液量、药物剂量或静脉治疗指令；未收录过时门诊时间。",
+  "withdrawn": false,
+  "language": "zh",
+  "body": "# 腹泻、脱水与就医信号\n腹泻病情轻重缓急差异较大，轻度腹泻者可口服补液盐，必要时静脉点滴补液，严重者需住院进一步诊治，因为严重的脱水、电解质紊乱和酸碱失衡等病理生理状况在老年人、慢性基础疾病患者、妊娠、免疫力低下等特殊人群甚至可引发严重后果！所以，如果出现发热、频繁的呕吐和腹泻、吐泻量较大、便中带脓血、基础病加重等严重情况，请您及时于设有肠道门诊的医疗机构就诊！"
+}
