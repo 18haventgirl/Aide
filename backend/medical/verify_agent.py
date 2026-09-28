@@ -13,6 +13,7 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 from .huatuo_lite import write_report
+from .answer_audit import audit_answer
 
 
 async def verify(output: Path):
@@ -69,6 +70,7 @@ async def verify(output: Path):
                 passed = passed and all(not h["doc_id"].startswith("HTL-") for c in calls for h in c.get("hits", []))
             report["cases"].append({"scenario": scenario, "passed": passed, "tool_calls": len(calls),
                                     "total_tokens": usage.total_tokens, "answer": answer,
+                                    "quantity_audit": audit_answer(answer, [h for c in calls for h in c.get("hits", [])]),
                                     "retrieval_statuses": [c["knowledge_status"] for c in calls]})
         except Exception as error:
             report["cases"].append({"scenario": scenario, "passed": False, "error_type": type(error).__name__})
