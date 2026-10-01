@@ -50,6 +50,12 @@ mcp_server_process = None
 async def start_mcp_server():
     """启动MCP服务器进程"""
     global mcp_server_process
+
+    # The Windows launcher verifies and owns the external MCP process. Avoid
+    # starting a second process on its port or terminating it with the API.
+    if os.getenv("AIDE_EXTERNAL_MCP", "false").lower() == "true":
+        logger.info("使用启动脚本管理的 MCP 服务")
+        return True
     
     try:
         print("🔌 正在启动MCP服务器进程...")

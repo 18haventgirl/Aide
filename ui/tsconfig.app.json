@@ -23,5 +23,11 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  // Local experiments are not shipped by index.html. Imports from production
+  // still bring an excluded file into the graph and therefore type-check it.
+  "exclude": [
+    "src/TestApp.tsx", "src/main-test.tsx",
+    "src/lib/performance.ts", "src/lib/useOptimizedScroll.ts"
+  ]
 }

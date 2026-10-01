@@ -1,11 +1,11 @@
 # Aide 医疗知识 RAG：本机研究版
 
-本模块在 Aide 的“健康知识”模式中提供来源可追溯的中文健康科普。范围是中国大陆成年人一般健康知识与保守就医引导。它不提供个人诊断、处方、剂量或改药建议。尚未计划公开上线。
+本模块由 Aide 的 Triage 路由至 Medical Health Agent，提供来源可追溯的中文健康科普；前端不再依赖“健康知识”开关。范围是中国大陆成年人一般健康知识与保守就医引导。它不提供个人诊断、处方、剂量或改药建议。尚未计划公开上线。
 
 ## 数据与模型
 
 - `source_pipeline.py` 对照 2024 年正式《健康素养 66 条》与国务院网站托管的正式释义 PDF，生成 66 条记录；另有北京、广州卫健委各一条常见症状就医资料。原文及 SHA256 记在 `source_downloads/` 和 `source_corpus/source_manifest.json`。原文下载目录被 Git 忽略。
-- `source_corpus/` 当前本机研究索引包含 68 条中文 JSON 资料、88 个切片，均为 `source_checked`，表示机器核对原文，**不是医疗专业审核**。正式公共索引仅接纳 `clinician_reviewed` 且未过期、未撤回的中文资料。
+- `source_corpus/` 当前本机研究索引包含 72 条中文 JSON 资料、95 个切片（2026-09-28 增补后），均为 `source_checked`，表示原文核对，**不是医疗专业审核**。新增流感、咽喉、头痛、腹泻四篇限定范围摘录，验收见 `medical-rag-data/reports/chinese_symptoms_acceptance_20260928.md`。正式公共索引仅接纳 `clinician_reviewed` 且未过期、未撤回的中文资料。
 - 2026-09-24 按用户要求改为仅使用中文原文。MedlinePlus 的 68 篇英文文档与 562 个切片已撤下，原始下载与衍生数据已清理；相关脚本保留作历史参考，下载和导入入口被语言策略阻止。原文语言需准确写入文档的 `language`，不得通过中文标题把英文正文标记为中文。
 - 向量模型为本机运行的 `BAAI/bge-small-zh-v1.5`，固定模型 revision 和权重 SHA256。模型文件在 `models/`（Git 忽略）。研究与正式索引使用分开的 Chroma collection。
 - 检索先分别取得 BGE 稠密候选和全库 jieba/BM25 关键词候选，用加权 RRF 合并后，将前 8 个片段交给本机 `BAAI/bge-reranker-base` 交叉编码器重排。最后按相关性门槛过滤，并限制单份文档最多占两个片段。重排模型固定 revision 和权重 SHA256；模型缺失或推理失败时会退回经过门槛控制的混合排序，不会让检索服务整体中断。

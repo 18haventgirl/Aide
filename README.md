@@ -130,7 +130,9 @@ cd backend
 .\.venv\python.exe -m uvicorn main:app --host 127.0.0.1 --port 8000
 ```
 
-后端启动时会初始化数据库和 MCP 服务。Windows 也可从项目根目录运行 `start.bat`，同时启动前后端。
+Windows 推荐从项目根目录运行 `启动Aide.ps1`，以隐藏窗口启动或复用本项目的前端、API 和 MCP；脚本核验进程路径，不会把其他程序占用的端口当作 Aide。前端默认从 3000–3010 选择空闲端口，有已运行的 Aide 前端时优先复用，**访问地址以脚本输出为准**。8000/8002 若被其他程序占用则明确失败，不终止占用者。用 `启动Aide.ps1 -Status` 查看本项目进程；实际地址和 PID 保存在本机 `logs/aide-runtime.json`。
+
+脚本在新建服务前检查模型地址的 TCP 可达性（这不验证密钥、模型权限或生成能力）；离线使用本地功能可加 `-AllowOffline`。Node 默认使用 PATH，也支持 `-NodePath 'C:\path\node.exe'` 或 `AIDE_NODE_EXE`。日志按启动时间分别保存于 `logs/`。脚本启动的 API 复用其管理的 MCP；直接运行 uvicorn 时仍由 API 管理 MCP。旧 `start.bat` 保留，但未具备这些端口识别保护。
 
 ## 前端环境配置与运行 (Frontend Environment Setup & Running)
 

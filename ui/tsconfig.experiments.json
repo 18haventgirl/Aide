@@ -1,0 +1,6 @@
+{
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": { "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.experiments.tsbuildinfo" },
+  "include": ["src/TestApp.tsx", "src/main-test.tsx", "src/lib/performance.ts", "src/lib/useOptimizedScroll.ts"],
+  "exclude": []
+}
