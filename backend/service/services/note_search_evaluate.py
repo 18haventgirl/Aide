@@ -79,6 +79,7 @@ def main():
                 rows.append({**case,'ids':[h['id'] for h in hits],'ms':round((time.perf_counter()-started)*1000,1)})
             return {'metrics':score(rows),'details':rows}
         report={'scope':'synthetic_developer_cases_not_blind_real_user_eval','cases':len(cases),'case_sha256':case_hash,
+                'lexical_policy':'half_distinct_query_terms_per_chunk_exact_and_dense_independent',
                 'threshold_policy':'fixed' if args.fixed_distance is not None else 'dev_selection','candidates':{}}
         for value in ([args.fixed_distance] if args.fixed_distance is not None else (0.35,0.45,0.55)):
             os.environ['NOTE_BGE_MAX_DISTANCE']=str(value)

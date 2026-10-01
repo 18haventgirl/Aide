@@ -184,12 +184,19 @@ class NoteSearchIndex:
             body = note.get('content') or note['title']
             position = max(0, body.lower().find(query.lower()) - 60)
             candidates[note['id']] = {"revision": revision(note), "score": 1.0, "snippet": body[position:position+300]}
-        terms = list(dict.fromkeys(tokens(query)))[:16]
+        terms = list(dict.fromkeys(tokens(query)))
         if terms:
-            match = " OR ".join('"'+t.replace('"','""')+'"' for t in terms)
+            match = " OR ".join('"'+t.replace('"','""')+'"' for t in terms[:16])
             with self.engine.connect() as c:
-                rows = c.execute(text("SELECT f.note_id,f.revision,f.body FROM note_chunks_fts f JOIN notes n ON n.id=f.note_id AND n.user_id=f.user_id WHERE note_chunks_fts MATCH :match AND f.user_id=:user" + (" AND n.tag=:tag" if tag else "") + (" AND n.status=:status" if status else "") + " ORDER BY bm25(note_chunks_fts) LIMIT 30"), {**params, "match": match}).mappings().all()
+                rows = c.execute(text("SELECT f.note_id,f.revision,f.body,f.tokens FROM note_chunks_fts f JOIN notes n ON n.id=f.note_id AND n.user_id=f.user_id WHERE note_chunks_fts MATCH :match AND f.user_id=:user" + (" AND n.tag=:tag" if tag else "") + (" AND n.status=:status" if status else "") + " ORDER BY bm25(note_chunks_fts) LIMIT 30"), {**params, "match": match}).mappings().all()
+            query_terms = set(terms)
             for rank, row in enumerate(rows, 1):
+                # OR retrieves candidates, not evidence that a note answers a query.
+                # Require at least half the distinct non-stop query terms in this
+                # chunk. Exact SQLite hits and independent dense hits bypass this
+                # lexical-only gate, preserving literal and paraphrase searches.
+                if len(query_terms.intersection(row['tokens'].split())) * 2 < len(query_terms):
+                    continue
                 item = candidates.setdefault(int(row['note_id']), {"revision": row['revision'], "score": 0, "snippet": row['body']})
                 item['score'] = max(item['score'], 1/(60+rank))
         dense = []

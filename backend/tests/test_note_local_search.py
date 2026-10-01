@@ -122,6 +122,29 @@ class NoteIndexTests(unittest.TestCase):
         self.index.ready=False
         self.assertEqual(self.index.search(1,'%'),[])
 
+    def test_fts_shared_word_is_not_enough_for_unrelated_intent(self):
+        self.add(body='游泳馆十月维修闭馆，会员卡延期五天', title='场馆通知')
+        self.index.process_one()
+        self.index.ready=False
+        self.assertEqual(self.index.search(1, '打印机卡纸维修手册'), [])
+        self.assertEqual(self.index.search(1, '游泳馆 维修')[0]['id'], 1)
+
+    def test_lexical_gate_keeps_literal_and_independent_dense_hits(self):
+        self.add(body='小王说自行车链条锈蚀的化学机理很复杂', title='随笔')
+        self.index.process_one()
+        self.index.ready=False
+        self.assertEqual(self.index.search(1, '自行车链条锈蚀的化学机理')[0]['id'], 1)
+        self.assertEqual(self.index.search(1, '金属氧化原理'), [])
+        self.index.ready=True
+        # The fake dense collection supplies a semantic match independently of FTS.
+        self.assertEqual(self.index.search(1, '金属氧化原理')[0]['id'], 1)
+
+    def test_fts_repeated_query_terms_do_not_inflate_coverage(self):
+        self.add(body='游泳馆维修闭馆', title='场馆通知')
+        self.index.process_one()
+        self.index.ready=False
+        self.assertEqual(self.index.search(1, '维修 维修 维修 打印机 卡纸 手册'), [])
+
     def test_bootstrap_idempotent(self):
         self.add(); self.index.install(); self.index.install()
         with self.engine.connect() as c:
