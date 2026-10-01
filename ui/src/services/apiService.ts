@@ -120,6 +120,7 @@ apiClient.interceptors.response.use(
     return response;
   },
   (error: AxiosError) => {
+    if (error.code === 'ERR_CANCELED') return Promise.reject(error);
     console.error(`❌ API Error: ${error.response?.status} ${error.config?.url}`, error.response?.data);
     
     // 处理HTTP级别的认证失败 (401)
@@ -330,7 +331,12 @@ export const noteAPI = {
   },
 
   // 搜索笔记 - 修正：后端返回包含data字段的结构
-  async searchNotes(userId: string, searchData: any): Promise<ApiResponse<{data: any[], total: number, user_id: number}>> {
+  async searchNotes(userId: string, searchData: any, signal?: AbortSignal): Promise<ApiResponse<{data: any[], total: number, user_id: number}>> {
+    if (signal) {
+      const response = await apiClient.post(API_ENDPOINTS.NOTE.SEARCH(userId), searchData, { signal });
+      if (response.data?.success === false) throw new Error(response.data.message || '搜索失败');
+      return response.data;
+    }
     try {
       const response = await apiService.post<{data: any[], total: number, user_id: number}>(API_ENDPOINTS.NOTE.SEARCH(userId), searchData);
       if (response.success === false || !Array.isArray(response.data?.data)) {

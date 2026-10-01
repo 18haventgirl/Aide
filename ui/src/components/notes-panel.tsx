@@ -12,10 +12,15 @@ const PREDEFINED_TAGS = [
 ];
 
 interface NotesPanelProps { userId: number }
+type SearchNote = Note & { snippet?: string };
 
 export function NotesPanel({ userId }: NotesPanelProps) {
   const [notes, setNotes] = useState<Note[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [searchResults, setSearchResults] = useState<SearchNote[]>([]);
+  const [searchError, setSearchError] = useState('');
+  const searchController = useRef<AbortController | null>(null);
+  const [listLoading, setListLoading] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [opLoading, setOpLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Note | null>(null);
@@ -27,42 +32,54 @@ export function NotesPanel({ userId }: NotesPanelProps) {
   const [menuOpen, setMenuOpen] = useState<number | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const requestSeq = useRef(0);
+  const listSeq = useRef(0);
+  const tagsSeq = useRef(0);
+  const detailSeq = useRef(0);
+  const activeSearch = showFilters && !!searchQ.trim();
+  const loading = activeSearch ? searchLoading : listLoading;
 
   const [form, setForm] = useState<NoteCreateRequest>({ title: '', content: '', tag: '', status: 'draft' });
 
   const load = async () => {
-    const seq = ++requestSeq.current;
-    setLoading(true);
+    const seq = ++listSeq.current;
+    setListLoading(true);
     try {
       const r = await noteAPI.getNotes(userId.toString(), { tag: filter.tag, status: filter.status, search: filter.search, limit: 50 });
-      if (seq === requestSeq.current && r.success !== false) setNotes(Array.isArray(r.data?.data) ? r.data.data : []);
+      if (seq === listSeq.current && r.success !== false) setNotes(Array.isArray(r.data?.data) ? r.data.data : []);
     } catch { /* Keep the last successful list visible on transient failures. */ }
-    if (seq === requestSeq.current) setLoading(false);
+    if (seq === listSeq.current) setListLoading(false);
   };
 
   const loadTags = async () => {
-    try { const r = await noteAPI.getTags(userId.toString()); setTags(r.data?.data || []); } catch { setTags([]); }
+    const seq = ++tagsSeq.current;
+    try { const r = await noteAPI.getTags(userId.toString()); if (seq === tagsSeq.current) setTags(r.data?.data || []); } catch { if (seq === tagsSeq.current) setTags([]); }
   };
 
   const search = async () => {
     const query = searchQ.trim();
     if (!query) { await load(); return; }
     const seq = ++requestSeq.current;
-    setLoading(true);
+    searchController.current?.abort();
+    const controller = new AbortController();
+    searchController.current = controller;
+    setSearchLoading(true);
+    setSearchError('');
     try {
-      // Keep interactive search on the local indexed text path. Remote vector
-      // search remains available to API clients but must not block the UI.
-      const r = await noteAPI.searchNotes(userId.toString(), { query, tag: filter.tag, status: filter.status, limit: 20, use_vector_search: false });
-      if (seq === requestSeq.current && r.success !== false) setNotes(Array.isArray(r.data?.data) ? r.data.data : []);
-    } catch { /* Do not replace the current list with an error state. */ }
-    if (seq === requestSeq.current) setLoading(false);
+      const r = await noteAPI.searchNotes(userId.toString(), { query, tag: filter.tag, status: filter.status, limit: 20, use_vector_search: false }, controller.signal);
+      if (seq === requestSeq.current && r.success !== false) setSearchResults(Array.isArray(r.data?.data) ? r.data.data : []);
+    } catch {
+      if (!controller.signal.aborted && seq === requestSeq.current) setSearchError('搜索暂时失败，请重试');
+    }
+    if (seq === requestSeq.current) setSearchLoading(false);
   };
 
-  const clearSearch = async () => { setSearchQ(''); await load(); };
+  const clearSearch = async () => { setSearchQ(''); setSearchResults([]); setSearchError(''); await load(); };
   const toggleSearchPanel = async () => {
     if (showFilters) {
       setSearchQ('');
       setShowFilters(false);
+      setSearchResults([]);
+      setSearchError('');
       await load();
       return;
     }
@@ -80,6 +97,7 @@ export function NotesPanel({ userId }: NotesPanelProps) {
       setShowForm(false); setEditing(null);
       setForm({ title: '', content: '', tag: '', status: 'draft' });
       await Promise.all([load(), loadTags()]);
+      if (showFilters && searchQ.trim()) await search();
     } catch { /* noop */ }
     setOpLoading(false);
   };
@@ -87,15 +105,33 @@ export function NotesPanel({ userId }: NotesPanelProps) {
   const remove = async (id: number) => {
     if (opLoading || !confirm('删除这条笔记？')) return;
     setOpLoading(true);
-    try { await noteAPI.deleteNote(userId.toString(), id.toString()); await Promise.all([load(), loadTags()]); } catch { /* noop */ }
+    try { await noteAPI.deleteNote(userId.toString(), id.toString()); await Promise.all([load(), loadTags()]); if (showFilters && searchQ.trim()) await search(); } catch { /* noop */ }
     setOpLoading(false);
     setMenuOpen(null);
   };
 
   const startEdit = (n: Note) => { setEditing(n); setForm({ title: n.title, content: n.content, tag: n.tag || '', status: n.status }); setShowForm(true); setMenuOpen(null); };
-  const openDetail = async (n: Note) => { try { const r = await noteAPI.getNote(userId.toString(), n.id.toString()); setDetail(r.data?.data || r.data || n); } catch { setDetail(n); } };
+  const openDetail = async (n: Note) => {
+    const seq = ++detailSeq.current;
+    try {
+      const r = await noteAPI.getNote(userId.toString(), n.id.toString());
+      const current = r.data?.data || r.data;
+      if (seq === detailSeq.current && current?.id === n.id && String(current.user_id) === String(userId)) setDetail(current);
+    } catch { /* API interceptor reports failure; do not present a stale cached detail. */ }
+  };
 
-  useEffect(() => { Promise.all([load(), loadTags()]).catch(() => {}); }, [userId, filter]);
+  useEffect(() => { Promise.all([load(), loadTags()]).catch(() => {}); return () => { ++listSeq.current; ++tagsSeq.current; }; }, [userId, filter]);
+  useEffect(() => {
+    ++requestSeq.current;
+    searchController.current?.abort();
+    setSearchResults([]); setSearchError('');
+    if (!showFilters || !searchQ.trim()) { setSearchLoading(false); return; }
+    setSearchLoading(true);
+    const timer = setTimeout(() => { void search(); }, 300);
+    return () => { clearTimeout(timer); searchController.current?.abort(); ++requestSeq.current; };
+  }, [searchQ, showFilters, userId, filter]);
+  useEffect(() => { setNotes([]); setDetail(null); setTags([]); return () => { ++detailSeq.current; }; }, [userId]);
+  const displayedNotes: SearchNote[] = (showFilters && searchQ.trim() ? searchResults : notes).filter(n => String(n.user_id) === String(userId));
   useEffect(() => { const h = (e: MouseEvent) => { if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(null); }; document.addEventListener('mousedown', h); return () => document.removeEventListener('mousedown', h); }, []);
 
   const tagLabel = (v: string) => PREDEFINED_TAGS.find(t => t.value === v)?.label || v;
@@ -143,16 +179,18 @@ export function NotesPanel({ userId }: NotesPanelProps) {
       <div className="flex-1 overflow-y-auto scrollbar-thin">
         {loading ? (
           <div className="flex justify-center py-8"><div className="w-6 h-6 rounded-full border-2 border-primary border-t-transparent animate-spin" /></div>
-        ) : notes.length === 0 ? (
-          <div className="text-center py-8 text-xs text-muted-foreground">暂无笔记</div>
+        ) : searchError && showFilters ? (
+          <div role="alert" className="text-center py-8 text-xs text-destructive">{searchError}<button onClick={search} className="ml-2 underline">重试</button></div>
+        ) : displayedNotes.length === 0 ? (
+          <div className="text-center py-8 text-xs text-muted-foreground">{showFilters && searchQ.trim() ? '未找到相关笔记' : '暂无笔记'}</div>
         ) : (
           <div className="p-2 space-y-1.5">
-            {notes.map(n => (
+            {displayedNotes.map(n => (
               <div key={n.id} onClick={() => openDetail(n)} className="group px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors relative cursor-pointer">
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
                     <h4 className="text-sm font-medium text-foreground truncate">{n.title}</h4>
-                    {n.content && <p className="text-xs text-muted-foreground truncate mt-0.5">{n.content}</p>}
+                    {(n.snippet || n.content) && <p className="text-xs text-muted-foreground line-clamp-2 break-words mt-0.5">{n.snippet || n.content}</p>}
                     <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
                       {n.tag && <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] bg-primary/10 text-primary rounded-full"><Tag className="w-2.5 h-2.5" />{tagLabel(n.tag)}</span>}
                       <span className={`px-1.5 py-0.5 text-[10px] rounded-full ${sc(n.status)}`}>{n.status === 'draft' ? '草稿' : n.status === 'published' ? '已发布' : '归档'}</span>
@@ -160,7 +198,7 @@ export function NotesPanel({ userId }: NotesPanelProps) {
                     </div>
                   </div>
                   {/* ... menu */}
-                  <div className="relative" ref={menuOpen === n.id ? menuRef : undefined}>
+                  <div className="relative" onClick={e => e.stopPropagation()} ref={menuOpen === n.id ? menuRef : undefined}>
                     <button onClick={(e) => { e.stopPropagation(); setMenuOpen(menuOpen === n.id ? null : n.id); }} className="p-1 rounded-md hover:bg-muted opacity-0 group-hover:opacity-100 transition-opacity">
                       <MoreHorizontal className="w-3.5 h-3.5 text-muted-foreground" />
                     </button>

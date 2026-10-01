@@ -9,6 +9,7 @@ from datetime import datetime
 import hashlib
 import math
 import re
+import os
 from sqlalchemy.orm import Session
 from sqlalchemy import or_, and_, func
 from core.database_core import DatabaseClient
@@ -34,10 +35,14 @@ class NoteService:
         """
         self.db_client = db_client or DatabaseClient()
         self.user_service = UserService()
+        self.local_search_enabled = os.getenv("NOTES_LOCAL_SEARCH", "false").lower() == "true"
+        self.local_index = None
         
         # 初始化向量数据库客户端
         try:
-            if vector_client:
+            if self.local_search_enabled:
+                self.vector_client = None
+            elif vector_client:
                 self.vector_client = vector_client
             else:
                 config = VectorConfig.from_env()
@@ -49,6 +54,18 @@ class NoteService:
         # 确保数据库初始化
         if not self.db_client._initialized:
             self.db_client.initialize()
+        if self.local_search_enabled:
+            try:
+                from .note_search_index import get_note_index
+                self.local_index = get_note_index(self.db_client.engine)
+            except Exception as exc:
+                print(f"本地笔记索引暂不可用: {type(exc).__name__}")
+
+    def search_local(self, user_id, query, limit=20, tag=None, status=None):
+        if self.local_index is not None:
+            return self.local_index.search(user_id, query, limit, tag, status)
+        return [{**note.to_dict(), "search_type": "text"} for note in
+                self.search_notes(user_id, query, tag=tag, status=status, limit=limit)]
     
     def create_note(self, user_id: int, title: str, content: str = '', 
                    tag: Optional[str] = None, status: str = 'draft') -> Optional[Note]:
@@ -552,6 +569,8 @@ class NoteService:
         Returns:
             搜索结果列表
         """
+        if self.local_search_enabled:
+            return self.search_local(user_id, query, limit)
         try:
             if not self.vector_client:
                 return self._local_hybrid_search(user_id, query, limit)

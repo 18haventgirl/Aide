@@ -212,6 +212,9 @@ token.json
 node_modules/
 .pnpm-store/
 backend/chroma_db/
+backend/data/note_index_v1/
+backend/data/note_search_reports/
+backend/data/backups/
 backend/medical/models/
 backend/medical/source_downloads/
 medical-rag-data/raw/

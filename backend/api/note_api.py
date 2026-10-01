@@ -9,6 +9,7 @@ from typing import Optional, Dict, Any, List
 from datetime import datetime
 from fastapi import APIRouter, HTTPException, Path, Query, Body
 from pydantic import BaseModel, Field
+from starlette.concurrency import run_in_threadpool
 
 # 导入认证核心模块
 from core.auth_core import CurrentUser, success_response, error_response, not_found_response, validation_error_response, internal_error_response
@@ -51,7 +52,7 @@ class NoteUpdateRequest(BaseModel):
 class NoteSearchRequest(BaseModel):
     """搜索笔记请求模型"""
     query: str = Field(..., min_length=1, description="搜索查询")
-    use_vector_search: bool = Field(default=False, description="是否使用向量搜索；默认使用本地关键词搜索以保证响应速度")
+    use_vector_search: bool = Field(default=False, description="旧检索路径的向量开关；启用 NOTES_LOCAL_SEARCH 时统一使用本地混合检索")
     tag: Optional[str] = Field(default=None, description="标签过滤")
     status: Optional[str] = Field(default=None, description="状态过滤")
     limit: Optional[int] = Field(default=10, ge=1, le=50, description="返回数量限制")
@@ -90,6 +91,12 @@ async def search_notes(
         )
         
         search_results = []
+        if note_service.local_search_enabled:
+            search_results = await run_in_threadpool(note_service.search_local, user_id,
+                request.query, request.limit or 20, request.tag, request.status)
+            return success_response({"data": search_results, "total": len(search_results),
+                "user_id": user_id, "query": request.query,
+                "search_type": "local_hybrid"}, f"搜索完成，找到 {len(search_results)} 条结果")
         
         # 向量搜索（如果有查询词）
         if request.query and request.use_vector_search:
