@@ -1,5 +1,8 @@
 """Synthetic, repeatable local note search acceptance. Never reads user notes."""
 import json
+import argparse
+import hashlib
+import math
 import os
 import tempfile
 import time
@@ -26,6 +29,23 @@ NEGATIVES=['量子纠缠实验装置','火星探测器轨道参数','恐龙灭�
 
 
 def main():
+    parser=argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--cases',type=Path,help='Versioned synthetic fixture JSON; never read application notes')
+    parser.add_argument('--fixed-distance',type=float,help='Evaluate without threshold tuning')
+    parser.add_argument('--output',type=Path,default=Path('data/note_search_reports/synthetic_v1.json'))
+    args=parser.parse_args()
+    if args.fixed_distance is not None and not 0 <= args.fixed_distance <= 2:
+        parser.error('fixed-distance must be finite and between 0 and 2')
+    fixture_rows, negatives = FIXTURES, NEGATIVES
+    case_hash=None
+    if args.cases:
+        raw=args.cases.read_bytes()
+        source=json.loads(raw)
+        fixture_rows=[(x['title'],x['body'],x['queries']) for x in source['fixtures']]
+        negatives=source['negatives']
+        if any(len(x[2])!=4 for x in fixture_rows) or len(negatives)%2:
+            parser.error('each fixture needs four queries; negatives must split evenly')
+        case_hash=hashlib.sha256(raw).hexdigest()
     import torch
     torch.set_num_threads(2)
     model=BGEEmbedding(batch_size=4); model._load()
@@ -37,20 +57,20 @@ def main():
         collection=client.create_collection('notes_acceptance',metadata={'hnsw:space':'cosine'})
         index=NoteSearchIndex(engine,model,collection); index.install()
         cases=[]
-        for i,(title,body,queries) in enumerate(FIXTURES,1):
+        for i,(title,body,queries) in enumerate(fixture_rows,1):
             # Long irrelevant introduction deliberately puts the useful fact at the end.
             content=('这是一份日常工作生活记录，具体事项见后文。\n'*55 if i==1 else '')+body
             with engine.begin() as c:
                 c.execute(text("INSERT INTO notes VALUES(:id,1,:title,:body,'work','draft','2026-09-29')"),{'id':i,'title':title,'body':content})
             for j,q in enumerate(queries): cases.append({'query':q,'expected':i,'split':'dev' if j<2 else 'validation'})
-        for i,q in enumerate(NEGATIVES): cases.append({'query':q,'expected':None,'split':'dev' if i<10 else 'validation'})
+        for i,q in enumerate(negatives): cases.append({'query':q,'expected':None,'split':'dev' if i<len(negatives)//2 else 'validation'})
         while index.process_one(): pass
         def score(rows):
             positive=[x for x in rows if x['expected']]
             negative=[x for x in rows if not x['expected']]
             return {'recall_at_5':sum(x['expected'] in x['ids'] for x in positive)/len(positive),
                     'negative_rejection':sum(not x['ids'] for x in negative)/len(negative),
-                    'p95_ms':sorted(x['ms'] for x in rows)[int(len(rows)*.95)-1]}
+                    'p95_ms':sorted(x['ms'] for x in rows)[math.ceil(len(rows)*.95)-1]}
         def run(split):
             rows=[]
             for case in cases:
@@ -58,14 +78,34 @@ def main():
                 started=time.perf_counter(); hits=index.search(1,case['query'],5)
                 rows.append({**case,'ids':[h['id'] for h in hits],'ms':round((time.perf_counter()-started)*1000,1)})
             return {'metrics':score(rows),'details':rows}
-        report={'scope':'synthetic_developer_cases_not_blind_real_user_eval','cases':len(cases),'candidates':{}}
-        for value in (0.35,0.45,0.55):
+        report={'scope':'synthetic_developer_cases_not_blind_real_user_eval','cases':len(cases),'case_sha256':case_hash,
+                'threshold_policy':'fixed' if args.fixed_distance is not None else 'dev_selection','candidates':{}}
+        for value in ([args.fixed_distance] if args.fixed_distance is not None else (0.35,0.45,0.55)):
             os.environ['NOTE_BGE_MAX_DISTANCE']=str(value)
             result=run('dev'); report['candidates'][str(value)]=result
         selected=max(report['candidates'],key=lambda v:report['candidates'][v]['metrics']['recall_at_5']+report['candidates'][v]['metrics']['negative_rejection'])
         os.environ['NOTE_BGE_MAX_DISTANCE']=selected
         report['selected_max_distance']=float(selected)
         report['validation']=run('validation')
+        # Diagnose failures without changing their labels or the selected threshold.
+        # These are isolated synthetic cases, never production queries or notes.
+        report['failure_channels']=[]
+        for row in report['validation']['details']:
+            failed = row['expected'] not in row['ids'] if row['expected'] else bool(row['ids'])
+            if not failed: continue
+            previous = os.environ.get('NOTE_DENSE_SEARCH')
+            try:
+                os.environ['NOTE_DENSE_SEARCH']='false'
+                lexical=index.search(1,row['query'],5)
+            finally:
+                if previous is None: os.environ.pop('NOTE_DENSE_SEARCH',None)
+                else: os.environ['NOTE_DENSE_SEARCH']=previous
+            dense_ids=None
+            if index.query_slot.acquire(blocking=False):
+                dense=index._dense(row['query'],1,None,None)
+                dense_ids=list(dict.fromkeys(int(m['note_id']) for m,_ in dense))
+            report['failure_channels'].append({'query':row['query'],
+                'literal_fts_ids':[h['id'] for h in lexical], 'dense_candidate_ids':dense_ids})
         baseline=[]
         with engine.connect() as c:
             for case in cases:
@@ -74,7 +114,7 @@ def main():
                 ids=[r[0] for r in c.execute(text('SELECT id FROM notes WHERE user_id=1 AND (title LIKE :q OR content LIKE :q) LIMIT 5'),{'q':'%'+case['query']+'%'})]
                 baseline.append({**case,'ids':ids,'ms':round((time.perf_counter()-started)*1000,2)})
         report['keyword_baseline']=score(baseline)
-        path=Path('data/note_search_reports/synthetic_v1.json');path.parent.mkdir(parents=True,exist_ok=True)
+        path=args.output;path.parent.mkdir(parents=True,exist_ok=True)
         path.write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf-8')
         print(json.dumps({'selected':selected,'validation':report['validation']['metrics'],'baseline':report['keyword_baseline'],'report':str(path)}),flush=True)
         index.pool.shutdown(wait=True); engine.dispose()

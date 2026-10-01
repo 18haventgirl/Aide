@@ -3,6 +3,7 @@ import unittest
 import threading
 import time
 from pathlib import Path
+from concurrent.futures import ThreadPoolExecutor
 from sqlalchemy import create_engine, text
 from service.services.note_chunks import chunks, revision
 from service.services.note_search_index import NoteSearchIndex
@@ -133,6 +134,74 @@ class NoteIndexTests(unittest.TestCase):
         self.index.process_one()
         self.assertFalse(old & set(self.collection.rows))
         self.assertEqual(self.index.search(1,'会议')[0]['content'],'新的会议议程')
+
+    def test_edit_during_embedding_does_not_publish_stale_revision(self):
+        self.add(); self.index.process_one()
+        with self.engine.begin() as c:
+            c.execute(text("UPDATE notes SET content='中间版本' WHERE id=1"))
+        entered, release = threading.Event(), threading.Event()
+        original = self.index.embedding.embed_documents
+        def delayed(texts):
+            entered.set()
+            if not release.wait(5): raise RuntimeError('test timeout')
+            return original(texts)
+        self.index.embedding.embed_documents = delayed
+        with ThreadPoolExecutor(max_workers=1) as worker:
+            future = worker.submit(self.index.process_one)
+            try:
+                self.assertTrue(entered.wait(3))
+                with self.engine.begin() as c:
+                    c.execute(text("UPDATE notes SET content='最终版本会议' WHERE id=1"))
+                self.assertEqual(self.index.search(1, '报销'), [])
+                self.assertEqual(self.index.search(1, '最终版本')[0]['content'], '最终版本会议')
+            finally:
+                release.set()
+            self.assertTrue(future.result(timeout=3))
+        self.index.embedding.embed_documents = original
+        while self.index.process_one(): pass
+        with self.engine.connect() as c:
+            note = dict(c.execute(text('SELECT * FROM notes WHERE id=1')).mappings().one())
+            self.assertEqual(c.execute(text('SELECT revision FROM note_index_state WHERE note_id=1')).scalar(), revision(note))
+        self.assertTrue(all(m['revision']==revision(note) for _,m in self.collection.rows.values()))
+
+    def test_cleanup_failure_remains_retryable_after_publish(self):
+        self.add(); self.index.process_one()
+        old = set(self.collection.rows)
+        with self.engine.begin() as c: c.execute(text("UPDATE notes SET content='会议议程' WHERE id=1"))
+        original = self.collection.delete
+        self.collection.delete = lambda **kwargs: (_ for _ in ()).throw(OSError('injected cleanup failure'))
+        self.index.process_one()
+        self.assertEqual(self.index.search(1, '会议')[0]['content'], '会议议程')
+        with self.engine.begin() as c:
+            self.assertEqual(c.execute(text('SELECT attempts FROM note_index_jobs')).scalar(), 1)
+            c.execute(text('UPDATE note_index_jobs SET available_at=0'))
+        self.collection.delete = original
+        self.index.process_one()
+        self.assertFalse(old & set(self.collection.rows))
+
+    def test_crash_after_vector_write_recovers_expired_lease(self):
+        self.add()
+        original = self.collection.upsert
+        def interrupt(**kwargs):
+            original(**kwargs)
+            raise SystemExit('injected process interruption')
+        self.collection.upsert = interrupt
+        with self.assertRaises(SystemExit): self.index.process_one()
+        saved_ids = set(self.collection.rows)
+        with self.engine.begin() as c:
+            self.assertEqual(c.execute(text('SELECT COUNT(*) FROM note_index_state')).scalar(), 0)
+            self.assertGreater(c.execute(text('SELECT lease_until FROM note_index_jobs')).scalar(), time.time())
+            c.execute(text('UPDATE note_index_jobs SET lease_until=0'))  # Simulate lease expiry.
+        self.collection.upsert = original
+        recovered = NoteSearchIndex(self.engine, Embedding(), self.collection)
+        try:
+            recovered.install()
+            self.assertTrue(recovered.process_one())
+            self.assertFalse(recovered.process_one())
+            self.assertEqual(set(self.collection.rows), saved_ids)
+            self.assertEqual(recovered.search(1, '发票')[0]['id'], 1)
+        finally:
+            recovered.pool.shutdown(wait=True)
 
     def test_short_code_block_kept_together(self):
         code='```python\n'+('print(123)\n'*12)+'```\n'
