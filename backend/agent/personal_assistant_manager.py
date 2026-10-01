@@ -3,6 +3,7 @@ from __future__ import annotations as _annotations
 import os
 import sys
 import asyncio
+import logging
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Dict, List, Any, Optional
@@ -34,6 +35,25 @@ from agents import (
     set_tracing_disabled,
 )
 from agents.extensions.handoff_prompt import RECOMMENDED_PROMPT_PREFIX
+
+
+logger = logging.getLogger(__name__)
+
+
+def _news_agent_failure_message(context: RunContextWrapper[PersonalAssistantContext], error: Exception) -> str:
+    """Keep a nested model refusal distinct from a news API failure."""
+    if "content exists risk" in str(error).lower():
+        logger.warning("News Agent model request rejected by provider content policy")
+        return (
+            "News Agent's model request was rejected by the model provider's content policy. "
+            "This does not mean the news API failed. Do not retry the same request in this turn; "
+            "continue with any other requested parts and explain that the news lookup was incomplete."
+        )
+    logger.warning("News Agent failed with %s", type(error).__name__)
+    return (
+        "News Agent could not complete this request. The news API status is unknown. "
+        "Continue with any other requested parts and explain that the news lookup was incomplete."
+    )
 
 
 class PersonalAssistantContext(BaseModel):
@@ -193,9 +213,6 @@ class PersonalAssistantManager:
             # 3. 初始化所有智能体
             self._initialize_agents()
             
-            # 4. 设置智能体关系
-            self._setup_agent_relationships()
-            
             self._initialized = True
             print("🎉 个人助手管理器初始化完成")
             return True
@@ -298,9 +315,9 @@ class PersonalAssistantManager:
             mcp_servers=self._mcp_servers(),
         )
 
-        # A handoff changes the active agent, so the triage agent cannot call
-        # another specialist after handing off. Agent tools keep triage in
-        # control for requests spanning several read-only domains.
+        # A handoff changes the active agent. Keep Triage in control when a
+        # request needs several read-only specialists, so it can collect and
+        # combine all results without creating specialist-to-specialist edges.
         coordination_tools = [
             self.agents['weather'].as_tool(
                 tool_name="consult_weather_agent",
@@ -309,6 +326,7 @@ class PersonalAssistantManager:
             self.agents['news'].as_tool(
                 tool_name="consult_news_agent",
                 tool_description="Ask the news specialist for recent news about the user's requested place or topic.",
+                failure_error_function=_news_agent_failure_message,
             ),
             self.agents['recipe'].as_tool(
                 tool_name="consult_recipe_agent",
@@ -341,34 +359,6 @@ class PersonalAssistantManager:
         )
         
         print("✅ 所有智能体创建完成")
-    
-    def _setup_agent_relationships(self):
-        """设置智能体之间的关系"""
-        # 为任务调度中心添加所有其他智能体的转接关系
-        triage = self.agents['triage']
-        for agent_name in ['weather', 'news', 'recipe', 'personal', 'medical']:
-            if agent_name != 'triage':
-                # Triage is initialized with these handoffs already. Keep this
-                # setup idempotent so repeated initialization cannot duplicate
-                # the same destinations in the UI or model configuration.
-                target = self.agents[agent_name]
-                existing_names = {
-                    getattr(item, "agent_name", getattr(item, "name", ""))
-                    for item in triage.handoffs
-                }
-                target_name = getattr(target, "name", agent_name)
-                if target_name not in existing_names:
-                    triage.handoffs.append(target)
-
-        # If the model still chooses a direct handoff for a weather + news
-        # request, the active specialist must be able to finish the second
-        # part. Keep this limited to the two read-only specialists.
-        weather = self.agents['weather']
-        news = self.agents['news']
-        if news not in weather.handoffs:
-            weather.handoffs.append(news)
-        if weather not in news.handoffs:
-            news.handoffs.append(weather)
     
     def create_user_context(self, user_id: int) -> PersonalAssistantContext:
         """
@@ -455,8 +445,7 @@ class PersonalAssistantManager:
             "You are a weather agent. Use your tools to get the requested weather. "
             f"Current date in China is {today.isoformat()}; tomorrow is {(today + timedelta(days=1)).isoformat()}. "
             "Use these exact dates for relative-date requests such as 'tomorrow', and check the returned forecast date before answering. "
-            "If the original request also asks for news and the news part is not yet answered, hand off to News Agent after obtaining weather facts. "
-            "If news was already handled, give a concise combined answer without handing off again. "
+            "Handle only the weather portion of the request. When called by Triage as a tool, return weather facts, the forecast date, and any uncertainty so Triage can combine them with other specialists' results. "
             f"The user's location is {ctx.lat}, {ctx.lng}."
         )
     
@@ -468,8 +457,10 @@ class PersonalAssistantManager:
             f"{RECOMMENDED_PROMPT_PREFIX} "
             "You are a news agent. Use your tools to get the requested news. "
             f"Current date in China is {today.isoformat()}. Interpret 'recent' relative to this date and check article dates. "
-            "If the original request also asks for weather and the weather part is not yet answered, hand off to Weather Agent after obtaining news facts. "
-            "If weather was already handled, give a concise combined answer without handing off again. "
+            "Search for the exact requested place or topic instead of fetching broad headlines. "
+            "For a Chinese place name, use the disambiguating province and city in the query, language='zh', and limit at most 3. "
+            "Make one focused news search first; only make a second, meaningfully different search if the first returns no relevant results. "
+            "Handle only the news portion of the request. When called by Triage as a tool, return article dates, sources, and any uncertainty so Triage can combine them with other specialists' results. "
             f"The user's location is {ctx.lat}, {ctx.lng}."
             f"The user's preferences are {ctx.user_preferences}."
         )
@@ -548,21 +539,16 @@ class PersonalAssistantManager:
             "4. Personal Assistant: A multi-functional assistant managing notes, to-dos and preferences.\n"
             "5. Medical Health Agent: Handles general adult health education and care-seeking guidance. It must use medical_search and cannot diagnose, prescribe or change medication.\n\n"
             "Route questions about symptoms, fever, pain, cough, vomiting, diarrhea, medicines, examinations, diseases, prevention, or when to seek care to Medical Health Agent.\n"
-            "Your approach: Analyze intent → Decompose tasks → Call appropriate agents → Integrate results → Deliver comprehensive response.\n\n"
-            "For one clear domain, hand off to its specialist. For a request combining weather, news, or recipes, "
-            "call the relevant consult_*_agent tools with the user's place, date, and topic, then combine their returned facts yourself. "
-            "Do not hand off a multi-domain request to one specialist and expect that specialist to call another tool it does not have. "
-            "If one specialist cannot retrieve data, state that part's limitation while answering the other part.\n\n"
-            "Example Workflow:\n"
-            "User Input: '我明天要去法国巴黎玩，给我出一个规划。'\n"
-            "Your Chain of Thought:\n"
-            "1. Intent Analysis: User needs a travel plan for Paris tomorrow - this is a complex task requiring multiple types of information.\n"
-            "2. Task Decomposition & Planning:\n"
-            "   - Sub-task 1: Get Paris weather for tomorrow to provide clothing and travel suggestions → Call Weather Agent\n"
-            "   - Sub-task 2: Query recent Paris news for any travel-affecting events or interesting activities → Call News Agent\n"
-            "   - Sub-task 3: Recommend Paris specialty foods or cuisines → Call Recipe Agent\n"
-            "   - Sub-task 4: Summarize all information into a complete plan and interact with user to confirm if recording is needed → Call Personal Assistant (notes/todo/preferences)\n"
-            "3. Execute agents in logical order, then integrate all results into a comprehensive Paris travel plan."
+            "Analyze the request, select the required domains, and use the routing rule below.\n\n"
+            "For one clear domain, hand off to its specialist so it can answer the user directly. "
+            "For a request combining weather, news, or recipes, remain the final-answer owner: identify each requested domain, "
+            "call each relevant consult_*_agent tool once with the user's place, explicit date, and topic, and wait for every result before answering. "
+            "Do not hand off a multi-domain request to a specialist; specialists cannot transfer to one another. "
+            "In the final answer cover every requested part, preserve dates and sources from the specialists, "
+            "and never invent missing facts. If one specialist cannot retrieve data, state that part's limitation while answering the other parts.\n\n"
+            "Example: For '帮我看看朝阳市明天的天气和最近的新闻', call consult_weather_agent "
+            "for tomorrow's dated Chaoyang forecast and consult_news_agent for recent dated Chaoyang news. "
+            "Use both results in one answer. Do not call the recipe tool or transfer control to Weather or News."
         )
     
     # 钩子函数
