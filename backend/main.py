@@ -26,7 +26,8 @@ from api import (
     system_router,
     note_router,
     todo_router,
-    health_record_router
+    health_record_router,
+    medical_document_router
 )
 
 # 导入WebSocket核心模块
@@ -292,6 +293,7 @@ app.include_router(note_router, prefix="/api")
 # 待办事项路由器
 app.include_router(todo_router, prefix="/api")
 app.include_router(health_record_router, prefix="/api")
+app.include_router(medical_document_router, prefix="/api")
 
 # WebSocket路由器（包含所有WebSocket相关端点）
 app.include_router(websocket_router)

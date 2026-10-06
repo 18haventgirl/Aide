@@ -1,0 +1,5 @@
+# Optional: local OCR for photos, scanned PDFs and PDFs containing images.
+# Native text PDF, DOCX and TXT work with backend/requirements.txt.
+Pillow==11.3.0
+rapidocr-onnxruntime==1.4.4
+pypdfium2==4.30.0

@@ -2,6 +2,12 @@
 
 一个基于 Python 后端和 React 前端的多智能体个人日常助手，集成 MCP 协议与 RAG 知识检索，帮助用户管理日常任务、笔记、对话，并提供智能化服务。
 
+## 病历解析
+
+登录后点击顶部 **病历解析**，上传门诊病历或出院小结，也可以粘贴原文。解析后逐项查看原文依据、修正信息，并确认日期后保存到 **个人数据 → 身体状况**。页面提供明确标注的虚构样例；专门的 Medical Record Parser Agent 也可以整理对话中粘贴的病历。
+
+支持文字 PDF、DOCX、TXT；图片和扫描 PDF 需额外安装 `backend/requirements-medical-parser-ocr.txt`。模型默认复用现有 `OPENAI_*` 配置。完整接入规范、限制和验证方式见 [病历解析设计](docs/medical-record-parser.md)。
+
 ## 项目结构 (Project Structure)
 
 ```

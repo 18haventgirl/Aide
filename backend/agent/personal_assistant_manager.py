@@ -33,6 +33,7 @@ from agents import (
     Agent,
     RunContextWrapper,
     set_tracing_disabled,
+    function_tool,
 )
 from agents.extensions.handoff_prompt import RECOMMENDED_PROMPT_PREFIX
 
@@ -315,6 +316,41 @@ class PersonalAssistantManager:
             mcp_servers=self._mcp_servers(),
         )
 
+        @function_tool
+        async def parse_medical_record(context: RunContextWrapper[PersonalAssistantContext], text: str) -> str:
+            """Extract facts from the full outpatient record or discharge summary supplied by the user.
+
+            Args:
+                text: The complete verbatim medical record supplied by the user, not a summary or a path.
+            """
+            from medical_parser.schema import ParserError, TextParseRequest
+            from service.service_manager import service_manager
+            from service.services.medical_document_service import MedicalDocumentService
+            import json
+            try:
+                payload = TextParseRequest(text=text)
+                service = service_manager.get_service("medical_document_service", MedicalDocumentService)
+                draft = await service.parse(context.context.user_id, "对话中的病历", text=payload.text)
+                return json.dumps({"draft_id": draft["id"], "status": "review",
+                                   "fields": draft["result"]["fields"], "warnings": draft["result"]["warnings"],
+                                   "next_step": "在顶部病历解析入口的最近记录中打开、核对并确认保存。"}, ensure_ascii=False)
+            except ParserError as exc:
+                return json.dumps({"error": str(exc)}, ensure_ascii=False)
+            except Exception:
+                return '{"error":"病历解析未完成，请使用病历解析入口重试。"}'
+
+        self.agents['medical_parser'] = Agent[PersonalAssistantContext](
+            name="Medical Record Parser Agent", model=self.model,
+            model_settings=ModelSettings(temperature=0.1),
+            handoff_description="Extract existing facts from outpatient records and discharge summaries.",
+            instructions=("你是病历解析专员。用户粘贴门诊病历或出院小结时，调用 parse_medical_record 一次，"
+                          "传入完整原文，不改写、不总结后再传入。用户只有文件时，引导打开顶部‘病历解析’上传。"
+                          "没有病历原文时请用户提供，不调用工具猜测。只整理工具返回的已提取事实，保留否认、疑似等限定词。"
+                          "不提供新的诊断、处方或治疗建议。说明待核对记录编号和打开方式，不能声称已存入健康记录。"
+                          "健康记录由用户在界面核对后确认保存。"),
+            tools=[parse_medical_record],
+        )
+
         # A handoff changes the active agent. Keep Triage in control when a
         # request needs several read-only specialists, so it can collect and
         # combine all results without creating specialist-to-specialist edges.
@@ -348,6 +384,7 @@ class PersonalAssistantManager:
                 self.agents['recipe'],
                 self.agents['personal'],
                 self.agents['medical'],
+                self.agents['medical_parser'],
             ]
         )
 
@@ -538,7 +575,8 @@ class PersonalAssistantManager:
             "3. News Agent: Queries global and local latest news, specific topic information (such as travel, technology, finance) and updates. Call when users need to understand recent situations about places or events, or need background information for planning.\n"
             "4. Personal Assistant: A multi-functional assistant managing notes, to-dos and preferences.\n"
             "5. Medical Health Agent: Handles general adult health education and care-seeking guidance. It must use medical_search and cannot diagnose, prescribe or change medication.\n\n"
-            "Route questions about symptoms, fever, pain, cough, vomiting, diarrhea, medicines, examinations, diseases, prevention, or when to seek care to Medical Health Agent.\n"
+            "6. Medical Record Parser Agent: Extracts existing facts from supplied outpatient records and discharge summaries. Route requests to parse, extract or organize a medical document to this agent.\n"
+            "Route health advice questions about symptoms, fever, pain, cough, vomiting, diarrhea, medicines, examinations, diseases, prevention, or when to seek care to Medical Health Agent. Document extraction requests take precedence and go to Medical Record Parser Agent.\n"
             "Analyze the request, select the required domains, and use the routing rule below.\n\n"
             "For one clear domain, hand off to its specialist so it can answer the user directly. "
             "For a request combining weather, news, or recipes, remain the final-answer owner: identify each requested domain, "

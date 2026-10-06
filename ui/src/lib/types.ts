@@ -186,7 +186,7 @@ export interface HealthRecord {
   title: string
   summary: string
   details: Record<string, unknown>
-  source: 'conversation' | 'manual'
+  source: 'conversation' | 'manual' | 'document'
   source_conversation_id?: string | null
   source_message_id?: string | null
   confidence: 'explicit' | 'user_confirmed' | 'inferred_time'

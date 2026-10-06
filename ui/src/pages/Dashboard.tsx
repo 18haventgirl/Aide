@@ -4,12 +4,13 @@ import { logout } from "../store/slices/authSlice";
 import { AgentPanel } from "../components/agent-panel";
 import { Chat } from "../components/Chat";
 import { PersonDataPanel } from "../components/person-data-panel";
+import { MedicalRecordParser } from "../components/medical-record-parser";
 import ErrorBoundary from "../components/ErrorBoundary";
 import type { Agent, AgentEvent, GuardrailCheck, Message } from "../lib/types";
 import { createWebSocketService, getWebSocketService, type WebSocketConnectionStatus } from "../lib/websocket";
 import {
   Bot, MessageCircle, Wifi, WifiOff, RefreshCw, AlertTriangle, LogOut, User,
-  PanelLeftClose, PanelLeftOpen, ChevronLeft, Zap
+  PanelLeftClose, PanelLeftOpen, ChevronLeft, Zap, ScanLine
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 
@@ -51,6 +52,9 @@ const Dashboard: React.FC = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [sidebarTab, setSidebarTab] = useState<'agent' | 'person'>('agent');
   const [mobileTab, setMobileTab] = useState<'chat' | 'agent' | 'person'>('chat');
+  const [workspace, setWorkspace] = useState<'chat' | 'medical-parser'>('chat');
+  const [parserOpened, setParserOpened] = useState(false);
+  const [healthRevision, setHealthRevision] = useState(0);
 
   /* ---- Data state ---- */
   const [messages, setMessages] = useState<Message[]>([]);
@@ -330,12 +334,16 @@ const Dashboard: React.FC = () => {
             </div>
             <div className={`flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-medium ${statusConfig.color} bg-muted/50`}>
               {statusConfig.icon}
-              <span className="hidden sm:inline">{statusConfig.text}</span>
+              <span className="hidden sm:inline">{workspace === 'medical-parser' ? '聊天：' : ''}{statusConfig.text}</span>
               {wsError && <span className="text-destructive/80 truncate max-w-[120px]">{wsError}</span>}
             </div>
           </div>
 
           <div className="flex items-center gap-2">
+            <div className="flex rounded-lg bg-muted/60 p-0.5" aria-label="工作区切换">
+              <button onClick={() => setWorkspace('chat')} className={`rounded-md px-2 py-1.5 text-xs ${workspace === 'chat' ? 'bg-white text-primary shadow-sm' : 'text-muted-foreground'}`}>聊天</button>
+              <button onClick={() => { setParserOpened(true); setWorkspace('medical-parser'); setMobileTab('chat'); }} className={`flex items-center gap-1 rounded-md px-2 py-1.5 text-xs ${workspace === 'medical-parser' ? 'bg-white text-teal-700 shadow-sm' : 'text-muted-foreground'}`}><ScanLine className="h-3.5 w-3.5" />病历解析</button>
+            </div>
             <span className="text-sm text-muted-foreground hidden sm:block">{user?.username}</span>
             <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
               <User className="w-4 h-4 text-primary" />
@@ -349,7 +357,7 @@ const Dashboard: React.FC = () => {
         {/* ====== MAIN CONTENT ====== */}
         <div className="flex-1 flex overflow-hidden">
           {/* Desktop: Sidebar */}
-          <div className={`hidden md:flex flex-col transition-all duration-300 ease-in-out overflow-hidden ${sidebarOpen ? 'w-[340px] min-w-[340px] border-r border-border/30' : 'w-0 min-w-0'}`}>
+          <div className={`${workspace === 'chat' ? 'hidden md:flex' : 'hidden'} flex-col transition-all duration-300 ease-in-out overflow-hidden ${sidebarOpen ? 'w-[340px] min-w-[340px] border-r border-border/30' : 'w-0 min-w-0'}`}>
             {sidebarOpen && (
               <div className="flex flex-col h-full">
                 {/* Tab switcher */}
@@ -372,7 +380,7 @@ const Dashboard: React.FC = () => {
                   {sidebarTab === 'agent' ? (
                     <AgentPanel agents={agents} currentAgent={currentAgent} events={events} guardrails={guardrails} context={context} />
                   ) : (
-                    <PersonDataPanel userId={parseInt(user?.user_id || "1")} />
+                    <PersonDataPanel key={healthRevision} userId={parseInt(user?.user_id || "1")} />
                   )}
                 </div>
               </div>
@@ -380,7 +388,7 @@ const Dashboard: React.FC = () => {
           </div>
 
           {/* Chat area */}
-          <div className="flex-1 flex flex-col min-w-0">
+          <div className={`${workspace === 'chat' ? 'flex' : 'hidden'} flex-1 flex-col min-w-0`}>
             <Chat
               messages={messages}
               onSendMessage={handleSendMessage}
@@ -392,6 +400,9 @@ const Dashboard: React.FC = () => {
               conversationListKey={conversationListKey}
             />
           </div>
+          {parserOpened && <div className={`${workspace === 'medical-parser' ? 'flex' : 'hidden'} relative z-[1] min-h-0 min-w-0 flex-1 flex-col`}>
+            <MedicalRecordParser key={user?.user_id} onSaved={() => setHealthRevision(value => value + 1)} />
+          </div>}
         </div>
 
         {/* ====== MOBILE BOTTOM NAV ====== */}
@@ -429,7 +440,7 @@ const Dashboard: React.FC = () => {
               {mobileTab === 'agent' ? (
                 <AgentPanel agents={agents} currentAgent={currentAgent} events={events} guardrails={guardrails} context={context} />
               ) : (
-                <PersonDataPanel userId={parseInt(user?.user_id || "1")} />
+                <PersonDataPanel key={healthRevision} userId={parseInt(user?.user_id || "1")} />
               )}
             </div>
           </div>

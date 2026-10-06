@@ -20,7 +20,7 @@ class HealthRecord(BaseModel):
     title = Column(String(200), nullable=False, comment="记录标题")
     summary = Column(Text, nullable=False, default="", comment="用户可读摘要")
     details_json = Column(Text, nullable=False, default="{}", comment="结构化详情 JSON")
-    source = Column(String(24), nullable=False, default="conversation", comment="conversation/manual")
+    source = Column(String(24), nullable=False, default="conversation", comment="conversation/manual/document")
     source_conversation_id = Column(String(64), nullable=True, comment="来源会话")
     source_message_id = Column(String(64), nullable=True, comment="来源消息")
     confidence = Column(String(24), nullable=False, default="explicit", comment="explicit/user_confirmed/inferred_time")

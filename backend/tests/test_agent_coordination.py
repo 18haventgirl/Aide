@@ -35,10 +35,10 @@ class AgentCoordinationTests(unittest.TestCase):
         self.assertEqual(weather.handoffs, [])
         self.assertEqual(news.handoffs, [])
         self.assertEqual(manager.agents["recipe"].handoffs, [])
-        self.assertEqual(len(triage.handoffs), 5)
+        self.assertEqual(len(triage.handoffs), 6)
         self.assertEqual({agent.name for agent in triage.handoffs}, {
             "Weather Agent", "News Agent", "Recipe Agent",
-            "Personal Assistant Agent", "Medical Health Agent",
+            "Personal Assistant Agent", "Medical Health Agent", "Medical Record Parser Agent",
         })
 
         today = datetime.now(ZoneInfo("Asia/Shanghai")).date()

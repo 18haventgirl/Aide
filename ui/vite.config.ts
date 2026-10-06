@@ -7,6 +7,12 @@ export default defineConfig({
   server: {
     port: 3000,
     proxy: {
+      '/api/medical-documents': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+        timeout: 180000,
+        proxyTimeout: 180000,
+      },
       '/api': {
         target: 'http://localhost:8000',
         changeOrigin: true,

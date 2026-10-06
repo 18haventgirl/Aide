@@ -12,6 +12,7 @@ from .system_api import system_router
 from .note_api import note_router
 from .todo_api import todo_router
 from .health_record_api import health_record_router
+from .medical_document_api import medical_document_router
 
 __all__ = [
     "auth_router",
@@ -21,5 +22,6 @@ __all__ = [
     "system_router",
     "note_router",
     "todo_router",
-    "health_record_router"
+    "health_record_router",
+    "medical_document_router"
 ] 
