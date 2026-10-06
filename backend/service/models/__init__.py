@@ -10,6 +10,7 @@ from .todo import Todo
 from .conversation import Conversation
 from .chat_message import ChatMessage
 from .health_record import HealthRecord
+from .health_record_receipt import HealthRecordReceipt
 
 __all__ = [
     'UserPreference',
@@ -17,5 +18,6 @@ __all__ = [
     'Todo',
     'Conversation',
     'ChatMessage',
-    'HealthRecord'
+    'HealthRecord',
+    'HealthRecordReceipt'
 ] 

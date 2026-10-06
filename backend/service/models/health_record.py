@@ -46,6 +46,10 @@ class HealthRecord(BaseModel):
 
     def to_dict(self) -> Dict[str, Any]:
         data = super().to_dict()
-        data["details"] = self.details
+        details = self.details
+        time_metadata = details.pop("_time", None)
+        data["details"] = details
+        if isinstance(time_metadata, dict):
+            data["time_expression"] = time_metadata.get("expression", "")
         data.pop("details_json", None)
         return data

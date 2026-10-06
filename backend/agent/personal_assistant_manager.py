@@ -492,7 +492,8 @@ class PersonalAssistantManager:
 
     def _get_medical_instructions(self, context: RunContextWrapper[PersonalAssistantContext], agent: Agent[PersonalAssistantContext]) -> str:
         """为医疗 Agent 注入当前用户身份，避免健康记录写入错误用户。"""
-        local_now = datetime.now().strftime("%Y-%m-%d %H:%M")
+        from service.services.health_time import china_local_datetime
+        local_now = china_local_datetime().strftime("%Y-%m-%d %H:%M")
         return (
             f"你是面向普通公众的健康陪伴助手，服务成年人。当前用户 ID 是 {context.context.user_id}，"
             f"当前会话 ID 是 {context.context.conversation_id or 'unknown'}，当前中国本地时间是 {local_now}。"
@@ -514,8 +515,10 @@ class PersonalAssistantManager:
             "资料不足时直接给保守的一般安全引导，不要声称知识库不可用。\n\n"
             "如果用户明确说出自己的症状、测量值、用药事实或就诊事实，只提取明确事实并调用 health_create_record 保存。"
             "不得记录你的推测、鉴别诊断、建议或他人的情况。用户说了‘昨天、前天、20号、上周三’等时间时，"
-            "必须结合当前本地日期换算 observed_at；只有日期没有时刻时，使用该日 00:00:00、time_precision=day，"
-            "同时把用户的原始时间表达传给 date_text。用户完全没说发生日期时才省略 observed_at，并使用 time_precision=unknown。"
+            "把该条事实的原始时间表达传给 date_text，由工具结合中国本地日期解析；只有明确完整年月日或时刻才可传 observed_at。"
+            "仅说‘20号’或未说明年份的月日，不要自行猜月份或年份；工具返回 needs_clarification 时按 question 简短询问，未澄清前不要保存。"
+            "只有日期没有时刻使用 time_precision=day，‘晚上’不推测为具体几点；用户完全没说发生日期才使用 time_precision=unknown。"
+            "用户补充已有事件的日期、时刻或事实时，先定位原记录再调用 health_update_record；不要重复创建。"
             "保存成功后用一句自然的话确认已记录；没有成功调用工具时不要声称已记录。需要澄清主体或事实时先提问。"
             "如果用户只是补充一条身体情况或用药记录而没有提问，简短确认记录并最多追问一个必要问题，"
             "不要自动展开成长篇疾病或药品科普。只有用户询问处理办法、风险或用药问题时才给完整建议。"

@@ -10,7 +10,8 @@ from pydantic import BaseModel, Field
 
 from core.auth_core import CurrentUser, success_response, not_found_response
 from service.service_manager import service_manager
-from service.services.health_record_service import HealthRecordService
+from service.services.health_record_service import HealthRecordService, HealthRecordConflict
+from service.services.health_time import china_local_datetime
 
 logger = logging.getLogger(__name__)
 health_record_router = APIRouter(prefix="/health-records", tags=["身体状况"])
@@ -27,6 +28,7 @@ class HealthRecordCreateRequest(BaseModel):
     source_conversation_id: Optional[str] = Field(default=None, max_length=64)
     source_message_id: Optional[str] = Field(default=None, max_length=64)
     confidence: str = Field(default="user_confirmed", pattern="^(explicit|user_confirmed|inferred_time)$")
+    idempotency_key: Optional[str] = Field(default=None, min_length=1, max_length=128)
 
 
 class HealthRecordUpdateRequest(BaseModel):
@@ -48,8 +50,7 @@ def _ensure_owner(user_id: int, current_user: Dict[str, Any]) -> None:
 
 
 def _local_datetime(value: Optional[datetime]) -> datetime:
-    value = value or datetime.now()
-    return value.replace(tzinfo=None) if value.tzinfo else value
+    return china_local_datetime(value)
 
 
 def _serialize(record) -> Dict[str, Any]:
@@ -95,13 +96,19 @@ async def create_health_record(
     current_user: Dict[str, Any] = CurrentUser,
 ):
     _ensure_owner(user_id, current_user)
-    record = _service().create_record(
-        user_id, observed_at=_local_datetime(request.observed_at),
-        time_precision=request.time_precision, record_type=request.record_type,
-        title=request.title, summary=request.summary, details=request.details,
-        source=request.source, source_conversation_id=request.source_conversation_id,
-        source_message_id=request.source_message_id, confidence=request.confidence,
-    )
+    try:
+        record = _service().create_record(
+            user_id, observed_at=_local_datetime(request.observed_at),
+            time_precision=request.time_precision, record_type=request.record_type,
+            title=request.title, summary=request.summary, details=request.details,
+            source=request.source, source_conversation_id=request.source_conversation_id,
+            source_message_id=request.source_message_id, confidence=request.confidence,
+            idempotency_key=request.idempotency_key,
+        )
+    except HealthRecordConflict as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from None
+    except ValueError:
+        raise HTTPException(status_code=422, detail="身体状况记录字段无效") from None
     if not record:
         raise HTTPException(status_code=500, detail="创建身体状况记录失败")
     return success_response(_serialize(record), "身体状况记录已保存")
@@ -115,9 +122,14 @@ async def update_health_record(
 ):
     _ensure_owner(user_id, current_user)
     changes = request.model_dump(exclude_unset=True)
+    if any(value is None for value in changes.values()):
+        raise HTTPException(status_code=422, detail="更新字段不能为null")
     if "observed_at" in changes:
         changes["observed_at"] = _local_datetime(changes["observed_at"])
-    record = _service().update_record(user_id, record_id, **changes)
+    try:
+        record = _service().update_record(user_id, record_id, **changes)
+    except ValueError:
+        raise HTTPException(status_code=422, detail="身体状况记录字段无效") from None
     if not record:
         return not_found_response("身体状况记录不存在")
     return success_response(_serialize(record), "身体状况记录已更新")

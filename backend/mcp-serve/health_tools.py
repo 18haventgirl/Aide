@@ -1,50 +1,17 @@
 """健康记录 MCP 工具，仅向 Medical Health Agent 暴露。"""
 
 import json
-import re
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Any, Dict, Optional
 
 from service.services.health_record_service import HealthRecordService
+from service.services.health_time import resolve_health_time, HealthTimeClarification
 from core.database_core import DatabaseClient
 
 
 def _resolve_observed_at(value: Optional[str], date_text: str, precision: str) -> tuple[datetime, str]:
-    """Resolve common Chinese date phrases when the model omits an ISO timestamp."""
-    if value:
-        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
-        return (parsed.replace(tzinfo=None) if parsed.tzinfo else parsed), precision
-
-    now = datetime.now()
-    text = date_text or ""
-    day = None
-    if "前天" in text:
-        day = now.date() - timedelta(days=2)
-    elif "昨天" in text or "昨日" in text:
-        day = now.date() - timedelta(days=1)
-    elif "今天" in text or "今日" in text:
-        day = now.date()
-    else:
-        full = re.search(r"(\d{4})年(\d{1,2})月(\d{1,2})[日号]", text)
-        month_day = re.search(r"(?<!\d)(\d{1,2})月(\d{1,2})[日号]", text)
-        day_only = re.search(r"(?<!\d)(\d{1,2})号", text)
-        if full:
-            day = datetime(int(full.group(1)), int(full.group(2)), int(full.group(3))).date()
-        elif month_day:
-            candidate = datetime(now.year, int(month_day.group(1)), int(month_day.group(2))).date()
-            day = candidate if candidate <= now.date() else datetime(now.year - 1, candidate.month, candidate.day).date()
-        elif day_only:
-            number = int(day_only.group(1))
-            year, month = now.year, now.month
-            if number > now.day:
-                month -= 1
-                if month == 0:
-                    year, month = year - 1, 12
-            day = datetime(year, month, number).date()
-
-    if day is not None:
-        return datetime.combine(day, datetime.min.time()), "day"
-    return now, "unknown"
+    result = resolve_health_time(value or "", date_text, precision)
+    return result.observed_at, result.precision
 
 
 def register_health_tools(mcp):
@@ -65,6 +32,8 @@ def register_health_tools(mcp):
         confidence: str = "explicit",
         source_conversation_id: str = "",
         date_text: str = "",
+        source_message_id: str = "",
+        idempotency_key: str = "",
     ) -> str:
         """Save an explicit user health fact locally. Never pass inferred diagnoses."""
         if record_type not in {"symptom", "vital", "medication", "visit"}:
@@ -73,19 +42,24 @@ def register_health_tools(mcp):
             details_dict = json.loads(details or "{}")
             if not isinstance(details_dict, dict):
                 raise ValueError("details must be a JSON object")
-            resolved_at, resolved_precision = _resolve_observed_at(
-                observed_at, date_text or f"{title} {summary}", time_precision
-            )
+            resolved = resolve_health_time(observed_at, date_text or f"{title} {summary}", time_precision)
+            details_dict = {**details_dict, "_time": {"expression": resolved.date_text,
+                "precision": resolved.precision, "parser_version": resolved.parser_version}}
             record = service.create_record(
-                user_id, observed_at=resolved_at, time_precision=resolved_precision,
+                user_id, observed_at=resolved.observed_at, time_precision=resolved.precision,
                 record_type=record_type, title=title[:200], summary=summary[:2000],
                 details=details_dict, source="conversation",
                 source_conversation_id=source_conversation_id or None,
-                confidence=confidence,
+                source_message_id=source_message_id or None,
+                confidence="inferred_time" if resolved.precision == "unknown" else confidence,
+                idempotency_key=idempotency_key or None,
             )
             if not record:
                 return json.dumps({"success": False, "error": "create_failed"}, ensure_ascii=False)
             return json.dumps({"success": True, "record": record.to_dict()}, ensure_ascii=False)
+        except HealthTimeClarification as exc:
+            return json.dumps({"success": False, "error": "needs_clarification",
+                               "reason": exc.reason, "question": exc.question}, ensure_ascii=False)
         except Exception as exc:
             return json.dumps({"success": False, "error": type(exc).__name__}, ensure_ascii=False)
 
@@ -109,13 +83,34 @@ def register_health_tools(mcp):
         return json.dumps({"success": True, "record": record.to_dict()}, ensure_ascii=False)
 
     @mcp.tool
-    def update_record(user_id: int, record_id: int, summary: str = "", details: str = "{}") -> str:
+    def update_record(user_id: int, record_id: int, summary: Optional[str] = None,
+                      details: Optional[str] = None, observed_at: str = "", date_text: str = "",
+                      time_precision: str = "minute") -> str:
         """Correct an existing user health record after the user clarifies it."""
         try:
-            details_dict = json.loads(details or "{}")
-            record = service.update_record(user_id, record_id, summary=summary[:2000], details=details_dict)
+            current = service.get_record(user_id, record_id)
+            if not current:
+                return json.dumps({"success": False, "error": "not_found"}, ensure_ascii=False)
+            changes = {}
+            if summary is not None:
+                changes["summary"] = summary[:2000]
+            if details is not None:
+                supplied = json.loads(details)
+                if not isinstance(supplied, dict):
+                    raise ValueError("details must be a JSON object")
+                changes["details"] = {**current.details, **supplied}
+            if observed_at or date_text:
+                resolved = resolve_health_time(observed_at, date_text, time_precision)
+                changes.update(observed_at=resolved.observed_at, time_precision=resolved.precision)
+                changes["details"] = {**changes.get("details", current.details), "_time": {
+                    "expression": resolved.date_text, "precision": resolved.precision,
+                    "parser_version": resolved.parser_version}}
+            record = service.update_record(user_id, record_id, **changes)
             if not record:
                 return json.dumps({"success": False, "error": "not_found"}, ensure_ascii=False)
             return json.dumps({"success": True, "record": record.to_dict()}, ensure_ascii=False)
+        except HealthTimeClarification as exc:
+            return json.dumps({"success": False, "error": "needs_clarification",
+                               "reason": exc.reason, "question": exc.question}, ensure_ascii=False)
         except Exception as exc:
             return json.dumps({"success": False, "error": type(exc).__name__}, ensure_ascii=False)
