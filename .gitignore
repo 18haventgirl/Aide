@@ -214,6 +214,7 @@ node_modules/
 backend/chroma_db/
 backend/data/note_index_v1/
 backend/data/note_search_reports/
+backend/data/evaluation_reports/
 backend/data/backups/
 backend/medical/models/
 backend/medical/source_downloads/

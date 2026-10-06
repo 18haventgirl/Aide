@@ -46,7 +46,7 @@ class PilotRetrievalTests(unittest.TestCase):
         kb = SimpleNamespace(search=lambda q, limit: [SimpleNamespace(doc_id="A")])
         result = evaluate(kb, [{"id": "case", "query": "饮水", "expected_doc_ids": ["A", "B"]}], 5)
         self.assertEqual(result["recall_at_5"], .5)
-        self.assertEqual(result["metric_version"], "multi_relevant_v2")
+        self.assertEqual(result["metric_version"], "multi_relevant_v3_mrr_at_k")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,263 @@
+"""Versioned, isolated retrieval experiments. No user DB or generation API calls."""
+import argparse
+from collections import Counter
+from datetime import date, datetime, timezone
+import hashlib
+import importlib.metadata
+import json
+import math
+import os
+from pathlib import Path
+import subprocess
+from contextlib import ExitStack
+import time
+
+from .evaluate import evaluate, validate_cases
+from .knowledge_base import INDEX_VERSION, MedicalKnowledgeBase, load_corpus
+
+ROOT = Path(__file__).resolve().parents[2]
+MEDICAL = Path(__file__).resolve().parent
+PROFILES = ("keyword", "dense", "hybrid", "rerank")
+PARAMETERS = {
+    "MEDICAL_RESEARCH_MAX_DISTANCE": "0.50",
+    "MEDICAL_DENSE_CANDIDATES": "24",
+    "MEDICAL_LEXICAL_CANDIDATES": "24",
+    "MEDICAL_RERANK_CANDIDATES": "8",
+    "MEDICAL_RERANK_RELATIVE_FLOOR": "0.35",
+    "MEDICAL_RERANK_MIN_SCORE": "0.05",
+    "MEDICAL_MAX_CHUNKS_PER_DOCUMENT": "2",
+    "MEDICAL_LEXICAL_CACHE_TTL_SECONDS": "60",
+}
+
+
+def digest(value) -> str:
+    return hashlib.sha256(json.dumps(value, sort_keys=True, ensure_ascii=False,
+                                     separators=(",", ":")).encode()).hexdigest()
+
+
+def load_suite(path: Path) -> tuple[dict, dict]:
+    manifest = json.loads(path.read_text(encoding="utf-8"))
+    if manifest.get("schema_version") != 1 or manifest.get("hash_scheme") != "canonical-json-v1" or not manifest.get("groups"):
+        raise ValueError("unsupported or empty suite manifest")
+    groups, names = {}, set()
+    for entry in manifest["groups"]:
+        name = entry["name"]
+        if name in names or entry["purpose"] not in {"development", "regression", "topic_acceptance", "frozen"}:
+            raise ValueError("invalid or duplicate evaluation group")
+        names.add(name)
+        source = (path.parent / entry["path"]).resolve()
+        if not source.is_relative_to(MEDICAL):
+            raise ValueError("case file must stay inside medical package")
+        raw = source.read_bytes()
+        cases = json.loads(raw)
+        if digest(cases) != entry["sha256"]:
+            raise ValueError(f"case hash mismatch: {name}")
+        validate_cases(cases)
+        if len(cases) != entry["count"]:
+            raise ValueError(f"case count mismatch: {name}")
+        groups[name] = cases
+    date.fromisoformat(manifest["evaluation_date"])
+    return manifest, groups
+
+
+class KeywordBaseline:
+    """Positive full-corpus BM25, no dense encoding or reranker threshold."""
+    def __init__(self, kb):
+        from .lexical import LexicalIndex
+        self.kb = kb
+        data = kb.collection.get(include=["documents", "metadatas"])
+        self.index = LexicalIndex(data["ids"], data["documents"])
+        self.rows = {cid: {"chunk_id": cid, "text": body, "metadata": meta,
+                           "distance": None, "retrieval_method": "lexical"}
+                     for cid, body, meta in zip(data["ids"], data["documents"], data["metadatas"])}
+        self.metrics = {}
+
+    def search(self, query, limit=20, today=None):
+        ranked = self.index.ranked(query, len(self.rows))
+        counts, output = Counter(), []
+        for cid, score in ranked:
+            row = self.rows[cid]
+            if not self.kb._metadata_is_current(row["metadata"], today or date.today()):
+                continue
+            doc_id = row["metadata"]["doc_id"]
+            if counts[doc_id] >= int(PARAMETERS["MEDICAL_MAX_CHUNKS_PER_DOCUMENT"]):
+                continue
+            counts[doc_id] += 1
+            output.append(self.kb._to_hit({**row, "lexical_score": score}))
+            if len(output) == limit:
+                break
+        self.metrics = {"candidate_count": len(ranked), "selected_count": len(output),
+                        "reranker_status": "disabled", "baseline": "positive_bm25"}
+        return output
+
+    def search_metrics(self):
+        return dict(self.metrics)
+
+
+class DatedSearch:
+    def __init__(self, searcher, day):
+        self.searcher, self.day = searcher, day
+
+    def search(self, query, limit=20):
+        return self.searcher.search(query, limit=limit, today=self.day)
+
+    def search_metrics(self):
+        return self.searcher.search_metrics()
+
+
+def repository_version():
+    def git(*args):
+        return subprocess.run(["git", *args], cwd=ROOT, capture_output=True, text=True,
+                              check=True).stdout.strip()
+    try:
+        files = ["experiment.py", "evaluate.py", "knowledge_base.py", "chunking.py", "lexical.py",
+                 "chat.py", "schema.py", "bge_embedding.py", "bge_reranker.py"]
+        return {"commit": git("rev-parse", "HEAD"),
+                "retrieval_implementation_sha256": digest({name: hashlib.sha256((MEDICAL/name).read_bytes()).hexdigest() for name in files}),
+                "tracked_changes": bool(git("status", "--porcelain", "--untracked-files=no"))}
+    except (OSError, subprocess.CalledProcessError):
+        return {"commit": None, "tracked_changes": None}
+
+
+def mode_comparisons(results, k):
+    comparisons = []
+    for group, modes in results.items():
+        for base, other in (("keyword", "dense"), ("dense", "hybrid"), ("hybrid", "rerank")):
+            if base not in modes or other not in modes:
+                continue
+            metrics = {}
+            for key in (f"recall_at_{k}", f"mrr_at_{k}", f"ndcg_at_{k}", "unanswerable_rejection_rate"):
+                left, right = modes[base].get(key), modes[other].get(key)
+                if left is not None and right is not None:
+                    metrics[key] = round(right-left, 4)
+            comparisons.append({"group": group, "baseline": base, "candidate": other, "deltas": metrics})
+    return comparisons
+
+
+def run_experiment(manifest_path, corpus_path, output, groups=None, profiles=PROFILES, k=5):
+    manifest, cases_by_group = load_suite(manifest_path)
+    selected = groups or list(cases_by_group)
+    if not selected or set(selected) - set(cases_by_group) or len(set(selected)) != len(selected):
+        raise ValueError("unknown, duplicate or empty group selection")
+    if not profiles or set(profiles) - set(PROFILES) or len(set(profiles)) != len(profiles):
+        raise ValueError("invalid profile selection")
+    if not 1 <= k <= 20:
+        raise ValueError("k must be between 1 and 20")
+    documents = load_corpus(corpus_path)
+    day = date.fromisoformat(manifest["evaluation_date"])
+    eligible = {d.doc_id for d in documents if d.is_searchable(day, research_mode=True)}
+    unavailable = {}
+    for entry in manifest["groups"]:
+        if entry["name"] not in selected:
+            continue
+        missing = {did for c in cases_by_group[entry["name"]] for did in c.get("expected_doc_ids", [])} - eligible
+        if missing and not entry.get("allow_historical_missing_ids", False):
+            raise ValueError(f"unknown/ineligible expected docs: {entry['name']}: {sorted(missing)}")
+        unavailable[entry["name"]] = sorted(missing)
+    from .resource_budget import require_available, memory_status
+    before = require_available(1536)
+    previous = {key: os.environ.get(key) for key in PARAMETERS}
+    report = {
+        "report_version": "retrieval_experiment_v1", "scope": "developer_cases_not_blind_not_clinical",
+        "started_at_utc": datetime.now(timezone.utc).isoformat(), "code": repository_version(),
+        "suite": manifest, "suite_manifest_sha256": hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
+        "selected_groups": selected, "profiles": list(profiles), "k": k,
+        "corpus_sha256": digest([d.model_dump(mode="json") for d in documents]),
+        "corpus_documents": len(documents), "eligible_documents": len(eligible),
+        "unavailable_expected_doc_ids": unavailable, "index_version": INDEX_VERSION,
+        "parameters": PARAMETERS, "cpu_threads": 2, "memory_before": before,
+        "ranking_constants": {"rrf_k": 60, "dense_weight": .6, "lexical_weight": .4,
+                              "rerank_pool_dense_quota": 5, "rerank_pool_lexical_quota": 3},
+        "metric_definitions": {"mrr": "first relevant document within top K only",
+            "recall": "retrieved relevant document IDs / all labelled relevant IDs",
+            "keyword": "positive full-corpus BM25; per-doc cap; no semantic rejection threshold",
+            "latency": "service function, no HTTP/LLM; first search per mode separately reported"},
+        "results": {name: {} for name in selected}, "complete": False,
+    }
+    output.parent.mkdir(parents=True, exist_ok=True)
+    def save():
+        temporary = output.with_suffix(output.suffix + ".tmp")
+        temporary.write_text(json.dumps(report, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
+        temporary.replace(output)
+    try:
+        os.environ.update(PARAMETERS)
+        import torch
+        import chromadb
+        from chromadb.config import Settings
+        from .bge_embedding import BGEEmbedding
+        from .bge_reranker import BGEReranker
+        torch.set_num_threads(2)
+        started = time.perf_counter()
+        embedding = BGEEmbedding(batch_size=4)
+        report["embedding"] = {"name": embedding.name(), "weight_sha256": embedding.weight_sha256,
+                               "batch_size": 4, "dimensions": 512}
+        report["packages"] = {p: importlib.metadata.version(p) for p in ("torch", "transformers", "chromadb", "jieba")}
+        with ExitStack() as cleanup:
+            # In-memory Chroma belongs only to this CLI process. Do not open the
+            # application's persistent path; Windows keeps persistent files open.
+            client = chromadb.EphemeralClient(settings=Settings(anonymized_telemetry=False))
+            if client.list_collections():
+                raise ValueError("experiment requires a fresh isolated Chroma process")
+            kb = MedicalKnowledgeBase(client, embedding, embedding.name(), research_mode=True)
+            cleanup.callback(client.delete_collection, kb.collection.name)
+            report["index_sync"] = kb.sync(documents, today=day)
+            report["index_chunks"] = kb.collection.count()
+            report["index_build_and_embedding_load_ms"] = round((time.perf_counter()-started)*1000, 1)
+            keyword = KeywordBaseline(kb)
+            for profile in profiles:
+                kb.use_lexical = profile in {"hybrid", "rerank"}
+                kb.reranker = None
+                kb.reranker_requested = profile == "rerank"
+                if profile == "rerank":
+                    require_available(1536)
+                    model = BGEReranker(batch_size=1, max_length=256)
+                    started = time.perf_counter()
+                    model._load()
+                    report["reranker"] = {"name": model.name(), "weight_sha256": model.weight_sha256,
+                                          "load_ms": round((time.perf_counter()-started)*1000, 1),
+                                          "max_length": 256, "batch_size": 1}
+                    kb.reranker = model
+                for name in selected:
+                    result = evaluate(DatedSearch(keyword if profile == "keyword" else kb, day), cases_by_group[name], k)
+                    timings = [r["latency_ms"] for r in result["details"] if "latency_ms" in r]
+                    warm = sorted(timings[1:])
+                    result["first_search_ms"] = timings[0] if timings else None
+                    result["subsequent_search_p95_ms"] = warm[math.ceil(.95*len(warm))-1] if warm else None
+                    result["reranker_status_counts"] = dict(Counter(r.get("diagnostics", {}).get("reranker_status", "not_searched") for r in result["details"]))
+                    report["results"][name][profile] = result
+                    report["memory_after"] = memory_status()
+                    save()
+                    print(json.dumps({"group": name, "profile": profile,
+                        "recall_at_k": result[f"recall_at_{k}"], "mrr_at_k": result[f"mrr_at_{k}"],
+                        "reranker_status": result["reranker_status_counts"]}), flush=True)
+            report["comparisons"] = mode_comparisons(report["results"], k)
+            report["complete"] = True
+            save()
+    except Exception as exc:
+        report["complete"] = False
+        report["failure_type"] = type(exc).__name__
+        save()
+        raise
+    finally:
+        for key, value in previous.items():
+            if value is None:
+                os.environ.pop(key, None)
+            else:
+                os.environ[key] = value
+    return report
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--suite", type=Path, default=MEDICAL / "evaluation" / "suite_v1.json")
+    parser.add_argument("--corpus", type=Path, default=MEDICAL / "source_corpus")
+    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--group", action="append")
+    parser.add_argument("--profiles", nargs="+", choices=PROFILES, default=list(PROFILES))
+    parser.add_argument("--k", type=int, default=5)
+    args = parser.parse_args()
+    run_experiment(args.suite, args.corpus, args.output, args.group, args.profiles, args.k)
+
+
+if __name__ == "__main__":
+    main()

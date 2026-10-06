@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "hash_scheme": "canonical-json-v1",
+  "suite_id": "aide-chinese-retrieval-baseline-v1",
+  "evaluation_date": "2026-10-06",
+  "authorship": "developer_authored_not_external_blind",
+  "groups": [
+    {
+      "name": "legacy-development",
+      "purpose": "development",
+      "path": "../eval_cases_research.json",
+      "sha256": "6c4419c16bdb40cc799dbb5295820a4450dae6f5c19ad83b472f16f316da49e4",
+      "count": 111,
+      "allow_historical_missing_ids": true
+    },
+    {
+      "name": "legacy-regression",
+      "purpose": "regression",
+      "path": "../eval_cases_validation_v1.json",
+      "sha256": "6cf26a8a0c768d762bd61e3e7931506642fa37b2e702f3296fd807580ab28510",
+      "count": 33,
+      "allow_historical_missing_ids": true
+    },
+    {
+      "name": "chinese-symptoms",
+      "purpose": "topic_acceptance",
+      "path": "../eval_cases_chinese_symptoms_v1.json",
+      "sha256": "92714ccb10798fee282bd0bcfbbd14d1c26b9be5a126a5eb8b3ac3a93143fb1a",
+      "count": 10,
+      "allow_historical_missing_ids": false
+    }
+  ]
+}
