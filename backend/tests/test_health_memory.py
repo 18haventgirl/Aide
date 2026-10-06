@@ -13,6 +13,7 @@ from core.database_core import DatabaseClient
 from core.database_core.config import DatabaseConfig
 from service.models.health_record import HealthRecord
 from service.models.health_record_receipt import HealthRecordReceipt
+from service.models.health_record_revision import HealthRecordVersion, HealthRecordRevision
 from service.services.health_record_service import HealthRecordService, HealthRecordConflict
 from service.services.health_time import resolve_health_time, HealthTimeClarification
 
@@ -104,6 +105,9 @@ class HealthMemoryTests(unittest.TestCase):
             ids = [job.result(timeout=10).id for job in jobs]
         self.assertEqual(ids[0], ids[1])
         self.assertEqual(self.count(), (1, 1))
+        with self.db.get_session() as session:
+            self.assertEqual(session.query(HealthRecordVersion).count(), 1)
+            self.assertEqual(session.query(HealthRecordRevision).count(), 1)
 
     def test_same_key_different_users_are_independent(self):
         one = self.service.create_record(1, **self.facts, idempotency_key="same")
@@ -144,6 +148,56 @@ class HealthMemoryTests(unittest.TestCase):
         with patch.object(self.db, "get_session", side_effect=RuntimeError("synthetic offline")):
             with self.assertRaises(RuntimeError):
                 self.service.list_records(1)
+
+    def test_revision_history_and_stale_updates(self):
+        record = self.service.create_record(1, **self.facts)
+        updated = self.service.update_record(1, record.id, expected_revision=1,
+            actor_message_id="message-2", summary="用户补充合成情况")
+        self.assertEqual(updated.to_dict()["revision"], 2)
+        with self.assertRaisesRegex(HealthRecordConflict, "revision_conflict"):
+            self.service.update_record(1, record.id, expected_revision=1, summary="过期更新")
+        history = self.service.get_history(1, record.id)
+        self.assertEqual(len(history), 2)
+        self.assertEqual(history[0]["before"]["summary"], "合成测试")
+        self.assertEqual(history[0]["after"]["summary"], "用户补充合成情况")
+        self.assertEqual(history[0]["actor_message_id"], "message-2")
+        self.assertIsNone(self.service.get_history(2, record.id))
+
+    def test_history_failure_rolls_back_record_and_revision(self):
+        record = self.service.create_record(1, **self.facts)
+        with patch.object(self.service, "_history", side_effect=RuntimeError("injected history failure")):
+            with self.assertRaises(RuntimeError):
+                self.service.update_record(1, record.id, summary="不能部分保存")
+        current = self.service.get_record(1, record.id)
+        self.assertEqual(current.summary, "合成测试")
+        self.assertEqual(current.to_dict()["revision"], 1)
+        self.assertEqual(len(self.service.get_history(1, record.id)), 1)
+
+    def test_noop_correction_does_not_increment_revision(self):
+        record = self.service.create_record(1, **self.facts)
+        result = self.service.update_record(1, record.id, summary="合成测试")
+        self.assertEqual(result.to_dict()["revision"], 1)
+        self.assertEqual(len(self.service.get_history(1, record.id)), 1)
+
+    def test_concurrent_corrections_do_not_silently_overwrite(self):
+        record = self.service.create_record(1, **self.facts)
+        barrier = threading.Barrier(2)
+        original = self.service._advance_revision
+        def synchronized(*args):
+            barrier.wait(timeout=5)
+            return original(*args)
+        with patch.object(self.service, "_advance_revision", synchronized), ThreadPoolExecutor(max_workers=2) as pool:
+            jobs = [pool.submit(self.service.update_record, 1, record.id, expected_revision=1, summary=value)
+                    for value in ("更正A", "更正B")]
+            outcomes = []
+            for job in jobs:
+                try:
+                    outcomes.append(job.result(timeout=10))
+                except HealthRecordConflict:
+                    outcomes.append(None)
+        self.assertEqual(sum(value is not None for value in outcomes), 1)
+        self.assertEqual(self.service.get_record(1, record.id).to_dict()["revision"], 2)
+        self.assertEqual(len(self.service.get_history(1, record.id)), 2)
 
     def test_additive_schema_keeps_existing_records_and_is_repeatable(self):
         from service.services.health_record_admin import prepare

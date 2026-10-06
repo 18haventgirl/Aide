@@ -63,6 +63,7 @@ class AgentSession:
         # 初始化状态
         self._initialized = False
         self._closed = False
+        self._last_saved_user_message_id: Optional[str] = None
     
     async def initialize(self, conversation_title: str = "New Conversation") -> bool:
         """
@@ -81,6 +82,8 @@ class AgentSession:
             
             # 尝试获取现有会话
             self._conversation = self.conversation_service.get_conversation_by_id_str(self.conversation_id_str)
+            if self._conversation is not None and self._conversation.user_id != self.user_id:
+                return False
             
             # 如果会话不存在，创建新会话
             if self._conversation is None:
@@ -241,7 +244,11 @@ class AgentSession:
         
         self._state["current_agent"] = agent_name
     
-    async def save_message(self, content: str, role: str, sender_id: Optional[str] = None, 
+    @property
+    def last_saved_user_message_id(self) -> Optional[str]:
+        return self._last_saved_user_message_id
+
+    async def save_message(self, content: str, role: str, sender_id: Optional[str] = None,
                           extra_data: Optional[Dict[str, Any]] = None) -> bool:
         """
         保存消息到数据库和缓存
@@ -282,6 +289,8 @@ class AgentSession:
             
             # 添加到缓存
             self._message_cache.append(message)
+            if role == "user":
+                self._last_saved_user_message_id = str(message.id)
             
             # 维护缓存大小
             if len(self._message_cache) > self.max_messages:
@@ -495,7 +504,8 @@ class AgentSessionManager:
         
         # 如果会话已存在，直接返回
         if conversation_id in self._sessions:
-            return self._sessions[conversation_id]
+            cached = self._sessions[conversation_id]
+            return cached if cached.user_id == self.default_user_id else None
         
         # 创建新会话
         session = AgentSession(

@@ -19,7 +19,6 @@ from news_tools import register_news_tools
 from recipe_tools import register_recipe_tools
 from user_data_tools import register_user_data_tools
 from medical_tools import register_medical_tools
-from health_tools import register_health_tools
 from medical.runtime import warmup_medical_models
 
 # Import database initialization components
@@ -40,8 +39,6 @@ user_data_mcp = FastMCP("UserData")
 register_user_data_tools(user_data_mcp)  # Register user data tools
 medical_mcp = FastMCP("Medical")
 register_medical_tools(medical_mcp)
-health_mcp = FastMCP("HealthRecords")
-register_health_tools(health_mcp)
 
 mcp = FastMCP("MainApp")
 
@@ -108,7 +105,7 @@ async def create_mcp_server():
     await mcp.import_server(recipe_mcp, prefix="recipe")
     await mcp.import_server(user_data_mcp, prefix="user_data")
     await mcp.import_server(medical_mcp, prefix="medical")
-    await mcp.import_server(health_mcp, prefix="health")
+    # User health CRUD is executed by authenticated local SDK function tools.
 
     # Load the local embedding and reranking models before accepting health
     # queries. A failed warmup must not prevent the other assistants starting.

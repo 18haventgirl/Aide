@@ -63,6 +63,19 @@ class HealthApiTests(unittest.TestCase):
             response = self.client.get("/api/health-records/1")
         self.assertEqual(response.status_code, 500)
 
+    def test_revision_conflict_and_history_authorization(self):
+        record = self.service.create_record(1, observed_at=datetime(2026, 1, 1),
+            time_precision="day", record_type="symptom", title="合成记录")
+        route = f"/api/health-records/1/{record.id}"
+        updated = self.client.patch(route, json={"summary": "更正", "expected_revision": 1})
+        self.assertEqual(updated.status_code, 200)
+        self.assertEqual(updated.json()["data"]["revision"], 2)
+        stale = self.client.patch(route, json={"summary": "旧版本", "expected_revision": 1})
+        self.assertEqual(stale.status_code, 409)
+        history = self.client.get(route + "/history").json()["data"]["history"]
+        self.assertEqual(len(history), 2)
+        self.assertEqual(self.client.get(f"/api/health-records/2/{record.id}/history").status_code, 403)
+
 
 if __name__ == "__main__":
     unittest.main()

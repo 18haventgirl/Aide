@@ -52,4 +52,5 @@ class HealthRecord(BaseModel):
         if isinstance(time_metadata, dict):
             data["time_expression"] = time_metadata.get("expression", "")
         data.pop("details_json", None)
+        data["revision"] = getattr(self, "_record_revision", 1)
         return data

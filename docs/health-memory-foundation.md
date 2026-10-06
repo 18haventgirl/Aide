@@ -2,6 +2,8 @@
 
 日期：2026-10-06。对应主方案 M2a。M2b 的可信工具身份绑定、消息级自动幂等与更正历史，以及 M2c 的完整页面闭环尚未完成。
 
+同日后续：M2b实现见 `health-tool-context-and-history.md`；本文件保留M2a边界及验收。最新状态以portfolio-progress为准。
+
 ## 时间契约
 
 数据库仍存 China UTC+8 无时区墙钟时间，保持既有结构。HTTP 输入带 offset 时先转为中国时间，再去掉 tzinfo；不使用运行主机时区猜测用户日期。

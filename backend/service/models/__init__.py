@@ -11,6 +11,7 @@ from .conversation import Conversation
 from .chat_message import ChatMessage
 from .health_record import HealthRecord
 from .health_record_receipt import HealthRecordReceipt
+from .health_record_revision import HealthRecordVersion, HealthRecordRevision
 
 __all__ = [
     'UserPreference',
@@ -19,5 +20,7 @@ __all__ = [
     'Conversation',
     'ChatMessage',
     'HealthRecord',
-    'HealthRecordReceipt'
+    'HealthRecordReceipt',
+    'HealthRecordVersion',
+    'HealthRecordRevision'
 ] 

@@ -70,6 +70,8 @@ class PersonalAssistantContext(BaseModel):
     user_preferences: Dict[str, Dict[str, Any]]  # 用户偏好
     todos: List[Todo]  # 待办事项
     conversation_id: Optional[str] = Field(default=None, exclude=True)  # 当前会话ID，用于记录来源
+    health_message_id: Optional[str] = Field(default=None, exclude=True)
+    health_reference_at: Optional[datetime] = Field(default=None, exclude=True)
     
     def model_dump(self, **kwargs) -> Dict[str, Any]:
         """重写序列化方法，确保Todo对象可以被正确序列化"""
@@ -197,7 +199,9 @@ class PersonalAssistantManager:
         prefix = tool_mapping.get(agent_name)
         if prefix and tool.name.startswith(prefix):
             return True
-        return agent_name == "Medical Health Agent" and tool.name.startswith("health_")
+        # Health tools bind the authenticated local context instead of trusting
+        # model-provided user IDs over unauthenticated localhost MCP.
+        return False
     
     async def initialize(self) -> bool:
         """初始化所有服务和智能体"""
@@ -307,11 +311,13 @@ class PersonalAssistantManager:
             mcp_servers=self._mcp_servers(),
         )
 
+        from .health_tools import health_function_tools
         self.agents['medical'] = Agent[PersonalAssistantContext](
             name="Medical Health Agent",
             model=self.model,
             model_settings=ModelSettings(temperature=0.1, top_p=1.0),
             instructions=self._get_medical_instructions,
+            tools=health_function_tools(),
             mcp_servers=self._mcp_servers(),
         )
 
@@ -497,8 +503,8 @@ class PersonalAssistantManager:
         return (
             f"你是面向普通公众的健康陪伴助手，服务成年人。当前用户 ID 是 {context.context.user_id}，"
             f"当前会话 ID 是 {context.context.conversation_id or 'unknown'}，当前中国本地时间是 {local_now}。"
-            "调用健康记录工具时必须使用这个 user_id，"
-            "创建记录时将当前会话 ID 作为 source_conversation_id 传入。"
+            "健康记录工具由应用绑定当前用户、会话和消息来源，不需要也不得指定其他用户。"
+            "同一条用户消息的不同健康事实分别用稳定event_index=0、1等编号；重试同一事实使用原编号，不换编号重复创建。"
             "每次健康问题必须先调用一次 medical_search，再根据资料、通用医学常识和用户明确提供的事实回答。"
             "一次工具调用要使用能完整表达用户核心问题的查询，不要把同一问题拆成多个近义查询并行检索。"
             "当前问题是‘那怎么办、还需要吗、如果更严重呢’等依赖上文的短追问时，使用 prior_user_facts 传入必要的用户原话事实；"

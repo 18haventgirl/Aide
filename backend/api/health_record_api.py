@@ -32,6 +32,7 @@ class HealthRecordCreateRequest(BaseModel):
 
 
 class HealthRecordUpdateRequest(BaseModel):
+    expected_revision: Optional[int] = Field(default=None, ge=1)
     observed_at: Optional[datetime] = None
     time_precision: Optional[str] = Field(default=None, pattern="^(minute|day|unknown)$")
     record_type: Optional[str] = Field(default=None, pattern="^(symptom|vital|medication|visit)$")
@@ -128,6 +129,8 @@ async def update_health_record(
         changes["observed_at"] = _local_datetime(changes["observed_at"])
     try:
         record = _service().update_record(user_id, record_id, **changes)
+    except HealthRecordConflict as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from None
     except ValueError:
         raise HTTPException(status_code=422, detail="身体状况记录字段无效") from None
     if not record:
@@ -141,6 +144,21 @@ async def delete_health_record(
     current_user: Dict[str, Any] = CurrentUser,
 ):
     _ensure_owner(user_id, current_user)
-    if not _service().delete_record(user_id, record_id):
+    try:
+        deleted = _service().delete_record(user_id, record_id)
+    except HealthRecordConflict:
+        raise HTTPException(status_code=409, detail="记录已更新，请刷新后重试") from None
+    if not deleted:
         return not_found_response("身体状况记录不存在")
     return success_response({"id": record_id}, "身体状况记录已删除")
+
+
+@health_record_router.get("/{user_id}/{record_id}/history")
+async def health_record_history(user_id: int, record_id: int,
+                               limit: int = Query(default=100, ge=1, le=500),
+                               current_user: Dict[str, Any] = CurrentUser):
+    _ensure_owner(user_id, current_user)
+    history = _service().get_history(user_id, record_id, limit)
+    if history is None:
+        return not_found_response("身体状况记录不存在")
+    return success_response({"history": history, "record_id": record_id}, "成功获取更正历史")

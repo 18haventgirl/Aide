@@ -2,6 +2,8 @@
 
 本模块由 Aide 的 Triage 路由至 Medical Health Agent，提供来源可追溯的中文健康科普；前端不再依赖“健康知识”开关。范围是中国大陆成年人一般健康知识与保守就医引导。它不提供个人诊断、处方、剂量或改药建议。尚未计划公开上线。
 
+2026-10-06：健康事实读写工具改为绑定后端鉴权上下文的SDK FunctionTool；`medical_search`仍走MCP。详见 `docs/health-tool-context-and-history.md` 与 `docs/portfolio-upgrade-plan.md`。这是工具身份和记忆可靠性升级，不是医学效果验证。
+
 ## 数据与模型
 
 - `source_pipeline.py` 对照 2024 年正式《健康素养 66 条》与国务院网站托管的正式释义 PDF，生成 66 条记录；另有北京、广州卫健委各一条常见症状就医资料。原文及 SHA256 记在 `source_downloads/` 和 `source_corpus/source_manifest.json`。原文下载目录被 Git 忽略。

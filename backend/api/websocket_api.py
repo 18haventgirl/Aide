@@ -713,7 +713,9 @@ async def handle_stream_chat(user_id: str, message: str, connection_id: str, aut
         
         # 获取用户上下文（使用缓存）
         try:
-            ctx = initialize_context(int(user_id))
+            # Performance manager caches a user context. Give each run its own
+            # snapshot so another conversation cannot change its provenance.
+            ctx = initialize_context(int(user_id)).model_copy(deep=True)
             logger.debug(f"✅ 用户 {user_id} 上下文已获取（缓存优化）")
         except Exception as e:
             logger.error(f"获取用户上下文失败: {e}")
@@ -860,7 +862,11 @@ async def handle_stream_chat(user_id: str, message: str, connection_id: str, aut
         agent_session.set_current_agent(triage_agent.name if triage_agent else "Medical Knowledge Agent")
         
         # 保存用户消息到会话
-        await agent_session.save_message(message, "user")
+        if not await agent_session.save_message(message, "user"):
+            raise RuntimeError("无法保存用户消息，未开始模型或健康记录操作")
+        from service.services.health_time import china_local_datetime
+        ctx.health_message_id = agent_session.last_saved_user_message_id
+        ctx.health_reference_at = china_local_datetime()
         
         # 获取完整的会话历史（包含新添加的用户消息）
         session_state = agent_session.get_state()
