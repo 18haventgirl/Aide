@@ -14,19 +14,16 @@ export function PanelSection({
   const [isOpen, setIsOpen] = useState(defaultOpen);
 
   return (
-    <div className="border-b border-border/40 pb-3 last:border-b-0">
-      <div
-        className={`flex items-center justify-between mb-2.5 px-1 ${collapsible ? "cursor-pointer" : ""}`}
-        onClick={() => collapsible && setIsOpen(!isOpen)}
-      >
-        <h3 className="text-sm font-heading font-semibold text-foreground/80">{title}</h3>
+    <div className="surface-card min-w-0 overflow-hidden">
+      <div className="flex items-center justify-between border-b border-border px-5 py-4">
+        <h3 className="text-sm font-semibold">{title}</h3>
         {collapsible && (
-          <button className="p-1 rounded hover:bg-muted transition-colors">
+          <button onClick={() => setIsOpen(!isOpen)} aria-label={`${isOpen ? '收起' : '展开'}${title}`} aria-expanded={isOpen} className="rounded p-1 hover:bg-muted">
             {isOpen ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}
           </button>
         )}
       </div>
-      {isOpen && <div>{children}</div>}
+      {isOpen && <div className="p-5">{children}</div>}
     </div>
   );
 }

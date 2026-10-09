@@ -54,17 +54,8 @@ export function RunnerOutput({ runnerEvents }: RunnerOutputProps) {
 
   return (
     <div className="min-w-0 space-y-3">
-      <div className="flex items-center gap-2">
-        <Terminal className="h-4 w-4 text-gray-600" />
-        <h3 className="font-semibold text-sm text-gray-900">
-          运行输出
-        </h3>
-      </div>
-      
       {runnerEvents.length === 0 && (
-        <div className="text-xs text-gray-500 italic">
-          暂无运行事件
-        </div>
+        <div className="flex items-center gap-3 py-4 text-sm text-muted-foreground"><Terminal className="h-5 w-5" />任务开始后，运行事件将在这里展示。</div>
       )}
       
       <div className="space-y-2 max-h-64 overflow-y-auto">

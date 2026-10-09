@@ -139,21 +139,21 @@ export function NotesPanel({ userId }: NotesPanelProps) {
   const sc = (s: string) => ({ draft: 'bg-gray-100 text-gray-600', published: 'bg-green-100 text-green-700', archived: 'bg-yellow-100 text-yellow-700' }[s] || 'bg-gray-100');
 
   return (
-    <div className="h-full flex flex-col">
+    <div className="h-full min-h-0 flex flex-col">
       {/* Compact header */}
-      <div className="flex items-center justify-between px-3 py-2 border-b border-border/30">
+      <div className="flex shrink-0 items-center justify-between border-b border-border px-5 py-4">
         <h3 className="text-sm font-heading font-semibold text-foreground/80 flex items-center gap-1.5">
           <FileText className="w-3.5 h-3.5" />笔记
         </h3>
         <div className="flex items-center gap-1">
           <button onClick={toggleSearchPanel} className={`p-1.5 rounded-md transition-colors ${showFilters ? 'bg-primary/10 text-primary' : 'hover:bg-muted text-muted-foreground'}`} title={showFilters ? '退出搜索' : '搜索'}><Search className="w-3.5 h-3.5" /></button>
-          <button onClick={() => { setEditing(null); setForm({ title: '', content: '', tag: '', status: 'draft' }); setShowForm(true); }} className="p-1.5 rounded-md hover:bg-primary/10 text-primary transition-colors" title="新建笔记"><Plus className="w-3.5 h-3.5" /></button>
+          <button onClick={() => { setEditing(null); setForm({ title: '', content: '', tag: '', status: 'draft' }); setShowForm(true); }} className="p-1.5 rounded-md hover:bg-primary/10 text-primary transition-colors" title="新建笔记"><span className="flex items-center gap-1.5 px-1 text-xs"><Plus className="w-4 h-4" />新建笔记</span></button>
         </div>
       </div>
 
       {/* Collapsible filter bar */}
       {showFilters && (
-        <div className="px-3 py-2 border-b border-border/30 bg-muted/20 space-y-2 animate-fade-in">
+        <div className="px-5 py-3 border-b border-border bg-muted/20 space-y-2 animate-fade-in">
           <div className="relative">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
             <input value={searchQ} onChange={e => setSearchQ(e.target.value)} onKeyDown={e => e.key === 'Enter' && search()} placeholder="搜索..." className="w-full pl-8 pr-8 py-1.5 text-xs border border-border rounded-lg focus:ring-1 focus:ring-primary outline-none bg-white" />
@@ -176,17 +176,17 @@ export function NotesPanel({ userId }: NotesPanelProps) {
       )}
 
       {/* List */}
-      <div className="flex-1 overflow-y-auto scrollbar-thin">
+      <div className="min-h-0 flex-1 overflow-y-auto scrollbar-thin">
         {loading ? (
           <div className="flex justify-center py-8"><div className="w-6 h-6 rounded-full border-2 border-primary border-t-transparent animate-spin" /></div>
         ) : searchError && showFilters ? (
           <div role="alert" className="text-center py-8 text-xs text-destructive">{searchError}<button onClick={search} className="ml-2 underline">重试</button></div>
         ) : displayedNotes.length === 0 ? (
-          <div className="text-center py-8 text-xs text-muted-foreground">{showFilters && searchQ.trim() ? '未找到相关笔记' : '暂无笔记'}</div>
+          <div className="flex flex-col items-center px-6 py-20 text-center"><span className="mb-4 rounded-xl bg-muted p-3"><FileText className="h-6 w-6 text-muted-foreground" /></span><h3 className="text-sm font-medium">{showFilters && searchQ.trim() ? '未找到相关笔记' : '给灵感一个落脚点'}</h3><p className="mt-2 text-xs leading-6 text-muted-foreground">{showFilters && searchQ.trim() ? '试试其他关键词，或调整筛选条件。' : '点击右上角新建，记下第一条笔记。'}</p></div>
         ) : (
-          <div className="p-2 space-y-1.5">
+          <div className="grid gap-3 p-4 lg:grid-cols-2 xl:grid-cols-3">
             {displayedNotes.map(n => (
-              <div key={n.id} onClick={() => openDetail(n)} className="group px-3 py-2 rounded-lg hover:bg-muted/50 transition-colors relative cursor-pointer">
+              <div key={n.id} onClick={() => openDetail(n)} className="group relative cursor-pointer rounded-xl border border-border p-4 transition-colors hover:border-primary/30 hover:bg-primary/[0.02]">
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex-1 min-w-0">
                     <h4 className="text-sm font-medium text-foreground truncate">{n.title}</h4>
@@ -199,7 +199,7 @@ export function NotesPanel({ userId }: NotesPanelProps) {
                   </div>
                   {/* ... menu */}
                   <div className="relative" onClick={e => e.stopPropagation()} ref={menuOpen === n.id ? menuRef : undefined}>
-                    <button onClick={(e) => { e.stopPropagation(); setMenuOpen(menuOpen === n.id ? null : n.id); }} className="p-1 rounded-md hover:bg-muted opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button onClick={(e) => { e.stopPropagation(); setMenuOpen(menuOpen === n.id ? null : n.id); }} className="p-1 rounded-md hover:bg-muted text-muted-foreground transition-colors hover:text-foreground">
                       <MoreHorizontal className="w-3.5 h-3.5 text-muted-foreground" />
                     </button>
                     {menuOpen === n.id && (
@@ -234,14 +234,14 @@ export function NotesPanel({ userId }: NotesPanelProps) {
               <button onClick={() => { setShowForm(false); setEditing(null); }} className="p-1.5 rounded-lg hover:bg-muted"><X className="w-4 h-4" /></button>
             </div>
             <div className="space-y-3">
-              <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="w-full px-3 py-2 text-sm border rounded-xl focus:ring-2 focus:ring-primary outline-none" placeholder="标题" />
-              <textarea value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} className="w-full px-3 py-2 text-sm border rounded-xl focus:ring-2 focus:ring-primary outline-none" rows={4} placeholder="内容" />
+              <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="field-control" placeholder="标题" />
+              <textarea value={form.content} onChange={e => setForm({ ...form, content: e.target.value })} className="field-control" rows={4} placeholder="内容" />
               <div className="flex gap-3">
-                <select value={form.tag} onChange={e => setForm({ ...form, tag: e.target.value })} className="flex-1 px-3 py-2 text-sm border rounded-xl focus:ring-2 focus:ring-primary outline-none bg-white">
+                <select value={form.tag} onChange={e => setForm({ ...form, tag: e.target.value })} className="field-control min-w-0 flex-1 bg-white">
                   <option value="">选择标签</option>
                   {PREDEFINED_TAGS.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
                 </select>
-                <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value })} className="flex-1 px-3 py-2 text-sm border rounded-xl focus:ring-2 focus:ring-primary outline-none bg-white">
+                <select value={form.status} onChange={e => setForm({ ...form, status: e.target.value })} className="field-control min-w-0 flex-1 bg-white">
                   <option value="draft">草稿</option><option value="published">已发布</option><option value="archived">已归档</option>
                 </select>
               </div>

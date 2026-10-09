@@ -156,16 +156,17 @@ export function ConversationList({
 
   return (
     <div className="absolute inset-0 z-50 bg-black/30 backdrop-blur-sm flex items-start justify-end">
-      <div className="bg-white/95 backdrop-blur-glass w-80 h-full shadow-xl flex flex-col border-l border-border/30 animate-slide-in-right">
+      <div className="bg-card w-80 max-w-full h-full shadow-xl flex flex-col border-l border-border animate-slide-in-right">
         {/* Header */}
-        <div className="h-12 bg-gradient-to-r from-primary to-blue-600 text-white px-4 flex items-center justify-between">
+        <div className="h-16 shrink-0 border-b border-border px-5 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <MessageSquare className="h-4.5 w-4.5" />
+            <MessageSquare className="h-4 w-4 text-primary" />
             <h2 className="font-heading font-semibold text-sm">会话列表</h2>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg hover:bg-white/20 transition-colors"
+            aria-label="关闭会话记录"
+            className="p-1.5 rounded-lg hover:bg-muted transition-colors"
           >
             <X className="h-4 w-4" />
           </button>

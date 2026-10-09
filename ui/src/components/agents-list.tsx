@@ -12,9 +12,9 @@ export function AgentsList({ agents, currentAgent }: AgentsListProps) {
       {agents.map((agent, agentIndex) => (
         <div
           key={`agent-${agentIndex}-${agent.name}`}
-          className={`min-w-0 overflow-hidden p-4 rounded-lg border-2 transition-all ${
+          className={`min-w-0 overflow-hidden p-4 rounded-lg border transition-colors ${
             currentAgent === agent.name
-              ? "border-blue-500 bg-blue-50"
+              ? "border-primary/40 bg-primary/5"
               : "border-gray-200 bg-white hover:border-gray-300"
           }`}
         >
@@ -29,7 +29,7 @@ export function AgentsList({ agents, currentAgent }: AgentsListProps) {
             </div>
             {currentAgent === agent.name && (
               <Badge variant="default" className="ml-2">
-                Active
+                运行中
               </Badge>
             )}
           </div>

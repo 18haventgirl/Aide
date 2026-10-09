@@ -4,8 +4,9 @@ import { useForm } from 'react-hook-form';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { login, clearError } from '../store/slices/authSlice';
 import type { LoginCredentials } from '../lib/types';
+import { AppLogo } from '../components/app-logo';
 import { Button } from '../components/ui/button';
-import { Eye, EyeOff, Lock, User, AlertCircle, Loader2, Bot, Zap } from 'lucide-react';
+import { Eye, EyeOff, Lock, User, AlertCircle, Loader2, FileText, MessageCircle, CheckCircle2 } from 'lucide-react';
 
 const Login: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -39,28 +40,24 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen relative flex items-center justify-center p-4 overflow-hidden">
-      {/* Decorative background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-indigo-50" />
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-bl from-blue-200/30 to-primary/10 rounded-full translate-x-1/3 -translate-y-1/3 blur-3xl" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-indigo-200/20 to-blue-100/30 rounded-full -translate-x-1/4 translate-y-1/4 blur-3xl" />
-
-      {/* Card */}
-      <div className="relative w-full max-w-md">
-        <div className="bg-white/75 backdrop-blur-[16px] rounded-2xl p-8 shadow-xl animate-fade-in" style={{ WebkitBackdropFilter: 'blur(16px)', border: '1px solid rgba(37,99,235,0.15)' }}>
-          {/* Logo */}
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-blue-600 shadow-lg shadow-primary/25 mb-5">
-              <Bot className="w-8 h-8 text-white" />
-            </div>
-            <h1 className="text-2xl font-heading font-bold text-foreground">
-              Aide
-            </h1>
-            <p className="text-muted-foreground mt-1.5">
-              智能个人日常助手
-            </p>
-          </div>
-
+    <div className="app-shell grid overflow-y-auto lg:grid-cols-2">
+      <aside className="hidden flex-col justify-between bg-[#141e30] p-12 text-white lg:flex xl:p-16">
+        <AppLogo />
+        <div className="max-w-md py-12">
+          <p className="mb-5 text-xs font-medium tracking-[0.25em] text-blue-300">YOUR EVERYDAY ASSISTANT</p>
+          <h1 className="text-4xl font-semibold leading-[1.5] tracking-tight">让日常井然有序，<br />让记录清晰可循。</h1>
+          <p className="mt-6 text-sm leading-8 text-slate-400">从随手记下的想法，到每一次就诊的细节。<br />Aide 帮你把重要的信息，放在触手可及的地方。</p>
+          <div className="mt-10 flex flex-wrap gap-3">{[[MessageCircle, '智能对话'], [FileText, '病历解析'], [CheckCircle2, '日常管理']].map(([Icon, label]) => {
+            const FeatureIcon = Icon as typeof MessageCircle;
+            return <span key={label as string} className="inline-flex items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-xs text-slate-300"><FeatureIcon className="h-4 w-4 text-blue-300" />{label as string}</span>;
+          })}</div>
+        </div>
+        <p className="text-xs text-slate-500">Aide · 个人智能工作空间</p>
+      </aside>
+      <main className="flex items-center justify-center bg-card px-6 py-12 sm:px-12">
+        <div className="w-full max-w-sm">
+          <div className="mb-12 lg:hidden"><AppLogo /></div>
+          <div className="mb-8"><h2 className="text-2xl font-semibold tracking-tight">欢迎回来</h2><p className="mt-3 text-sm text-muted-foreground">登录 Aide，继续你的个人工作空间。</p></div>
           {/* Error */}
           {error && (
             <div className="mb-6 p-3.5 bg-destructive/10 border border-destructive/20 rounded-xl flex items-center gap-3 animate-fade-in">
@@ -72,18 +69,19 @@ const Login: React.FC = () => {
           {/* Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div className="space-y-1.5">
-              <label className="block text-sm font-medium text-foreground/80 ml-1">
+              <label htmlFor="login-username" className="block text-sm font-medium text-foreground">
                 用户名
               </label>
               <div className="relative">
-                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-muted-foreground/50" />
+                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
                 <input
+                  id="login-username"
                   {...register('username', {
                     required: '请输入用户名',
                     minLength: { value: 2, message: '用户名至少2个字符' },
                   })}
                   type="text"
-                  className="w-full pl-10 pr-4 py-3 bg-muted/50 border border-border rounded-xl focus:ring-2 focus:ring-ring focus:border-transparent outline-none transition-all text-sm placeholder:text-muted-foreground/50"
+                  className="field-control h-12 pl-10 pr-4"
                   placeholder="请输入用户名"
                   autoComplete="username"
                 />
@@ -94,18 +92,19 @@ const Login: React.FC = () => {
             </div>
 
             <div className="space-y-1.5">
-              <label className="block text-sm font-medium text-foreground/80 ml-1">
+              <label htmlFor="login-password" className="block text-sm font-medium text-foreground">
                 密码
               </label>
               <div className="relative">
-                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4.5 w-4.5 text-muted-foreground/50" />
+                <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground/50" />
                 <input
+                  id="login-password"
                   {...register('password', {
                     required: '请输入密码',
                     minLength: { value: 6, message: '密码至少6个字符' },
                   })}
                   type={showPassword ? 'text' : 'password'}
-                  className="w-full pl-10 pr-12 py-3 bg-muted/50 border border-border rounded-xl focus:ring-2 focus:ring-ring focus:border-transparent outline-none transition-all text-sm placeholder:text-muted-foreground/50"
+                  className="field-control h-12 pl-10 pr-12"
                   placeholder="请输入密码"
                   autoComplete="current-password"
                 />
@@ -129,7 +128,7 @@ const Login: React.FC = () => {
 
             <Button
               type="submit"
-              className="w-full bg-gradient-to-r from-primary to-blue-600 hover:from-primary/90 hover:to-blue-600/90 text-white font-semibold py-3 rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-primary/20 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none disabled:active:scale-100"
+              className="h-12 w-full"
               disabled={isLoading}
             >
               {isLoading ? (
@@ -145,13 +144,13 @@ const Login: React.FC = () => {
 
           {/* Footer */}
           <div className="mt-6 pt-5 border-t border-border/50 text-center">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-muted/50 rounded-full text-xs text-muted-foreground">
-              <Zap className="w-3 h-3 text-warning" />
+            <div className="text-xs leading-6 text-muted-foreground">
+
               <span>测试账号：admin / 密码：admin123456</span>
             </div>
           </div>
         </div>
-      </div>
+      </main>
     </div>
   );
 };

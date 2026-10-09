@@ -1,4 +1,5 @@
 import { Bot } from "lucide-react";
+import { WorkspaceHeader } from './workspace-header';
 import type { Agent, AgentEvent, GuardrailCheck } from "../lib/types";
 import { AgentsList } from "./agents-list";
 import { ConversationContext } from "./conversation-context";
@@ -22,18 +23,13 @@ export function AgentPanel({
   const runnerEvents = events.filter((e) => e.type !== "message");
 
   return (
-    <div className="w-full h-full min-w-0 flex flex-col bg-transparent">
-      <div className="bg-gradient-to-r from-primary to-blue-600 text-white h-12 px-4 flex items-center gap-3 shadow-sm md:rounded-t-xl flex-shrink-0">
-        <Bot className="h-5 w-5" />
-        <h1 className="font-semibold text-sm sm:text-base lg:text-lg">Agent View</h1>
-        <span className="ml-auto text-xs font-light tracking-wide opacity-80">
-          &nbsp;Personal Assistant
-        </span>
-      </div>
+    <div className="w-full h-full min-h-0 min-w-0 flex flex-col">
+      <WorkspaceHeader title="智能体" description="了解助手如何协作，查看当前任务与运行过程。" />
 
-      <div className="flex-1 min-h-0 min-w-0 overflow-y-auto p-4 md:p-6 bg-gray-50 space-y-4 md:space-y-6">
-        <PanelSection title="代理状态" defaultOpen={true}>
-          <AgentsList agents={agents} currentAgent={currentAgent} />
+      <div className="flex-1 min-h-0 min-w-0 overflow-y-auto px-5 pb-5 sm:px-8 sm:pb-8">
+        <div className="mx-auto grid max-w-6xl items-start gap-5 xl:grid-cols-2">
+        <PanelSection title="智能体状态" defaultOpen={true}>
+          {agents.length > 0 ? <AgentsList agents={agents} currentAgent={currentAgent} /> : <div className="flex flex-col items-center px-4 py-10 text-center"><span className="mb-4 rounded-xl bg-muted p-3"><Bot className="h-6 w-6 text-muted-foreground" /></span><p className="text-sm font-medium">等待任务开始</p><p className="mt-2 max-w-xs text-xs leading-6 text-muted-foreground">连接聊天服务并发起对话后，参与任务的智能体会显示在这里。</p></div>}
         </PanelSection>
 
         {/* 安全护栏功能已暂时隐藏 */}
@@ -46,6 +42,7 @@ export function AgentPanel({
         </PanelSection>
         */}
 
+        <div className="min-w-0 space-y-5">
         <PanelSection title="对话上下文" defaultOpen={true}>
           <ConversationContext context={context} />
         </PanelSection>
@@ -53,6 +50,8 @@ export function AgentPanel({
         <PanelSection title="运行输出" defaultOpen={true}>
           <RunnerOutput runnerEvents={runnerEvents} />
         </PanelSection>
+        </div>
+        </div>
       </div>
     </div>
   );

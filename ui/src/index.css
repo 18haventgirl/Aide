@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -7,7 +5,7 @@
 @layer base {
   :root {
     /* === Semantic Color Tokens (SaaS Blue) === */
-    --background: 210 40% 98%;
+    --background: 220 25% 97%;
     --foreground: 222 47% 11%;
 
     --card: 0 0% 100%;
@@ -16,14 +14,14 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    --primary: 221 83% 53%;
+    --primary: 224 76% 56%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96%;
     --secondary-foreground: 222 47% 11%;
 
-    --accent: 25 95% 53%;
-    --accent-foreground: 0 0% 100%;
+    --accent: 220 30% 96%;
+    --accent-foreground: 222 35% 20%;
 
     --muted: 210 40% 96%;
     --muted-foreground: 215 16% 47%;
@@ -39,7 +37,7 @@
 
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 221 83% 53%;
+    --ring: 224 76% 56%;
 
     --radius: 0.75rem;
 
@@ -60,8 +58,9 @@
     margin: 0;
     padding: 0;
     width: 100%;
-    height: 100vh;
+    height: 100dvh;
     min-width: 320px;
+    font-size: 14px;
     overflow: hidden;
   }
 
@@ -75,67 +74,26 @@
 }
 
 @layer components {
-  /* === Glass Card === */
-  .glass-card {
-    @apply bg-white/70 backdrop-blur-glass border border-white/30 shadow-sm;
+  .app-shell { height: 100vh; height: 100dvh; }
+  .workspace-header {
+    @apply flex shrink-0 flex-wrap items-center justify-between gap-4 px-5 pb-5 pt-6 sm:px-8 sm:pb-6 sm:pt-8;
   }
-
-  .glass-card-strong {
-    @apply bg-white/85 backdrop-blur-glass border border-white/30 shadow-md;
+  .surface-card { @apply rounded-xl border border-border bg-card; }
+  .field-control {
+    @apply w-full rounded-lg border border-input bg-card px-3 py-2 text-sm leading-6 text-foreground outline-none transition-colors placeholder:text-muted-foreground/60 focus:border-primary focus:ring-2 focus:ring-primary/10 disabled:bg-muted/60 disabled:text-muted-foreground;
   }
-
-  .glass-frosted {
-    @apply bg-white/60 backdrop-blur-glass-lg border border-white/25 shadow-lg;
-  }
-
-  .glass-tinted {
-    @apply bg-gradient-to-br from-primary/5 via-white/70 to-blue-50/50 backdrop-blur-glass-lg border border-primary/10 shadow-md;
-  }
-
-  .glass-gradient-border {
-    @apply bg-white/75 backdrop-blur-glass shadow-lg;
-    border: 1px solid transparent;
-    background-clip: padding-box;
-    position: relative;
-  }
-
-  .glass-gradient-border::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(135deg, rgba(37,99,235,0.3), rgba(37,99,235,0.05), rgba(255,255,255,0.4));
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask-composite: exclude;
-    -webkit-mask-composite: xor;
-    pointer-events: none;
-  }
-
-  /* === Background Orbs === */
-  .bg-orb {
-    @apply absolute rounded-full blur-[80px] opacity-40 animate-float pointer-events-none;
-  }
-
-  .bg-orb-primary {
-    background: radial-gradient(circle, rgba(37,99,235,0.25), transparent 70%);
-  }
-
-  .bg-orb-accent {
-    background: radial-gradient(circle, rgba(234,88,12,0.12), transparent 70%);
-  }
-
-  .bg-orb-indigo {
-    background: radial-gradient(circle, rgba(99,102,241,0.15), transparent 70%);
+  /* Existing surfaces share the same opaque card treatment. */
+  .glass-card, .glass-card-strong, .glass-frosted, .glass-tinted, .glass-gradient-border {
+    @apply rounded-xl border border-border bg-card shadow-sm;
   }
 
   /* === Message Bubble === */
   .msg-user {
-    @apply bg-gradient-to-r from-primary to-blue-600 text-white rounded-2xl rounded-br-md shadow-md;
+    @apply bg-primary text-white rounded-2xl rounded-br-md;
   }
 
   .msg-ai {
-    @apply bg-white/80 backdrop-blur-sm border border-gray-100/50 text-foreground rounded-2xl rounded-bl-md shadow-sm;
+    @apply bg-card border border-border text-foreground rounded-2xl rounded-bl-md;
   }
 
   .msg-error {
@@ -143,7 +101,7 @@
   }
 
   .msg-streaming {
-    @apply bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200/60 rounded-2xl rounded-bl-md shadow-sm;
+    @apply bg-card border border-primary/20 rounded-2xl rounded-bl-md;
   }
 
   .msg-ai a,
@@ -226,25 +184,8 @@
   .chat-table-scroll tr:last-child td { border-bottom: 0; }
   .chat-table-scroll tbody tr:nth-child(even) { background: rgb(248 250 252 / 0.65); }
 
-  /* === Input Area === */
   .chat-input-container {
-    @apply bg-white/75 backdrop-blur-glass-lg rounded-2xl shadow-lg;
-    border: 1px solid transparent;
-    background-clip: padding-box;
-    position: relative;
-  }
-
-  .chat-input-container::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(135deg, rgba(37,99,235,0.25), rgba(255,255,255,0.2), rgba(37,99,235,0.08));
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask-composite: exclude;
-    -webkit-mask-composite: xor;
-    pointer-events: none;
+    @apply rounded-xl border border-input bg-card p-2 shadow-sm focus-within:border-primary/50 focus-within:ring-2 focus-within:ring-primary/10;
   }
 
   /* === Panel === */
@@ -316,10 +257,21 @@
 @layer base {
   button {
     border-radius: 8px;
-    border: 1px solid transparent;
     font-weight: 500;
     font-family: inherit;
     cursor: pointer;
-    transition: all 0.15s ease;
+    transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
   }
+}
+
+@layer base {
+  button:focus-visible, [role="tab"]:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 3px;
+  }
+  button:disabled { cursor: not-allowed; }
+  ::selection { background: hsl(var(--primary) / 0.16); }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 }

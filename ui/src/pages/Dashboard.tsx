@@ -10,9 +10,10 @@ import type { Agent, AgentEvent, GuardrailCheck, Message } from "../lib/types";
 import { createWebSocketService, getWebSocketService, type WebSocketConnectionStatus } from "../lib/websocket";
 import {
   Bot, MessageCircle, Wifi, WifiOff, RefreshCw, AlertTriangle, LogOut, User,
-  PanelLeftClose, PanelLeftOpen, ChevronLeft, Zap, ScanLine
+  ScanLine, ChevronRight
 } from "lucide-react";
 import { Button } from "../components/ui/button";
+import { AppLogo } from "../components/app-logo";
 
 /* ================================================================
    Session Persistence Helpers
@@ -49,10 +50,7 @@ const Dashboard: React.FC = () => {
   const { user, token } = useAppSelector((s) => s.auth);
 
   /* ---- UI state ---- */
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [sidebarTab, setSidebarTab] = useState<'agent' | 'person'>('agent');
-  const [mobileTab, setMobileTab] = useState<'chat' | 'agent' | 'person'>('chat');
-  const [workspace, setWorkspace] = useState<'chat' | 'medical-parser'>('chat');
+  const [workspace, setWorkspace] = useState<'chat' | 'medical-parser' | 'personal' | 'agents'>('chat');
   const [parserOpened, setParserOpened] = useState(false);
   const [healthRevision, setHealthRevision] = useState(0);
 
@@ -293,158 +291,82 @@ const Dashboard: React.FC = () => {
     disconnected: { icon: <WifiOff className="w-4 h-4" />, text: '断开', color: 'text-muted-foreground' },
   }[wsStatus];
 
-  /* ================================================================
-     RENDER
-     ================================================================ */
+  const navigation = [
+    { id: 'chat', label: '智能对话', icon: MessageCircle, description: '你的日常助手' },
+    { id: 'medical-parser', label: '病历解析', icon: ScanLine, description: '整理就诊信息' },
+    { id: 'personal', label: '个人数据', icon: User, description: '笔记、待办与健康' },
+    { id: 'agents', label: '智能体', icon: Bot, description: '查看协作过程' },
+  ] as const;
+  const selectWorkspace = (next: typeof workspace) => {
+    if (next === 'medical-parser') setParserOpened(true);
+    setWorkspace(next);
+  };
+  const activeNavigation = navigation.find(item => item.id === workspace)!;
+
   return (
     <ErrorBoundary>
-      <div className="h-screen flex flex-col overflow-hidden relative" style={{ background: 'linear-gradient(135deg, #eef2ff 0%, #f8fafc 40%, #f0f4ff 70%, #fce7f3 100%)' }}>
-        {/* ====== ANIMATED MESH GRADIENT BLOBS ====== */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-          <div className="absolute rounded-full bg-blue-400/40 w-[900px] h-[900px] -top-[25%] -right-[15%] blur-[100px]" style={{ animation: 'drift 18s ease-in-out infinite' }} />
-          <div className="absolute rounded-full bg-indigo-400/35 w-[700px] h-[700px] top-[25%] -left-[10%] blur-[90px]" style={{ animation: 'drift 22s ease-in-out infinite 3s' }} />
-          <div className="absolute rounded-full bg-purple-400/30 w-[600px] h-[600px] -bottom-[15%] left-[25%] blur-[80px]" style={{ animation: 'drift 20s ease-in-out infinite 6s' }} />
-          <div className="absolute rounded-full bg-amber-300/25 w-[500px] h-[500px] top-[40%] right-[10%] blur-[70px]" style={{ animation: 'drift 24s ease-in-out infinite 9s' }} />
-          <div className="absolute rounded-full bg-cyan-300/25 w-[400px] h-[400px] top-[60%] left-[50%] blur-[60px]" style={{ animation: 'drift 19s ease-in-out infinite 12s' }} />
+      <div className="app-shell flex overflow-hidden bg-background">
+        <aside className="hidden w-[216px] shrink-0 flex-col bg-[#141e30] text-white md:flex">
+          <div className="px-6 pb-9 pt-7"><AppLogo /></div>
+          <p className="px-6 pb-3 text-[10px] font-medium tracking-[0.2em] text-slate-500">工作空间</p>
+          <nav aria-label="主导航" className="space-y-1.5 px-3">
+            {navigation.map(({ id, label, icon: Icon }) => <button key={id}
+              onClick={() => selectWorkspace(id)} aria-current={workspace === id ? 'page' : undefined}
+              className={`flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm transition-colors ${workspace === id ? 'bg-primary text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}>
+              <Icon className="h-[18px] w-[18px]" /><span>{label}</span>
+              {workspace === id && <ChevronRight className="ml-auto h-3.5 w-3.5 opacity-70" />}
+            </button>)}
+          </nav>
+          <div className="mt-auto px-5 pb-5">
+            <div className="mb-5 rounded-xl border border-white/10 p-4">
+              <p className="flex items-center gap-2 text-xs font-medium text-slate-300"><ScanLine className="h-4 w-4 text-blue-400" />从原文到清晰记录</p>
+              <p className="mt-2 text-xs leading-6 text-slate-500">上传、核对、保存。让每一次就诊都有迹可循。</p>
+            </div>
+            <div className="flex items-center gap-3 border-t border-white/10 pt-5">
+              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-sm text-slate-200">{user?.username?.slice(0, 1).toUpperCase() || 'A'}</span>
+              <div className="min-w-0 flex-1"><p className="truncate text-sm text-slate-200">{user?.username}</p><p className="mt-0.5 text-[11px] text-slate-500">个人工作空间</p></div>
+              <Button variant="ghost" size="icon" onClick={handleLogout} aria-label="退出登录" className="h-8 w-8 text-slate-400 hover:bg-white/10 hover:text-white"><LogOut className="h-4 w-4" /></Button>
+            </div>
+          </div>
+        </aside>
+
+        <div className="flex min-w-0 flex-1 flex-col">
+          <header className="flex h-16 shrink-0 items-center justify-between border-b border-border bg-card px-4 sm:px-8">
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="md:hidden"><AppLogo compact /></div>
+              <span className="hidden text-xs text-muted-foreground md:inline">工作空间</span>
+              <ChevronRight className="hidden h-3.5 w-3.5 text-slate-300 md:block" />
+              <span className="text-sm font-medium">{activeNavigation.label}</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <span title={wsError || `聊天服务${statusConfig.text}`} className={`inline-flex items-center gap-1.5 text-xs ${statusConfig.color}`}>
+                {statusConfig.icon}<span className="hidden sm:inline">聊天服务 · {statusConfig.text}</span>
+              </span>
+              <Button variant="ghost" size="icon" onClick={handleLogout} aria-label="退出登录" className="h-8 w-8 text-muted-foreground md:hidden"><LogOut className="h-4 w-4" /></Button>
+            </div>
+          </header>
+
+          <main className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
+            <div className={`${workspace === 'chat' ? 'flex' : 'hidden'} min-h-0 flex-1 flex-col`}>
+              <Chat messages={messages} onSendMessage={handleSendMessage} isLoading={isLoading || isRestoring}
+                streamingResponse={streamingResponse} wsStatus={wsStatus} conversationId={conversationId}
+                onSelectConversation={handleSelectConversation} conversationListKey={conversationListKey} />
+            </div>
+            {parserOpened && <div className={`${workspace === 'medical-parser' ? 'flex' : 'hidden'} min-h-0 flex-1 flex-col`}>
+              <MedicalRecordParser key={user?.user_id} onSaved={() => setHealthRevision(value => value + 1)} />
+            </div>}
+            {workspace === 'personal' && <PersonDataPanel key={healthRevision} userId={parseInt(user?.user_id || '1')} />}
+            {workspace === 'agents' && <AgentPanel agents={agents} currentAgent={currentAgent} events={events} guardrails={guardrails} context={context} />}
+          </main>
+
+          <nav aria-label="移动端主导航" className="safe-bottom grid shrink-0 grid-cols-4 border-t border-border bg-card md:hidden">
+            {navigation.map(({ id, label, icon: Icon }) => <button key={id} onClick={() => selectWorkspace(id)}
+              aria-current={workspace === id ? 'page' : undefined}
+              className={`flex min-h-16 flex-col items-center justify-center gap-1 rounded-none text-[11px] ${workspace === id ? 'text-primary' : 'text-muted-foreground'}`}>
+              <span className={`rounded-lg px-4 py-1 ${workspace === id ? 'bg-primary/10' : ''}`}><Icon className="h-[18px] w-[18px]" /></span>{label}
+            </button>)}
+          </nav>
         </div>
-        <style>{`
-          @keyframes drift {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            25% { transform: translate(30px, -20px) scale(1.05); }
-            50% { transform: translate(-20px, 25px) scale(0.95); }
-            75% { transform: translate(-25px, -15px) scale(1.08); }
-          }
-        `}</style>
-
-        {/* ====== TOP BAR ====== */}
-        <header className="h-14 flex-shrink-0 bg-white/25 backdrop-blur-[30px] border-b border-white/30 z-10 px-4 flex items-center justify-between" style={{ WebkitBackdropFilter: 'blur(30px)' }}>
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="p-2 rounded-lg hover:bg-muted transition-colors hidden md:flex"
-              title={sidebarOpen ? '收起面板' : '展开面板'}
-            >
-              {sidebarOpen ? <PanelLeftClose className="w-4 h-4" /> : <PanelLeftOpen className="w-4 h-4" />}
-            </button>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center">
-                <Zap className="w-4 h-4 text-white" />
-              </div>
-              <h1 className="text-base font-heading font-semibold text-foreground">Aide</h1>
-            </div>
-            <div className={`flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-medium ${statusConfig.color} bg-muted/50`}>
-              {statusConfig.icon}
-              <span className="hidden sm:inline">{workspace === 'medical-parser' ? '聊天：' : ''}{statusConfig.text}</span>
-              {wsError && <span className="text-destructive/80 truncate max-w-[120px]">{wsError}</span>}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <div className="flex rounded-lg bg-muted/60 p-0.5" aria-label="工作区切换">
-              <button onClick={() => setWorkspace('chat')} className={`rounded-md px-2 py-1.5 text-xs ${workspace === 'chat' ? 'bg-white text-primary shadow-sm' : 'text-muted-foreground'}`}>聊天</button>
-              <button onClick={() => { setParserOpened(true); setWorkspace('medical-parser'); setMobileTab('chat'); }} className={`flex items-center gap-1 rounded-md px-2 py-1.5 text-xs ${workspace === 'medical-parser' ? 'bg-white text-teal-700 shadow-sm' : 'text-muted-foreground'}`}><ScanLine className="h-3.5 w-3.5" />病历解析</button>
-            </div>
-            <span className="text-sm text-muted-foreground hidden sm:block">{user?.username}</span>
-            <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center">
-              <User className="w-4 h-4 text-primary" />
-            </div>
-            <Button variant="ghost" size="sm" onClick={handleLogout} className="text-muted-foreground hover:text-destructive hover:bg-destructive/10">
-              <LogOut className="w-4 h-4" />
-            </Button>
-          </div>
-        </header>
-
-        {/* ====== MAIN CONTENT ====== */}
-        <div className="flex-1 flex overflow-hidden">
-          {/* Desktop: Sidebar */}
-          <div className={`${workspace === 'chat' ? 'hidden md:flex' : 'hidden'} flex-col transition-all duration-300 ease-in-out overflow-hidden ${sidebarOpen ? 'w-[340px] min-w-[340px] border-r border-border/30' : 'w-0 min-w-0'}`}>
-            {sidebarOpen && (
-              <div className="flex flex-col h-full">
-                {/* Tab switcher */}
-                <div className="flex border-b border-border/30 bg-muted/30">
-                  {(['agent', 'person'] as const).map(t => (
-                    <button
-                      key={t}
-                      onClick={() => setSidebarTab(t)}
-                      className={`flex-1 py-2.5 text-sm font-medium transition-colors ${
-                        sidebarTab === t
-                          ? 'text-primary border-b-2 border-primary bg-white/50'
-                          : 'text-muted-foreground hover:text-foreground'
-                      }`}
-                    >
-                      {t === 'agent' ? '智能体' : '个人数据'}
-                    </button>
-                  ))}
-                </div>
-                <div className="flex-1 overflow-hidden">
-                  {sidebarTab === 'agent' ? (
-                    <AgentPanel agents={agents} currentAgent={currentAgent} events={events} guardrails={guardrails} context={context} />
-                  ) : (
-                    <PersonDataPanel key={healthRevision} userId={parseInt(user?.user_id || "1")} />
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* Chat area */}
-          <div className={`${workspace === 'chat' ? 'flex' : 'hidden'} flex-1 flex-col min-w-0`}>
-            <Chat
-              messages={messages}
-              onSendMessage={handleSendMessage}
-              isLoading={isLoading || isRestoring}
-              streamingResponse={streamingResponse}
-              wsStatus={wsStatus}
-              conversationId={conversationId}
-              onSelectConversation={handleSelectConversation}
-              conversationListKey={conversationListKey}
-            />
-          </div>
-          {parserOpened && <div className={`${workspace === 'medical-parser' ? 'flex' : 'hidden'} relative z-[1] min-h-0 min-w-0 flex-1 flex-col`}>
-            <MedicalRecordParser key={user?.user_id} onSaved={() => setHealthRevision(value => value + 1)} />
-          </div>}
-        </div>
-
-        {/* ====== MOBILE BOTTOM NAV ====== */}
-        <div className="md:hidden flex-shrink-0 bg-white/40 backdrop-blur-[20px] border-t border-white/40 safe-bottom z-10" style={{ WebkitBackdropFilter: 'blur(30px)' }}>
-          <div className="flex">
-            {([
-              ['agent', Bot, '智能体'],
-              ['chat', MessageCircle, '聊天'],
-              ['person', User, '数据'],
-            ] as const).map(([tab, Icon, label]) => (
-              <button
-                key={tab}
-                onClick={() => setMobileTab(tab)}
-                className={`flex-1 py-2.5 flex flex-col items-center gap-0.5 text-xs font-medium transition-colors ${
-                  mobileTab === tab ? 'text-primary' : 'text-muted-foreground'
-                }`}
-              >
-                <Icon className="w-5 h-5" />
-                <span>{label}</span>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Mobile: Sidebar overlay */}
-        {mobileTab !== 'chat' && (
-          <div className="md:hidden fixed inset-0 top-14 bottom-[72px] z-20 flex flex-col bg-background animate-fade-in">
-            <div className="flex items-center gap-2 p-3 border-b border-border/30">
-              <button onClick={() => setMobileTab('chat')} className="p-1.5 rounded-lg hover:bg-muted">
-                <ChevronLeft className="w-5 h-5" />
-              </button>
-              <span className="font-medium text-sm">{mobileTab === 'agent' ? '智能体' : '个人数据'}</span>
-            </div>
-            <div className="flex-1 overflow-hidden">
-              {mobileTab === 'agent' ? (
-                <AgentPanel agents={agents} currentAgent={currentAgent} events={events} guardrails={guardrails} context={context} />
-              ) : (
-                <PersonDataPanel key={healthRevision} userId={parseInt(user?.user_id || "1")} />
-              )}
-            </div>
-          </div>
-        )}
       </div>
     </ErrorBoundary>
   );
