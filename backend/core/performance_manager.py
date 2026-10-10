@@ -7,6 +7,7 @@
 import asyncio
 import logging
 import time
+import os
 from typing import Dict, Optional, Any, List
 from threading import RLock
 from datetime import datetime, timedelta
@@ -53,31 +54,37 @@ class PerformanceManager:
         
         # 初始化状态
         self._initialized = False
+        self._initialization_task = None
     
     async def initialize(self) -> bool:
         """初始化性能管理器"""
         if self._initialized:
             return True
-        
-        with self._lock:
-            try:
-                self._logger.info("🚀 开始初始化性能管理器...")
-                
-                # 确保service_manager已初始化
-                if not service_manager.initialize():
-                    self._logger.error("❌ Service manager初始化失败")
-                    return False
-                
-                # 初始化全局assistant manager
-                await self._initialize_assistant_manager()
-                
-                self._initialized = True
-                self._logger.info("✅ 性能管理器初始化完成")
-                return True
-                
-            except Exception as e:
-                self._logger.error(f"❌ 性能管理器初始化失败: {e}")
+        if self._initialization_task is None or self._initialization_task.done():
+            self._initialization_task = asyncio.create_task(self._initialize_once(), name="aide-services-initialize")
+        return await asyncio.shield(self._initialization_task)
+
+    async def _initialize_once(self):
+        try:
+            if not service_manager.initialize():
                 return False
+            await self._initialize_assistant_manager()
+            self._initialized = True
+            return True
+        except Exception as exc:
+            self._logger.error("Performance manager initialization failed: %s", type(exc).__name__)
+            return False
+
+    async def aclose(self):
+        if self._initialization_task is not None and not self._initialization_task.done():
+            await asyncio.shield(self._initialization_task)
+        if self._assistant_manager is not None:
+            await self._assistant_manager.cleanup()
+        for manager in self._session_managers.values():
+            await manager.close()
+        self._session_managers.clear()
+        self.close()
+        self._initialization_task = None
     
     async def _initialize_assistant_manager(self):
         """初始化全局assistant manager单例"""
@@ -95,7 +102,7 @@ class PerformanceManager:
             # 创建assistant manager
             self._assistant_manager = PersonalAssistantManager(
                 db_client=db_client,
-                mcp_server_url="http://localhost:8002/mcp"
+                mcp_server_url=os.getenv("AIDE_MCP_SERVER_URL", "http://127.0.0.1:8002/mcp")
             )
             
             # 初始化assistant manager

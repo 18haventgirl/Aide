@@ -28,4 +28,13 @@ $proc.CommandLine='node "'+$testRoot+'\ui\node_modules\vite\bin\vite.js" --port 
 Assert-Equal (Get-AideProcessKind $proc $testRoot) 'UI'
 $proc.CommandLine='node D:\Other\ui\node_modules\vite\bin\vite.js'
 Assert-Equal (Get-AideProcessKind $proc $testRoot) 'Other'
-Write-Output '12 runtime ownership/port checks passed.'
+Assert-AidePortConfiguration 8004 8005
+Assert-Throws { Assert-AidePortConfiguration 8004 8004 }
+Assert-Equal (Select-AideFrontendPort @() 3000 @(3000,3001)) 3002
+Assert-Throws { Select-AideFrontendPort @($own) 3000 @(3002) }
+$api = [pscustomobject]@{Port=8004;Kind='API';ProcessId=6;Name='python.exe'}
+Assert-Equal (Select-AideServicePort @($api) 'API' 8000) 8004
+Assert-Equal (Select-AideServicePort @($api) 'API' 8000 $true) 8000
+Assert-Equal (Select-AideServicePort @() 'MCP' 8002) 8002
+Assert-Throws { Select-AideServicePort @($api,([pscustomobject]@{Port=8006;Kind='API'})) 'API' 8000 }
+Write-Output '20 runtime ownership/port checks passed.'

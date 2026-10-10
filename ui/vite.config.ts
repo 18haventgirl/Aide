@@ -1,6 +1,11 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
+const apiTarget = new URL(process.env.AIDE_API_BASE_URL || 'http://127.0.0.1:8000')
+if (!['http:', 'https:'].includes(apiTarget.protocol) || apiTarget.username || apiTarget.password || apiTarget.pathname !== '/') {
+  throw new Error('AIDE_API_BASE_URL must be an HTTP origin without credentials or a path')
+}
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
@@ -8,7 +13,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       '/api': {
-        target: 'http://localhost:8000',
+        target: apiTarget.origin,
         changeOrigin: true,
         secure: false,
         timeout: 10000,
@@ -19,7 +24,7 @@ export default defineConfig({
         }
       },
       '/ws': {
-        target: 'ws://localhost:8000',
+        target: apiTarget.origin.replace(/^http/, 'ws'),
         ws: true,
         changeOrigin: true,
         secure: false,

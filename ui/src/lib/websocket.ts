@@ -117,10 +117,7 @@ export class WebSocketService {
         wsUrl.searchParams.set('token', this.token);
       }
       
-      // 如果是开发环境，使用固定端口
-      if (import.meta.env.DEV) {
-        wsUrl.host = 'localhost:8000';
-      }
+      // Same-origin /ws uses the same configured proxy as the HTTP API.
       
       console.log('🌐 WebSocket 地址:', `${wsUrl.origin}${wsUrl.pathname}`);
       console.log('🔐 连接参数详情:', {
@@ -271,12 +268,14 @@ export class WebSocketService {
     switch (type) {
       case 'ai_response':
         this.emit('ai_response', content);
+        if (content?.type === 'completion') window.dispatchEvent(new Event('aide:health-records-changed'));
         break;
       case 'ai_thinking':
         this.emit('ai_thinking', content);
         break;
       case 'ai_finished':
         this.emit('ai_finished', content);
+        window.dispatchEvent(new Event('aide:health-records-changed'));
         break;
       case 'chat_response':
         this.emit('chat_response', content);

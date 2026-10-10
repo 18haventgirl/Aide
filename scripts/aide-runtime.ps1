@@ -35,12 +35,26 @@ function Assert-AideFixedPort($Listeners, [int]$Port, [string]$Kind) {
     }
 }
 
-function Select-AideFrontendPort($Listeners, [int]$PreferredPort=3000) {
+function Assert-AidePortConfiguration([int]$BackendPort, [int]$McpPort) {
+    if ($BackendPort -eq $McpPort) { throw 'API and MCP ports must be different.' }
+}
+
+function Select-AideServicePort($Listeners, [string]$Kind, [int]$PreferredPort, [bool]$Explicit=$false) {
+    $ownPorts = @($Listeners | Where-Object Kind -eq $Kind | Select-Object -ExpandProperty Port -Unique)
+    if ($ownPorts.Count -gt 1) { throw "Multiple $Kind listeners exist in this checkout." }
+    if (-not $Explicit -and $ownPorts.Count -eq 1) { return [int]$ownPorts[0] }
+    return $PreferredPort
+}
+
+function Select-AideFrontendPort($Listeners, [int]$PreferredPort=3000, [int[]]$ReservedPorts=@()) {
     $existing = @($Listeners | Where-Object Kind -eq 'UI' | Select-Object -ExpandProperty Port -Unique)
     if ($existing.Count -gt 1) { throw 'Multiple Aide UI listeners exist; inspect them before starting another.' }
-    if ($existing.Count -eq 1) { return [int]$existing[0] }
+    if ($existing.Count -eq 1) {
+        if ($existing[0] -in $ReservedPorts) { throw 'Existing frontend overlaps a requested backend port.' }
+        return [int]$existing[0]
+    }
     foreach ($candidate in $PreferredPort..($PreferredPort+10)) {
-        if (-not @($Listeners | Where-Object Port -eq $candidate).Count) { return $candidate }
+        if ($candidate -notin $ReservedPorts -and -not @($Listeners | Where-Object Port -eq $candidate).Count) { return $candidate }
     }
     throw 'No free frontend port in the requested range.'
 }

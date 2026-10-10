@@ -137,7 +137,7 @@ def main():
         mcp.run(
             transport="http",
             host="127.0.0.1", 
-            port=8002,
+            port=int(os.getenv("AIDE_MCP_PORT", "8002")),
             path="/mcp",
             # Tools do not need server-side conversation state. Stateless mode
             # keeps backend clients valid across MCP process restarts.

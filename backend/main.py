@@ -201,6 +201,9 @@ async def lifespan(app: FastAPI):
     
     # 关闭时的清理
     logger.info("关闭 AI 个人日常助手服务...")
+
+    from core.performance_manager import performance_manager
+    await performance_manager.aclose()
     
     # 先停止MCP服务器进程
     await stop_mcp_server()
