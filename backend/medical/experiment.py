@@ -60,6 +60,27 @@ def load_suite(path: Path) -> tuple[dict, dict]:
     return manifest, groups
 
 
+def validate_source_bindings(cases, documents):
+    by_id = {document.doc_id: document for document in documents}
+    for case in cases:
+        if "source_binding" not in case:
+            continue
+        binding = case["source_binding"]
+        required = {"doc_id", "version", "source_locator", "normalized_document_sha256"}
+        if not isinstance(binding, dict) or not required.issubset(binding):
+            raise ValueError(f"invalid source binding: {case['id']}")
+        doc_id = binding["doc_id"]
+        if not isinstance(doc_id, str):
+            raise ValueError(f"invalid source binding: {case['id']}")
+        if doc_id not in case.get("expected_doc_ids", []) or doc_id not in by_id:
+            raise ValueError(f"invalid source binding: {case['id']}")
+        document = by_id[doc_id]
+        if (binding["version"] != document.version
+                or binding["source_locator"] != document.source_locator
+                or binding["normalized_document_sha256"] != digest(document.model_dump(mode="json"))):
+            raise ValueError(f"frozen source changed: {case['id']}")
+
+
 class KeywordBaseline:
     """Positive full-corpus BM25, no dense encoding or reranker threshold."""
     def __init__(self, kb):
@@ -144,6 +165,8 @@ def run_experiment(manifest_path, corpus_path, output, groups=None, profiles=PRO
     if not 1 <= k <= 20:
         raise ValueError("k must be between 1 and 20")
     documents = load_corpus(corpus_path)
+    for group in selected:
+        validate_source_bindings(cases_by_group[group], documents)
     day = date.fromisoformat(manifest["evaluation_date"])
     eligible = {d.doc_id for d in documents if d.is_searchable(day, research_mode=True)}
     unavailable = {}

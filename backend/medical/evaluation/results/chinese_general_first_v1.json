@@ -1,0 +1,832 @@
+{
+  "report_version": "retrieval_experiment_v1",
+  "scope": "developer_cases_not_blind_not_clinical",
+  "started_at_utc": "2026-10-10T07:45:56.788077+00:00",
+  "code": {
+    "commit": "4b033ad1670475e0c3a1e4698927c0498d94d03d",
+    "retrieval_implementation_sha256": "df72a7475f80b5db646d3e2ff17def690629421b871e69db469257b75041f9a5",
+    "tracked_changes": false
+  },
+  "suite": {
+    "schema_version": 1,
+    "hash_scheme": "canonical-json-v1",
+    "suite_id": "aide-chinese-retrieval-v2",
+    "evaluation_date": "2026-10-10",
+    "authorship": "developer_authored_not_external_blind",
+    "groups": [
+      {
+        "name": "legacy-development",
+        "purpose": "development",
+        "path": "../eval_cases_research.json",
+        "sha256": "6c4419c16bdb40cc799dbb5295820a4450dae6f5c19ad83b472f16f316da49e4",
+        "count": 111,
+        "allow_historical_missing_ids": true
+      },
+      {
+        "name": "legacy-regression",
+        "purpose": "regression",
+        "path": "../eval_cases_validation_v1.json",
+        "sha256": "6cf26a8a0c768d762bd61e3e7931506642fa37b2e702f3296fd807580ab28510",
+        "count": 33,
+        "allow_historical_missing_ids": true
+      },
+      {
+        "name": "chinese-symptoms",
+        "purpose": "topic_acceptance",
+        "path": "../eval_cases_chinese_symptoms_v1.json",
+        "sha256": "92714ccb10798fee282bd0bcfbbd14d1c26b9be5a126a5eb8b3ac3a93143fb1a",
+        "count": 10,
+        "allow_historical_missing_ids": false
+      },
+      {
+        "name": "frozen-chinese-general",
+        "purpose": "frozen",
+        "path": "frozen_chinese_general_v1.json",
+        "sha256": "9ce5e24394e13f571f8554ab58ebf2e29d6a96febbd1f8d37067561e399e1087",
+        "count": 80,
+        "allow_historical_missing_ids": false,
+        "authorship": "developer_source_derived_not_external_blind",
+        "frozen_before_first_run": true
+      }
+    ]
+  },
+  "suite_manifest_sha256": "6b400520aaaf9c940f6d0b6d52ad6513482729987475a16222e20043788bfd1e",
+  "selected_groups": [
+    "frozen-chinese-general"
+  ],
+  "profiles": [
+    "keyword",
+    "dense",
+    "hybrid",
+    "rerank"
+  ],
+  "k": 5,
+  "corpus_sha256": "3bf1713ffd0dd9ca89394a0875661ff7cbf2425d8cf3267da0491563a515afe9",
+  "corpus_documents": 72,
+  "eligible_documents": 72,
+  "unavailable_expected_doc_ids": {
+    "frozen-chinese-general": []
+  },
+  "index_version": "medical-zh-section-v2",
+  "parameters": {
+    "MEDICAL_RESEARCH_MAX_DISTANCE": "0.50",
+    "MEDICAL_DENSE_CANDIDATES": "24",
+    "MEDICAL_LEXICAL_CANDIDATES": "24",
+    "MEDICAL_RERANK_CANDIDATES": "8",
+    "MEDICAL_RERANK_RELATIVE_FLOOR": "0.35",
+    "MEDICAL_RERANK_MIN_SCORE": "0.05",
+    "MEDICAL_MAX_CHUNKS_PER_DOCUMENT": "2",
+    "MEDICAL_LEXICAL_CACHE_TTL_SECONDS": "60"
+  },
+  "cpu_threads": 2,
+  "memory_before": {
+    "total_mib": 15556.9,
+    "available_mib": 3154.5,
+    "process_working_mib": 32.7,
+    "process_peak_mib": 32.7
+  },
+  "ranking_constants": {
+    "rrf_k": 60,
+    "dense_weight": 0.6,
+    "lexical_weight": 0.4,
+    "rerank_pool_dense_quota": 5,
+    "rerank_pool_lexical_quota": 3
+  },
+  "metric_definitions": {
+    "mrr": "first relevant document within top K only",
+    "recall": "retrieved relevant document IDs / all labelled relevant IDs",
+    "keyword": "positive full-corpus BM25; per-doc cap; no semantic rejection threshold",
+    "latency": "service function, no HTTP/LLM; first search per mode separately reported"
+  },
+  "complete": true,
+  "embedding": {
+    "name": "BAAI/bge-small-zh-v1.5@7999e1d3359715c523056ef9478215996d62a620",
+    "weight_sha256": "354763b9b1357bc9c44f62c6be2276321081ed2567773608c0d0785b61d5a026",
+    "batch_size": 4,
+    "dimensions": 512
+  },
+  "packages": {
+    "torch": "2.6.0",
+    "transformers": "4.49.0",
+    "chromadb": "1.0.15",
+    "jieba": "0.42.1"
+  },
+  "index_sync": {
+    "indexed_documents": 72,
+    "indexed_chunks": 95,
+    "removed_chunks": 0
+  },
+  "index_chunks": 95,
+  "index_build_and_embedding_load_ms": 47530.3,
+  "memory_after": {
+    "total_mib": 15556.9,
+    "available_mib": 2509.0,
+    "process_working_mib": 1107.3,
+    "process_peak_mib": 1115.5
+  },
+  "reranker": {
+    "name": "BAAI/bge-reranker-base@af37ed791788201a1cdcf513e0f584f3aa3be105",
+    "weight_sha256": "ced967c45fd1902eb92716c9ceeca7c95a936770ea9db611f5a841b926e33fbd",
+    "load_ms": 2069.2,
+    "max_length": 256,
+    "batch_size": 1
+  },
+  "comparisons": [
+    {
+      "group": "frozen-chinese-general",
+      "baseline": "keyword",
+      "candidate": "dense",
+      "deltas": {
+        "recall_at_5": -0.062,
+        "mrr_at_5": -0.055,
+        "ndcg_at_5": -0.057,
+        "unanswerable_rejection_rate": 0.75
+      }
+    },
+    {
+      "group": "frozen-chinese-general",
+      "baseline": "dense",
+      "candidate": "hybrid",
+      "deltas": {
+        "recall_at_5": 0.062,
+        "mrr_at_5": 0.078,
+        "ndcg_at_5": 0.074,
+        "unanswerable_rejection_rate": -0.125
+      }
+    },
+    {
+      "group": "frozen-chinese-general",
+      "baseline": "hybrid",
+      "candidate": "rerank",
+      "deltas": {
+        "recall_at_5": -0.047,
+        "mrr_at_5": -0.07,
+        "ndcg_at_5": -0.064,
+        "unanswerable_rejection_rate": 0.25
+      }
+    }
+  ],
+  "publication": {
+    "kind": "aggregate_and_failure_rows",
+    "full_local_report_sha256": "7de00c9914cca96daaf4efec1501843516f089f47dce0a159786905df4c00ee7",
+    "local_report": "backend/data/evaluation_reports/frozen_chinese_general_first_20261010.json",
+    "first_run_preserved": true,
+    "live_llm_calls": 0,
+    "external_blind_cases": 0
+  },
+  "results": {
+    "frozen-chinese-general": {
+      "keyword": {
+        "metric_version": "multi_relevant_v3_mrr_at_k",
+        "cases": 80,
+        "supported_cases": 64,
+        "unanswerable_cases": 8,
+        "urgent_cases": 4,
+        "followup_cases": 4,
+        "recall_at_1": 0.953,
+        "recall_at_5": 1.0,
+        "mrr": 0.977,
+        "mrr_at_5": 0.977,
+        "ndcg_at_5": 0.983,
+        "forbidden_hit_rate_at_5": null,
+        "average_retrieval_latency_ms": 0.8,
+        "p95_retrieval_latency_ms": 1.2,
+        "unanswerable_rejection_rate": 0.125,
+        "urgent_detection_rate": 0.5,
+        "followup_recall_at_5": 0.5,
+        "first_search_ms": 1.46,
+        "subsequent_search_p95_ms": 1.16,
+        "reranker_status_counts": {
+          "disabled": 76,
+          "not_searched": 4
+        },
+        "failure_rows": [
+          {
+            "id": "CGN01",
+            "kind": "unanswerable",
+            "retrieved": [
+              "NHC-HL2024-05",
+              "NHC-HL2024-64"
+            ],
+            "rejected": false,
+            "latency_ms": 0.36,
+            "diagnostics": {
+              "candidate_count": 2,
+              "selected_count": 2,
+              "reranker_status": "disabled",
+              "baseline": "positive_bm25"
+            },
+            "query": "献血者的血型能决定星座运势吗？"
+          },
+          {
+            "id": "CGN03",
+            "kind": "unanswerable",
+            "retrieved": [
+              "NHC-HL2024-41",
+              "NHC-HL2024-43",
+              "NHC-HL2024-11"
+            ],
+            "rejected": false,
+            "latency_ms": 0.4,
+            "diagnostics": {
+              "candidate_count": 3,
+              "selected_count": 3,
+              "reranker_status": "disabled",
+              "baseline": "positive_bm25"
+            },
+            "query": "牙刷商标注册的商业类别应该选哪个？"
+          },
+          {
+            "id": "CGN04",
+            "kind": "unanswerable",
+            "retrieved": [
+              "NHC-HL2024-30",
+              "NHC-HL2024-56",
+              "FJ-HEADACHE-20260626",
+              "NHC-HL2024-38",
+              "NHC-HL2024-28"
+            ],
+            "rejected": false,
+            "latency_ms": 0.67,
+            "diagnostics": {
+              "candidate_count": 20,
+              "selected_count": 20,
+              "reranker_status": "disabled",
+              "baseline": "positive_bm25"
+            },
+            "query": "光盘文件系统为什么不能写入大文件？"
+          },
+          {
+            "id": "CGN05",
+            "kind": "unanswerable",
+            "retrieved": [
+              "NHC-HL2024-34",
+              "NHC-HL2024-05",
+              "NHC-HL2024-23",
+              "NHC-HL2024-54",
+              "NHC-HL2024-53"
+            ],
+            "rejected": false,
+            "latency_ms": 1.25,
+            "diagnostics": {
+              "candidate_count": 32,
+              "selected_count": 20,
+              "reranker_status": "disabled",
+              "baseline": "positive_bm25"
+            },
+            "query": "本地戒烟补贴申请需要填写哪张政府表格？"
+          },
+          {
+            "id": "CGN06",
+            "kind": "unanswerable",
+            "retrieved": [
+              "NHC-HL2024-56",
+              "NHC-HL2024-54",
+              "NHC-HL2024-43",
+              "NHC-HL2024-33",
+              "NHC-HL2024-24"
+            ],
+            "rejected": false,
+            "latency_ms": 1.16,
+            "diagnostics": {
+              "candidate_count": 13,
+              "selected_count": 13,
+              "reranker_status": "disabled",
+              "baseline": "positive_bm25"
+            },
+            "query": "药品包装防伪油墨的工业化学组成是什么？"
+          },
+          {
+            "id": "CGN07",
+            "kind": "unanswerable",
+            "retrieved": [
+              "NHC-HL2024-57",
+              "FJ-HEADACHE-20260626",
+              "NHC-HL2024-25",
+              "NHC-HL2024-17",
+              "NHC-HL2024-16"
+            ],
+            "rejected": false,
+            "latency_ms": 0.64,
+            "diagnostics": {
+              "candidate_count": 12,
+              "selected_count": 12,
+              "reranker_status": "disabled",
+              "baseline": "positive_bm25"
+            },
+            "query": "体重秤的无线固件升级包在哪里下载？"
+          },
+          {
+            "id": "CGN08",
+            "kind": "unanswerable",
+            "retrieved": [
+              "GZ-POSTMEAL-ABDOMEN-2026",
+              "NHC-THROAT-20240821",
+              "NHC-HL2024-37",
+              "NHC-HL2024-10",
+              "NHC-HL2024-07"
+            ],
+            "rejected": false,
+            "latency_ms": 0.73,
+            "diagnostics": {
+              "candidate_count": 13,
+              "selected_count": 13,
+              "reranker_status": "disabled",
+              "baseline": "positive_bm25"
+            },
+            "query": "附近医院今天牙科还剩多少预约号源？"
+          },
+          {
+            "id": "CGU02",
+            "kind": "urgent",
+            "urgent_detected": false,
+            "query": "刚才讲话含糊，一只胳膊抬不起来，脸也歪了。"
+          },
+          {
+            "id": "CGU03",
+            "kind": "urgent",
+            "urgent_detected": false,
+            "query": "这次头痛突然特别剧烈，比以前都严重，而且一直吐。"
+          },
+          {
+            "id": "CGF02",
+            "kind": "followup",
+            "expected": [
+              "NHC-HL2024-34"
+            ],
+            "retrieved": [
+              "NHC-HL2024-33",
+              "NHC-THROAT-20240821",
+              "NHC-HL2024-20"
+            ],
+            "first_match_rank": null,
+            "latency_ms": 0.31,
+            "diagnostics": {
+              "candidate_count": 3,
+              "selected_count": 3,
+              "reranker_status": "disabled",
+              "baseline": "positive_bm25"
+            },
+            "query": "已经吸了很多年，现在还有收益吗？"
+          },
+          {
+            "id": "CGF04",
+            "kind": "followup",
+            "expected": [
+              "NHC-HL2024-56"
+            ],
+            "retrieved": [
+              "NHC-HL2024-10",
+              "NHC-HL2024-01",
+              "NHC-HL2024-52"
+            ],
+            "first_match_rank": null,
+            "latency_ms": 0.38,
+            "diagnostics": {
+              "candidate_count": 3,
+              "selected_count": 3,
+              "reranker_status": "disabled",
+              "baseline": "positive_bm25"
+            },
+            "query": "原来的瓶子要留着吗？"
+          }
+        ]
+      },
+      "dense": {
+        "metric_version": "multi_relevant_v3_mrr_at_k",
+        "cases": 80,
+        "supported_cases": 64,
+        "unanswerable_cases": 8,
+        "urgent_cases": 4,
+        "followup_cases": 4,
+        "recall_at_1": 0.906,
+        "recall_at_5": 0.938,
+        "mrr": 0.922,
+        "mrr_at_5": 0.922,
+        "ndcg_at_5": 0.926,
+        "forbidden_hit_rate_at_5": null,
+        "average_retrieval_latency_ms": 32.7,
+        "p95_retrieval_latency_ms": 37.5,
+        "unanswerable_rejection_rate": 0.875,
+        "urgent_detection_rate": 0.5,
+        "followup_recall_at_5": 0.5,
+        "first_search_ms": 107.89,
+        "subsequent_search_p95_ms": 37.49,
+        "reranker_status_counts": {
+          "disabled": 76,
+          "not_searched": 4
+        },
+        "failure_rows": [
+          {
+            "id": "CGS003",
+            "kind": "supported",
+            "expected": [
+              "NHC-HL2024-04"
+            ],
+            "retrieved": [],
+            "first_match_rank": null,
+            "forbidden_retrieved": [],
+            "latency_ms": 31.34,
+            "diagnostics": {
+              "candidate_count": 24,
+              "rerank_candidate_count": 8,
+              "selected_count": 0,
+              "reranker_status": "disabled",
+              "reranker_model": null,
+              "top_rerank_score": null,
+              "dense_ms": 30.6,
+              "lexical_ms": 0.0,
+              "rerank_ms": 0.0
+            },
+            "query": "保护环境只是环卫工人的事，普通居民不用参与吧？"
+          },
+          {
+            "id": "CGS015",
+            "kind": "supported",
+            "expected": [
+              "NHC-HL2024-09"
+            ],
+            "retrieved": [
+              "NHC-HL2024-15"
+            ],
+            "first_match_rank": null,
+            "forbidden_retrieved": [],
+            "latency_ms": 29.16,
+            "diagnostics": {
+              "candidate_count": 24,
+              "rerank_candidate_count": 8,
+              "selected_count": 1,
+              "reranker_status": "disabled",
+              "reranker_model": null,
+              "top_rerank_score": null,
+              "dense_ms": 28.5,
+              "lexical_ms": 0.0,
+              "rerank_ms": 0.0
+            },
+            "query": "只有生病的人会排出病原体，动物和无症状者不算吗？"
+          },
+          {
+            "id": "CGS035",
+            "kind": "supported",
+            "expected": [
+              "NHC-HL2024-23"
+            ],
+            "retrieved": [
+              "NHC-HL2024-40"
+            ],
+            "first_match_rank": null,
+            "forbidden_retrieved": [],
+            "latency_ms": 34.34,
+            "diagnostics": {
+              "candidate_count": 24,
+              "rerank_candidate_count": 8,
+              "selected_count": 1,
+              "reranker_status": "disabled",
+              "reranker_model": null,
+              "top_rerank_score": null,
+              "dense_ms": 33.5,
+              "lexical_ms": 0.0,
+              "rerank_ms": 0.0
+            },
+            "query": "防护用品戴一会儿就好，暴露作业时不必全程使用吧？"
+          },
+          {
+            "id": "CGS042",
+            "kind": "supported",
+            "expected": [
+              "NHC-HL2024-26"
+            ],
+            "retrieved": [],
+            "first_match_rank": null,
+            "forbidden_retrieved": [],
+            "latency_ms": 30.11,
+            "diagnostics": {
+              "candidate_count": 24,
+              "rerank_candidate_count": 8,
+              "selected_count": 0,
+              "reranker_status": "disabled",
+              "reranker_model": null,
+              "top_rerank_score": null,
+              "dense_ms": 28.9,
+              "lexical_ms": 0.0,
+              "rerank_ms": 0.0
+            },
+            "query": "水果、蔬菜和果汁可以互相完全替代吗？"
+          },
+          {
+            "id": "CGN01",
+            "kind": "unanswerable",
+            "retrieved": [
+              "NHC-HL2024-05"
+            ],
+            "rejected": false,
+            "latency_ms": 33.06,
+            "diagnostics": {
+              "candidate_count": 24,
+              "rerank_candidate_count": 8,
+              "selected_count": 1,
+              "reranker_status": "disabled",
+              "reranker_model": null,
+              "top_rerank_score": null,
+              "dense_ms": 32.3,
+              "lexical_ms": 0.0,
+              "rerank_ms": 0.0
+            },
+            "query": "献血者的血型能决定星座运势吗？"
+          },
+          {
+            "id": "CGU02",
+            "kind": "urgent",
+            "urgent_detected": false,
+            "query": "刚才讲话含糊，一只胳膊抬不起来，脸也歪了。"
+          },
+          {
+            "id": "CGU03",
+            "kind": "urgent",
+            "urgent_detected": false,
+            "query": "这次头痛突然特别剧烈，比以前都严重，而且一直吐。"
+          },
+          {
+            "id": "CGF02",
+            "kind": "followup",
+            "expected": [
+              "NHC-HL2024-34"
+            ],
+            "retrieved": [],
+            "first_match_rank": null,
+            "latency_ms": 27.53,
+            "diagnostics": {
+              "candidate_count": 24,
+              "rerank_candidate_count": 8,
+              "selected_count": 0,
+              "reranker_status": "disabled",
+              "reranker_model": null,
+              "top_rerank_score": null,
+              "dense_ms": 26.8,
+              "lexical_ms": 0.0,
+              "rerank_ms": 0.0
+            },
+            "query": "已经吸了很多年，现在还有收益吗？"
+          },
+          {
+            "id": "CGF04",
+            "kind": "followup",
+            "expected": [
+              "NHC-HL2024-56"
+            ],
+            "retrieved": [],
+            "first_match_rank": null,
+            "latency_ms": 31.61,
+            "diagnostics": {
+              "candidate_count": 24,
+              "rerank_candidate_count": 8,
+              "selected_count": 0,
+              "reranker_status": "disabled",
+              "reranker_model": null,
+              "top_rerank_score": null,
+              "dense_ms": 31.0,
+              "lexical_ms": 0.0,
+              "rerank_ms": 0.0
+            },
+            "query": "原来的瓶子要留着吗？"
+          }
+        ]
+      },
+      "hybrid": {
+        "metric_version": "multi_relevant_v3_mrr_at_k",
+        "cases": 80,
+        "supported_cases": 64,
+        "unanswerable_cases": 8,
+        "urgent_cases": 4,
+        "followup_cases": 4,
+        "recall_at_1": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "mrr_at_5": 1.0,
+        "ndcg_at_5": 1.0,
+        "forbidden_hit_rate_at_5": null,
+        "average_retrieval_latency_ms": 36.3,
+        "p95_retrieval_latency_ms": 41.3,
+        "unanswerable_rejection_rate": 0.75,
+        "urgent_detection_rate": 0.5,
+        "followup_recall_at_5": 0.5,
+        "first_search_ms": 320.14,
+        "subsequent_search_p95_ms": 40.87,
+        "reranker_status_counts": {
+          "disabled": 76,
+          "not_searched": 4
+        },
+        "failure_rows": [
+          {
+            "id": "CGN01",
+            "kind": "unanswerable",
+            "retrieved": [
+              "NHC-HL2024-05"
+            ],
+            "rejected": false,
+            "latency_ms": 30.86,
+            "diagnostics": {
+              "candidate_count": 25,
+              "rerank_candidate_count": 8,
+              "selected_count": 1,
+              "reranker_status": "disabled",
+              "reranker_model": null,
+              "top_rerank_score": null,
+              "dense_ms": 29.1,
+              "lexical_ms": 0.9,
+              "rerank_ms": 0.0
+            },
+            "query": "献血者的血型能决定星座运势吗？"
+          },
+          {
+            "id": "CGN05",
+            "kind": "unanswerable",
+            "retrieved": [
+              "NHC-HL2024-34"
+            ],
+            "rejected": false,
+            "latency_ms": 30.82,
+            "diagnostics": {
+              "candidate_count": 40,
+              "rerank_candidate_count": 8,
+              "selected_count": 1,
+              "reranker_status": "disabled",
+              "reranker_model": null,
+              "top_rerank_score": null,
+              "dense_ms": 28.8,
+              "lexical_ms": 1.1,
+              "rerank_ms": 0.0
+            },
+            "query": "本地戒烟补贴申请需要填写哪张政府表格？"
+          },
+          {
+            "id": "CGU02",
+            "kind": "urgent",
+            "urgent_detected": false,
+            "query": "刚才讲话含糊，一只胳膊抬不起来，脸也歪了。"
+          },
+          {
+            "id": "CGU03",
+            "kind": "urgent",
+            "urgent_detected": false,
+            "query": "这次头痛突然特别剧烈，比以前都严重，而且一直吐。"
+          },
+          {
+            "id": "CGF02",
+            "kind": "followup",
+            "expected": [
+              "NHC-HL2024-34"
+            ],
+            "retrieved": [
+              "NHC-HL2024-33"
+            ],
+            "first_match_rank": null,
+            "latency_ms": 31.69,
+            "diagnostics": {
+              "candidate_count": 25,
+              "rerank_candidate_count": 8,
+              "selected_count": 1,
+              "reranker_status": "disabled",
+              "reranker_model": null,
+              "top_rerank_score": null,
+              "dense_ms": 30.6,
+              "lexical_ms": 0.5,
+              "rerank_ms": 0.0
+            },
+            "query": "已经吸了很多年，现在还有收益吗？"
+          },
+          {
+            "id": "CGF04",
+            "kind": "followup",
+            "expected": [
+              "NHC-HL2024-56"
+            ],
+            "retrieved": [],
+            "first_match_rank": null,
+            "latency_ms": 25.55,
+            "diagnostics": {
+              "candidate_count": 27,
+              "rerank_candidate_count": 8,
+              "selected_count": 0,
+              "reranker_status": "disabled",
+              "reranker_model": null,
+              "top_rerank_score": null,
+              "dense_ms": 24.1,
+              "lexical_ms": 0.6,
+              "rerank_ms": 0.0
+            },
+            "query": "原来的瓶子要留着吗？"
+          }
+        ]
+      },
+      "rerank": {
+        "metric_version": "multi_relevant_v3_mrr_at_k",
+        "cases": 80,
+        "supported_cases": 64,
+        "unanswerable_cases": 8,
+        "urgent_cases": 4,
+        "followup_cases": 4,
+        "recall_at_1": 0.906,
+        "recall_at_5": 0.953,
+        "mrr": 0.93,
+        "mrr_at_5": 0.93,
+        "ndcg_at_5": 0.936,
+        "forbidden_hit_rate_at_5": null,
+        "average_retrieval_latency_ms": 4114.7,
+        "p95_retrieval_latency_ms": 4436.0,
+        "unanswerable_rejection_rate": 1.0,
+        "urgent_detection_rate": 0.5,
+        "followup_recall_at_5": 1.0,
+        "first_search_ms": 4364.96,
+        "subsequent_search_p95_ms": 4436.02,
+        "reranker_status_counts": {
+          "applied": 76,
+          "not_searched": 4
+        },
+        "failure_rows": [
+          {
+            "id": "CGS024",
+            "kind": "supported",
+            "expected": [
+              "NHC-HL2024-14"
+            ],
+            "retrieved": [],
+            "first_match_rank": null,
+            "forbidden_retrieved": [],
+            "latency_ms": 4275.66,
+            "diagnostics": {
+              "candidate_count": 42,
+              "rerank_candidate_count": 8,
+              "selected_count": 0,
+              "reranker_status": "applied",
+              "reranker_model": "BAAI/bge-reranker-base@af37ed791788201a1cdcf513e0f584f3aa3be105",
+              "top_rerank_score": 0.015227,
+              "dense_ms": 29.4,
+              "lexical_ms": 1.0,
+              "rerank_ms": 4243.9
+            },
+            "query": "鼠夹、防鼠网和封堵孔洞，分别怎样帮助防鼠卫生？"
+          },
+          {
+            "id": "CGS035",
+            "kind": "supported",
+            "expected": [
+              "NHC-HL2024-23"
+            ],
+            "retrieved": [],
+            "first_match_rank": null,
+            "forbidden_retrieved": [],
+            "latency_ms": 4275.87,
+            "diagnostics": {
+              "candidate_count": 36,
+              "rerank_candidate_count": 8,
+              "selected_count": 0,
+              "reranker_status": "applied",
+              "reranker_model": "BAAI/bge-reranker-base@af37ed791788201a1cdcf513e0f584f3aa3be105",
+              "top_rerank_score": 0.023082,
+              "dense_ms": 27.2,
+              "lexical_ms": 1.0,
+              "rerank_ms": 4246.4
+            },
+            "query": "防护用品戴一会儿就好，暴露作业时不必全程使用吧？"
+          },
+          {
+            "id": "CGS042",
+            "kind": "supported",
+            "expected": [
+              "NHC-HL2024-26"
+            ],
+            "retrieved": [],
+            "first_match_rank": null,
+            "forbidden_retrieved": [],
+            "latency_ms": 3812.74,
+            "diagnostics": {
+              "candidate_count": 29,
+              "rerank_candidate_count": 8,
+              "selected_count": 0,
+              "reranker_status": "applied",
+              "reranker_model": "BAAI/bge-reranker-base@af37ed791788201a1cdcf513e0f584f3aa3be105",
+              "top_rerank_score": 0.00976,
+              "dense_ms": 25.6,
+              "lexical_ms": 0.6,
+              "rerank_ms": 3785.3
+            },
+            "query": "水果、蔬菜和果汁可以互相完全替代吗？"
+          },
+          {
+            "id": "CGU02",
+            "kind": "urgent",
+            "urgent_detected": false,
+            "query": "刚才讲话含糊，一只胳膊抬不起来，脸也歪了。"
+          },
+          {
+            "id": "CGU03",
+            "kind": "urgent",
+            "urgent_detected": false,
+            "query": "这次头痛突然特别剧烈，比以前都严重，而且一直吐。"
+          }
+        ]
+      }
+    }
+  }
+}

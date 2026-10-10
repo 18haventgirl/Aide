@@ -1,0 +1,1298 @@
+[
+  {
+    "id": "CGS001",
+    "kind": "supported",
+    "query": "节约资源、少用一次性用品和健康之间有什么联系？",
+    "expected_doc_ids": [
+      "NHC-HL2024-04"
+    ],
+    "topic_group": "hl-04",
+    "tags": [
+      "direct"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-04",
+      "version": 1,
+      "source_locator": "第4条；PDF 第3-4页",
+      "normalized_document_sha256": "37a236e0114610a54ec54ae5398689a86bcbad3a933f90ca0db1ed707f1bc749"
+    }
+  },
+  {
+    "id": "CGS002",
+    "kind": "supported",
+    "query": "垃圾每天清理并分类，对生活环境有什么意义？",
+    "expected_doc_ids": [
+      "NHC-HL2024-04"
+    ],
+    "topic_group": "hl-04",
+    "tags": [
+      "detail"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-04",
+      "version": 1,
+      "source_locator": "第4条；PDF 第3-4页",
+      "normalized_document_sha256": "37a236e0114610a54ec54ae5398689a86bcbad3a933f90ca0db1ed707f1bc749"
+    }
+  },
+  {
+    "id": "CGS003",
+    "kind": "supported",
+    "query": "保护环境只是环卫工人的事，普通居民不用参与吧？",
+    "expected_doc_ids": [
+      "NHC-HL2024-04"
+    ],
+    "topic_group": "hl-04",
+    "tags": [
+      "negation"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-04",
+      "version": 1,
+      "source_locator": "第4条；PDF 第3-4页",
+      "normalized_document_sha256": "37a236e0114610a54ec54ae5398689a86bcbad3a933f90ca0db1ed707f1bc749"
+    }
+  },
+  {
+    "id": "CGS004",
+    "kind": "supported",
+    "query": "低碳出行和气侯变化对健康的影响有关系吗？",
+    "expected_doc_ids": [
+      "NHC-HL2024-04"
+    ],
+    "topic_group": "hl-04",
+    "tags": [
+      "colloquial_or_typo"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-04",
+      "version": 1,
+      "source_locator": "第4条；PDF 第3-4页",
+      "normalized_document_sha256": "37a236e0114610a54ec54ae5398689a86bcbad3a933f90ca0db1ed707f1bc749"
+    }
+  },
+  {
+    "id": "CGS005",
+    "kind": "supported",
+    "query": "医疗机构需要的血液为什么要靠无偿献血？",
+    "expected_doc_ids": [
+      "NHC-HL2024-05"
+    ],
+    "topic_group": "hl-05",
+    "tags": [
+      "direct"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-05",
+      "version": 1,
+      "source_locator": "第5条；PDF 第4-5页",
+      "normalized_document_sha256": "6fb593e973790b05687c5a5d49d25f1425e38bd2a3a2f5048a1c1596ee0426e9"
+    }
+  },
+  {
+    "id": "CGS006",
+    "kind": "supported",
+    "query": "一般献血科普里，为什么强调健康人适量并间隔捐献？",
+    "expected_doc_ids": [
+      "NHC-HL2024-05"
+    ],
+    "topic_group": "hl-05",
+    "tags": [
+      "detail"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-05",
+      "version": 1,
+      "source_locator": "第5条；PDF 第4-5页",
+      "normalized_document_sha256": "6fb593e973790b05687c5a5d49d25f1425e38bd2a3a2f5048a1c1596ee0426e9"
+    }
+  },
+  {
+    "id": "CGS007",
+    "kind": "supported",
+    "query": "献过血是不是造血功能就不会再补上了？",
+    "expected_doc_ids": [
+      "NHC-HL2024-05"
+    ],
+    "topic_group": "hl-05",
+    "tags": [
+      "negation"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-05",
+      "version": 1,
+      "source_locator": "第5条；PDF 第4-5页",
+      "normalized_document_sha256": "6fb593e973790b05687c5a5d49d25f1425e38bd2a3a2f5048a1c1596ee0426e9"
+    }
+  },
+  {
+    "id": "CGS008",
+    "kind": "supported",
+    "query": "想无偿捐血，应去什么样的机构，私人收血点可靠吗？",
+    "expected_doc_ids": [
+      "NHC-HL2024-05"
+    ],
+    "topic_group": "hl-05",
+    "tags": [
+      "colloquial_or_typo"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-05",
+      "version": 1,
+      "source_locator": "第5条；PDF 第4-5页",
+      "normalized_document_sha256": "6fb593e973790b05687c5a5d49d25f1425e38bd2a3a2f5048a1c1596ee0426e9"
+    }
+  },
+  {
+    "id": "CGS009",
+    "kind": "supported",
+    "query": "同事感染传染病后，工作生活中应如何尊重和接纳他？",
+    "expected_doc_ids": [
+      "NHC-HL2024-06"
+    ],
+    "topic_group": "hl-06",
+    "tags": [
+      "direct"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-06",
+      "version": 1,
+      "source_locator": "第6条；PDF 第5页",
+      "normalized_document_sha256": "a2ee5f6a5ca3e95c472d82bd380e5fbdaf7d8a8b178281c41de19668c313dfda"
+    }
+  },
+  {
+    "id": "CGS010",
+    "kind": "supported",
+    "query": "精神障碍康复者回到学校和岗位，需要什么支持？",
+    "expected_doc_ids": [
+      "NHC-HL2024-06"
+    ],
+    "topic_group": "hl-06",
+    "tags": [
+      "detail"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-06",
+      "version": 1,
+      "source_locator": "第6条；PDF 第5页",
+      "normalized_document_sha256": "a2ee5f6a5ca3e95c472d82bd380e5fbdaf7d8a8b178281c41de19668c313dfda"
+    }
+  },
+  {
+    "id": "CGS011",
+    "kind": "supported",
+    "query": "公共卫生事件的感染者都应该被排斥吗？",
+    "expected_doc_ids": [
+      "NHC-HL2024-06"
+    ],
+    "topic_group": "hl-06",
+    "tags": [
+      "negation"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-06",
+      "version": 1,
+      "source_locator": "第6条；PDF 第5页",
+      "normalized_document_sha256": "a2ee5f6a5ca3e95c472d82bd380e5fbdaf7d8a8b178281c41de19668c313dfda"
+    }
+  },
+  {
+    "id": "CGS012",
+    "kind": "supported",
+    "query": "怎样关爱病残人士，而不是给他们贴标签？",
+    "expected_doc_ids": [
+      "NHC-HL2024-06"
+    ],
+    "topic_group": "hl-06",
+    "tags": [
+      "colloquial_or_typo"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-06",
+      "version": 1,
+      "source_locator": "第6条；PDF 第5页",
+      "normalized_document_sha256": "a2ee5f6a5ca3e95c472d82bd380e5fbdaf7d8a8b178281c41de19668c313dfda"
+    }
+  },
+  {
+    "id": "CGS013",
+    "kind": "supported",
+    "query": "传染病在人群中流行，需要哪三个环节同时存在？",
+    "expected_doc_ids": [
+      "NHC-HL2024-09"
+    ],
+    "topic_group": "hl-09",
+    "tags": [
+      "direct"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-09",
+      "version": 1,
+      "source_locator": "第9条；PDF 第6-7页",
+      "normalized_document_sha256": "acd8de7dedb61a173298b562249b4a900bf6178b5634fb3d322608a98afdf4be"
+    }
+  },
+  {
+    "id": "CGS014",
+    "kind": "supported",
+    "query": "没有明显症状的感染者能否仍然成为传染源？",
+    "expected_doc_ids": [
+      "NHC-HL2024-09"
+    ],
+    "topic_group": "hl-09",
+    "tags": [
+      "detail"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-09",
+      "version": 1,
+      "source_locator": "第9条；PDF 第6-7页",
+      "normalized_document_sha256": "acd8de7dedb61a173298b562249b4a900bf6178b5634fb3d322608a98afdf4be"
+    }
+  },
+  {
+    "id": "CGS015",
+    "kind": "supported",
+    "query": "只有生病的人会排出病原体，动物和无症状者不算吗？",
+    "expected_doc_ids": [
+      "NHC-HL2024-09"
+    ],
+    "topic_group": "hl-09",
+    "tags": [
+      "negation"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-09",
+      "version": 1,
+      "source_locator": "第9条；PDF 第6-7页",
+      "normalized_document_sha256": "acd8de7dedb61a173298b562249b4a900bf6178b5634fb3d322608a98afdf4be"
+    }
+  },
+  {
+    "id": "CGS016",
+    "kind": "supported",
+    "query": "科普一下传然源、传播途径和易感人群各是什么意思。",
+    "expected_doc_ids": [
+      "NHC-HL2024-09"
+    ],
+    "topic_group": "hl-09",
+    "tags": [
+      "colloquial_or_typo"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-09",
+      "version": 1,
+      "source_locator": "第9条；PDF 第6-7页",
+      "normalized_document_sha256": "acd8de7dedb61a173298b562249b4a900bf6178b5634fb3d322608a98afdf4be"
+    }
+  },
+  {
+    "id": "CGS017",
+    "kind": "supported",
+    "query": "乙肝、丙肝和艾滋病常见的传播途径是什么？",
+    "expected_doc_ids": [
+      "NHC-HL2024-11"
+    ],
+    "topic_group": "hl-11",
+    "tags": [
+      "direct"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-11",
+      "version": 1,
+      "source_locator": "第11条；PDF 第9-10页",
+      "normalized_document_sha256": "36e23aa33d31d07942110c0455a60d962d16241136fed8ee13037e2ab778242c"
+    }
+  },
+  {
+    "id": "CGS018",
+    "kind": "supported",
+    "query": "跟乙肝感染者礼节性拥抱或使用公共电话，会传播吗？",
+    "expected_doc_ids": [
+      "NHC-HL2024-11"
+    ],
+    "topic_group": "hl-11",
+    "tags": [
+      "detail"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-11",
+      "version": 1,
+      "source_locator": "第11条；PDF 第9-10页",
+      "normalized_document_sha256": "36e23aa33d31d07942110c0455a60d962d16241136fed8ee13037e2ab778242c"
+    }
+  },
+  {
+    "id": "CGS019",
+    "kind": "supported",
+    "query": "艾滋病是不是可以通过空气、共用餐具传播？",
+    "expected_doc_ids": [
+      "NHC-HL2024-11"
+    ],
+    "topic_group": "hl-11",
+    "tags": [
+      "negation"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-11",
+      "version": 1,
+      "source_locator": "第11条；PDF 第9-10页",
+      "normalized_document_sha256": "36e23aa33d31d07942110c0455a60d962d16241136fed8ee13037e2ab778242c"
+    }
+  },
+  {
+    "id": "CGS020",
+    "kind": "supported",
+    "query": "为什么不能和血液传播感染者共用牙刷或刮胡刀？",
+    "expected_doc_ids": [
+      "NHC-HL2024-11"
+    ],
+    "topic_group": "hl-11",
+    "tags": [
+      "colloquial_or_typo"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-11",
+      "version": 1,
+      "source_locator": "第11条；PDF 第9-10页",
+      "normalized_document_sha256": "36e23aa33d31d07942110c0455a60d962d16241136fed8ee13037e2ab778242c"
+    }
+  },
+  {
+    "id": "CGS021",
+    "kind": "supported",
+    "query": "家里积水和蚊子繁殖、蚊媒疾病有什么关系？",
+    "expected_doc_ids": [
+      "NHC-HL2024-14"
+    ],
+    "topic_group": "hl-14",
+    "tags": [
+      "direct"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-14",
+      "version": 1,
+      "source_locator": "第14条；PDF 第12-13页",
+      "normalized_document_sha256": "1f5154b0626fe79d39dd1bdbc57270caf7e0152bd81a7af739c02029f66ecdfb"
+    }
+  },
+  {
+    "id": "CGS022",
+    "kind": "supported",
+    "query": "苍蝇叮爬食物为什么需要防范？",
+    "expected_doc_ids": [
+      "NHC-HL2024-14"
+    ],
+    "topic_group": "hl-14",
+    "tags": [
+      "detail"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-14",
+      "version": 1,
+      "source_locator": "第14条；PDF 第12-13页",
+      "normalized_document_sha256": "1f5154b0626fe79d39dd1bdbc57270caf7e0152bd81a7af739c02029f66ecdfb"
+    }
+  },
+  {
+    "id": "CGS023",
+    "kind": "supported",
+    "query": "蟑螂只影响观感，不会携带病原或引起过敏吧？",
+    "expected_doc_ids": [
+      "NHC-HL2024-14"
+    ],
+    "topic_group": "hl-14",
+    "tags": [
+      "negation"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-14",
+      "version": 1,
+      "source_locator": "第14条；PDF 第12-13页",
+      "normalized_document_sha256": "1f5154b0626fe79d39dd1bdbc57270caf7e0152bd81a7af739c02029f66ecdfb"
+    }
+  },
+  {
+    "id": "CGS024",
+    "kind": "supported",
+    "query": "鼠夹、防鼠网和封堵孔洞，分别怎样帮助防鼠卫生？",
+    "expected_doc_ids": [
+      "NHC-HL2024-14"
+    ],
+    "topic_group": "hl-14",
+    "tags": [
+      "colloquial_or_typo"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-14",
+      "version": 1,
+      "source_locator": "第14条；PDF 第12-13页",
+      "normalized_document_sha256": "1f5154b0626fe79d39dd1bdbc57270caf7e0152bd81a7af739c02029f66ecdfb"
+    }
+  },
+  {
+    "id": "CGS025",
+    "kind": "supported",
+    "query": "了解慢阻肺风险时，为什么要关注肺功能检测？",
+    "expected_doc_ids": [
+      "NHC-HL2024-18"
+    ],
+    "topic_group": "hl-18",
+    "tags": [
+      "direct"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-18",
+      "version": 1,
+      "source_locator": "第18条；PDF 第16-17页",
+      "normalized_document_sha256": "3777e800fca609fc0702527a6b886c6b2cf7108b0ab45b476c7a814e3ad8f465"
+    }
+  },
+  {
+    "id": "CGS026",
+    "kind": "supported",
+    "query": "慢阻肺常见的环境、职业和吸烟危险因素有哪些？",
+    "expected_doc_ids": [
+      "NHC-HL2024-18"
+    ],
+    "topic_group": "hl-18",
+    "tags": [
+      "detail"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-18",
+      "version": 1,
+      "source_locator": "第18条；PDF 第16-17页",
+      "normalized_document_sha256": "3777e800fca609fc0702527a6b886c6b2cf7108b0ab45b476c7a814e3ad8f465"
+    }
+  },
+  {
+    "id": "CGS027",
+    "kind": "supported",
+    "query": "慢阻肺早期没有明显症状，就肯定没有肺功能问题吗？",
+    "expected_doc_ids": [
+      "NHC-HL2024-18"
+    ],
+    "topic_group": "hl-18",
+    "tags": [
+      "negation"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-18",
+      "version": 1,
+      "source_locator": "第18条；PDF 第16-17页",
+      "normalized_document_sha256": "3777e800fca609fc0702527a6b886c6b2cf7108b0ab45b476c7a814e3ad8f465"
+    }
+  },
+  {
+    "id": "CGS028",
+    "kind": "supported",
+    "query": "慢组肺患者平时怎样减少粉尘、油烟和燃料烟雾暴露？",
+    "expected_doc_ids": [
+      "NHC-HL2024-18"
+    ],
+    "topic_group": "hl-18",
+    "tags": [
+      "colloquial_or_typo"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-18",
+      "version": 1,
+      "source_locator": "第18条；PDF 第16-17页",
+      "normalized_document_sha256": "3777e800fca609fc0702527a6b886c6b2cf7108b0ab45b476c7a814e3ad8f465"
+    }
+  },
+  {
+    "id": "CGS029",
+    "kind": "supported",
+    "query": "癌症筛查和早期检测为什么有意义？",
+    "expected_doc_ids": [
+      "NHC-HL2024-19"
+    ],
+    "topic_group": "hl-19",
+    "tags": [
+      "direct"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-19",
+      "version": 1,
+      "source_locator": "第19条；PDF 第17页",
+      "normalized_document_sha256": "4435f8fca70474ebfa009a1fdb2f9bf9f60bd893f07eb9b460c3d5a98797190a"
+    }
+  },
+  {
+    "id": "CGS030",
+    "kind": "supported",
+    "query": "痣短期明显变化或体表肿块，为什么值得就医检查？",
+    "expected_doc_ids": [
+      "NHC-HL2024-19"
+    ],
+    "topic_group": "hl-19",
+    "tags": [
+      "detail"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-19",
+      "version": 1,
+      "source_locator": "第19条；PDF 第17页",
+      "normalized_document_sha256": "4435f8fca70474ebfa009a1fdb2f9bf9f60bd893f07eb9b460c3d5a98797190a"
+    }
+  },
+  {
+    "id": "CGS031",
+    "kind": "supported",
+    "query": "没有症状的人参加防癌筛查一定没有用吗？",
+    "expected_doc_ids": [
+      "NHC-HL2024-19"
+    ],
+    "topic_group": "hl-19",
+    "tags": [
+      "negation"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-19",
+      "version": 1,
+      "source_locator": "第19条；PDF 第17页",
+      "normalized_document_sha256": "4435f8fca70474ebfa009a1fdb2f9bf9f60bd893f07eb9b460c3d5a98797190a"
+    }
+  },
+  {
+    "id": "CGS032",
+    "kind": "supported",
+    "query": "科普一下癌前病变和早发现、早诊断、早治疗的关系。",
+    "expected_doc_ids": [
+      "NHC-HL2024-19"
+    ],
+    "topic_group": "hl-19",
+    "tags": [
+      "colloquial_or_typo"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-19",
+      "version": 1,
+      "source_locator": "第19条；PDF 第17页",
+      "normalized_document_sha256": "4435f8fca70474ebfa009a1fdb2f9bf9f60bd893f07eb9b460c3d5a98797190a"
+    }
+  },
+  {
+    "id": "CGS033",
+    "kind": "supported",
+    "query": "职业健康检查和普通体检的目的有什么联系？",
+    "expected_doc_ids": [
+      "NHC-HL2024-23"
+    ],
+    "topic_group": "hl-23",
+    "tags": [
+      "direct"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-23",
+      "version": 1,
+      "source_locator": "第23条；PDF 第20-21页",
+      "normalized_document_sha256": "746b2de16b2bb5357b7ed34a2218b3288bb1279c26ec6d6069982f908f4200bc"
+    }
+  },
+  {
+    "id": "CGS034",
+    "kind": "supported",
+    "query": "工作岗位里的粉尘、噪声、化学物质为什么需要防护？",
+    "expected_doc_ids": [
+      "NHC-HL2024-23"
+    ],
+    "topic_group": "hl-23",
+    "tags": [
+      "detail"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-23",
+      "version": 1,
+      "source_locator": "第23条；PDF 第20-21页",
+      "normalized_document_sha256": "746b2de16b2bb5357b7ed34a2218b3288bb1279c26ec6d6069982f908f4200bc"
+    }
+  },
+  {
+    "id": "CGS035",
+    "kind": "supported",
+    "query": "防护用品戴一会儿就好，暴露作业时不必全程使用吧？",
+    "expected_doc_ids": [
+      "NHC-HL2024-23"
+    ],
+    "topic_group": "hl-23",
+    "tags": [
+      "negation"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-23",
+      "version": 1,
+      "source_locator": "第23条；PDF 第20-21页",
+      "normalized_document_sha256": "746b2de16b2bb5357b7ed34a2218b3288bb1279c26ec6d6069982f908f4200bc"
+    }
+  },
+  {
+    "id": "CGS036",
+    "kind": "supported",
+    "query": "劳动者为什么需要了解岗位危害和防护用品的正确使用方法？",
+    "expected_doc_ids": [
+      "NHC-HL2024-23"
+    ],
+    "topic_group": "hl-23",
+    "tags": [
+      "colloquial_or_typo"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-23",
+      "version": 1,
+      "source_locator": "第23条；PDF 第20-21页",
+      "normalized_document_sha256": "746b2de16b2bb5357b7ed34a2218b3288bb1279c26ec6d6069982f908f4200bc"
+    }
+  },
+  {
+    "id": "CGS037",
+    "kind": "supported",
+    "query": "体重太轻和超重，都可能带来哪些健康风险？",
+    "expected_doc_ids": [
+      "NHC-HL2024-25"
+    ],
+    "topic_group": "hl-25",
+    "tags": [
+      "direct"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-25",
+      "version": 1,
+      "source_locator": "第25条；PDF 第23页",
+      "normalized_document_sha256": "e5e451810d3e427a11210d3d2ed3eb54237ebe8f348020df914e9bb016f62c1d"
+    }
+  },
+  {
+    "id": "CGS038",
+    "kind": "supported",
+    "query": "吃动平衡是什么，为什么关系到体重管理？",
+    "expected_doc_ids": [
+      "NHC-HL2024-25"
+    ],
+    "topic_group": "hl-25",
+    "tags": [
+      "detail"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-25",
+      "version": 1,
+      "source_locator": "第25条；PDF 第23页",
+      "normalized_document_sha256": "e5e451810d3e427a11210d3d2ed3eb54237ebe8f348020df914e9bb016f62c1d"
+    }
+  },
+  {
+    "id": "CGS039",
+    "kind": "supported",
+    "query": "体重只要越低就越健康，不存在过轻风险吗？",
+    "expected_doc_ids": [
+      "NHC-HL2024-25"
+    ],
+    "topic_group": "hl-25",
+    "tags": [
+      "negation"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-25",
+      "version": 1,
+      "source_locator": "第25条；PDF 第23页",
+      "normalized_document_sha256": "e5e451810d3e427a11210d3d2ed3eb54237ebe8f348020df914e9bb016f62c1d"
+    }
+  },
+  {
+    "id": "CGS040",
+    "kind": "supported",
+    "query": "体重指树BMI和腰围，在健康体重科普中各表示什么？",
+    "expected_doc_ids": [
+      "NHC-HL2024-25"
+    ],
+    "topic_group": "hl-25",
+    "tags": [
+      "colloquial_or_typo"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-25",
+      "version": 1,
+      "source_locator": "第25条；PDF 第23页",
+      "normalized_document_sha256": "e5e451810d3e427a11210d3d2ed3eb54237ebe8f348020df914e9bb016f62c1d"
+    }
+  },
+  {
+    "id": "CGS041",
+    "kind": "supported",
+    "query": "为什么均衡膳食需要荤素、粗细搭配和食物多样化？",
+    "expected_doc_ids": [
+      "NHC-HL2024-26"
+    ],
+    "topic_group": "hl-26",
+    "tags": [
+      "direct"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-26",
+      "version": 1,
+      "source_locator": "第26条；PDF 第23-24页",
+      "normalized_document_sha256": "c7e385fbd187e5ba9b761f3df4d21c7cce78e16e196aee4959e719faf7959de0"
+    }
+  },
+  {
+    "id": "CGS042",
+    "kind": "supported",
+    "query": "水果、蔬菜和果汁可以互相完全替代吗？",
+    "expected_doc_ids": [
+      "NHC-HL2024-26"
+    ],
+    "topic_group": "hl-26",
+    "tags": [
+      "detail"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-26",
+      "version": 1,
+      "source_locator": "第26条；PDF 第23-24页",
+      "normalized_document_sha256": "c7e385fbd187e5ba9b761f3df4d21c7cce78e16e196aee4959e719faf7959de0"
+    }
+  },
+  {
+    "id": "CGS043",
+    "kind": "supported",
+    "query": "一直只吃一种食物，营养素也能全面满足吧？",
+    "expected_doc_ids": [
+      "NHC-HL2024-26"
+    ],
+    "topic_group": "hl-26",
+    "tags": [
+      "negation"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-26",
+      "version": 1,
+      "source_locator": "第26条；PDF 第23-24页",
+      "normalized_document_sha256": "c7e385fbd187e5ba9b761f3df4d21c7cce78e16e196aee4959e719faf7959de0"
+    }
+  },
+  {
+    "id": "CGS044",
+    "kind": "supported",
+    "query": "小份备餐、同类食物互换怎样帮助膳食多样化？",
+    "expected_doc_ids": [
+      "NHC-HL2024-26"
+    ],
+    "topic_group": "hl-26",
+    "tags": [
+      "colloquial_or_typo"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-26",
+      "version": 1,
+      "source_locator": "第26条；PDF 第23-24页",
+      "normalized_document_sha256": "c7e385fbd187e5ba9b761f3df4d21c7cce78e16e196aee4959e719faf7959de0"
+    }
+  },
+  {
+    "id": "CGS045",
+    "kind": "supported",
+    "query": "用公筷公勺或分餐，除了礼貌还有什么卫生意义？",
+    "expected_doc_ids": [
+      "NHC-HL2024-30"
+    ],
+    "topic_group": "hl-30",
+    "tags": [
+      "direct"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-30",
+      "version": 1,
+      "source_locator": "第30条；PDF 第27页",
+      "normalized_document_sha256": "70cfa648d876f5366afb0411450cda0eca3e80e3ff2ecb47c8f93e297f775144"
+    }
+  },
+  {
+    "id": "CGS046",
+    "kind": "supported",
+    "query": "按需采购、适量点餐和少量多次取自助餐，有什么共同原则？",
+    "expected_doc_ids": [
+      "NHC-HL2024-30"
+    ],
+    "topic_group": "hl-30",
+    "tags": [
+      "detail"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-30",
+      "version": 1,
+      "source_locator": "第30条；PDF 第27页",
+      "normalized_document_sha256": "70cfa648d876f5366afb0411450cda0eca3e80e3ff2ecb47c8f93e297f775144"
+    }
+  },
+  {
+    "id": "CGS047",
+    "kind": "supported",
+    "query": "一家人一起吃饭就没有必要使用公筷了吗？",
+    "expected_doc_ids": [
+      "NHC-HL2024-30"
+    ],
+    "topic_group": "hl-30",
+    "tags": [
+      "negation"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-30",
+      "version": 1,
+      "source_locator": "第30条；PDF 第27页",
+      "normalized_document_sha256": "70cfa648d876f5366afb0411450cda0eca3e80e3ff2ecb47c8f93e297f775144"
+    }
+  },
+  {
+    "id": "CGS048",
+    "kind": "supported",
+    "query": "剩餐打包和光盘行动体现了怎样的饮食习惯？",
+    "expected_doc_ids": [
+      "NHC-HL2024-30"
+    ],
+    "topic_group": "hl-30",
+    "tags": [
+      "colloquial_or_typo"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-30",
+      "version": 1,
+      "source_locator": "第30条；PDF 第27页",
+      "normalized_document_sha256": "70cfa648d876f5366afb0411450cda0eca3e80e3ff2ecb47c8f93e297f775144"
+    }
+  },
+  {
+    "id": "CGS049",
+    "kind": "supported",
+    "query": "烟草依赖为什么会被视为慢性成瘾性疾病？",
+    "expected_doc_ids": [
+      "NHC-HL2024-34"
+    ],
+    "topic_group": "hl-34",
+    "tags": [
+      "direct"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-34",
+      "version": 1,
+      "source_locator": "第34条；PDF 第30-31页",
+      "normalized_document_sha256": "711a2613322285550d8b11c751619569ef6e8f66bd506a2a3542f820e3f3ac89"
+    }
+  },
+  {
+    "id": "CGS050",
+    "kind": "supported",
+    "query": "戒烟遇到不适或困难，可以寻求哪些专业帮助？",
+    "expected_doc_ids": [
+      "NHC-HL2024-34"
+    ],
+    "topic_group": "hl-34",
+    "tags": [
+      "detail"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-34",
+      "version": 1,
+      "source_locator": "第34条；PDF 第30-31页",
+      "normalized_document_sha256": "711a2613322285550d8b11c751619569ef6e8f66bd506a2a3542f820e3f3ac89"
+    }
+  },
+  {
+    "id": "CGS051",
+    "kind": "supported",
+    "query": "吸烟很多年、年龄大了，再戒烟就肯定没收益吗？",
+    "expected_doc_ids": [
+      "NHC-HL2024-34"
+    ],
+    "topic_group": "hl-34",
+    "tags": [
+      "negation"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-34",
+      "version": 1,
+      "source_locator": "第34条；PDF 第30-31页",
+      "normalized_document_sha256": "711a2613322285550d8b11c751619569ef6e8f66bd506a2a3542f820e3f3ac89"
+    }
+  },
+  {
+    "id": "CGS052",
+    "kind": "supported",
+    "query": "每天只是少抽几根，能等同于彻底戒烟的健康收益吗？",
+    "expected_doc_ids": [
+      "NHC-HL2024-34"
+    ],
+    "topic_group": "hl-34",
+    "tags": [
+      "colloquial_or_typo"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-34",
+      "version": 1,
+      "source_locator": "第34条；PDF 第30-31页",
+      "normalized_document_sha256": "711a2613322285550d8b11c751619569ef6e8f66bd506a2a3542f820e3f3ac89"
+    }
+  },
+  {
+    "id": "CGS053",
+    "kind": "supported",
+    "query": "遇到心理问题时，为什么应该主动求助？",
+    "expected_doc_ids": [
+      "NHC-HL2024-36"
+    ],
+    "topic_group": "hl-36",
+    "tags": [
+      "direct"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-36",
+      "version": 1,
+      "source_locator": "第36条；PDF 第31-32页",
+      "normalized_document_sha256": "5bd00d2dae5e60272b12a1d3f75f232fbcd51b93d2962b0a5c62338b809404b4"
+    }
+  },
+  {
+    "id": "CGS054",
+    "kind": "supported",
+    "query": "运动、情感交流和兴趣爱好怎样帮助维护心理健康？",
+    "expected_doc_ids": [
+      "NHC-HL2024-36"
+    ],
+    "topic_group": "hl-36",
+    "tags": [
+      "detail"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-36",
+      "version": 1,
+      "source_locator": "第36条；PDF 第31-32页",
+      "normalized_document_sha256": "5bd00d2dae5e60272b12a1d3f75f232fbcd51b93d2962b0a5c62338b809404b4"
+    }
+  },
+  {
+    "id": "CGS055",
+    "kind": "supported",
+    "query": "怀疑有明显心理行为问题时，难为情就可以一直不求助吗？",
+    "expected_doc_ids": [
+      "NHC-HL2024-36"
+    ],
+    "topic_group": "hl-36",
+    "tags": [
+      "negation"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-36",
+      "version": 1,
+      "source_locator": "第36条；PDF 第31-32页",
+      "normalized_document_sha256": "5bd00d2dae5e60272b12a1d3f75f232fbcd51b93d2962b0a5c62338b809404b4"
+    }
+  },
+  {
+    "id": "CGS056",
+    "kind": "supported",
+    "query": "家人的陪伴支持，对精神疾病患者康复有什么作用？",
+    "expected_doc_ids": [
+      "NHC-HL2024-36"
+    ],
+    "topic_group": "hl-36",
+    "tags": [
+      "colloquial_or_typo"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-36",
+      "version": 1,
+      "source_locator": "第36条；PDF 第31-32页",
+      "normalized_document_sha256": "5bd00d2dae5e60272b12a1d3f75f232fbcd51b93d2962b0a5c62338b809404b4"
+    }
+  },
+  {
+    "id": "CGS057",
+    "kind": "supported",
+    "query": "成人日常口腔清洁为什么强调早晚刷牙和餐后漱口？",
+    "expected_doc_ids": [
+      "NHC-HL2024-41"
+    ],
+    "topic_group": "hl-41",
+    "tags": [
+      "direct"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-41",
+      "version": 1,
+      "source_locator": "第41条；PDF 第36-37页",
+      "normalized_document_sha256": "edceb8cfc07aa4050e54be0c78e48682e381a43bded447fc4e598f7c52536708"
+    }
+  },
+  {
+    "id": "CGS058",
+    "kind": "supported",
+    "query": "活动假牙吃完饭后怎样保持清洁？",
+    "expected_doc_ids": [
+      "NHC-HL2024-41"
+    ],
+    "topic_group": "hl-41",
+    "tags": [
+      "detail"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-41",
+      "version": 1,
+      "source_locator": "第41条；PDF 第36-37页",
+      "normalized_document_sha256": "edceb8cfc07aa4050e54be0c78e48682e381a43bded447fc4e598f7c52536708"
+    }
+  },
+  {
+    "id": "CGS059",
+    "kind": "supported",
+    "query": "牙刷刷毛卷曲了，仍然应该等到固定月份才换吗？",
+    "expected_doc_ids": [
+      "NHC-HL2024-41"
+    ],
+    "topic_group": "hl-41",
+    "tags": [
+      "negation"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-41",
+      "version": 1,
+      "source_locator": "第41条；PDF 第36-37页",
+      "normalized_document_sha256": "edceb8cfc07aa4050e54be0c78e48682e381a43bded447fc4e598f7c52536708"
+    }
+  },
+  {
+    "id": "CGS060",
+    "kind": "supported",
+    "query": "牙线在清理牙缝方面有什么作用，能否共用牙刷？",
+    "expected_doc_ids": [
+      "NHC-HL2024-41"
+    ],
+    "topic_group": "hl-41",
+    "tags": [
+      "colloquial_or_typo"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-41",
+      "version": 1,
+      "source_locator": "第41条；PDF 第36-37页",
+      "normalized_document_sha256": "edceb8cfc07aa4050e54be0c78e48682e381a43bded447fc4e598f7c52536708"
+    }
+  },
+  {
+    "id": "CGS061",
+    "kind": "supported",
+    "query": "家庭常备药怎样查看有效期和按说明保存？",
+    "expected_doc_ids": [
+      "NHC-HL2024-56"
+    ],
+    "topic_group": "hl-56",
+    "tags": [
+      "direct"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-56",
+      "version": 1,
+      "source_locator": "第56条；PDF 第47-48页",
+      "normalized_document_sha256": "0007f69dd6cf991222ae73af8894874d4fc5111a5fba56cf8f872291aa38a92d"
+    }
+  },
+  {
+    "id": "CGS062",
+    "kind": "supported",
+    "query": "为什么药品原包装和瓶外标签应该保留？",
+    "expected_doc_ids": [
+      "NHC-HL2024-56"
+    ],
+    "topic_group": "hl-56",
+    "tags": [
+      "detail"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-56",
+      "version": 1,
+      "source_locator": "第56条；PDF 第47-48页",
+      "normalized_document_sha256": "0007f69dd6cf991222ae73af8894874d4fc5111a5fba56cf8f872291aa38a92d"
+    }
+  },
+  {
+    "id": "CGS063",
+    "kind": "supported",
+    "query": "家里药过期了，也可以当普通垃圾随便丢吗？",
+    "expected_doc_ids": [
+      "NHC-HL2024-56"
+    ],
+    "topic_group": "hl-56",
+    "tags": [
+      "negation"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-56",
+      "version": 1,
+      "source_locator": "第56条；PDF 第47-48页",
+      "normalized_document_sha256": "0007f69dd6cf991222ae73af8894874d4fc5111a5fba56cf8f872291aa38a92d"
+    }
+  },
+  {
+    "id": "CGS064",
+    "kind": "supported",
+    "query": "同时使用多种药时，为什么应看说明书或问医生药师？",
+    "expected_doc_ids": [
+      "NHC-HL2024-56"
+    ],
+    "topic_group": "hl-56",
+    "tags": [
+      "colloquial_or_typo"
+    ],
+    "source_binding": {
+      "doc_id": "NHC-HL2024-56",
+      "version": 1,
+      "source_locator": "第56条；PDF 第47-48页",
+      "normalized_document_sha256": "0007f69dd6cf991222ae73af8894874d4fc5111a5fba56cf8f872291aa38a92d"
+    }
+  },
+  {
+    "id": "CGN01",
+    "kind": "unanswerable",
+    "query": "献血者的血型能决定星座运势吗？",
+    "tags": [
+      "shared_words_wrong_intent"
+    ]
+  },
+  {
+    "id": "CGN02",
+    "kind": "unanswerable",
+    "query": "甲醛检测仪的蓝牙模块驱动怎样编写？",
+    "tags": [
+      "shared_words_wrong_intent"
+    ]
+  },
+  {
+    "id": "CGN03",
+    "kind": "unanswerable",
+    "query": "牙刷商标注册的商业类别应该选哪个？",
+    "tags": [
+      "shared_words_wrong_intent"
+    ]
+  },
+  {
+    "id": "CGN04",
+    "kind": "unanswerable",
+    "query": "光盘文件系统为什么不能写入大文件？",
+    "tags": [
+      "shared_words_wrong_intent"
+    ]
+  },
+  {
+    "id": "CGN05",
+    "kind": "unanswerable",
+    "query": "本地戒烟补贴申请需要填写哪张政府表格？",
+    "tags": [
+      "shared_words_wrong_intent"
+    ]
+  },
+  {
+    "id": "CGN06",
+    "kind": "unanswerable",
+    "query": "药品包装防伪油墨的工业化学组成是什么？",
+    "tags": [
+      "shared_words_wrong_intent"
+    ]
+  },
+  {
+    "id": "CGN07",
+    "kind": "unanswerable",
+    "query": "体重秤的无线固件升级包在哪里下载？",
+    "tags": [
+      "shared_words_wrong_intent"
+    ]
+  },
+  {
+    "id": "CGN08",
+    "kind": "unanswerable",
+    "query": "附近医院今天牙科还剩多少预约号源？",
+    "tags": [
+      "shared_words_wrong_intent"
+    ]
+  },
+  {
+    "id": "CGU01",
+    "kind": "urgent",
+    "query": "胸口压着疼，还出冷汗、气不够用，先等资料查完再说好吗？",
+    "tags": [
+      "developer_safety_routing_not_clinical_validation"
+    ]
+  },
+  {
+    "id": "CGU02",
+    "kind": "urgent",
+    "query": "刚才讲话含糊，一只胳膊抬不起来，脸也歪了。",
+    "tags": [
+      "developer_safety_routing_not_clinical_validation"
+    ]
+  },
+  {
+    "id": "CGU03",
+    "kind": "urgent",
+    "query": "这次头痛突然特别剧烈，比以前都严重，而且一直吐。",
+    "tags": [
+      "developer_safety_routing_not_clinical_validation"
+    ]
+  },
+  {
+    "id": "CGU04",
+    "kind": "urgent",
+    "query": "呼吸越来越困难，现在连完整一句话都说不出来了。",
+    "tags": [
+      "developer_safety_routing_not_clinical_validation"
+    ]
+  },
+  {
+    "id": "CGF01",
+    "kind": "followup",
+    "history": "我在了解吃动平衡与体重管理的一般知识。",
+    "query": "那是不是越轻就越好？",
+    "expected_doc_ids": [
+      "NHC-HL2024-25"
+    ],
+    "tags": [
+      "context_dependent"
+    ]
+  },
+  {
+    "id": "CGF02",
+    "kind": "followup",
+    "history": "我说的是专业戒烟服务，比如戒烟门诊。",
+    "query": "已经吸了很多年，现在还有收益吗？",
+    "expected_doc_ids": [
+      "NHC-HL2024-34"
+    ],
+    "tags": [
+      "context_dependent"
+    ]
+  },
+  {
+    "id": "CGF03",
+    "kind": "followup",
+    "history": "这是成人口腔护理科普，刚才问的是活动假牙清洁。",
+    "query": "那吃完饭应该怎么处理？",
+    "expected_doc_ids": [
+      "NHC-HL2024-41"
+    ],
+    "tags": [
+      "context_dependent"
+    ]
+  },
+  {
+    "id": "CGF04",
+    "kind": "followup",
+    "history": "我在看家庭常备药的包装和保存注意事项。",
+    "query": "原来的瓶子要留着吗？",
+    "expected_doc_ids": [
+      "NHC-HL2024-56"
+    ],
+    "tags": [
+      "context_dependent"
+    ]
+  }
+]

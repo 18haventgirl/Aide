@@ -7,7 +7,9 @@ import tempfile
 import unittest
 
 from medical.evaluate import evaluate, validate_cases
-from medical.experiment import MEDICAL, load_suite, mode_comparisons, digest
+from medical.experiment import MEDICAL, load_suite, mode_comparisons, digest, validate_source_bindings
+from medical.knowledge_base import load_corpus
+from medical.evaluation.author_general_v1 import write_frozen
 
 
 class Search:
@@ -58,6 +60,40 @@ class EvaluationTests(unittest.TestCase):
         value = [{"id": "q", "query": "合成问题", "expected_doc_ids": ["A"]}]
         spaced = json.dumps(value, ensure_ascii=False, indent=2).replace("\n", "\r\n")
         self.assertEqual(digest(json.loads(spaced)), digest(value))
+
+    def test_new_frozen_group_categories_and_source_bindings(self):
+        _, groups = load_suite(MEDICAL / "evaluation" / "suite_v2.json")
+        cases = groups["frozen-chinese-general"]
+        self.assertEqual(len(cases), 80)
+        self.assertEqual(sum(c.get("kind") == "supported" for c in cases), 64)
+        self.assertEqual(sum(c.get("kind") == "unanswerable" for c in cases), 8)
+        self.assertEqual(sum(c.get("kind") == "urgent" for c in cases), 4)
+        self.assertEqual(sum(c.get("kind") == "followup" for c in cases), 4)
+        corpus = load_corpus(MEDICAL / "source_corpus")
+        validate_source_bindings(cases, corpus)
+        changed = [doc.model_copy(update={"body": doc.body + "变更"}) for doc in corpus]
+        with self.assertRaisesRegex(ValueError, "frozen source changed"):
+            validate_source_bindings(cases, changed)
+
+    def test_authoring_cannot_overwrite_frozen_labels(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "cases.json"
+            write_frozen(path, [{"label": "original"}])
+            write_frozen(path, [{"label": "original"}])
+            with self.assertRaisesRegex(ValueError, "refusing to overwrite"):
+                write_frozen(path, [{"label": "changed"}])
+
+    def test_source_bindings_cannot_silently_skip_invalid_metadata(self):
+        corpus = load_corpus(MEDICAL / "source_corpus")
+        _, groups = load_suite(MEDICAL / "evaluation" / "suite_v2.json")
+        case = groups["frozen-chinese-general"][0]
+        for binding in (None, {}, {**case["source_binding"], "doc_id": []},
+                        {**case["source_binding"], "doc_id": "missing"}):
+            with self.subTest(binding=binding), self.assertRaisesRegex(ValueError, "invalid source binding"):
+                validate_source_bindings([{**case, "source_binding": binding}], corpus)
+        with self.assertRaisesRegex(ValueError, "frozen source changed"):
+            validate_source_bindings([{**case, "source_binding": {**case["source_binding"],
+                                     "source_locator": "wrong paragraph"}}], corpus)
 
     def test_changed_case_file_or_manifest_count_fails(self):
         source = MEDICAL / "evaluation" / "suite_v1.json"
