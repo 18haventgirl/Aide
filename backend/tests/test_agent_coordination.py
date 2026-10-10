@@ -53,6 +53,8 @@ class AgentCoordinationTests(unittest.TestCase):
         self.assertIn(tomorrow, weather_instructions)
         self.assertIn("call each relevant consult_*_agent tool once", triage_instructions)
         self.assertIn("wait for every result", triage_instructions)
+        self.assertIn("weekly health summaries to Medical Health Agent", triage_instructions)
+        self.assertIn("only health_get_records", triage_instructions)
         self.assertNotIn("hand off to News Agent", weather_instructions)
         news_instructions = manager._get_news_instructions(context, news)
         self.assertNotIn("hand off to Weather Agent", news_instructions)

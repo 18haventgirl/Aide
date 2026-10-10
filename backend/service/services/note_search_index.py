@@ -71,7 +71,8 @@ class NoteSearchIndex:
         torch.set_num_threads(2)
         model._load()
         # Separate physical storage prevents accidental model-space mixing.
-        path = str(Path(__file__).resolve().parents[2] / "data" / "note_index_v1" / "chroma")
+        default_root = Path(__file__).resolve().parents[2] / "data" / "note_index_v1"
+        path = str(Path(os.getenv("AIDE_NOTE_INDEX_DIR", str(default_root))) / "chroma")
         client = chromadb.PersistentClient(path=path, settings=Settings(anonymized_telemetry=False))
         metadata = {"model": model.name(), "weights": model.weight_sha256, "hnsw:space": "cosine"}
         collection = client.get_or_create_collection("notes_bge_zh_v1", metadata=metadata)

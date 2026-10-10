@@ -12,6 +12,7 @@ from core.auth_core import get_current_user
 from core.database_core import DatabaseClient
 from core.database_core.config import DatabaseConfig
 from service.services.health_record_service import HealthRecordService
+from service.models.health_record import HealthRecord
 
 
 class HealthApiTests(unittest.TestCase):
@@ -59,7 +60,7 @@ class HealthApiTests(unittest.TestCase):
         self.assertEqual(self.service.get_record(1, record.id).observed_at, datetime(2026, 1, 1))
 
     def test_storage_failure_returns_error_not_empty_success(self):
-        with patch.object(self.service, "list_records", side_effect=RuntimeError("synthetic offline")):
+        with patch.object(self.service, "record_page", side_effect=RuntimeError("synthetic offline")):
             response = self.client.get("/api/health-records/1")
         self.assertEqual(response.status_code, 500)
 
@@ -75,6 +76,32 @@ class HealthApiTests(unittest.TestCase):
         history = self.client.get(route + "/history").json()["data"]["history"]
         self.assertEqual(len(history), 2)
         self.assertEqual(self.client.get(f"/api/health-records/2/{record.id}/history").status_code, 403)
+
+    def test_calendar_counts_all_records_and_day_pages_do_not_overlap(self):
+        with self.db.get_session() as session:
+            session.add_all([HealthRecord(user_id=1, observed_at=datetime(2026, 10, 7),
+                time_precision="day", record_type="symptom", title=f"合成旧记录{i}", status="active") for i in range(503)])
+            session.add(HealthRecord(user_id=2, observed_at=datetime(2026, 10, 7),
+                time_precision="day", record_type="symptom", title="他人记录", status="active"))
+            session.add(HealthRecord(user_id=1, observed_at=datetime(2026, 10, 7),
+                time_precision="day", record_type="symptom", title="删除记录", status="deleted"))
+            session.commit()
+        calendar = self.client.get("/api/health-records/1/calendar", params={"month": "2026-10"})
+        self.assertEqual(calendar.status_code, 200)
+        self.assertEqual(calendar.json()["data"]["daily_counts"], {"2026-10-07": 503})
+        first = self.client.get("/api/health-records/1", params={"start_date": "2026-10-07", "end_date": "2026-10-07", "limit": 2}).json()["data"]
+        second = self.client.get("/api/health-records/1", params={"start_date": "2026-10-07", "end_date": "2026-10-07", "limit": 2, "offset": 2}).json()["data"]
+        self.assertEqual(first["total"], 503)
+        self.assertEqual(first["returned"], 2)
+        self.assertTrue(first["has_more"])
+        self.assertFalse({r["id"] for r in first["records"]}.intersection(r["id"] for r in second["records"]))
+        self.assertEqual(self.client.get("/api/health-records/2/calendar", params={"month": "2026-10"}).status_code, 403)
+        self.assertEqual(self.client.get("/api/health-records/1/calendar", params={"month": "2026-13"}).status_code, 422)
+
+    def test_manual_api_cannot_forge_conversation_or_time_metadata(self):
+        for extra in ({"source": "conversation"}, {"source_message_id": "999"}, {"details": {"_time": {"expression": "伪造"}}}):
+            response = self.client.post("/api/health-records/1", json={"title": "合成记录", **extra})
+            self.assertEqual(response.status_code, 422)
 
 
 if __name__ == "__main__":

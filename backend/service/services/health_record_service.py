@@ -4,7 +4,7 @@ import json
 from datetime import date, datetime, time
 from typing import Any, Dict, List, Optional
 
-from sqlalchemy import update
+from sqlalchemy import update, func
 from sqlalchemy.exc import IntegrityError
 from core.database_core import DatabaseClient
 from ..models.health_record import HealthRecord
@@ -145,25 +145,55 @@ class HealthRecordService:
         with self.db_client.get_session() as session:
             return self._attach_revision(session, self._owned(session, user_id, record_id))
 
-    def list_records(self, user_id: int, start_date: Optional[date] = None,
-                     end_date: Optional[date] = None, limit: int = 500) -> List[HealthRecord]:
+    @staticmethod
+    def _range_query(session, user_id, start_date, end_date):
         if start_date and end_date and start_date > end_date:
             raise ValueError("start_date exceeds end_date")
+        query = session.query(HealthRecord).filter(HealthRecord.user_id == user_id, HealthRecord.status != "deleted")
+        if start_date:
+            query = query.filter(HealthRecord.observed_at >= datetime.combine(start_date, time.min))
+        if end_date:
+            query = query.filter(HealthRecord.observed_at <= datetime.combine(end_date, time.max))
+        return query
+
+    @staticmethod
+    def _counts(query):
+        day = func.date(HealthRecord.observed_at)
+        return {str(value): count for value, count in query.with_entities(day, func.count(HealthRecord.id)).group_by(day).all()}
+
+    @staticmethod
+    def _attach_versions(session, user_id, records):
+        if records:
+            versions = dict(session.query(HealthRecordVersion.record_id, HealthRecordVersion.revision).filter(
+                HealthRecordVersion.user_id == user_id, HealthRecordVersion.record_id.in_([r.id for r in records])).all())
+            for record in records:
+                record._record_revision = versions.get(record.id, 1)
+        return records
+
+    def daily_counts(self, user_id, start_date, end_date):
+        with self.db_client.get_session() as session:
+            return self._counts(self._range_query(session, user_id, start_date, end_date))
+
+    def record_page(self, user_id, start_date=None, end_date=None, limit=100, offset=0):
+        if not 1 <= limit <= 2000 or not 0 <= offset <= 1000000:
+            raise ValueError("invalid pagination")
+        with self.db_client.get_session() as session:
+            query = self._range_query(session, user_id, start_date, end_date)
+            counts = self._counts(query)
+            total = sum(counts.values())
+            records = query.order_by(HealthRecord.observed_at.desc(), HealthRecord.id.desc()).offset(offset).limit(limit).all()
+            self._attach_versions(session, user_id, records)
+            return {"records": records, "daily_counts": counts, "total": total,
+                    "offset": offset, "has_more": offset + len(records) < total}
+
+    def list_records(self, user_id: int, start_date: Optional[date] = None,
+                     end_date: Optional[date] = None, limit: int = 500) -> List[HealthRecord]:
         if not 1 <= limit <= 2000:
             raise ValueError("invalid limit")
         with self.db_client.get_session() as session:
-            query = session.query(HealthRecord).filter(HealthRecord.user_id == user_id, HealthRecord.status != "deleted")
-            if start_date:
-                query = query.filter(HealthRecord.observed_at >= datetime.combine(start_date, time.min))
-            if end_date:
-                query = query.filter(HealthRecord.observed_at <= datetime.combine(end_date, time.max))
+            query = self._range_query(session, user_id, start_date, end_date)
             records = query.order_by(HealthRecord.observed_at.desc(), HealthRecord.id.desc()).limit(limit).all()
-            if records:
-                versions = dict(session.query(HealthRecordVersion.record_id, HealthRecordVersion.revision).filter(
-                    HealthRecordVersion.user_id == user_id, HealthRecordVersion.record_id.in_([r.id for r in records])).all())
-                for record in records:
-                    record._record_revision = versions.get(record.id, 1)
-            return records
+            return self._attach_versions(session, user_id, records)
 
     def update_record(self, user_id: int, record_id: int, *, expected_revision: Optional[int] = None,
                       actor_message_id: Optional[str] = None, **changes: Any) -> Optional[HealthRecord]:
@@ -181,11 +211,17 @@ class HealthRecordService:
                 return record
             before = record.to_dict()
             if "details" in changes:
-                changes["details_json"] = _json(changes.pop("details"))
+                supplied = changes.pop("details")
+                private = {key: value for key, value in record.details.items() if key.startswith("_")}
+                changes["details_json"] = _json({**private, **supplied})
             if "observed_at" in changes:
                 changes["observed_at"] = china_local_datetime(changes["observed_at"])
             if changes.get("time_precision", record.time_precision) == "day":
                 changes["observed_at"] = changes.get("observed_at", record.observed_at).replace(hour=0, minute=0, second=0, microsecond=0)
+            if (("observed_at" in changes and changes["observed_at"] != record.observed_at)
+                    or changes.get("time_precision", record.time_precision) != record.time_precision):
+                if changes.get("time_precision", record.time_precision) != "unknown":
+                    changes["confidence"] = "user_confirmed"
             if expected_revision is not None and record._record_revision != expected_revision:
                 raise HealthRecordConflict("revision_conflict")
             if all(getattr(record, key) == value for key, value in changes.items()):

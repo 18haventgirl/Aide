@@ -228,28 +228,21 @@ class PersonalAssistantManager:
     async def _initialize_mcp_server(self) -> bool:
         """初始化MCP服务器连接"""
         print("🔌 正在连接MCP服务器...")
-        last_error = None
-        # API and MCP are started as separate hidden processes. The API can
-        # initialize slightly earlier, so retry the connection before making
-        # agents permanently tool-less.
-        for attempt in range(30):
-            try:
-                await self.mcp_server.connect()
-                self._mcp_connected = True
-                print(f"✅ MCP服务器连接成功: {self.mcp_server.name}")
-                return True
-            except Exception as e:
-                last_error = e
-                if attempt < 29:
-                    # A failed streamable HTTP client may retain a partial
-                    # session. Recreate it before the next attempt.
-                    self.mcp_server = self._create_mcp_server()
-                    await asyncio.sleep(2.0)
+        from .mcp_connection import MCPConnectionOwner
+        self._mcp_owner = MCPConnectionOwner(self._create_mcp_server)
+        self._mcp_connected = await self._mcp_owner.start()
+        if self._mcp_connected:
+            self.mcp_server = self._mcp_owner.server
+            print(f"✅ MCP服务器连接成功: {self.mcp_server.name}")
+        else:
+            print("⚠️ MCP连接不可用；保持本地工具可用")
+        return self._mcp_connected
+
+    async def cleanup(self):
+        owner = getattr(self, "_mcp_owner", None)
+        if owner is not None:
+            await owner.close()
         self._mcp_connected = False
-        print(f"❌ MCP服务器连接失败: {last_error}")
-        print(f"   服务器地址: {self.mcp_server_url}")
-        print("⚠️  将在没有MCP工具的情况下继续运行，避免使用未连接的客户端")
-        return False
 
     def _mcp_servers(self) -> list:
         """Only attach a connected MCP client to agents."""
@@ -505,7 +498,12 @@ class PersonalAssistantManager:
             f"当前会话 ID 是 {context.context.conversation_id or 'unknown'}，当前中国本地时间是 {local_now}。"
             "健康记录工具由应用绑定当前用户、会话和消息来源，不需要也不得指定其他用户。"
             "同一条用户消息的不同健康事实分别用稳定event_index=0、1等编号；重试同一事实使用原编号，不换编号重复创建。"
-            "每次健康问题必须先调用一次 medical_search，再根据资料、通用医学常识和用户明确提供的事实回答。"
+            "每次健康知识或症状处理问题必须先调用一次 medical_search，再根据资料、通用医学常识和用户明确提供的事实回答。"
+            "单纯保存、更正或整理身体状况记录时，调用相应health工具即可，不额外展开科普。"
+            "用户要求最近一周等健康摘要时，按当前日期明确start_date/end_date并用health_get_records读取跨会话的当前用户记录，"
+            "按observed_at而不是created_at整理，保留日期、时刻精度和用户原话事实，不生成诊断。"
+            "日期与星期直接引用工具返回的date_label；没有date_label时只写日期，不自行添加星期。"
+            "has_more=true时不能把当前页说成全部；必要时用offset继续读取，或说明仅概括已取得的记录。"
             "一次工具调用要使用能完整表达用户核心问题的查询，不要把同一问题拆成多个近义查询并行检索。"
             "当前问题是‘那怎么办、还需要吗、如果更严重呢’等依赖上文的短追问时，使用 prior_user_facts 传入必要的用户原话事实；"
             "只允许传用户明确说过的症状、持续时间、部位、测量值和用药，不得传入你先前的推测或建议。"
@@ -546,8 +544,13 @@ class PersonalAssistantManager:
             "2. Weather Agent: Provides real-time weather forecasts for specified locations and times, future weather trends, and weather-based suggestions for clothing, travel, and umbrella needs. Call when users mention 'weather', 'will it rain', 'cold or not', 'what to wear', etc.\n"
             "3. News Agent: Queries global and local latest news, specific topic information (such as travel, technology, finance) and updates. Call when users need to understand recent situations about places or events, or need background information for planning.\n"
             "4. Personal Assistant: A multi-functional assistant managing notes, to-dos and preferences.\n"
-            "5. Medical Health Agent: Handles general adult health education and care-seeking guidance. It must use medical_search and cannot diagnose, prescribe or change medication.\n\n"
+            "5. Medical Health Agent: Handles general adult health education, care-seeking guidance, and the user's health records. "
+            "It owns saving, correcting, reading and summarizing symptoms, measurements, medication facts and visits. "
+            "Use health_get_records for stored-health summaries, and medical_search for knowledge or symptom-care questions. "
+            "It cannot diagnose, prescribe or change medication.\n\n"
             "Route questions about symptoms, fever, pain, cough, vomiting, diarrhea, medicines, examinations, diseases, prevention, or when to seek care to Medical Health Agent.\n"
+            "Always hand off requests about 身体状况记录, 健康日记, medication history, or weekly health summaries to Medical Health Agent. "
+            "Health records are a separate resource from notes/todos/preferences; only health_get_records can establish whether health records exist.\n"
             "Analyze the request, select the required domains, and use the routing rule below.\n\n"
             "For one clear domain, hand off to its specialist so it can answer the user directly. "
             "For a request combining weather, news, or recipes, remain the final-answer owner: identify each requested domain, "

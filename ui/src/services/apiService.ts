@@ -1,7 +1,7 @@
 import axios from 'axios';
 import type { AxiosInstance, AxiosError, AxiosResponse } from 'axios';
 import { API_BASE_URL, API_ENDPOINTS, REQUEST_TIMEOUT } from '../lib/config';
-import type { LoginCredentials, AuthToken, User, HealthRecord, HealthRecordCreateRequest } from '../lib/types';
+import type { LoginCredentials, AuthToken, User, HealthRecord, HealthRecordCreateRequest, HealthRecordUpdateRequest, HealthRecordPage, HealthRecordChange } from '../lib/types';
 import { AuthManager } from '../lib/auth';
 
 // 通用API响应类型
@@ -11,6 +11,11 @@ export interface ApiResponse<T = any> {
   message?: string;
   error?: string;
   code?: number;
+}
+
+export class ApiRequestError extends Error {
+  readonly status: number;
+  constructor(message: string, status: number) { super(message); this.status = status; }
 }
 
 // 分页响应类型
@@ -161,6 +166,8 @@ apiClient.interceptors.response.use(
 function getErrorMessage(error: AxiosError): string {
   if (error.response?.data) {
     const data = error.response.data as any;
+    if (data.detail === 'revision_conflict') return '这条记录已被更新，请重新加载后再保存';
+    if (data.detail === 'idempotency_payload_conflict') return '保存内容发生变化，请重新保存';
     // 优先使用统一API响应格式中的message
     if (data.message) return data.message;
     if (data.error) return data.error;
@@ -194,9 +201,9 @@ function getErrorMessage(error: AxiosError): string {
 // 基础API服务类
 class ApiService {
   // 通用GET请求
-  async get<T>(url: string, params?: any): Promise<ApiResponse<T>> {
+  async get<T>(url: string, params?: any, signal?: AbortSignal): Promise<ApiResponse<T>> {
     try {
-      const response = await apiClient.get(url, { params });
+      const response = await apiClient.get(url, { params, signal });
       return response.data;
     } catch (error) {
       throw this.handleError(error);
@@ -246,7 +253,7 @@ class ApiService {
   private handleError(error: any): Error {
     if (error.response) {
       const message = getErrorMessage(error);
-      return new Error(message);
+      return new ApiRequestError(message, error.response.status);
     }
     return error;
   }
@@ -403,16 +410,22 @@ export const todoAPI = {
 };
 
 export const healthRecordAPI = {
-  async getRecords(userId: string, params?: { start_date?: string; end_date?: string; limit?: number }): Promise<ApiResponse<{ records: HealthRecord[]; daily_counts: Record<string, number>; total: number; user_id: number }>> {
-    return apiService.get(API_ENDPOINTS.HEALTH_RECORD.LIST(userId), params);
+  async getRecords(userId: string, params?: { start_date?: string; end_date?: string; limit?: number; offset?: number }, signal?: AbortSignal): Promise<ApiResponse<HealthRecordPage>> {
+    return apiService.get(API_ENDPOINTS.HEALTH_RECORD.LIST(userId), params, signal);
   },
-  async getRecord(userId: string, recordId: string): Promise<ApiResponse<HealthRecord>> {
-    return apiService.get(API_ENDPOINTS.HEALTH_RECORD.DETAIL(userId, recordId));
+  async getCalendar(userId: string, month: string, signal?: AbortSignal): Promise<ApiResponse<{ month: string; daily_counts: Record<string, number>; total: number }>> {
+    return apiService.get(API_ENDPOINTS.HEALTH_RECORD.CALENDAR(userId), { month }, signal);
+  },
+  async getRecord(userId: string, recordId: string, signal?: AbortSignal): Promise<ApiResponse<HealthRecord>> {
+    return apiService.get(API_ENDPOINTS.HEALTH_RECORD.DETAIL(userId, recordId), undefined, signal);
+  },
+  async getHistory(userId: string, recordId: string, signal?: AbortSignal): Promise<ApiResponse<{ history: HealthRecordChange[]; record_id: number }>> {
+    return apiService.get(API_ENDPOINTS.HEALTH_RECORD.HISTORY(userId, recordId), { limit: 100 }, signal);
   },
   async createRecord(userId: string, data: HealthRecordCreateRequest): Promise<ApiResponse<HealthRecord>> {
     return apiService.post(API_ENDPOINTS.HEALTH_RECORD.CREATE(userId), data);
   },
-  async updateRecord(userId: string, recordId: string, data: Partial<HealthRecordCreateRequest>): Promise<ApiResponse<HealthRecord>> {
+  async updateRecord(userId: string, recordId: string, data: HealthRecordUpdateRequest): Promise<ApiResponse<HealthRecord>> {
     return apiService.patch(API_ENDPOINTS.HEALTH_RECORD.UPDATE(userId, recordId), data);
   },
   async deleteRecord(userId: string, recordId: string): Promise<ApiResponse<{ id: number }>> {

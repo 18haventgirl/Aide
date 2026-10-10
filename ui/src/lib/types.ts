@@ -193,6 +193,8 @@ export interface HealthRecord {
   status: 'active' | 'corrected' | 'deleted'
   created_at: string | null
   updated_at: string | null
+  revision: number
+  time_expression?: string
 }
 
 export interface HealthRecordCreateRequest {
@@ -202,8 +204,31 @@ export interface HealthRecordCreateRequest {
   title: string
   summary: string
   details: Record<string, unknown>
-  source?: 'conversation' | 'manual'
+  source?: 'manual'
   confidence?: 'explicit' | 'user_confirmed' | 'inferred_time'
+  idempotency_key?: string
+}
+
+export type HealthRecordUpdateRequest = Partial<Pick<HealthRecordCreateRequest,
+  'observed_at' | 'time_precision' | 'record_type' | 'title' | 'summary' | 'details'>> & { expected_revision: number }
+
+export interface HealthRecordPage {
+  records: HealthRecord[]
+  daily_counts: Record<string, number>
+  total: number
+  returned: number
+  offset: number
+  has_more: boolean
+  user_id: number
+}
+
+export interface HealthRecordChange {
+  revision: number
+  operation: 'created' | 'updated' | 'deleted'
+  before: Partial<HealthRecord> | null
+  after: Partial<HealthRecord>
+  actor_message_id: string | null
+  at: string
 }
 
 export interface PersonDataFilter {

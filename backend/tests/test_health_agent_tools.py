@@ -54,6 +54,7 @@ class HealthAgentToolTests(unittest.TestCase):
         result = self.invoke(health_get_records, self.context(conversation="conversation-b"), {})
         self.assertEqual(len(result["records"]), 1)
         self.assertEqual(result["records"][0]["user_id"], 1)
+        self.assertEqual(result["records"][0]["date_label"], "2026-01-01（周四）")
 
     def test_missing_trusted_message_cannot_write(self):
         result = self.invoke(health_create_record, self.context(message=None), {"record_type": "symptom", "title": "合成头痛"})

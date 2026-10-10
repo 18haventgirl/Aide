@@ -215,6 +215,7 @@ backend/chroma_db/
 backend/data/note_index_v1/
 backend/data/note_search_reports/
 backend/data/evaluation_reports/
+backend/data/memory_acceptance*/
 backend/data/backups/
 backend/medical/models/
 backend/medical/source_downloads/

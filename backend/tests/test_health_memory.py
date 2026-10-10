@@ -179,6 +179,15 @@ class HealthMemoryTests(unittest.TestCase):
         self.assertEqual(result.to_dict()["revision"], 1)
         self.assertEqual(len(self.service.get_history(1, record.id)), 1)
 
+    def test_public_detail_edit_keeps_time_provenance_and_time_correction_confirms_it(self):
+        record = self.service.create_record(1, **{**self.facts, "time_precision": "unknown", "confidence": "inferred_time",
+            "details": {"body_site": "头部", "_time": {"expression": "昨天"}}})
+        edited = self.service.update_record(1, record.id, details={"body_site": "太阳穴"})
+        self.assertEqual(edited.time_precision, "unknown")
+        self.assertEqual(edited.details["_time"]["expression"], "昨天")
+        corrected = self.service.update_record(1, record.id, observed_at=datetime(2026, 1, 1, 18), time_precision="minute")
+        self.assertEqual(corrected.confidence, "user_confirmed")
+
     def test_concurrent_corrections_do_not_silently_overwrite(self):
         record = self.service.create_record(1, **self.facts)
         barrier = threading.Barrier(2)

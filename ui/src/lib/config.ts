@@ -4,10 +4,10 @@ export const config = {
   USE_WEBSOCKET: true,
   
   // API基础配置
-  API_BASE_URL: import.meta.env.DEV ? 'http://localhost:8000' : window.location.origin,
+  API_BASE_URL: window.location.origin,
   
   // WebSocket配置
-  WEBSOCKET_URL: import.meta.env.DEV ? 'ws://localhost:8000' : window.location.origin,
+  WEBSOCKET_URL: window.location.origin.replace(/^http/, 'ws'),
   
   // 默认用户配置
   DEFAULT_USER_ID: '1',
@@ -84,6 +84,8 @@ export const API_ENDPOINTS = {
   },
 
   HEALTH_RECORD: {
+    CALENDAR: (userId: string) => `/api/health-records/${userId}/calendar`,
+    HISTORY: (userId: string, recordId: string) => `/api/health-records/${userId}/${recordId}/history`,
     LIST: (userId: string) => `/api/health-records/${userId}`,
     DETAIL: (userId: string, recordId: string) => `/api/health-records/${userId}/${recordId}`,
     CREATE: (userId: string) => `/api/health-records/${userId}`,

@@ -76,14 +76,17 @@ async def health_create_record(ctx: RunContextWrapper[Any],
 
 
 @function_tool
-async def health_get_records(ctx: RunContextWrapper[Any], start_date: str = "", end_date: str = "", limit: int = 100) -> str:
+async def health_get_records(ctx: RunContextWrapper[Any], start_date: str = "", end_date: str = "", limit: int = 100, offset: int = 0) -> str:
     """Read current user's health facts for a bounded date range. Use these facts, dates and IDs for cross-conversation summaries, not inferred diagnoses."""
     def operation():
         context = _context(ctx)
         start = datetime.strptime(start_date, "%Y-%m-%d").date() if start_date else None
         end = datetime.strptime(end_date, "%Y-%m-%d").date() if end_date else None
-        records = _service().list_records(context.user_id, start, end, max(1, min(limit, 500)))
-        return {"success": True, "records": [r.to_dict() for r in records]}
+        page = _service().record_page(context.user_id, start, end, max(1, min(limit, 500)), offset)
+        records = [{**r.to_dict(), "date_label": f"{r.observed_at.date().isoformat()}（周{'一二三四五六日'[r.observed_at.weekday()]}）"}
+                   for r in page["records"]]
+        return {"success": True, **page, "records": records,
+                "returned": len(page["records"]), "start_date": start_date, "end_date": end_date}
     return await asyncio.to_thread(_result, operation)
 
 
