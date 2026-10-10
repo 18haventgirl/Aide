@@ -1,0 +1,391 @@
+{
+  "report_version": "retrieval_experiment_v1",
+  "scope": "developer_cases_not_blind_not_clinical",
+  "started_at_utc": "2026-10-10T08:02:30.396807+00:00",
+  "code": {
+    "commit": "205f5e475c338152568ea78ed66bbe698c8ed726",
+    "retrieval_implementation_sha256": "c2b1c3a158a84984e3004a5fa3822667d77d18c74a7de4b0cf79bfbb204d3296",
+    "tracked_changes": true
+  },
+  "suite": {
+    "schema_version": 1,
+    "hash_scheme": "canonical-json-v1",
+    "suite_id": "aide-chinese-retrieval-v3-regression",
+    "evaluation_date": "2026-10-10",
+    "authorship": "developer_authored_not_external_blind",
+    "groups": [
+      {
+        "name": "legacy-development",
+        "purpose": "development",
+        "path": "../eval_cases_research.json",
+        "sha256": "6c4419c16bdb40cc799dbb5295820a4450dae6f5c19ad83b472f16f316da49e4",
+        "count": 111,
+        "allow_historical_missing_ids": true
+      },
+      {
+        "name": "legacy-regression",
+        "purpose": "regression",
+        "path": "../eval_cases_validation_v1.json",
+        "sha256": "6cf26a8a0c768d762bd61e3e7931506642fa37b2e702f3296fd807580ab28510",
+        "count": 33,
+        "allow_historical_missing_ids": true
+      },
+      {
+        "name": "chinese-symptoms",
+        "purpose": "topic_acceptance",
+        "path": "../eval_cases_chinese_symptoms_v1.json",
+        "sha256": "92714ccb10798fee282bd0bcfbbd14d1c26b9be5a126a5eb8b3ac3a93143fb1a",
+        "count": 10,
+        "allow_historical_missing_ids": false
+      },
+      {
+        "name": "chinese-general-regression",
+        "purpose": "regression",
+        "path": "frozen_chinese_general_v1.json",
+        "sha256": "9ce5e24394e13f571f8554ab58ebf2e29d6a96febbd1f8d37067561e399e1087",
+        "count": 80,
+        "allow_historical_missing_ids": false,
+        "authorship": "developer_source_derived_not_external_blind",
+        "frozen_before_first_run": true,
+        "used_for_changes_after_first_run": true,
+        "first_run_result": "results/chinese_general_first_v1.json"
+      }
+    ],
+    "query_contract": "explicit_user_facts_v1"
+  },
+  "suite_manifest_sha256": "a6df97361537388a589aa849e175d6c1f6fb28e1380b474e41ac900c7eaae131",
+  "selected_groups": [
+    "chinese-general-regression",
+    "legacy-regression",
+    "chinese-symptoms"
+  ],
+  "profiles": [
+    "hybrid"
+  ],
+  "k": 5,
+  "corpus_sha256": "3bf1713ffd0dd9ca89394a0875661ff7cbf2425d8cf3267da0491563a515afe9",
+  "corpus_documents": 72,
+  "eligible_documents": 72,
+  "unavailable_expected_doc_ids": {
+    "legacy-regression": [
+      "MPLUS-1543-cough",
+      "MPLUS-196-common-cold",
+      "MPLUS-211-diarrhea",
+      "MPLUS-273-headache",
+      "MPLUS-3061-abdominal-pain",
+      "MPLUS-4748-sore-throat",
+      "MPLUS-489-nausea-vomiting",
+      "MPLUS-511-fever"
+    ],
+    "chinese-symptoms": [],
+    "chinese-general-regression": []
+  },
+  "index_version": "medical-zh-section-v2",
+  "parameters": {
+    "MEDICAL_RESEARCH_MAX_DISTANCE": "0.50",
+    "MEDICAL_DENSE_CANDIDATES": "24",
+    "MEDICAL_LEXICAL_CANDIDATES": "24",
+    "MEDICAL_RERANK_CANDIDATES": "8",
+    "MEDICAL_RERANK_RELATIVE_FLOOR": "0.35",
+    "MEDICAL_RERANK_MIN_SCORE": "0.05",
+    "MEDICAL_MAX_CHUNKS_PER_DOCUMENT": "2",
+    "MEDICAL_LEXICAL_CACHE_TTL_SECONDS": "60"
+  },
+  "cpu_threads": 2,
+  "memory_before": {
+    "total_mib": 15556.9,
+    "available_mib": 3837.7,
+    "process_working_mib": 32.8,
+    "process_peak_mib": 32.8
+  },
+  "ranking_constants": {
+    "rrf_k": 60,
+    "dense_weight": 0.6,
+    "lexical_weight": 0.4,
+    "rerank_pool_dense_quota": 5,
+    "rerank_pool_lexical_quota": 3
+  },
+  "metric_definitions": {
+    "mrr": "first relevant document within top K only",
+    "recall": "retrieved relevant document IDs / all labelled relevant IDs",
+    "keyword": "positive full-corpus BM25; per-doc cap; no semantic rejection threshold",
+    "latency": "service function, no HTTP/LLM; first search per mode separately reported"
+  },
+  "complete": true,
+  "embedding": {
+    "name": "BAAI/bge-small-zh-v1.5@7999e1d3359715c523056ef9478215996d62a620",
+    "weight_sha256": "354763b9b1357bc9c44f62c6be2276321081ed2567773608c0d0785b61d5a026",
+    "batch_size": 4,
+    "dimensions": 512
+  },
+  "packages": {
+    "torch": "2.6.0",
+    "transformers": "4.49.0",
+    "chromadb": "1.0.15",
+    "jieba": "0.42.1"
+  },
+  "index_sync": {
+    "indexed_documents": 72,
+    "indexed_chunks": 95,
+    "removed_chunks": 0
+  },
+  "index_chunks": 95,
+  "index_build_and_embedding_load_ms": 31394.2,
+  "memory_after": {
+    "total_mib": 15556.9,
+    "available_mib": 3414.6,
+    "process_working_mib": 481.3,
+    "process_peak_mib": 558.7
+  },
+  "comparisons": [],
+  "publication": {
+    "kind": "aggregate_and_failure_rows",
+    "full_local_report_sha256": "c231dd9251b225d1d16d5ccd2d99037d3442eb83aba7e9c61d2037edb7605e96",
+    "local_report": "backend/data/evaluation_reports/chinese_query_contract_hybrid_20261010.json",
+    "live_llm_calls": 0,
+    "external_blind_cases": 0,
+    "input_contract_changed": true
+  },
+  "results": {
+    "chinese-general-regression": {
+      "hybrid": {
+        "metric_version": "multi_relevant_v3_mrr_at_k",
+        "query_contract": "explicit_user_facts_v1",
+        "cases": 80,
+        "supported_cases": 64,
+        "unanswerable_cases": 8,
+        "urgent_cases": 4,
+        "followup_cases": 4,
+        "recall_at_1": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "mrr_at_5": 1.0,
+        "ndcg_at_5": 1.0,
+        "forbidden_hit_rate_at_5": null,
+        "average_retrieval_latency_ms": 36.9,
+        "p95_retrieval_latency_ms": 40.7,
+        "unanswerable_rejection_rate": 0.75,
+        "urgent_detection_rate": 1.0,
+        "followup_recall_at_5": 1.0,
+        "first_search_ms": 351.18,
+        "subsequent_search_p95_ms": 40.62,
+        "reranker_status_counts": {
+          "disabled": 76,
+          "not_searched": 4
+        },
+        "failure_rows": [
+          {
+            "id": "CGN01",
+            "kind": "unanswerable",
+            "retrieved": [
+              "NHC-HL2024-05"
+            ],
+            "rejected": false,
+            "latency_ms": 27.08,
+            "diagnostics": {
+              "candidate_count": 25,
+              "rerank_candidate_count": 8,
+              "selected_count": 1,
+              "reranker_status": "disabled",
+              "reranker_model": null,
+              "top_rerank_score": null,
+              "dense_ms": 25.6,
+              "lexical_ms": 0.7,
+              "rerank_ms": 0.0
+            },
+            "query": "献血者的血型能决定星座运势吗？"
+          },
+          {
+            "id": "CGN05",
+            "kind": "unanswerable",
+            "retrieved": [
+              "NHC-HL2024-34"
+            ],
+            "rejected": false,
+            "latency_ms": 29.99,
+            "diagnostics": {
+              "candidate_count": 40,
+              "rerank_candidate_count": 8,
+              "selected_count": 1,
+              "reranker_status": "disabled",
+              "reranker_model": null,
+              "top_rerank_score": null,
+              "dense_ms": 28.2,
+              "lexical_ms": 0.8,
+              "rerank_ms": 0.0
+            },
+            "query": "本地戒烟补贴申请需要填写哪张政府表格？"
+          }
+        ]
+      }
+    },
+    "legacy-regression": {
+      "hybrid": {
+        "metric_version": "multi_relevant_v3_mrr_at_k",
+        "query_contract": "explicit_user_facts_v1",
+        "cases": 33,
+        "supported_cases": 15,
+        "unanswerable_cases": 8,
+        "urgent_cases": 5,
+        "followup_cases": 5,
+        "recall_at_1": 0.533,
+        "recall_at_5": 0.644,
+        "mrr": 0.678,
+        "mrr_at_5": 0.678,
+        "ndcg_at_5": 0.617,
+        "forbidden_hit_rate_at_5": null,
+        "average_retrieval_latency_ms": 28.8,
+        "p95_retrieval_latency_ms": 42.5,
+        "unanswerable_rejection_rate": 0.875,
+        "urgent_detection_rate": 1.0,
+        "followup_recall_at_5": 0.8,
+        "first_search_ms": 39.15,
+        "subsequent_search_p95_ms": 42.52,
+        "reranker_status_counts": {
+          "disabled": 23,
+          "not_searched": 10
+        },
+        "failure_rows": [
+          {
+            "id": "VS02",
+            "kind": "supported",
+            "expected": [
+              "MPLUS-4748-sore-throat"
+            ],
+            "retrieved": [
+              "NHC-THROAT-20240821",
+              "GZ-POSTMEAL-ABDOMEN-2026",
+              "NHC-HL2024-35",
+              "NHC-HL2024-41",
+              "NHC-HL2024-40"
+            ],
+            "first_match_rank": null,
+            "forbidden_retrieved": [],
+            "latency_ms": 31.06,
+            "diagnostics": {
+              "candidate_count": 40,
+              "rerank_candidate_count": 8,
+              "selected_count": 6,
+              "reranker_status": "disabled",
+              "reranker_model": null,
+              "top_rerank_score": null,
+              "dense_ms": 29.4,
+              "lexical_ms": 0.8,
+              "rerank_ms": 0.0
+            },
+            "query": "嗓子疼得吞口水都不舒服，需要注意哪些变化？"
+          },
+          {
+            "id": "VS04",
+            "kind": "supported",
+            "expected": [
+              "MPLUS-273-headache"
+            ],
+            "retrieved": [
+              "FJ-HEADACHE-20260626",
+              "NHC-HL2024-44",
+              "NHC-HL2024-26",
+              "NHC-HL2024-39"
+            ],
+            "first_match_rank": null,
+            "forbidden_retrieved": [],
+            "latency_ms": 34.45,
+            "diagnostics": {
+              "candidate_count": 42,
+              "rerank_candidate_count": 8,
+              "selected_count": 5,
+              "reranker_status": "disabled",
+              "reranker_model": null,
+              "top_rerank_score": null,
+              "dense_ms": 32.8,
+              "lexical_ms": 0.9,
+              "rerank_ms": 0.0
+            },
+            "query": "我最近总是头疼，但不是每次都一样，常见诱因有哪些？"
+          },
+          {
+            "id": "VS07",
+            "kind": "supported",
+            "expected": [
+              "MPLUS-211-diarrhea"
+            ],
+            "retrieved": [
+              "BJ-DIARRHEA-20210406",
+              "NHC-HL2024-66",
+              "NHC-HL2024-31",
+              "NHC-HL2024-59",
+              "NHC-HL2024-48"
+            ],
+            "first_match_rank": null,
+            "forbidden_retrieved": [],
+            "latency_ms": 31.12,
+            "diagnostics": {
+              "candidate_count": 37,
+              "rerank_candidate_count": 8,
+              "selected_count": 7,
+              "reranker_status": "disabled",
+              "reranker_model": null,
+              "top_rerank_score": null,
+              "dense_ms": 29.4,
+              "lexical_ms": 0.8,
+              "rerank_ms": 0.0
+            },
+            "query": "腹泻的时候怎么防止身体缺水？"
+          },
+          {
+            "id": "VN04",
+            "kind": "unanswerable",
+            "retrieved": [
+              "NHC-HL2024-32",
+              "NHC-HL2024-60",
+              "NHC-HL2024-57",
+              "NHC-HL2024-08"
+            ],
+            "rejected": false,
+            "latency_ms": 36.11,
+            "diagnostics": {
+              "candidate_count": 43,
+              "rerank_candidate_count": 8,
+              "selected_count": 5,
+              "reranker_status": "disabled",
+              "reranker_model": null,
+              "top_rerank_score": null,
+              "dense_ms": 34.0,
+              "lexical_ms": 1.0,
+              "rerank_ms": 0.0
+            },
+            "query": "根据这张心电图能不能确定我是心肌梗死？"
+          }
+        ]
+      }
+    },
+    "chinese-symptoms": {
+      "hybrid": {
+        "metric_version": "multi_relevant_v3_mrr_at_k",
+        "query_contract": "explicit_user_facts_v1",
+        "cases": 10,
+        "supported_cases": 10,
+        "unanswerable_cases": 0,
+        "urgent_cases": 0,
+        "followup_cases": 0,
+        "recall_at_1": 1.0,
+        "recall_at_5": 1.0,
+        "mrr": 1.0,
+        "mrr_at_5": 1.0,
+        "ndcg_at_5": 1.0,
+        "forbidden_hit_rate_at_5": null,
+        "average_retrieval_latency_ms": 31.6,
+        "p95_retrieval_latency_ms": 35.5,
+        "unanswerable_rejection_rate": null,
+        "urgent_detection_rate": null,
+        "followup_recall_at_5": null,
+        "first_search_ms": 32.31,
+        "subsequent_search_p95_ms": 35.48,
+        "reranker_status_counts": {
+          "disabled": 10
+        },
+        "failure_rows": []
+      }
+    }
+  }
+}

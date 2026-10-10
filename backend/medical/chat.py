@@ -2,29 +2,48 @@
 
 import re
 
+
+def _positive_signal(pattern: str, text: str) -> bool:
+    """Exclude simple explicit negations; this is not a clinical NLP classifier."""
+    for match in re.finditer(pattern, text):
+        prefix = re.split(r"[，,。；;！？!?\n]", text[:match.start()])[-1]
+        if re.search(r"(?:没有|没|未出现|否认|无|不)(?:出现|发生|感到|觉得|明显|任何|再)?$", prefix):
+            continue
+        if re.search(r"(?:不|没有|没|无)(?:出现|感到|觉得|明显)?(?:痛|疼|无力|麻木|冷汗|困难|含糊|歪)", match.group()):
+            continue
+        return True
+    return False
+
+
 def is_urgent(query: str) -> bool:
     """Detect a small set of emergency presentations without diagnosing them."""
     text = re.sub(r"\s+", "", query)
-    chest = bool(re.search(r"胸痛|胸口.{0,4}(?:痛|疼|压榨|压着)|胸闷", text))
-    cardiopulmonary = bool(re.search(r"冷汗|冒汗|大汗|气不够用|喘不过气|呼吸.{0,3}(?:困难|费劲)", text))
+    chest = _positive_signal(r"胸痛|胸口.{0,4}(?:痛|疼|压榨|压着)|胸闷", text)
+    cardiopulmonary = _positive_signal(r"冷汗|冒汗|大汗|气不够用|喘不过气|呼吸.{0,3}(?:困难|费劲)", text)
     if chest and cardiopulmonary:
         return True
 
-    neuro_signs = sum(bool(re.search(pattern, text)) for pattern in (
-        r"脸歪|口角歪斜",
-        r"说话.{0,3}(?:不清|含糊)|说不清话|说不出话",
-        r"(?:一侧|一边|半边身子|左手|右手|左臂|右臂).{0,6}(?:无力|没力|使不上劲|麻木|麻)",
+    limb = r"(?:一侧|一边|半边身子|左手|右手|左臂|右臂|一只(?:手|胳膊)|单侧手臂).{0,8}(?:无力|没力|使不上劲|麻木|麻|抬不起来)"
+    neuro_signs = sum(_positive_signal(pattern, text) for pattern in (
+        r"脸.{0,3}歪|口角歪斜",
+        r"(?:说话|讲话|言语).{0,3}(?:不清|含糊)|说不清话|说不出话",
+        limb,
     ))
     if neuro_signs >= 2:
         return True
-    if re.search(r"(?:一侧|一边|半边身子|左手|右手|左臂|右臂).{0,8}(?:无力|没力|使不上劲|麻木|麻|抬不起来)", text):
+    if _positive_signal(limb, text):
         return True
-    if re.search(r"呼吸.{0,4}(?:越来越费劲|困难)|喘不过气|无法呼吸|一句完整的话都说不出来", text):
+    if _positive_signal(r"呼吸.{0,4}(?:越来越费劲|困难)|喘不过气|无法呼吸|一句完整的话都说不出来", text):
         return True
-    if re.search(r"想自杀|想轻生|正在自伤|准备.{0,4}(?:伤害自己|自伤|自杀)|马上.{0,4}(?:伤害自己|自伤|自杀)", text):
+    if _positive_signal(r"想自杀|想轻生|正在自伤|准备.{0,4}(?:伤害自己|自伤|自杀)|马上.{0,4}(?:伤害自己|自伤|自杀)", text):
         return True
-    severe_headache = bool(re.search(r"突然.{0,8}(?:最严重|剧烈|炸裂|雷击).{0,5}头痛|这辈子最严重的头痛", text))
-    if severe_headache and re.search(r"呕吐|脖子硬|意识|抽搐|说话|无力", text):
+    severe = r"(?:最严重|剧烈|炸裂|雷击)"
+    headache = r"(?:头痛|头疼)"
+    severe_headache = _positive_signal(
+        rf"(?:突然|突发).{{0,8}}{severe}.{{0,5}}{headache}|"
+        rf"{headache}.{{0,8}}(?:突然|突发).{{0,8}}{severe}|"
+        rf"(?:突然|突发).{{0,8}}{headache}.{{0,8}}{severe}|这辈子最严重的{headache}", text)
+    if severe_headache and _positive_signal(r"呕吐|(?:一直|不停|反复|频繁|又|还).{0,2}吐|脖子硬|意识|抽搐|说话|无力", text):
         return True
     return False
 

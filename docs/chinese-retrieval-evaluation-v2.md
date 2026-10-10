@@ -13,7 +13,7 @@
 实验使用独立进程内 Chroma、真实 BGE-small-zh-v1.5 与 BGE-reranker-base，CPU 2 线程，embedding batch 4，reranker batch 1 / max_length 256。没有打开用户数据库，没有调用生成模型。启动加载与建库约 47.5 秒，进程峰值约 1115.5 MiB。模型 revision/权重哈希、参数、逐题诊断与运行版本均保存。
 
 ```powershell
-# 在 backend 目录，每次运行使用新的输出文件
+# 在 205f5e4 提交的 backend 目录复现首次输入合同；每次运行使用新的输出文件
 .\.venv\python.exe -m medical.experiment --suite medical/evaluation/suite_v2.json --group frozen-chinese-general --output data/evaluation_reports/chinese_general_reproduction.json
 ```
 
@@ -41,6 +41,8 @@ Recall/MRR/nDCG 的分母是 64 道 supported 题；追问另外计算。无答�
 5. **规模与覆盖仍不足。** 新题主要检查已有健康素养文章，尚未新增深入医疗知识；120 道新开发题、40 道流程题、答案要点/证据断言及外部未见集仍待完成，后续和 M3 资料升级配套推进。
 
 这组被用于修复或调参后应在新 suite 中标为回归组；原 `suite_v2` 和首次结果保留作为历史封存证据，不再声称后续数字来自未见测试。
+
+续轮使用 `suite_v3.json`、`chinese-general-regression` 和 `explicit_user_facts_v1` 合同。原标签/哈希保持不变；跟首次合同不同的追问数字单独呈现，不直接归因于模型优化。
 
 ## 本轮验证
 

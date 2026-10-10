@@ -61,6 +61,20 @@ class EvaluationTests(unittest.TestCase):
         spaced = json.dumps(value, ensure_ascii=False, indent=2).replace("\n", "\r\n")
         self.assertEqual(digest(json.loads(spaced)), digest(value))
 
+    def test_reused_frozen_cases_are_explicitly_regression(self):
+        _, original = load_suite(MEDICAL / "evaluation" / "suite_v2.json")
+        manifest, reused = load_suite(MEDICAL / "evaluation" / "suite_v3.json")
+        self.assertEqual(original["frozen-chinese-general"], reused["chinese-general-regression"])
+        entry = next(group for group in manifest["groups"] if group["name"] == "chinese-general-regression")
+        self.assertEqual(entry["purpose"], "regression")
+        self.assertTrue(entry["used_for_changes_after_first_run"])
+        manifest["query_contract"] = "unknown"
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "suite.json"
+            path.write_text(json.dumps(manifest), encoding="utf-8")
+            with self.assertRaisesRegex(ValueError, "unsupported query contract"):
+                load_suite(path)
+
     def test_new_frozen_group_categories_and_source_bindings(self):
         _, groups = load_suite(MEDICAL / "evaluation" / "suite_v2.json")
         cases = groups["frozen-chinese-general"]

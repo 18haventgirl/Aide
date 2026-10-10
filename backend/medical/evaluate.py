@@ -7,7 +7,9 @@ import time
 from pathlib import Path
 
 from .runtime import get_knowledge_base
-from .chat import is_urgent, is_out_of_scope, contextual_query
+from .chat import is_urgent, is_out_of_scope, contextual_facts_query
+
+QUERY_CONTRACT = "explicit_user_facts_v1"
 
 
 def validate_cases(cases: list[dict]) -> None:
@@ -63,15 +65,15 @@ def evaluate(kb, cases: list[dict], k: int = 3) -> dict:
         expected = set(case.get("expected_doc_ids", []))
         if kind in {"supported", "followup"} and not expected:
             raise ValueError(f"case {case['id']} has no expected documents")
-        query = (contextual_query(case["query"], [{"role": "user", "content": case["history"]}])
-                 if kind == "followup" else case["query"])
+        query = contextual_facts_query(case["query"], case["history"] if kind == "followup" else "")
+        outside_scope = is_out_of_scope(query)
         search_started = time.perf_counter()
-        retrieved = ([] if is_out_of_scope(query) else
-                     list(dict.fromkeys(hit.doc_id for hit in kb.search(query, limit=20))))
+        retrieved = ([] if outside_scope else
+                     list(dict.fromkeys(hit.doc_id for hit in kb.search(query[:1000], limit=20))))
         latency_ms = (time.perf_counter() - search_started) * 1000
         retrieval_latencies.append(latency_ms)
         operational = {"latency_ms": round(latency_ms, 2),
-                       "diagnostics": kb.search_metrics() if hasattr(kb, "search_metrics") and not is_out_of_scope(query) else {}}
+                       "diagnostics": kb.search_metrics() if hasattr(kb, "search_metrics") and not outside_scope else {}}
         if kind == "unanswerable":
             unanswered += 1
             correct_rejections += not retrieved
@@ -103,6 +105,7 @@ def evaluate(kb, cases: list[dict], k: int = 3) -> dict:
     p95_index = max(0, math.ceil(len(sorted_latency) * 0.95) - 1)
     return {
         "metric_version": "multi_relevant_v3_mrr_at_k",
+        "query_contract": QUERY_CONTRACT,
         "cases": len(cases), "supported_cases": supported,
         "unanswerable_cases": unanswered, "urgent_cases": urgent, "followup_cases": followup,
         "recall_at_1": round(recall_1 / supported, 3) if supported else None,

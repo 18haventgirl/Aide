@@ -1,0 +1,63 @@
+{
+  "scope": "direct_MCP_no_LLM_no_health_writes",
+  "probes": [
+    {
+      "id": "stroke_language",
+      "urgency": "emergency",
+      "knowledge_status": "not_covered",
+      "doc_ids": [],
+      "reranker_status": "applied",
+      "latency_ms": 4290.3,
+      "passed": true
+    },
+    {
+      "id": "headache_language",
+      "urgency": "emergency",
+      "knowledge_status": "grounded",
+      "doc_ids": [
+        "FJ-HEADACHE-20260626",
+        "FJ-HEADACHE-20260626"
+      ],
+      "reranker_status": "applied",
+      "latency_ms": 3914.7,
+      "passed": true
+    },
+    {
+      "id": "explicit_denial",
+      "urgency": "routine",
+      "knowledge_status": "grounded",
+      "doc_ids": [
+        "BJ-EMERG-CHEST-2022"
+      ],
+      "reranker_status": "applied",
+      "latency_ms": 3930.0,
+      "passed": true
+    },
+    {
+      "id": "medicine_followup",
+      "urgency": "routine",
+      "knowledge_status": "grounded",
+      "doc_ids": [
+        "NHC-HL2024-56",
+        "NHC-HL2024-56",
+        "NHC-HL2024-59"
+      ],
+      "reranker_status": "applied",
+      "latency_ms": 3945.1,
+      "passed": true
+    },
+    {
+      "id": "quit_followup",
+      "urgency": "routine",
+      "knowledge_status": "grounded",
+      "doc_ids": [
+        "NHC-HL2024-34",
+        "NHC-HL2024-33"
+      ],
+      "reranker_status": "applied",
+      "latency_ms": 3844.0,
+      "passed": true
+    }
+  ],
+  "passed": true
+}

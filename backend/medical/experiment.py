@@ -12,7 +12,7 @@ import subprocess
 from contextlib import ExitStack
 import time
 
-from .evaluate import evaluate, validate_cases
+from .evaluate import evaluate, validate_cases, QUERY_CONTRACT
 from .knowledge_base import INDEX_VERSION, MedicalKnowledgeBase, load_corpus
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -39,6 +39,8 @@ def load_suite(path: Path) -> tuple[dict, dict]:
     manifest = json.loads(path.read_text(encoding="utf-8"))
     if manifest.get("schema_version") != 1 or manifest.get("hash_scheme") != "canonical-json-v1" or not manifest.get("groups"):
         raise ValueError("unsupported or empty suite manifest")
+    if manifest.get("query_contract", QUERY_CONTRACT) != QUERY_CONTRACT:
+        raise ValueError("unsupported query contract")
     groups, names = {}, set()
     for entry in manifest["groups"]:
         name = entry["name"]
@@ -184,6 +186,7 @@ def run_experiment(manifest_path, corpus_path, output, groups=None, profiles=PRO
         "report_version": "retrieval_experiment_v1", "scope": "developer_cases_not_blind_not_clinical",
         "started_at_utc": datetime.now(timezone.utc).isoformat(), "code": repository_version(),
         "suite": manifest, "suite_manifest_sha256": hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
+        "query_contract": QUERY_CONTRACT,
         "selected_groups": selected, "profiles": list(profiles), "k": k,
         "corpus_sha256": digest([d.model_dump(mode="json") for d in documents]),
         "corpus_documents": len(documents), "eligible_documents": len(eligible),
