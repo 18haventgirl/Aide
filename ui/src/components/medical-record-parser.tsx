@@ -4,6 +4,7 @@ import { WorkspaceHeader } from './workspace-header';
 import { Button } from './ui/button';
 import { ConfirmDialog, type Confirmation } from './ui/confirm-dialog';
 import { MedicalParserField } from './medical-parser-field';
+import { MedicalPdfPreview } from './medical-pdf-preview';
 import { medicalDocumentAPI } from '../services/medicalDocumentAPI';
 import type { MedicalDocument, MedicalDocumentSummary } from '../services/medicalDocumentAPI';
 
@@ -211,7 +212,7 @@ export function MedicalRecordParser({ onSaved }: { onSaved: () => void }) {
         <div className="surface-card flex h-80 flex-col overflow-hidden lg:h-auto lg:min-h-0">
           <div className="flex items-center justify-between border-b border-border px-5 py-4"><h2 className="flex items-center gap-2 text-sm font-semibold"><FileText className="h-4 w-4 text-muted-foreground" />病历原文</h2>{preview && <div className="flex gap-3 text-xs"><button onClick={() => setSourceTab('text')} className={sourceTab === 'text' ? 'text-primary' : 'text-muted-foreground'}>文字</button><button onClick={() => setSourceTab('file')} className={sourceTab === 'file' ? 'text-primary' : 'text-muted-foreground'}>文件预览</button></div>}</div>
           <div className="max-h-96 flex-1 overflow-auto p-4 lg:max-h-none">
-            {sourceTab === 'file' && preview ? file?.name.toLowerCase().endsWith('.pdf') ? <iframe title="上传的病历 PDF" src={preview} className="h-[600px] w-full rounded-lg border bg-card" /> : <img src={preview} alt="上传的病历原件" className="w-full rounded-lg border bg-card" /> : <>
+            {sourceTab === 'file' && preview ? file?.name.toLowerCase().endsWith('.pdf') ? <MedicalPdfPreview url={preview} filename={file.name} /> : <img src={preview} alt="上传的病历原件" className="w-full rounded-lg border bg-card" /> : <>
               <p className="mb-4 text-xs leading-5 text-muted-foreground">点击字段下的「查看原文」，定位提取依据。</p>
               {draft.result.source_lines.map(line => <div key={line.id} ref={line.id === highlight[0] ? firstLine : undefined} className={`flex gap-3 rounded-sm border-l-2 px-2 py-1.5 ${highlight.includes(line.id) ? 'border-primary bg-primary/5' : 'border-transparent'}`}><span className="mt-1 w-11 shrink-0 font-mono text-[10px] text-slate-400">{line.id}</span><p className="min-w-0 whitespace-pre-wrap break-words text-sm leading-7 text-foreground/80">{line.text}{line.method === 'ocr' && <span className="ml-2 text-[10px] text-muted-foreground">OCR</span>}</p></div>)}
             </>}

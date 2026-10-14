@@ -1,5 +1,14 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { cpSync, mkdirSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
+
+// Keep PDF rendering assets on this origin in development and production.
+for (const directory of ['cmaps', 'standard_fonts', 'wasm']) {
+  const destination = fileURLToPath(new URL(`./public/pdfjs/${directory}`, import.meta.url))
+  mkdirSync(destination, { recursive: true })
+  cpSync(fileURLToPath(new URL(`./node_modules/pdfjs-dist/${directory}`, import.meta.url)), destination, { recursive: true })
+}
 
 // https://vite.dev/config/
 export default defineConfig({

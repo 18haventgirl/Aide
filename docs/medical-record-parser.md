@@ -66,6 +66,7 @@
 - 初始页：上传/粘贴切换、文件限制、两个明确标注虚构的样例、正在解析和可重试错误提示。
 - 结果页：桌面双栏，左侧原文，右侧分组字段；窄屏纵向排列。点击字段依据定位并高亮原文行。
 - 当前上传的图片/PDF 可在内存中预览；从历史重新打开时展示留存的提取原文，不宣称仍保存着原文件。
+- PDF 使用按需加载的 PDF.js 在页面内渲染，支持翻页和下载原文件；不依赖浏览器内置 PDF 插件。字体、CMap 和 WASM 由 Vite 从锁定的依赖生成到 `ui/public/pdfjs/`，随构建一同发布，不使用外部 CDN。该生成目录不入 Git。
 - 空白、待核对、人工修正分别标识；修改后依据按钮标注“修改前的提取依据”。
 - 底部确认日期及保存按钮；保存成功后标注已保存并刷新个人数据组件。
 - 最近记录支持重新打开、刷新、删除；没有把接口失败当成空历史。
@@ -86,16 +87,19 @@ python -m pip install -r backend/requirements-medical-parser-ocr.txt
 
 ## 验证与边界
 
-可重复检查：
+可重复检查（在已安装后端基础及 OCR 依赖的测试环境执行；生成器还需要 `python-docx`、`reportlab` 和中文字体，如 Windows 微软雅黑或 Linux Noto Sans CJK）：
 
 ```powershell
+python -m pip install python-docx==1.2.0 reportlab==4.4.9
+python backend/tests/create_medical_parser_fixtures.py logs/parser-format-matrix
+$env:MEDICAL_PARSER_TEST_FIXTURES = (Resolve-Path logs/parser-format-matrix).Path
 cd backend
-python -m unittest tests.test_medical_parser tests.test_agent_coordination
+python -m unittest tests.test_medical_parser tests.test_agent_coordination -v
 cd ../ui
 npm run typecheck
 npm run build
 ```
 
-测试覆盖原文顺序、输入限制、DOCX 图片防遗漏、PDF 文字层和页数、虚构字段/伪造引用/丢失限定词、用户隔离、确认前不入健康记录、人工修正留痕、并发确认、删除和 API 流程。具体本轮实测记录见 `medical-record-parser-validation.md`。
+测试覆盖 TXT、DOCX、文字 PDF、PNG、JPG、JPEG、扫描 PDF、混合 PDF，以及原文顺序、输入限制、DOCX 图片防遗漏、PDF 页数与密码保护、虚构字段/伪造引用/丢失限定词、基础字段名前缀清理、用户隔离、确认前不入健康记录、人工修正留痕、并发确认、删除和 API 流程。格式矩阵使用真实文件解码和本地 OCR，只替换远程模型；真实模型在浏览器流程中另行验证。不设置 `MEDICAL_PARSER_TEST_FIXTURES` 时会明确跳过矩阵测试，不能据此宣称全部格式已通过。具体实测记录见 `medical-record-parser-validation.md`。
 
 第一版不做化验数值的专用表格识别，不生成新诊断或调整治疗，不支持手写保证、跨页病历拼接、批量异步队列或图像坐标框。原文校验只能校验取字后的文本；OCR 读错原件仍需人工发现。进程异常或请求断开时未完成解析不会自动恢复；确认已写入的结果可从最近记录恢复。真实脱敏病历的提取质量尚需样本评估。

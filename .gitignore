@@ -236,6 +236,7 @@ pnpm-debug.log*
 lerna-debug.log*
 
 node_modules
+ui/public/pdfjs/
 dist
 dist-ssr
 *.local

@@ -22,6 +22,10 @@ def ground_result(raw: dict, lines: list[SourceLine]) -> dict:
     for key, label in FIELD_LABELS.items():
         field = result.fields.get(key)
         value = field.value.strip() if field else ""
+        # Providers sometimes return "姓名：张某" instead of the field value.
+        # Only remove the exact basic-field label, preserving all clinical text.
+        if key in {"patient_name", "sex", "age", "hospital", "department", "visit_date", "admission_date", "discharge_date"}:
+            value = re.sub(rf"^{re.escape(label)}\s*[:：]\s*", "", value)
         ids = list(dict.fromkeys(field.line_ids)) if field else []
         evidence = [lookup[line_id] for line_id in ids if line_id in lookup]
         supported = (len(evidence) == len(ids) and bool(evidence)
@@ -65,6 +69,7 @@ async def extract_record(lines: list[SourceLine]) -> dict:
         "只返回 JSON。只抄录原文明示事实，不诊断、不补全、不纠错、不增加药物或剂量。"
         "否认、疑似、待排、既往等限定词必须保留。value 必须是所引用行拼接后的连续原文片段，"
         "允许去除空白，不能改写日期。缺失字段用空字符串和空数组，不把未提及写成无。"
+        "基本信息的 value 不包含字段名和冒号，例如姓名只返回姓名本身，就诊日期只返回原文日期。"
         "每个非空字段提供对应的 line_ids；多条信息引用相邻行并保留原文。"
         "无法确定文档类型时填 unknown。字段含义：" + json.dumps(FIELD_LABELS, ensure_ascii=False)
         + "。输出结构：" + json.dumps(contract, ensure_ascii=False)
