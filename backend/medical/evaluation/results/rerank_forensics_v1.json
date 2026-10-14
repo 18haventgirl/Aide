@@ -1,0 +1,1069 @@
+{
+  "scope": "forensic_selected_regression_not_new_quality_benchmark",
+  "script_sha256": "a7c0e23e297d34c8021944f4092b522f0d9190ace762bde325b85d8a0b184c74",
+  "code": {
+    "commit": "47db1e4a561dfd5ea1ed6d4a90a7593b26a0266e",
+    "retrieval_implementation_sha256": "b38f82dafd77a891373dc12801b0e1420835b1787a9fe84f5e6710e768d51a23",
+    "tracked_changes": false
+  },
+  "suite": "aide-chinese-retrieval-v3-regression",
+  "dataset_sha256": "9ce5e24394e13f571f8554ab58ebf2e29d6a96febbd1f8d37067561e399e1087",
+  "probe_ids": [
+    "CGS024",
+    "CGS035",
+    "CGS042",
+    "CGS023",
+    "CGS034",
+    "CGS041",
+    "CGN01",
+    "CGN05"
+  ],
+  "cpu_threads": 2,
+  "memory_before": {
+    "total_mib": 15556.9,
+    "available_mib": 1922.1,
+    "process_working_mib": 31.9,
+    "process_peak_mib": 31.9
+  },
+  "queries": [
+    {
+      "id": "CGS024",
+      "expected": [
+        "NHC-HL2024-14"
+      ],
+      "candidates": [
+        {
+          "sources": [
+            {
+              "chunk_id": "768c3c9c0bda965b50ba7a620a9cd5da",
+              "doc_id": "NHC-HL2024-14",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.003244817489758134,
+          "pair_tokens": 506,
+          "truncated_256": true,
+          "anchor": "安装防鼠门",
+          "anchor_character": 471,
+          "anchor_pair_token": 393
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "d2e574a2f63fb46a2053a2ba5989696f",
+              "doc_id": "NHC-HL2024-46",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.0004642555140890181,
+          "pair_tokens": 258,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "4745a019d462abf86db99464ad82d8b8",
+              "doc_id": "NHC-HL2024-15",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.0152271194383502,
+          "pair_tokens": 282,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "38fbed7dae3c95fa09907b9d405a106b",
+              "doc_id": "NHC-HL2024-14",
+              "chunk_index": 1
+            }
+          ],
+          "score_256": 0.010641993023455143,
+          "pair_tokens": 178,
+          "truncated_256": false,
+          "anchor": "安装防鼠门",
+          "anchor_character": -1,
+          "anchor_pair_token": null
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "9a2beab610abb57d831ef8ca0626812d",
+              "doc_id": "NHC-HL2024-40",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.005125039257109165,
+          "pair_tokens": 492,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "ad8a7ea596da9845ae333225d3fdae4f",
+              "doc_id": "NHC-HL2024-59",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.0014650640077888966,
+          "pair_tokens": 310,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "b9ca780c1518672f7afca0158a3a71bf",
+              "doc_id": "NHC-HL2024-64",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 4.135250856052153e-05,
+          "pair_tokens": 492,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "d8da7aa900f89e339e54d68a0c06eb0b",
+              "doc_id": "NHC-HL2024-06",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 7.460345659637824e-05,
+          "pair_tokens": 256,
+          "truncated_256": false
+        }
+      ],
+      "returned_docs": [],
+      "metrics": {
+        "candidate_count": 42,
+        "rerank_candidate_count": 8,
+        "selected_count": 0,
+        "reranker_status": "applied",
+        "reranker_model": "BAAI/bge-reranker-base@af37ed791788201a1cdcf513e0f584f3aa3be105",
+        "top_rerank_score": 0.015227,
+        "dense_ms": 81.5,
+        "lexical_ms": 1668.3,
+        "rerank_ms": 2598.0
+      }
+    },
+    {
+      "id": "CGS035",
+      "expected": [
+        "NHC-HL2024-23"
+      ],
+      "candidates": [
+        {
+          "sources": [
+            {
+              "chunk_id": "65103252f97dacf98412e3104a4fee0a",
+              "doc_id": "NHC-HL2024-47",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.008785666897892952,
+          "pair_tokens": 373,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "0b238450d13706c19eaee7e4c72b9970",
+              "doc_id": "NHC-HL2024-23",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.008480879478156567,
+          "pair_tokens": 418,
+          "truncated_256": true,
+          "anchor": "在工作期间全程",
+          "anchor_character": 560,
+          "anchor_pair_token": 372
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "9eadaedc7e9c8509c54021b1d4af5ae4",
+              "doc_id": "NHC-HL2024-13",
+              "chunk_index": 1
+            }
+          ],
+          "score_256": 0.010901108384132385,
+          "pair_tokens": 417,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "71af048de7e12d7b9f68aec6cb11ca0a",
+              "doc_id": "NHC-HL2024-13",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.0005035128560848534,
+          "pair_tokens": 467,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "daf46bf6423430b779dd27543841d9a4",
+              "doc_id": "NHC-HL2024-63",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.002034916775301099,
+          "pair_tokens": 230,
+          "truncated_256": false
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "63cf42d1e6ea002782f18366960fa258",
+              "doc_id": "NHC-HL2024-40",
+              "chunk_index": 1
+            }
+          ],
+          "score_256": 0.023081950843334198,
+          "pair_tokens": 348,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "9a2beab610abb57d831ef8ca0626812d",
+              "doc_id": "NHC-HL2024-40",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.0021633293945342302,
+          "pair_tokens": 488,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "d27213e6b86d7feaa7eaf839a9dfdd14",
+              "doc_id": "NHC-HL2024-55",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.0004075313627254218,
+          "pair_tokens": 175,
+          "truncated_256": false
+        }
+      ],
+      "returned_docs": [],
+      "metrics": {
+        "candidate_count": 36,
+        "rerank_candidate_count": 8,
+        "selected_count": 0,
+        "reranker_status": "applied",
+        "reranker_model": "BAAI/bge-reranker-base@af37ed791788201a1cdcf513e0f584f3aa3be105",
+        "top_rerank_score": 0.023082,
+        "dense_ms": 22.7,
+        "lexical_ms": 1.1,
+        "rerank_ms": 2561.7
+      }
+    },
+    {
+      "id": "CGS042",
+      "expected": [
+        "NHC-HL2024-26"
+      ],
+      "candidates": [
+        {
+          "sources": [
+            {
+              "chunk_id": "ee7e1faebc7d0a560fbbaf0e51679597",
+              "doc_id": "NHC-HL2024-26",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.009711457416415215,
+          "pair_tokens": 468,
+          "truncated_256": true,
+          "anchor": "果汁不能代替水果",
+          "anchor_character": 413,
+          "anchor_pair_token": 308
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "017ae8849315c7b3c6c79f2ccc6fdecc",
+              "doc_id": "NHC-HL2024-29",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.0026362312491983175,
+          "pair_tokens": 465,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "5f7f89f17bb7e9ba6253428e51618d5c",
+              "doc_id": "NHC-HL2024-26",
+              "chunk_index": 1
+            }
+          ],
+          "score_256": 0.004712058696895838,
+          "pair_tokens": 120,
+          "truncated_256": false,
+          "anchor": "果汁不能代替水果",
+          "anchor_character": -1,
+          "anchor_pair_token": null
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "ad8a7ea596da9845ae333225d3fdae4f",
+              "doc_id": "NHC-HL2024-59",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.009759924374520779,
+          "pair_tokens": 302,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "40da3b5f597b6cf877c27d29312ab794",
+              "doc_id": "NHC-HL2024-24",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.0002709845721255988,
+          "pair_tokens": 337,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "0c2d98f25ebf0e2838f1c0048855370e",
+              "doc_id": "NHC-HL2024-28",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.0005470088217407465,
+          "pair_tokens": 409,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "203895d42cd0ef21d1ba6b95713d8179",
+              "doc_id": "NHC-HL2024-30",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 5.270009933155961e-05,
+          "pair_tokens": 169,
+          "truncated_256": false
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "5299bd278a03993372dda4866d897918",
+              "doc_id": "NHC-HL2024-31",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.0058635203167796135,
+          "pair_tokens": 231,
+          "truncated_256": false
+        }
+      ],
+      "returned_docs": [],
+      "metrics": {
+        "candidate_count": 29,
+        "rerank_candidate_count": 8,
+        "selected_count": 0,
+        "reranker_status": "applied",
+        "reranker_model": "BAAI/bge-reranker-base@af37ed791788201a1cdcf513e0f584f3aa3be105",
+        "top_rerank_score": 0.00976,
+        "dense_ms": 19.0,
+        "lexical_ms": 0.5,
+        "rerank_ms": 2412.3
+      }
+    },
+    {
+      "id": "CGS023",
+      "expected": [
+        "NHC-HL2024-14"
+      ],
+      "candidates": [
+        {
+          "sources": [
+            {
+              "chunk_id": "38fbed7dae3c95fa09907b9d405a106b",
+              "doc_id": "NHC-HL2024-14",
+              "chunk_index": 1
+            }
+          ],
+          "score_256": 0.40596556663513184,
+          "pair_tokens": 176,
+          "truncated_256": false
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "768c3c9c0bda965b50ba7a620a9cd5da",
+              "doc_id": "NHC-HL2024-14",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.016447080299258232,
+          "pair_tokens": 504,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "02831e1acece2f2ef08f6ecf593d94fa",
+              "doc_id": "NHC-HL2024-11",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.00014750362606719136,
+          "pair_tokens": 442,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "ad8a7ea596da9845ae333225d3fdae4f",
+              "doc_id": "NHC-HL2024-59",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.006113914307206869,
+          "pair_tokens": 308,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "6fda4371cd9a3589b88d05c64559658e",
+              "doc_id": "NHC-HL2024-33",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 9.93615249171853e-05,
+          "pair_tokens": 486,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "0bf031e163e2fbee85bc59f4802bc705",
+              "doc_id": "NHC-HL2024-09",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.0021410465706139803,
+          "pair_tokens": 466,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "9a2beab610abb57d831ef8ca0626812d",
+              "doc_id": "NHC-HL2024-40",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.0011206201743334532,
+          "pair_tokens": 490,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "63cf42d1e6ea002782f18366960fa258",
+              "doc_id": "NHC-HL2024-40",
+              "chunk_index": 1
+            }
+          ],
+          "score_256": 0.00014508285676129162,
+          "pair_tokens": 350,
+          "truncated_256": true
+        }
+      ],
+      "returned_docs": [
+        "NHC-HL2024-14"
+      ],
+      "metrics": {
+        "candidate_count": 37,
+        "rerank_candidate_count": 8,
+        "selected_count": 1,
+        "reranker_status": "applied",
+        "reranker_model": "BAAI/bge-reranker-base@af37ed791788201a1cdcf513e0f584f3aa3be105",
+        "top_rerank_score": 0.405966,
+        "dense_ms": 18.8,
+        "lexical_ms": 0.6,
+        "rerank_ms": 2472.6
+      }
+    },
+    {
+      "id": "CGS034",
+      "expected": [
+        "NHC-HL2024-23"
+      ],
+      "candidates": [
+        {
+          "sources": [
+            {
+              "chunk_id": "0b238450d13706c19eaee7e4c72b9970",
+              "doc_id": "NHC-HL2024-23",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.9453633427619934,
+          "pair_tokens": 419,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "7af8cdad30bc3e2a0cdf1fe3a728c714",
+              "doc_id": "NHC-HL2024-23",
+              "chunk_index": 1
+            }
+          ],
+          "score_256": 0.040103767067193985,
+          "pair_tokens": 201,
+          "truncated_256": false
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "add15722edd7838a1f44e4b3168701eb",
+              "doc_id": "NHC-HL2024-18",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.07497462630271912,
+          "pair_tokens": 455,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "9a2beab610abb57d831ef8ca0626812d",
+              "doc_id": "NHC-HL2024-40",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.051863837987184525,
+          "pair_tokens": 489,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "daf46bf6423430b779dd27543841d9a4",
+              "doc_id": "NHC-HL2024-63",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.0005064888973720372,
+          "pair_tokens": 231,
+          "truncated_256": false
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "63cf42d1e6ea002782f18366960fa258",
+              "doc_id": "NHC-HL2024-40",
+              "chunk_index": 1
+            }
+          ],
+          "score_256": 0.050295911729335785,
+          "pair_tokens": 349,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "080a4caa54a22bfe688ef9c87b124fa7",
+              "doc_id": "NHC-HL2024-49",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.0028353622183203697,
+          "pair_tokens": 428,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "017ae8849315c7b3c6c79f2ccc6fdecc",
+              "doc_id": "NHC-HL2024-29",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 3.731192191480659e-05,
+          "pair_tokens": 470,
+          "truncated_256": true
+        }
+      ],
+      "returned_docs": [
+        "NHC-HL2024-23",
+        "NHC-HL2024-18"
+      ],
+      "metrics": {
+        "candidate_count": 38,
+        "rerank_candidate_count": 8,
+        "selected_count": 2,
+        "reranker_status": "applied",
+        "reranker_model": "BAAI/bge-reranker-base@af37ed791788201a1cdcf513e0f584f3aa3be105",
+        "top_rerank_score": 0.945363,
+        "dense_ms": 20.1,
+        "lexical_ms": 0.6,
+        "rerank_ms": 2605.3
+      }
+    },
+    {
+      "id": "CGS041",
+      "expected": [
+        "NHC-HL2024-26"
+      ],
+      "candidates": [
+        {
+          "sources": [
+            {
+              "chunk_id": "ee7e1faebc7d0a560fbbaf0e51679597",
+              "doc_id": "NHC-HL2024-26",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.9370707869529724,
+          "pair_tokens": 473,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "5f7f89f17bb7e9ba6253428e51618d5c",
+              "doc_id": "NHC-HL2024-26",
+              "chunk_index": 1
+            }
+          ],
+          "score_256": 0.7827335000038147,
+          "pair_tokens": 125,
+          "truncated_256": false
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "203895d42cd0ef21d1ba6b95713d8179",
+              "doc_id": "NHC-HL2024-30",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.08817718178033829,
+          "pair_tokens": 174,
+          "truncated_256": false
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "3f553cad0f35e45610ea497863323fea",
+              "doc_id": "NHC-HL2024-27",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.08261064440011978,
+          "pair_tokens": 504,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "0c2d98f25ebf0e2838f1c0048855370e",
+              "doc_id": "NHC-HL2024-28",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.07615659385919571,
+          "pair_tokens": 414,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "2e01496cd4919bfbbd69c6f0773ed07a",
+              "doc_id": "NHC-HL2024-54",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.01240709237754345,
+          "pair_tokens": 418,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "b7bef70798e8181e62f2882df9fb7708",
+              "doc_id": "NHC-HL2024-51",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.0050443802028894424,
+          "pair_tokens": 386,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "017ae8849315c7b3c6c79f2ccc6fdecc",
+              "doc_id": "NHC-HL2024-29",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.013780523091554642,
+          "pair_tokens": 470,
+          "truncated_256": true
+        }
+      ],
+      "returned_docs": [
+        "NHC-HL2024-26"
+      ],
+      "metrics": {
+        "candidate_count": 35,
+        "rerank_candidate_count": 8,
+        "selected_count": 2,
+        "reranker_status": "applied",
+        "reranker_model": "BAAI/bge-reranker-base@af37ed791788201a1cdcf513e0f584f3aa3be105",
+        "top_rerank_score": 0.937071,
+        "dense_ms": 19.5,
+        "lexical_ms": 0.7,
+        "rerank_ms": 2435.3
+      }
+    },
+    {
+      "id": "CGN01",
+      "expected": [],
+      "candidates": [
+        {
+          "sources": [
+            {
+              "chunk_id": "7738bae821e059c8ae566456956aecf4",
+              "doc_id": "NHC-HL2024-05",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.004969834350049496,
+          "pair_tokens": 354,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "6e951775807c976ef56784348dde9788",
+              "doc_id": "NHC-HL2024-57",
+              "chunk_index": 1
+            }
+          ],
+          "score_256": 0.00021232278959359974,
+          "pair_tokens": 163,
+          "truncated_256": false
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "33b2db8086d886c8ef6a0abba915c071",
+              "doc_id": "NHC-HL2024-57",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.0002595967089291662,
+          "pair_tokens": 475,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "6fe0f13540556b5cdf8cfee477fa35ed",
+              "doc_id": "NHC-HL2024-16",
+              "chunk_index": 1
+            }
+          ],
+          "score_256": 3.728663068613969e-05,
+          "pair_tokens": 331,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "ccbd648e7c61033cfd174259636e2371",
+              "doc_id": "NHC-HL2024-17",
+              "chunk_index": 1
+            }
+          ],
+          "score_256": 3.729847594513558e-05,
+          "pair_tokens": 190,
+          "truncated_256": false
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "e3ddae608a408a9944880b2fce928b97",
+              "doc_id": "NHC-HL2024-21",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 3.738447412615642e-05,
+          "pair_tokens": 443,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "03afe2a67f603eb2054e674aaaa92d2e",
+              "doc_id": "NHC-HL2024-16",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 3.734499114216305e-05,
+          "pair_tokens": 445,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "b9ca780c1518672f7afca0158a3a71bf",
+              "doc_id": "NHC-HL2024-64",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 3.742774424608797e-05,
+          "pair_tokens": 485,
+          "truncated_256": true
+        }
+      ],
+      "returned_docs": [],
+      "metrics": {
+        "candidate_count": 25,
+        "rerank_candidate_count": 8,
+        "selected_count": 0,
+        "reranker_status": "applied",
+        "reranker_model": "BAAI/bge-reranker-base@af37ed791788201a1cdcf513e0f584f3aa3be105",
+        "top_rerank_score": 0.00497,
+        "dense_ms": 18.1,
+        "lexical_ms": 0.4,
+        "rerank_ms": 3814.8
+      }
+    },
+    {
+      "id": "CGN05",
+      "expected": [],
+      "candidates": [
+        {
+          "sources": [
+            {
+              "chunk_id": "7b6a03aa0d8b945685e31268261244d1",
+              "doc_id": "NHC-HL2024-34",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.005051164422184229,
+          "pair_tokens": 363,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "438a224f28feeda53c8e5385cc163432",
+              "doc_id": "NHC-HL2024-56",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 4.314489706302993e-05,
+          "pair_tokens": 464,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "2e01496cd4919bfbbd69c6f0773ed07a",
+              "doc_id": "NHC-HL2024-54",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 4.780954623129219e-05,
+          "pair_tokens": 414,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "6fda4371cd9a3589b88d05c64559658e",
+              "doc_id": "NHC-HL2024-33",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.0027899686247110367,
+          "pair_tokens": 481,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "f66cbabeb1dfaef4e52f2ae16041d714",
+              "doc_id": "NHC-HL2024-33",
+              "chunk_index": 1
+            }
+          ],
+          "score_256": 0.003429677104577422,
+          "pair_tokens": 211,
+          "truncated_256": false
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "b9ca780c1518672f7afca0158a3a71bf",
+              "doc_id": "NHC-HL2024-64",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.0005082396091893315,
+          "pair_tokens": 485,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "7738bae821e059c8ae566456956aecf4",
+              "doc_id": "NHC-HL2024-05",
+              "chunk_index": 0
+            }
+          ],
+          "score_256": 0.0008985470049083233,
+          "pair_tokens": 354,
+          "truncated_256": true
+        },
+        {
+          "sources": [
+            {
+              "chunk_id": "7af8cdad30bc3e2a0cdf1fe3a728c714",
+              "doc_id": "NHC-HL2024-23",
+              "chunk_index": 1
+            }
+          ],
+          "score_256": 0.0007553725154139102,
+          "pair_tokens": 197,
+          "truncated_256": false
+        }
+      ],
+      "returned_docs": [],
+      "metrics": {
+        "candidate_count": 40,
+        "rerank_candidate_count": 8,
+        "selected_count": 0,
+        "reranker_status": "applied",
+        "reranker_model": "BAAI/bge-reranker-base@af37ed791788201a1cdcf513e0f584f3aa3be105",
+        "top_rerank_score": 0.005051,
+        "dense_ms": 72.6,
+        "lexical_ms": 1.1,
+        "rerank_ms": 3414.6
+      }
+    }
+  ],
+  "gold_variants": [
+    {
+      "id": "CGS024",
+      "original_256_score": 0.003244817489758134,
+      "original_512_score": 0.9164677262306213,
+      "diagnostic_compact_score": 0.8932720422744751,
+      "compact_pair_tokens": 164,
+      "compact_character_range": [
+        416,
+        571
+      ],
+      "compact_is_manual_gold_span_not_automatic_strategy": true
+    },
+    {
+      "id": "CGS035",
+      "original_256_score": 0.008480879478156567,
+      "original_512_score": 0.5118976831436157,
+      "diagnostic_compact_score": 0.36926740407943726,
+      "compact_pair_tokens": 123,
+      "compact_character_range": [
+        505,
+        660
+      ],
+      "compact_is_manual_gold_span_not_automatic_strategy": true
+    },
+    {
+      "id": "CGS042",
+      "original_256_score": 0.009711457416415215,
+      "original_512_score": 0.9427713751792908,
+      "diagnostic_compact_score": 0.9909137487411499,
+      "compact_pair_tokens": 149,
+      "compact_character_range": [
+        358,
+        513
+      ],
+      "compact_is_manual_gold_span_not_automatic_strategy": true
+    }
+  ],
+  "batch_benchmark": [
+    {
+      "batch_size": 1,
+      "pairs": 8,
+      "max_length": 256,
+      "warm_ms": [
+        3464.59,
+        2629.38,
+        2473.1
+      ],
+      "median_ms": 2629.38,
+      "maximum_score_delta_from_batch1": 0.0
+    },
+    {
+      "batch_size": 4,
+      "pairs": 8,
+      "max_length": 256,
+      "warm_ms": [
+        2447.7,
+        2306.89,
+        2433.63
+      ],
+      "median_ms": 2433.63,
+      "maximum_score_delta_from_batch1": 2.514570951461792e-08
+    },
+    {
+      "batch_size": 8,
+      "pairs": 8,
+      "max_length": 256,
+      "warm_ms": [
+        2316.8,
+        2313.88,
+        2226.25
+      ],
+      "median_ms": 2313.88,
+      "maximum_score_delta_from_batch1": 2.514570951461792e-08
+    }
+  ],
+  "complete": true,
+  "corpus_sha256": "3bf1713ffd0dd9ca89394a0875661ff7cbf2425d8cf3267da0491563a515afe9",
+  "model": {
+    "name": "BAAI/bge-reranker-base@af37ed791788201a1cdcf513e0f584f3aa3be105",
+    "weight_sha256": "ced967c45fd1902eb92716c9ceeca7c95a936770ea9db611f5a841b926e33fbd"
+  },
+  "index": {
+    "indexed_documents": 72,
+    "indexed_chunks": 95,
+    "removed_chunks": 0
+  },
+  "memory_after": {
+    "total_mib": 15556.9,
+    "available_mib": 1566.4,
+    "process_working_mib": 1186.0,
+    "process_peak_mib": 1198.5
+  }
+}
