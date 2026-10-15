@@ -35,6 +35,8 @@ def validate_cases(cases: list[dict]) -> None:
                 raise ValueError(f"duplicate document labels in {case['id']}")
         if kind in {"supported", "followup"} and not case.get("expected_doc_ids"):
             raise ValueError(f"case {case['id']} has no expected documents")
+        if kind in {"unanswerable", "urgent"} and case.get("expected_doc_ids"):
+            raise ValueError(f"case {case['id']} has conflicting kind and positive labels")
         if set(case.get("expected_doc_ids", [])).intersection(case.get("forbidden_doc_ids", [])):
             raise ValueError(f"conflicting labels in {case['id']}")
         if kind == "followup" and (not isinstance(case.get("history"), str) or not case["history"].strip()):

@@ -61,6 +61,7 @@ class MedicalHit(BaseModel):
     source_published_at: date | None = None
     source_version: str | None = None
     source_sha256: str | None = None
+    document_version: int | None = None
     status: str | None = None
     reviewed_at: date | None = None
     next_review_at: date | None = None

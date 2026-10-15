@@ -1,0 +1,452 @@
+[
+  {
+    "id": "EVS01",
+    "kind": "supported",
+    "query": "鼠夹、防鼠网和封堵孔洞，分别怎样帮助防鼠卫生？",
+    "expected_doc_ids": [
+      "NHC-HL2024-14"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "NHC-HL2024-14",
+        "version": 1,
+        "body_sha256": "a51c0b5d277801fd987712eaba848d6b4d9d4f0a78142224359d831b8041fba7",
+        "ranges": [
+          [
+            430,
+            446
+          ],
+          [
+            466,
+            488
+          ]
+        ],
+        "required_conditions": []
+      }
+    ]
+  },
+  {
+    "id": "EVS02",
+    "kind": "supported",
+    "query": "防护用品戴一会儿就好，暴露作业时不必全程使用吧？",
+    "expected_doc_ids": [
+      "NHC-HL2024-23"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "NHC-HL2024-23",
+        "version": 1,
+        "body_sha256": "5225b2827f0825c2b51da399d4aab67bbd361713034ba5446315a2ded4f24e11",
+        "ranges": [
+          [
+            514,
+            531
+          ]
+        ],
+        "required_conditions": [
+          [
+            466,
+            497
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EVS03",
+    "kind": "supported",
+    "query": "水果、蔬菜和果汁可以互相完全替代吗？",
+    "expected_doc_ids": [
+      "NHC-HL2024-26"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "NHC-HL2024-26",
+        "version": 1,
+        "body_sha256": "e5a612c7a4b37c8c04e48c2c45ccbc5fd93fe1e41707128359d950d7bf1ac681",
+        "ranges": [
+          [
+            356,
+            377
+          ]
+        ],
+        "required_conditions": []
+      }
+    ]
+  },
+  {
+    "id": "EVS04",
+    "kind": "supported",
+    "query": "健康成年人一周应该做多久有氧活动？",
+    "expected_doc_ids": [
+      "NHC-HL2024-32"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "NHC-HL2024-32",
+        "version": 1,
+        "body_sha256": "ef3f35cda0ef2d1700e3db48330036726e329521d1470dc3e37a9258b749cd34",
+        "ranges": [
+          [
+            290,
+            332
+          ]
+        ],
+        "required_conditions": [
+          [
+            290,
+            302
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EVS05",
+    "kind": "supported",
+    "query": "老年人和慢性病患者在运动前应该关注哪些准备？",
+    "expected_doc_ids": [
+      "NHC-HL2024-32"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "NHC-HL2024-32",
+        "version": 1,
+        "body_sha256": "ef3f35cda0ef2d1700e3db48330036726e329521d1470dc3e37a9258b749cd34",
+        "ranges": [
+          [
+            640,
+            663
+          ]
+        ],
+        "required_conditions": [
+          [
+            605,
+            620
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EVS06",
+    "kind": "supported",
+    "query": "家庭常备药的药瓶和标签应该保留吗？",
+    "expected_doc_ids": [
+      "NHC-HL2024-56"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "NHC-HL2024-56",
+        "version": 1,
+        "body_sha256": "8a14ce3852f1863726d83a6d5ec93e9e06159bfe79b27cf5d2cce45e3524bb2d",
+        "ranges": [
+          [
+            666,
+            688
+          ]
+        ],
+        "required_conditions": []
+      }
+    ]
+  },
+  {
+    "id": "EVS07",
+    "kind": "supported",
+    "query": "家里的药过期后可以随便丢掉吗？",
+    "expected_doc_ids": [
+      "NHC-HL2024-56"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "NHC-HL2024-56",
+        "version": 1,
+        "body_sha256": "8a14ce3852f1863726d83a6d5ec93e9e06159bfe79b27cf5d2cce45e3524bb2d",
+        "ranges": [
+          [
+            775,
+            798
+          ]
+        ],
+        "required_conditions": [
+          [
+            735,
+            747
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EVS08",
+    "kind": "supported",
+    "query": "一般腹泻出现什么变化应该及时去肠道门诊？",
+    "expected_doc_ids": [
+      "BJ-DIARRHEA-20210406"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "BJ-DIARRHEA-20210406",
+        "version": 1,
+        "body_sha256": "d3b31d779b87b194cbb14aafcd10808e8b42030912cdda18286e2143c9000314",
+        "ranges": [
+          [
+            164,
+            182
+          ]
+        ],
+        "required_conditions": [
+          [
+            125,
+            163
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EVS09",
+    "kind": "supported",
+    "query": "流感发病后症状一直不缓解，资料里如何建议就医？",
+    "expected_doc_ids": [
+      "NHC-FLU-CARE-20250117"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "NHC-FLU-CARE-20250117",
+        "version": 1,
+        "body_sha256": "1a974fe6b7e2b979a5a4dd90d8110c6d26e7345db07156c78d0536720c3d8c65",
+        "ranges": [
+          [
+            118,
+            145
+          ]
+        ],
+        "required_conditions": [
+          [
+            2,
+            14
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EVS10",
+    "kind": "supported",
+    "query": "聚餐后腹痛持续加重伴呕吐，原文有哪些就医提示？",
+    "expected_doc_ids": [
+      "GZ-POSTMEAL-ABDOMEN-2026"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "GZ-POSTMEAL-ABDOMEN-2026",
+        "version": 1,
+        "body_sha256": "007a666cc52b93792dfb11e0c65639f4105b8332e42c69dd351c350f3eb53e23",
+        "ranges": [
+          [
+            60,
+            76
+          ]
+        ],
+        "required_conditions": [
+          [
+            13,
+            43
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EVS11",
+    "kind": "supported",
+    "query": "反复头痛为什么建议记头痛日记，要记录哪些信息？",
+    "expected_doc_ids": [
+      "FJ-HEADACHE-20260626"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "FJ-HEADACHE-20260626",
+        "version": 1,
+        "body_sha256": "fb81f5ec714a111b181d1a611f90bcbd4257cf45b501742f6b2c188b0f453aa6",
+        "ranges": [
+          [
+            202,
+            256
+          ]
+        ],
+        "required_conditions": [
+          [
+            162,
+            176
+          ]
+        ]
+      }
+    ]
+  },
+  {
+    "id": "EVS12",
+    "kind": "supported",
+    "query": "干燥空气和鼻塞后张口呼吸为什么可能引起咽喉不适？",
+    "expected_doc_ids": [
+      "NHC-THROAT-20240821"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "NHC-THROAT-20240821",
+        "version": 1,
+        "body_sha256": "3a7212b79b4d142327853610564911a556dbe386837ba91f6df1bf81cc82f64f",
+        "ranges": [
+          [
+            176,
+            205
+          ]
+        ],
+        "required_conditions": []
+      }
+    ]
+  },
+  {
+    "id": "EVF01",
+    "kind": "followup",
+    "query": "原来的瓶子要留着吗？",
+    "expected_doc_ids": [
+      "NHC-HL2024-56"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "NHC-HL2024-56",
+        "version": 1,
+        "body_sha256": "8a14ce3852f1863726d83a6d5ec93e9e06159bfe79b27cf5d2cce45e3524bb2d",
+        "ranges": [
+          [
+            666,
+            688
+          ]
+        ],
+        "required_conditions": []
+      }
+    ],
+    "history": "我在看家庭常备药的包装保存。"
+  },
+  {
+    "id": "EVF02",
+    "kind": "followup",
+    "query": "那开始活动前需要做什么？",
+    "expected_doc_ids": [
+      "NHC-HL2024-32"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "NHC-HL2024-32",
+        "version": 1,
+        "body_sha256": "ef3f35cda0ef2d1700e3db48330036726e329521d1470dc3e37a9258b749cd34",
+        "ranges": [
+          [
+            640,
+            663
+          ]
+        ],
+        "required_conditions": [
+          [
+            605,
+            620
+          ]
+        ]
+      }
+    ],
+    "history": "我在了解65岁以上老年人运动。"
+  },
+  {
+    "id": "EVF03",
+    "kind": "followup",
+    "query": "过了五天症状还没缓解，资料怎么说？",
+    "expected_doc_ids": [
+      "NHC-FLU-CARE-20250117"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "NHC-FLU-CARE-20250117",
+        "version": 1,
+        "body_sha256": "1a974fe6b7e2b979a5a4dd90d8110c6d26e7345db07156c78d0536720c3d8c65",
+        "ranges": [
+          [
+            118,
+            145
+          ]
+        ],
+        "required_conditions": [
+          [
+            2,
+            14
+          ]
+        ]
+      }
+    ],
+    "history": "我问的是流感居家休息时的变化。"
+  },
+  {
+    "id": "EVF04",
+    "kind": "followup",
+    "query": "那果汁可以完全替代吗？",
+    "expected_doc_ids": [
+      "NHC-HL2024-26"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "NHC-HL2024-26",
+        "version": 1,
+        "body_sha256": "e5a612c7a4b37c8c04e48c2c45ccbc5fd93fe1e41707128359d950d7bf1ac681",
+        "ranges": [
+          [
+            356,
+            377
+          ]
+        ],
+        "required_conditions": []
+      }
+    ],
+    "history": "我在看蔬菜水果的膳食科普。"
+  },
+  {
+    "id": "EVN01",
+    "kind": "unanswerable",
+    "query": "献血者血型决定星座运势吗？"
+  },
+  {
+    "id": "EVN02",
+    "kind": "unanswerable",
+    "query": "本地戒烟补贴申请表在哪里？"
+  },
+  {
+    "id": "EVN03",
+    "kind": "unanswerable",
+    "query": "体重秤固件怎么更新？"
+  },
+  {
+    "id": "EVN04",
+    "kind": "unanswerable",
+    "query": "附近医院今天还有多少牙科预约号？"
+  },
+  {
+    "id": "EVU01",
+    "kind": "urgent",
+    "query": "胸口压着疼，还出冷汗气不够用。"
+  },
+  {
+    "id": "EVU02",
+    "kind": "urgent",
+    "query": "刚才讲话含糊，一只胳膊抬不起来，脸也歪了。"
+  },
+  {
+    "id": "EVU03",
+    "kind": "urgent",
+    "query": "这次头痛突然特别剧烈，而且一直吐。"
+  },
+  {
+    "id": "EVU04",
+    "kind": "urgent",
+    "query": "现在呼吸越来越困难，一句完整的话都说不出来。"
+  }
+]

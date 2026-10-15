@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "hash_scheme": "canonical-json-v1",
+  "suite_id": "aide-evidence-budget-v4",
+  "evaluation_date": "2026-10-15",
+  "authorship": "developer_authored_not_external_blind",
+  "groups": [
+    {
+      "name": "legacy-development",
+      "purpose": "development",
+      "path": "../eval_cases_research.json",
+      "sha256": "6c4419c16bdb40cc799dbb5295820a4450dae6f5c19ad83b472f16f316da49e4",
+      "count": 111,
+      "allow_historical_missing_ids": true
+    },
+    {
+      "name": "legacy-regression",
+      "purpose": "regression",
+      "path": "../eval_cases_validation_v1.json",
+      "sha256": "6cf26a8a0c768d762bd61e3e7931506642fa37b2e702f3296fd807580ab28510",
+      "count": 33,
+      "allow_historical_missing_ids": true
+    },
+    {
+      "name": "chinese-symptoms",
+      "purpose": "topic_acceptance",
+      "path": "../eval_cases_chinese_symptoms_v1.json",
+      "sha256": "92714ccb10798fee282bd0bcfbbd14d1c26b9be5a126a5eb8b3ac3a93143fb1a",
+      "count": 10,
+      "allow_historical_missing_ids": false
+    },
+    {
+      "name": "chinese-general-regression",
+      "purpose": "regression",
+      "path": "frozen_chinese_general_v1.json",
+      "sha256": "9ce5e24394e13f571f8554ab58ebf2e29d6a96febbd1f8d37067561e399e1087",
+      "count": 80,
+      "allow_historical_missing_ids": false,
+      "authorship": "developer_source_derived_not_external_blind",
+      "frozen_before_first_run": true,
+      "used_for_changes_after_first_run": true,
+      "first_run_result": "results/chinese_general_first_v1.json"
+    },
+    {
+      "name": "evidence-regression",
+      "purpose": "regression",
+      "path": "evidence_cases_v1.json",
+      "sha256": "d4217b44a2e61839d39d6e0b3ba8a90691aa7c08bb3f27b9ac54d9e1f26e3663",
+      "count": 24,
+      "allow_historical_missing_ids": false,
+      "authorship": "developer_source_ranges_exposed_regression_not_blind"
+    }
+  ],
+  "query_contract": "explicit_user_facts_v1"
+}

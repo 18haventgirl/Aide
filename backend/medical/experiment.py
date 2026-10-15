@@ -14,6 +14,9 @@ import time
 
 from .evaluate import evaluate, validate_cases, QUERY_CONTRACT
 from .knowledge_base import INDEX_VERSION, MedicalKnowledgeBase, load_corpus
+from .evidence_contract import EvidenceBudget
+from .evaluation.evidence import evaluate_evidence
+from .evaluation.metrics import validate_references
 
 ROOT = Path(__file__).resolve().parents[2]
 MEDICAL = Path(__file__).resolve().parent
@@ -97,6 +100,8 @@ class KeywordBaseline:
 
     def search(self, query, limit=20, today=None):
         ranked = self.index.ranked(query, len(self.rows))
+        self._last_ranked = [cid for cid, _ in ranked
+                             if self.kb._metadata_is_current(self.rows[cid]["metadata"], today or date.today())]
         counts, output = Counter(), []
         for cid, score in ranked:
             row = self.rows[cid]
@@ -116,6 +121,9 @@ class KeywordBaseline:
     def search_metrics(self):
         return dict(self.metrics)
 
+    def candidate_trace(self):
+        return {"union": [self.kb._to_hit(self.rows[cid]) for cid in self._last_ranked]}
+
 
 class DatedSearch:
     def __init__(self, searcher, day):
@@ -127,6 +135,9 @@ class DatedSearch:
     def search_metrics(self):
         return self.searcher.search_metrics()
 
+    def candidate_trace(self):
+        return self.searcher.candidate_trace() if hasattr(self.searcher, "candidate_trace") else {}
+
 
 def repository_version():
     def git(*args):
@@ -134,7 +145,8 @@ def repository_version():
                               check=True).stdout.strip()
     try:
         files = ["experiment.py", "evaluate.py", "knowledge_base.py", "chunking.py", "lexical.py",
-                 "chat.py", "schema.py", "bge_embedding.py", "bge_reranker.py"]
+                 "chat.py", "schema.py", "bge_embedding.py", "bge_reranker.py",
+                 "evidence_contract.py", "source_provenance.py", "evaluation/evidence.py", "evaluation/metrics.py"]
         return {"commit": git("rev-parse", "HEAD"),
                 "retrieval_implementation_sha256": digest({name: hashlib.sha256((MEDICAL/name).read_bytes()).hexdigest() for name in files}),
                 "tracked_changes": bool(git("status", "--porcelain", "--untracked-files=no"))}
@@ -149,7 +161,8 @@ def mode_comparisons(results, k):
             if base not in modes or other not in modes:
                 continue
             metrics = {}
-            for key in (f"recall_at_{k}", f"mrr_at_{k}", f"ndcg_at_{k}", "unanswerable_rejection_rate"):
+            for key in (f"recall_at_{k}", f"mrr_at_{k}", f"ndcg_at_{k}", "unanswerable_rejection_rate",
+                        "document_recall_at_budget", "evidence_span_recall_at_budget", "critical_condition_retention"):
                 left, right = modes[base].get(key), modes[other].get(key)
                 if left is not None and right is not None:
                     metrics[key] = round(right-left, 4)
@@ -157,7 +170,26 @@ def mode_comparisons(results, k):
     return comparisons
 
 
-def run_experiment(manifest_path, corpus_path, output, groups=None, profiles=PROFILES, k=5):
+def run_experiment(manifest_path, corpus_path, output, groups=None, profiles=PROFILES, k=5,
+                   metric_contract="evidence-v1"):
+    output.parent.mkdir(parents=True, exist_ok=True)
+    initial = {"report_version": "retrieval_experiment_v2", "complete": False,
+               "stage": "preflight", "started_at_utc": datetime.now(timezone.utc).isoformat()}
+    # Exclusive reservation protects historical runs, including concurrent writers.
+    with output.open("x", encoding="utf-8") as handle:
+        json.dump(initial, handle)
+    try:
+        return _run_experiment(manifest_path, corpus_path, output, groups, profiles, k, metric_contract)
+    except Exception as exc:
+        current = json.loads(output.read_text(encoding="utf-8"))
+        current.update(complete=False, failure_type=type(exc).__name__)
+        output.write_text(json.dumps(current, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
+        raise
+
+
+def _run_experiment(manifest_path, corpus_path, output, groups, profiles, k, metric_contract):
+    if metric_contract not in {"evidence-v1", "legacy-doc-v3"}:
+        raise ValueError("unknown metric contract")
     manifest, cases_by_group = load_suite(manifest_path)
     selected = groups or list(cases_by_group)
     if not selected or set(selected) - set(cases_by_group) or len(set(selected)) != len(selected):
@@ -166,9 +198,11 @@ def run_experiment(manifest_path, corpus_path, output, groups=None, profiles=PRO
         raise ValueError("invalid profile selection")
     if not 1 <= k <= 20:
         raise ValueError("k must be between 1 and 20")
+    budget = EvidenceBudget(max_chunks=k) if metric_contract == "evidence-v1" else None
     documents = load_corpus(corpus_path)
     for group in selected:
         validate_source_bindings(cases_by_group[group], documents)
+        validate_references(cases_by_group[group], documents)
     day = date.fromisoformat(manifest["evaluation_date"])
     eligible = {d.doc_id for d in documents if d.is_searchable(day, research_mode=True)}
     unavailable = {}
@@ -183,7 +217,8 @@ def run_experiment(manifest_path, corpus_path, output, groups=None, profiles=PRO
     before = require_available(1536)
     previous = {key: os.environ.get(key) for key in PARAMETERS}
     report = {
-        "report_version": "retrieval_experiment_v1", "scope": "developer_cases_not_blind_not_clinical",
+        "report_version": "retrieval_experiment_v2", "scope": "developer_cases_not_blind_not_clinical",
+        "stage": "model_and_index_initialization", "metric_contract": metric_contract,
         "started_at_utc": datetime.now(timezone.utc).isoformat(), "code": repository_version(),
         "suite": manifest, "suite_manifest_sha256": hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
         "query_contract": QUERY_CONTRACT,
@@ -206,6 +241,7 @@ def run_experiment(manifest_path, corpus_path, output, groups=None, profiles=PRO
         temporary.write_text(json.dumps(report, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
         temporary.replace(output)
     try:
+        save()
         os.environ.update(PARAMETERS)
         import torch
         import chromadb
@@ -244,8 +280,13 @@ def run_experiment(manifest_path, corpus_path, output, groups=None, profiles=PRO
                                           "max_length": 256, "batch_size": 1}
                     kb.reranker = model
                 for name in selected:
-                    result = evaluate(DatedSearch(keyword if profile == "keyword" else kb, day), cases_by_group[name], k)
-                    timings = [r["latency_ms"] for r in result["details"] if "latency_ms" in r]
+                    report["stage"] = f"evaluate:{profile}:{name}"
+                    save()
+                    searcher = DatedSearch(keyword if profile == "keyword" else kb, day)
+                    result = (evaluate_evidence(searcher, cases_by_group[name], documents, budget)
+                              if budget else evaluate(searcher, cases_by_group[name], k))
+                    timings = [r["latency_ms"] for r in result["details"] if "latency_ms" in r
+                               and (not budget or ("evidence_pack" in r and not r.get("scope_gated")))]
                     warm = sorted(timings[1:])
                     result["first_search_ms"] = timings[0] if timings else None
                     result["subsequent_search_p95_ms"] = warm[math.ceil(.95*len(warm))-1] if warm else None
@@ -254,10 +295,13 @@ def run_experiment(manifest_path, corpus_path, output, groups=None, profiles=PRO
                     report["memory_after"] = memory_status()
                     save()
                     print(json.dumps({"group": name, "profile": profile,
-                        "recall_at_k": result[f"recall_at_{k}"], "mrr_at_k": result[f"mrr_at_{k}"],
+                        "document_recall": result.get("document_recall_at_budget", result.get(f"recall_at_{k}")),
+                        "evidence_span_recall": result.get("evidence_span_recall_at_budget"),
                         "reranker_status": result["reranker_status_counts"]}), flush=True)
             report["comparisons"] = mode_comparisons(report["results"], k)
-            report["complete"] = True
+            report["evaluation_error_cases"] = sum(r.get("error_cases", 0) for modes in report["results"].values() for r in modes.values())
+            report["complete"] = report["evaluation_error_cases"] == 0
+            report["stage"] = "finished"
             save()
     except Exception as exc:
         report["complete"] = False
@@ -275,14 +319,15 @@ def run_experiment(manifest_path, corpus_path, output, groups=None, profiles=PRO
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--suite", type=Path, default=MEDICAL / "evaluation" / "suite_v1.json")
+    parser.add_argument("--suite", type=Path, default=MEDICAL / "evaluation" / "suite_v4.json")
     parser.add_argument("--corpus", type=Path, default=MEDICAL / "source_corpus")
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--group", action="append")
     parser.add_argument("--profiles", nargs="+", choices=PROFILES, default=list(PROFILES))
     parser.add_argument("--k", type=int, default=5)
+    parser.add_argument("--metric-contract", choices=("evidence-v1", "legacy-doc-v3"), default="evidence-v1")
     args = parser.parse_args()
-    run_experiment(args.suite, args.corpus, args.output, args.group, args.profiles, args.k)
+    run_experiment(args.suite, args.corpus, args.output, args.group, args.profiles, args.k, args.metric_contract)
 
 
 if __name__ == "__main__":

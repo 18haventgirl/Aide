@@ -162,6 +162,10 @@ class MedicalKnowledgeBase:
         """Diagnostics for the most recent search in the current thread."""
         return dict(getattr(self._search_state, "metrics", {}))
 
+    def candidate_trace(self):
+        """In-memory evaluation trace; never added to operational health logs."""
+        return dict(getattr(self._search_state, "candidates", {}))
+
     def _metadata_is_current(self, metadata: dict, today: date) -> bool:
         if metadata.get("language", "zh") not in {"zh", "zh-CN", "zh-TW", "zh-Hans", "zh-Hant"}:
             return False
@@ -186,6 +190,7 @@ class MedicalKnowledgeBase:
             source_published_at=date.fromisoformat(metadata["source_published_at"]),
             source_version=metadata.get("source_version") or None,
             source_sha256=metadata.get("source_sha256") or None,
+            document_version=metadata.get("version"),
             status=metadata.get("status"),
             reviewed_at=(date.fromisoformat(metadata["reviewed_at"])
                          if metadata.get("reviewed_at") else None),
@@ -208,6 +213,7 @@ class MedicalKnowledgeBase:
         count = self.collection.count()
         if count == 0:
             self._search_state.metrics = {"candidate_count": 0, "selected_count": 0}
+            self._search_state.candidates = {"union": [], "rerank_pool": []}
             return []
         started = time.perf_counter()
         dense_limit = min(count, int(os.getenv("MEDICAL_DENSE_CANDIDATES", "24")))
@@ -297,6 +303,10 @@ class MedicalKnowledgeBase:
                 selected_ids.add(item["chunk_id"])
                 preselected.append(item)
         ranked = sorted(preselected[:pre_limit], key=lambda item: item["fusion_score"], reverse=True)
+        self._search_state.candidates = {
+            "union": [self._to_hit(item) for item in candidates.values()],
+            "rerank_pool": [self._to_hit(item) for item in ranked],
+        }
 
         rerank_started = time.perf_counter()
         reranker_status = "unavailable" if self.reranker_requested and self.reranker is None else "disabled"
