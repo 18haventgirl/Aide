@@ -17,7 +17,8 @@ def validate_references(cases, documents):
                 raise ValueError(f"invalid or duplicate evidence source: {case['id']}")
             seen.add(doc_id)
             doc = by_id[doc_id]
-            if (doc_id not in case.get("expected_doc_ids", []) or reference.get("version") != doc.version
+            if (doc_id not in case.get("expected_doc_ids", []) or type(reference.get("version")) is not int
+                    or reference.get("version") != doc.version
                     or reference.get("body_sha256") != body_hash(doc.body)):
                 raise ValueError(f"evidence source snapshot mismatch: {case['id']}")
             if not reference.get("ranges"):

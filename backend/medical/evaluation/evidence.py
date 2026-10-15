@@ -20,6 +20,7 @@ def evaluate_evidence(searcher, cases, documents, budget=None):
     union_count = pool_count = labelled = 0
     totals = {key: 0 for key in ("evidence_spans", "retained_spans", "critical_conditions", "retained_conditions")}
     relevant_chunks = judged_chunks = 0
+    forbidden_cases = forbidden_hits = forbidden_unknown = 0
     for case in cases:
         kind = case.get("kind", "supported")
         expected = set(case.get("expected_doc_ids", []))
@@ -29,6 +30,8 @@ def evaluate_evidence(searcher, cases, documents, budget=None):
         negative += kind == "unanswerable"
         urgent += kind == "urgent"
         refs = case.get("expected_evidence", [])
+        forbidden = set(case.get("forbidden_doc_ids", []))
+        forbidden_cases += bool(forbidden)
         labelled += bool(refs)
         for reference in refs:
             totals["evidence_spans"] += len(reference["ranges"])
@@ -46,6 +49,7 @@ def evaluate_evidence(searcher, cases, documents, budget=None):
                 hits = [] if gated else searcher.search(query[:1000], limit=budget.max_chunks)
                 pack = build_evidence_pack(hits, budget, resolver)
                 found = set(hit["doc_id"] for hit in pack["hits"])
+                row["forbidden_retrieved"] = sorted(found & forbidden)
                 row.update(evidence_pack=pack, query_sha256=canonical_hash(query),
                            expected=sorted(expected), retrieved=list(dict.fromkeys(h["doc_id"] for h in pack["hits"])),
                            scope_gated=gated, diagnostics=searcher.search_metrics() if not gated and hasattr(searcher, "search_metrics") else {})
@@ -72,6 +76,7 @@ def evaluate_evidence(searcher, cases, documents, budget=None):
                     if "candidate_rerank_pool_recall" in row:
                         pool_recall += row["candidate_rerank_pool_recall"]; pool_count += 1
                 rejected += row.get("rejected", False)
+                forbidden_hits += bool(row["forbidden_retrieved"])
                 if refs:
                     for hit in pack["hits"]:
                         single = score_ranges({"hits": [hit]}, refs, resolver.documents)
@@ -79,6 +84,7 @@ def evaluate_evidence(searcher, cases, documents, budget=None):
                         judged_chunks += 1
         except Exception as exc:
             errors += 1
+            forbidden_unknown += bool(forbidden)
             row.update(status="error", error_type=type(exc).__name__)
         row["latency_ms"] = round((time.perf_counter()-started)*1000, 2)
         rows.append(row)
@@ -99,4 +105,6 @@ def evaluate_evidence(searcher, cases, documents, budget=None):
             "candidate_trace_cases": {"union": union_count, "rerank_pool": pool_count},
             "candidate_coverage_basis": "full_source_chunks_not_model_token_visibility",
             "unanswerable_rejection_rate": ratio(rejected, negative),
+            "forbidden_hit_rate_at_budget": ratio(forbidden_hits, forbidden_cases) if not forbidden_unknown else None,
+            "forbidden_labelled_cases": forbidden_cases, "forbidden_unverified_cases": forbidden_unknown,
             "urgent_detection_rate": ratio(urgent_ok, urgent), **totals, "details": rows}

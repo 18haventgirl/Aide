@@ -17,6 +17,8 @@ class EvidenceBudget:
     max_content_chars: int = 8000
 
     def __post_init__(self):
+        if any(type(value) is not int for value in asdict(self).values()):
+            raise ValueError("evidence budgets must be integers")
         if not 1 <= self.max_chunks <= 8 or not 1 <= self.max_chunks_per_document <= 8:
             raise ValueError("invalid evidence chunk budget")
         if self.max_chars_per_chunk < 1 or self.max_content_chars < 1:

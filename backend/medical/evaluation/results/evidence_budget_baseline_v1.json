@@ -1,0 +1,1991 @@
+{
+  "scope": "consolidated_exposed_regression_not_blind_not_answer_test",
+  "all_profiles_observed": true,
+  "code": {
+    "commit": "a2ac85d93f0344728e08b18055d11613ed63c5f4",
+    "retrieval_implementation_sha256": "2303a413ea51d0464b36c308d364b625e605bc885b6d87e33eff9c9142b977e5",
+    "tracked_changes": false
+  },
+  "corpus_sha256": "3bf1713ffd0dd9ca89394a0875661ff7cbf2425d8cf3267da0491563a515afe9",
+  "suite": {
+    "schema_version": 1,
+    "hash_scheme": "canonical-json-v1",
+    "suite_id": "aide-evidence-budget-v4",
+    "evaluation_date": "2026-10-15",
+    "authorship": "developer_authored_not_external_blind",
+    "groups": [
+      {
+        "name": "legacy-development",
+        "purpose": "development",
+        "path": "../eval_cases_research.json",
+        "sha256": "6c4419c16bdb40cc799dbb5295820a4450dae6f5c19ad83b472f16f316da49e4",
+        "count": 111,
+        "allow_historical_missing_ids": true
+      },
+      {
+        "name": "legacy-regression",
+        "purpose": "regression",
+        "path": "../eval_cases_validation_v1.json",
+        "sha256": "6cf26a8a0c768d762bd61e3e7931506642fa37b2e702f3296fd807580ab28510",
+        "count": 33,
+        "allow_historical_missing_ids": true
+      },
+      {
+        "name": "chinese-symptoms",
+        "purpose": "topic_acceptance",
+        "path": "../eval_cases_chinese_symptoms_v1.json",
+        "sha256": "92714ccb10798fee282bd0bcfbbd14d1c26b9be5a126a5eb8b3ac3a93143fb1a",
+        "count": 10,
+        "allow_historical_missing_ids": false
+      },
+      {
+        "name": "chinese-general-regression",
+        "purpose": "regression",
+        "path": "frozen_chinese_general_v1.json",
+        "sha256": "9ce5e24394e13f571f8554ab58ebf2e29d6a96febbd1f8d37067561e399e1087",
+        "count": 80,
+        "allow_historical_missing_ids": false,
+        "authorship": "developer_source_derived_not_external_blind",
+        "frozen_before_first_run": true,
+        "used_for_changes_after_first_run": true,
+        "first_run_result": "results/chinese_general_first_v1.json"
+      },
+      {
+        "name": "evidence-regression",
+        "purpose": "regression",
+        "path": "evidence_cases_v1.json",
+        "sha256": "d4217b44a2e61839d39d6e0b3ba8a90691aa7c08bb3f27b9ac54d9e1f26e3663",
+        "count": 24,
+        "allow_historical_missing_ids": false,
+        "authorship": "developer_source_ranges_exposed_regression_not_blind"
+      }
+    ],
+    "query_contract": "explicit_user_facts_v1"
+  },
+  "metric_contract": "evidence-v1",
+  "parameters": {
+    "MEDICAL_RESEARCH_MAX_DISTANCE": "0.50",
+    "MEDICAL_DENSE_CANDIDATES": "24",
+    "MEDICAL_LEXICAL_CANDIDATES": "24",
+    "MEDICAL_RERANK_CANDIDATES": "8",
+    "MEDICAL_RERANK_RELATIVE_FLOOR": "0.35",
+    "MEDICAL_RERANK_MIN_SCORE": "0.05",
+    "MEDICAL_MAX_CHUNKS_PER_DOCUMENT": "2",
+    "MEDICAL_LEXICAL_CACHE_TTL_SECONDS": "60"
+  },
+  "runs": [
+    {
+      "local_path": "backend\\data\\evaluation_reports\\evidence_budget_first_20261015.json",
+      "sha256": "1b3dc925ff717e997ec40ae2974ba0d7efe8e3d998abfa914b8d6e3eda4edbb4",
+      "complete": false,
+      "failure_type": "MemoryBudgetError"
+    },
+    {
+      "local_path": "backend\\data\\evaluation_reports\\evidence_budget_rerank_20261015.json",
+      "sha256": "203bfad7d6f47450cfd367e7cb7af0b670deab4727350b1851f98e0b3441b9d7",
+      "complete": true,
+      "failure_type": null
+    }
+  ],
+  "profiles": {
+    "keyword": {
+      "metric_version": "evidence_budget_v1",
+      "query_contract": "explicit_user_facts_v1",
+      "budget": {
+        "max_chunks": 5,
+        "max_chunks_per_document": 2,
+        "max_chars_per_chunk": 1600,
+        "max_content_chars": 8000
+      },
+      "cases": [
+        {
+          "id": "EVS01",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 2,
+            "retained_spans": 2,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [
+            "NHC-HL2024-14",
+            "NHC-HL2024-06",
+            "NHC-HL2024-46",
+            "NHC-HL2024-36",
+            "NHC-HL2024-52"
+          ],
+          "pack_sha256": "beaccae0db30a6d13c377a99bc8265db4003185b82b51ce2f4133f0352639d72",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS02",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "NHC-HL2024-13",
+            "NHC-HL2024-23",
+            "NHC-HL2024-46",
+            "NHC-HL2024-47"
+          ],
+          "pack_sha256": "5c6ad8c0714be3901e89ed1c1268a0cca76ae35a62db832f1761a43451d40c7b",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS03",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [
+            "NHC-HL2024-26",
+            "NHC-HL2024-59",
+            "NHC-HL2024-29",
+            "NHC-HL2024-16"
+          ],
+          "pack_sha256": "41b6125f52e32229a319cf36c1d4f114cef1ce8ac9ac796acf746c6227da68ba",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS04",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "NHC-HL2024-32",
+            "NHC-HL2024-41",
+            "FJ-HEADACHE-20260626",
+            "NHC-HL2024-18"
+          ],
+          "pack_sha256": "a5ee245aa00da0b367951d1b0161f86685c3052df7415d4d8320773f42267d82",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS05",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "NHC-HL2024-32",
+            "NHC-HL2024-16",
+            "BJ-EMERG-CHEST-2022",
+            "NHC-HL2024-21",
+            "NHC-HL2024-20"
+          ],
+          "pack_sha256": "15ea0707db5a8f346bf74103cc73850fd6b0f4806219c303c3244a0f2a52eab7",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS06",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [
+            "NHC-HL2024-56",
+            "NHC-HL2024-57",
+            "NHC-HL2024-24",
+            "NHC-HL2024-64"
+          ],
+          "pack_sha256": "2d2f6f0aff9f26273230ec627d504b7b1a2fc9057ac72f13bfbbacf3537e7977",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS07",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "NHC-HL2024-56",
+            "NHC-HL2024-29",
+            "FJ-HEADACHE-20260626",
+            "NHC-HL2024-60"
+          ],
+          "pack_sha256": "2ca30199faeca10eb0e69f18d43ef15cd8d6bf0fa56bab064179c917202c8f87",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS08",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "BJ-DIARRHEA-20210406",
+            "NHC-FLU-CARE-20250117",
+            "NHC-HL2024-12",
+            "NHC-HL2024-41",
+            "NHC-HL2024-39"
+          ],
+          "pack_sha256": "c0123b99880f63969f8b75b62ce123feff2003241a955ab01df80b66c5830ae5",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS09",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "NHC-FLU-CARE-20250117",
+            "BJ-EMERG-CHEST-2022",
+            "FJ-HEADACHE-20260626",
+            "GZ-POSTMEAL-ABDOMEN-2026"
+          ],
+          "pack_sha256": "5b922eac24081016ba97b17f3dd17376253928d0cdcc7427faa31331758c82e7",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS10",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "GZ-POSTMEAL-ABDOMEN-2026",
+            "FJ-HEADACHE-20260626",
+            "BJ-DIARRHEA-20210406",
+            "NHC-FLU-CARE-20250117",
+            "NHC-HL2024-60"
+          ],
+          "pack_sha256": "24f6b55fac88ec9b256517668b5b250dbfedc6bcc61d166b834f99b6d4cc697e",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS11",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "FJ-HEADACHE-20260626",
+            "NHC-FLU-CARE-20250117",
+            "NHC-HL2024-19",
+            "NHC-HL2024-49"
+          ],
+          "pack_sha256": "a077632ee730e388becc4762f7863c0958263dfeaf992532c23c1815fb12dc09",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS12",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [
+            "NHC-THROAT-20240821",
+            "NHC-HL2024-11",
+            "NHC-HL2024-48",
+            "NHC-HL2024-49"
+          ],
+          "pack_sha256": "ca1cdccc8e04387c17728f8087106c09744bece876ca186a6441bc620215618f",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVF01",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [
+            "NHC-HL2024-56",
+            "NHC-HL2024-01",
+            "NHC-HL2024-42",
+            "NHC-HL2024-52"
+          ],
+          "pack_sha256": "d33f3aea46fefe92acb9794ec66b2b7b31ce9da9e165bfeca14c130f86a75971",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVF02",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "NHC-HL2024-32",
+            "NHC-HL2024-21",
+            "NHC-HL2024-51",
+            "NHC-HL2024-41",
+            "NHC-HL2024-25"
+          ],
+          "pack_sha256": "976d967922f6d18e0ab9dbf91572ba8338e24f2e04de8450b0e273432a95e79f",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVF03",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "NHC-FLU-CARE-20250117",
+            "NHC-HL2024-42",
+            "NHC-HL2024-01",
+            "NHC-HL2024-32"
+          ],
+          "pack_sha256": "4532e10e03e1e2b9ce1a48e6ebcfdc0f4e89e2833523b2300f3ebdf77ffad651",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVF04",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [
+            "NHC-HL2024-26",
+            "NHC-HL2024-52",
+            "NHC-HL2024-24",
+            "NHC-HL2024-18",
+            "NHC-HL2024-42"
+          ],
+          "pack_sha256": "2cce832f62c54dbca9d338ac655f5ba972b75f0f967db7726cb6056d9ea25425",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVN01",
+          "status": "ok",
+          "document_recall": null,
+          "ranges": {
+            "evidence_spans": 0,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [
+            "NHC-HL2024-05",
+            "NHC-HL2024-64"
+          ],
+          "pack_sha256": "dfee28ed7d44bc6c03343d27c2c4b75b4fea994dd3a4f7cf73265c31b2884da3",
+          "unmapped_chunks": 0,
+          "rejected": false,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVN02",
+          "status": "ok",
+          "document_recall": null,
+          "ranges": {
+            "evidence_spans": 0,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [
+            "NHC-HL2024-34",
+            "FJ-HEADACHE-20260626",
+            "NHC-HL2024-05",
+            "NHC-HL2024-16",
+            "NHC-HL2024-03"
+          ],
+          "pack_sha256": "8aaacdc14b20ee1b85805bcf6960135a84bd033d643fbf5d6d64ea61dd8dd152",
+          "unmapped_chunks": 0,
+          "rejected": false,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVN03",
+          "status": "ok",
+          "document_recall": null,
+          "ranges": {
+            "evidence_spans": 0,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [
+            "NHC-HL2024-57",
+            "NHC-HL2024-25",
+            "NHC-HL2024-17",
+            "NHC-HL2024-16"
+          ],
+          "pack_sha256": "6dbb105d7e6d6c88dd56a61aca05deae4a4007fe2296b0a9ab14972f540710d4",
+          "unmapped_chunks": 0,
+          "rejected": false,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVN04",
+          "status": "ok",
+          "document_recall": null,
+          "ranges": {
+            "evidence_spans": 0,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [
+            "NHC-THROAT-20240821",
+            "GZ-POSTMEAL-ABDOMEN-2026",
+            "NHC-HL2024-37",
+            "NHC-HL2024-10",
+            "NHC-HL2024-07"
+          ],
+          "pack_sha256": "ae7fff692b10b63ba64018f4f1a7120006d3cafb8f51061e3e8aea67dde887e2",
+          "unmapped_chunks": 0,
+          "rejected": false,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVU01",
+          "status": "rule_only_not_agent_test",
+          "document_recall": null,
+          "ranges": null,
+          "retrieved": null,
+          "pack_sha256": null,
+          "unmapped_chunks": null,
+          "rejected": null,
+          "urgent_detected": true
+        },
+        {
+          "id": "EVU02",
+          "status": "rule_only_not_agent_test",
+          "document_recall": null,
+          "ranges": null,
+          "retrieved": null,
+          "pack_sha256": null,
+          "unmapped_chunks": null,
+          "rejected": null,
+          "urgent_detected": true
+        },
+        {
+          "id": "EVU03",
+          "status": "rule_only_not_agent_test",
+          "document_recall": null,
+          "ranges": null,
+          "retrieved": null,
+          "pack_sha256": null,
+          "unmapped_chunks": null,
+          "rejected": null,
+          "urgent_detected": true
+        },
+        {
+          "id": "EVU04",
+          "status": "rule_only_not_agent_test",
+          "document_recall": null,
+          "ranges": null,
+          "retrieved": null,
+          "pack_sha256": null,
+          "unmapped_chunks": null,
+          "rejected": null,
+          "urgent_detected": true
+        }
+      ],
+      "answerable_cases": 16,
+      "supported_cases": 12,
+      "followup_cases": 4,
+      "unanswerable_cases": 4,
+      "urgent_cases": 4,
+      "error_cases": 0,
+      "document_recall_at_budget": 1.0,
+      "followup_document_recall_at_budget": 1.0,
+      "evidence_labelled_cases": 16,
+      "evidence_span_recall_at_budget": 1.0,
+      "critical_condition_retention": 1.0,
+      "labelled_context_chunk_precision": 0.2,
+      "context_chunks_with_reference": 16,
+      "context_chunks_considered": 80,
+      "candidate_union_document_recall": 1.0,
+      "candidate_rerank_pool_document_recall": null,
+      "candidate_trace_cases": {
+        "union": 16,
+        "rerank_pool": 0
+      },
+      "candidate_coverage_basis": "full_source_chunks_not_model_token_visibility",
+      "unanswerable_rejection_rate": 0.0,
+      "urgent_detection_rate": 1.0,
+      "evidence_spans": 17,
+      "retained_spans": 17,
+      "critical_conditions": 10,
+      "retained_conditions": 10,
+      "first_search_ms": 2.5,
+      "subsequent_search_p95_ms": 3.11,
+      "reranker_status_counts": {
+        "disabled": 20,
+        "not_searched": 4
+      }
+    },
+    "dense": {
+      "metric_version": "evidence_budget_v1",
+      "query_contract": "explicit_user_facts_v1",
+      "budget": {
+        "max_chunks": 5,
+        "max_chunks_per_document": 2,
+        "max_chars_per_chunk": 1600,
+        "max_content_chars": 8000
+      },
+      "cases": [
+        {
+          "id": "EVS01",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 2,
+            "retained_spans": 2,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [
+            "NHC-HL2024-14"
+          ],
+          "pack_sha256": "00d5d606b3393c0cfbc3df5e001644e1e776a1494fac6bf382a33a29a47d8b71",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS02",
+          "status": "ok",
+          "document_recall": 0.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "retrieved": [
+            "NHC-HL2024-40"
+          ],
+          "pack_sha256": "a1f7c7326abcdd8f4101bba79378536318ca0372d989791d5476acac21e70875",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS03",
+          "status": "ok",
+          "document_recall": 0.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [],
+          "pack_sha256": "340ea7cd1bb1cd3c80490aa9b03e57b6a0a36c094fcf3b2d3be2038d8ae1b5c2",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS04",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "NHC-HL2024-32"
+          ],
+          "pack_sha256": "57c8f7a5a8224f538cebdee3f297978a33213d4ac2c25750fdcb876153d4c67b",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS05",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "NHC-HL2024-32",
+            "NHC-HL2024-21",
+            "NHC-HL2024-20",
+            "NHC-HL2024-52"
+          ],
+          "pack_sha256": "444102ee62ac53fb6e81789273a1e9c8127659122d568a6d983d124f4b10f98d",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS06",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [
+            "NHC-HL2024-56"
+          ],
+          "pack_sha256": "cf6ae897d92d9a2052486c0ba2d144a085a65d29b07c227f2bd4dfd12307121b",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS07",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "NHC-HL2024-56"
+          ],
+          "pack_sha256": "007e926e8e8142c171d71219e8a443875b5482aa5ac70ca35c28bb9a61094f39",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS08",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "BJ-DIARRHEA-20210406",
+            "GZ-POSTMEAL-ABDOMEN-2026",
+            "NHC-HL2024-26",
+            "NHC-HL2024-42"
+          ],
+          "pack_sha256": "d84cce30d36bb89f5276e1f824739623e7cc8f4b41403310064e3200279392b8",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS09",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "NHC-FLU-CARE-20250117",
+            "NHC-HL2024-42",
+            "NHC-HL2024-18",
+            "NHC-THROAT-20240821"
+          ],
+          "pack_sha256": "e916918384139e1a8ab017492e673d1d9c8506949ba5eec508e2def0076aeff0",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS10",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "GZ-POSTMEAL-ABDOMEN-2026",
+            "BJ-DIARRHEA-20210406",
+            "NHC-HL2024-30",
+            "NHC-HL2024-26",
+            "BJ-EMERG-CHEST-2022"
+          ],
+          "pack_sha256": "7ddf943ac430d29cc525e668fcd7c1897e3fc61d43cdd1dace3cb72fdd2787de",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS11",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "FJ-HEADACHE-20260626",
+            "BJ-EMERG-CHEST-2022"
+          ],
+          "pack_sha256": "c835416cf096af856626c948926ff4d11c8d2e142bb0ae0703cbecb03748691d",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS12",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [
+            "NHC-THROAT-20240821",
+            "NHC-HL2024-18",
+            "NHC-HL2024-40"
+          ],
+          "pack_sha256": "d28ec6447ca6e12609faddd1468efdf95d6221606ce82e39c513ab5d2a179042",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVF01",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [
+            "NHC-HL2024-56"
+          ],
+          "pack_sha256": "007e926e8e8142c171d71219e8a443875b5482aa5ac70ca35c28bb9a61094f39",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVF02",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "NHC-HL2024-32",
+            "NHC-HL2024-21",
+            "NHC-HL2024-20"
+          ],
+          "pack_sha256": "4b3d6f0cc51cbef4c21c64b04006f10eab099372ef0595aec61c0199974eaec3",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVF03",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "NHC-FLU-CARE-20250117",
+            "NHC-HL2024-40",
+            "NHC-HL2024-09"
+          ],
+          "pack_sha256": "a9f9584c15d9d249d6da307f2a04bc9c36d8e1eaf3349d71733cd3d24915e50b",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVF04",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [
+            "NHC-HL2024-26"
+          ],
+          "pack_sha256": "2b6fa712acb5b9151f20af4950d436af747b64eda3278a45af5f44d6307c8798",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVN01",
+          "status": "ok",
+          "document_recall": null,
+          "ranges": {
+            "evidence_spans": 0,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [
+            "NHC-HL2024-05"
+          ],
+          "pack_sha256": "1255d51b0756f166eb1abae0ec34f751ad2ecbf343407300e35d6cfd496c0091",
+          "unmapped_chunks": 0,
+          "rejected": false,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVN02",
+          "status": "ok",
+          "document_recall": null,
+          "ranges": {
+            "evidence_spans": 0,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [],
+          "pack_sha256": "340ea7cd1bb1cd3c80490aa9b03e57b6a0a36c094fcf3b2d3be2038d8ae1b5c2",
+          "unmapped_chunks": 0,
+          "rejected": true,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVN03",
+          "status": "ok",
+          "document_recall": null,
+          "ranges": {
+            "evidence_spans": 0,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [],
+          "pack_sha256": "340ea7cd1bb1cd3c80490aa9b03e57b6a0a36c094fcf3b2d3be2038d8ae1b5c2",
+          "unmapped_chunks": 0,
+          "rejected": true,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVN04",
+          "status": "ok",
+          "document_recall": null,
+          "ranges": {
+            "evidence_spans": 0,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [],
+          "pack_sha256": "340ea7cd1bb1cd3c80490aa9b03e57b6a0a36c094fcf3b2d3be2038d8ae1b5c2",
+          "unmapped_chunks": 0,
+          "rejected": true,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVU01",
+          "status": "rule_only_not_agent_test",
+          "document_recall": null,
+          "ranges": null,
+          "retrieved": null,
+          "pack_sha256": null,
+          "unmapped_chunks": null,
+          "rejected": null,
+          "urgent_detected": true
+        },
+        {
+          "id": "EVU02",
+          "status": "rule_only_not_agent_test",
+          "document_recall": null,
+          "ranges": null,
+          "retrieved": null,
+          "pack_sha256": null,
+          "unmapped_chunks": null,
+          "rejected": null,
+          "urgent_detected": true
+        },
+        {
+          "id": "EVU03",
+          "status": "rule_only_not_agent_test",
+          "document_recall": null,
+          "ranges": null,
+          "retrieved": null,
+          "pack_sha256": null,
+          "unmapped_chunks": null,
+          "rejected": null,
+          "urgent_detected": true
+        },
+        {
+          "id": "EVU04",
+          "status": "rule_only_not_agent_test",
+          "document_recall": null,
+          "ranges": null,
+          "retrieved": null,
+          "pack_sha256": null,
+          "unmapped_chunks": null,
+          "rejected": null,
+          "urgent_detected": true
+        }
+      ],
+      "answerable_cases": 16,
+      "supported_cases": 12,
+      "followup_cases": 4,
+      "unanswerable_cases": 4,
+      "urgent_cases": 4,
+      "error_cases": 0,
+      "document_recall_at_budget": 0.875,
+      "followup_document_recall_at_budget": 1.0,
+      "evidence_labelled_cases": 16,
+      "evidence_span_recall_at_budget": 0.8824,
+      "critical_condition_retention": 0.9,
+      "labelled_context_chunk_precision": 0.2917,
+      "context_chunks_with_reference": 14,
+      "context_chunks_considered": 48,
+      "candidate_union_document_recall": 1.0,
+      "candidate_rerank_pool_document_recall": 1.0,
+      "candidate_trace_cases": {
+        "union": 16,
+        "rerank_pool": 16
+      },
+      "candidate_coverage_basis": "full_source_chunks_not_model_token_visibility",
+      "unanswerable_rejection_rate": 0.75,
+      "urgent_detection_rate": 1.0,
+      "evidence_spans": 17,
+      "retained_spans": 15,
+      "critical_conditions": 10,
+      "retained_conditions": 9,
+      "first_search_ms": 86.78,
+      "subsequent_search_p95_ms": 30.17,
+      "reranker_status_counts": {
+        "disabled": 20,
+        "not_searched": 4
+      }
+    },
+    "hybrid": {
+      "metric_version": "evidence_budget_v1",
+      "query_contract": "explicit_user_facts_v1",
+      "budget": {
+        "max_chunks": 5,
+        "max_chunks_per_document": 2,
+        "max_chars_per_chunk": 1600,
+        "max_content_chars": 8000
+      },
+      "cases": [
+        {
+          "id": "EVS01",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 2,
+            "retained_spans": 2,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [
+            "NHC-HL2024-14"
+          ],
+          "pack_sha256": "00d5d606b3393c0cfbc3df5e001644e1e776a1494fac6bf382a33a29a47d8b71",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS02",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "NHC-HL2024-23",
+            "NHC-HL2024-13",
+            "NHC-HL2024-40"
+          ],
+          "pack_sha256": "9c5a78dd22ef3f0cebfee1854f0db7327eeb912ef943dfd3087104d658720ff5",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS03",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [
+            "NHC-HL2024-26"
+          ],
+          "pack_sha256": "2b6fa712acb5b9151f20af4950d436af747b64eda3278a45af5f44d6307c8798",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS04",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "NHC-HL2024-32",
+            "NHC-HL2024-41",
+            "FJ-HEADACHE-20260626"
+          ],
+          "pack_sha256": "66bc760a7b081e4dcbe1b2f863d20617738c9469853b4b71d6effc5cec174970",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS05",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "NHC-HL2024-32",
+            "NHC-HL2024-21",
+            "NHC-HL2024-20",
+            "NHC-HL2024-17"
+          ],
+          "pack_sha256": "a994c0cd710e3dc72b098e0001c75f4bb641e439f1bba99eadb8cf529fb93f5f",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS06",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [
+            "NHC-HL2024-56"
+          ],
+          "pack_sha256": "cf6ae897d92d9a2052486c0ba2d144a085a65d29b07c227f2bd4dfd12307121b",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS07",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "NHC-HL2024-56"
+          ],
+          "pack_sha256": "007e926e8e8142c171d71219e8a443875b5482aa5ac70ca35c28bb9a61094f39",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS08",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "BJ-DIARRHEA-20210406",
+            "NHC-HL2024-42",
+            "GZ-POSTMEAL-ABDOMEN-2026",
+            "NHC-HL2024-26",
+            "NHC-FLU-CARE-20250117"
+          ],
+          "pack_sha256": "6a7bf00c1c26a887087a5c233785da78dd46a7325d92379a98ec793638885266",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS09",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "NHC-FLU-CARE-20250117",
+            "NHC-HL2024-42",
+            "NHC-THROAT-20240821",
+            "NHC-HL2024-12"
+          ],
+          "pack_sha256": "51190504cf1f88bc160e53b4bf9e76767ed8fddad876975037326e349cda1863",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS10",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "GZ-POSTMEAL-ABDOMEN-2026",
+            "BJ-DIARRHEA-20210406",
+            "FJ-HEADACHE-20260626",
+            "NHC-FLU-CARE-20250117",
+            "NHC-HL2024-30"
+          ],
+          "pack_sha256": "73c38184eefb0440f5ddc47041c8d625b19f416f1eafcda5c080cd6a042d8c9e",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS11",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "FJ-HEADACHE-20260626",
+            "BJ-EMERG-CHEST-2022",
+            "NHC-FLU-CARE-20250117"
+          ],
+          "pack_sha256": "dd2812e2b3c0edc1c04fc5919845b1fc2a8239c4f1a45c3527f4ebeb84fc3bc1",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS12",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [
+            "NHC-THROAT-20240821",
+            "NHC-HL2024-18",
+            "NHC-HL2024-40"
+          ],
+          "pack_sha256": "8c00bb6913fe03e466e1ba4672bfc47a107c409b0285e148a66c3d5b27f20b27",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVF01",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [
+            "NHC-HL2024-56",
+            "NHC-HL2024-01"
+          ],
+          "pack_sha256": "733aa83be9fdedf9c8f1d62ba06677bbac47d56bcecfba9ccc51ce1f466c5242",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVF02",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "NHC-HL2024-32",
+            "NHC-HL2024-21",
+            "NHC-HL2024-52"
+          ],
+          "pack_sha256": "aebd7e90133e89f0eaf4ebed4eb9a00161f3852e9b294149eeafa3613eeb3c2e",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVF03",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "NHC-FLU-CARE-20250117",
+            "NHC-HL2024-40",
+            "NHC-HL2024-42",
+            "NHC-HL2024-09"
+          ],
+          "pack_sha256": "5c309168347852f5d9dc4b46b73ebdfc4ba1a9d9249c966767b61736b9d98132",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVF04",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [
+            "NHC-HL2024-26",
+            "NHC-HL2024-24",
+            "NHC-HL2024-52"
+          ],
+          "pack_sha256": "7d68940d00fd7b8d1fc5b9c64e3b23678dfdb4a340eaaf0f618e736b46cb3c03",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVN01",
+          "status": "ok",
+          "document_recall": null,
+          "ranges": {
+            "evidence_spans": 0,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [
+            "NHC-HL2024-05"
+          ],
+          "pack_sha256": "1255d51b0756f166eb1abae0ec34f751ad2ecbf343407300e35d6cfd496c0091",
+          "unmapped_chunks": 0,
+          "rejected": false,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVN02",
+          "status": "ok",
+          "document_recall": null,
+          "ranges": {
+            "evidence_spans": 0,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [
+            "NHC-HL2024-34"
+          ],
+          "pack_sha256": "71866c3df540be6f6232d77e8dfe9ebb4398b6fb49f8cf7aaff17dc47a2c6916",
+          "unmapped_chunks": 0,
+          "rejected": false,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVN03",
+          "status": "ok",
+          "document_recall": null,
+          "ranges": {
+            "evidence_spans": 0,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [
+            "NHC-HL2024-57"
+          ],
+          "pack_sha256": "0509d06be1013b0ba9ad5c8b1788fee6a0f48ef2e4c0c58270c505dcf454cc6f",
+          "unmapped_chunks": 0,
+          "rejected": false,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVN04",
+          "status": "ok",
+          "document_recall": null,
+          "ranges": {
+            "evidence_spans": 0,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [],
+          "pack_sha256": "340ea7cd1bb1cd3c80490aa9b03e57b6a0a36c094fcf3b2d3be2038d8ae1b5c2",
+          "unmapped_chunks": 0,
+          "rejected": true,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVU01",
+          "status": "rule_only_not_agent_test",
+          "document_recall": null,
+          "ranges": null,
+          "retrieved": null,
+          "pack_sha256": null,
+          "unmapped_chunks": null,
+          "rejected": null,
+          "urgent_detected": true
+        },
+        {
+          "id": "EVU02",
+          "status": "rule_only_not_agent_test",
+          "document_recall": null,
+          "ranges": null,
+          "retrieved": null,
+          "pack_sha256": null,
+          "unmapped_chunks": null,
+          "rejected": null,
+          "urgent_detected": true
+        },
+        {
+          "id": "EVU03",
+          "status": "rule_only_not_agent_test",
+          "document_recall": null,
+          "ranges": null,
+          "retrieved": null,
+          "pack_sha256": null,
+          "unmapped_chunks": null,
+          "rejected": null,
+          "urgent_detected": true
+        },
+        {
+          "id": "EVU04",
+          "status": "rule_only_not_agent_test",
+          "document_recall": null,
+          "ranges": null,
+          "retrieved": null,
+          "pack_sha256": null,
+          "unmapped_chunks": null,
+          "rejected": null,
+          "urgent_detected": true
+        }
+      ],
+      "answerable_cases": 16,
+      "supported_cases": 12,
+      "followup_cases": 4,
+      "unanswerable_cases": 4,
+      "urgent_cases": 4,
+      "error_cases": 0,
+      "document_recall_at_budget": 1.0,
+      "followup_document_recall_at_budget": 1.0,
+      "evidence_labelled_cases": 16,
+      "evidence_span_recall_at_budget": 1.0,
+      "critical_condition_retention": 1.0,
+      "labelled_context_chunk_precision": 0.2667,
+      "context_chunks_with_reference": 16,
+      "context_chunks_considered": 60,
+      "candidate_union_document_recall": 1.0,
+      "candidate_rerank_pool_document_recall": 1.0,
+      "candidate_trace_cases": {
+        "union": 16,
+        "rerank_pool": 16
+      },
+      "candidate_coverage_basis": "full_source_chunks_not_model_token_visibility",
+      "unanswerable_rejection_rate": 0.25,
+      "urgent_detection_rate": 1.0,
+      "evidence_spans": 17,
+      "retained_spans": 17,
+      "critical_conditions": 10,
+      "retained_conditions": 10,
+      "first_search_ms": 239.36,
+      "subsequent_search_p95_ms": 32.88,
+      "reranker_status_counts": {
+        "disabled": 20,
+        "not_searched": 4
+      }
+    },
+    "rerank": {
+      "metric_version": "evidence_budget_v1",
+      "query_contract": "explicit_user_facts_v1",
+      "budget": {
+        "max_chunks": 5,
+        "max_chunks_per_document": 2,
+        "max_chars_per_chunk": 1600,
+        "max_content_chars": 8000
+      },
+      "cases": [
+        {
+          "id": "EVS01",
+          "status": "ok",
+          "document_recall": 0.0,
+          "ranges": {
+            "evidence_spans": 2,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [],
+          "pack_sha256": "340ea7cd1bb1cd3c80490aa9b03e57b6a0a36c094fcf3b2d3be2038d8ae1b5c2",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS02",
+          "status": "ok",
+          "document_recall": 0.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "retrieved": [],
+          "pack_sha256": "340ea7cd1bb1cd3c80490aa9b03e57b6a0a36c094fcf3b2d3be2038d8ae1b5c2",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS03",
+          "status": "ok",
+          "document_recall": 0.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [],
+          "pack_sha256": "340ea7cd1bb1cd3c80490aa9b03e57b6a0a36c094fcf3b2d3be2038d8ae1b5c2",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS04",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "NHC-HL2024-32"
+          ],
+          "pack_sha256": "3ec3412aba3eeaab11aca3b42de4aa0a96dea8bb857d70e406ce00745a84a4f1",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS05",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "NHC-HL2024-32",
+            "NHC-HL2024-21",
+            "NHC-HL2024-20",
+            "NHC-HL2024-16"
+          ],
+          "pack_sha256": "3f1953d2adbc9a60114df6a346f97d36fdb2a178c35903efb536f1116c2d4a8f",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS06",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [
+            "NHC-HL2024-56",
+            "NHC-HL2024-59"
+          ],
+          "pack_sha256": "c06ed3c51c7da83c0d2fc703d006ab50b1cad6bb4c73f3faa779507128339e03",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS07",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "NHC-HL2024-56"
+          ],
+          "pack_sha256": "b8d23b6c2497bb46fece6f0d80649643ca2051b9e30a7aed93625192373e92e6",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS08",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "BJ-DIARRHEA-20210406"
+          ],
+          "pack_sha256": "92d5c9a7ea2bab343b17ed5d2edc7f6141b69440e39bbad734aa2211f0d246e0",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS09",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "NHC-FLU-CARE-20250117",
+            "NHC-HL2024-42"
+          ],
+          "pack_sha256": "e7d14e44a78c74161a013e14806d83c92e971fa1f51943d2d51aa96e8171d851",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS10",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "GZ-POSTMEAL-ABDOMEN-2026",
+            "FJ-HEADACHE-20260626"
+          ],
+          "pack_sha256": "7463e7e9743450e785b5314e1b6127df68b675472441ab5d98707e27faee7046",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS11",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "FJ-HEADACHE-20260626"
+          ],
+          "pack_sha256": "917b2dcf4a85053c8c9aa9fc83f45ac1b8efd41eae714314d6c3500fc82495cb",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVS12",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [
+            "NHC-THROAT-20240821"
+          ],
+          "pack_sha256": "7b979b41d4ec461dbc9204921c0cba9f95cc9c63d84e5fdec88c4e9f812aaea2",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVF01",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [
+            "NHC-HL2024-56",
+            "NHC-HL2024-59"
+          ],
+          "pack_sha256": "a23258e2a69cadfe381ee6bfb1d5fc7c15462e020e52b2a4fb2c85291d22f349",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVF02",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "NHC-HL2024-32",
+            "NHC-HL2024-21"
+          ],
+          "pack_sha256": "66cc4bcd393ef9a167963d4551d9cfe3f0b0d2dcc939a900e88647a5192378af",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVF03",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "retrieved": [
+            "NHC-FLU-CARE-20250117"
+          ],
+          "pack_sha256": "9ac0b9e4ed857db28e760c7ba5a06d77e27b0e949b6510b434ee72f48be4635a",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVF04",
+          "status": "ok",
+          "document_recall": 1.0,
+          "ranges": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [
+            "NHC-HL2024-26",
+            "NHC-HL2024-29"
+          ],
+          "pack_sha256": "3dd6aa94f8170472bf8ffef8d9bb882002cf39cd0cf900c6e94acca7616f5f40",
+          "unmapped_chunks": 0,
+          "rejected": null,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVN01",
+          "status": "ok",
+          "document_recall": null,
+          "ranges": {
+            "evidence_spans": 0,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [],
+          "pack_sha256": "340ea7cd1bb1cd3c80490aa9b03e57b6a0a36c094fcf3b2d3be2038d8ae1b5c2",
+          "unmapped_chunks": 0,
+          "rejected": true,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVN02",
+          "status": "ok",
+          "document_recall": null,
+          "ranges": {
+            "evidence_spans": 0,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [],
+          "pack_sha256": "340ea7cd1bb1cd3c80490aa9b03e57b6a0a36c094fcf3b2d3be2038d8ae1b5c2",
+          "unmapped_chunks": 0,
+          "rejected": true,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVN03",
+          "status": "ok",
+          "document_recall": null,
+          "ranges": {
+            "evidence_spans": 0,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [],
+          "pack_sha256": "340ea7cd1bb1cd3c80490aa9b03e57b6a0a36c094fcf3b2d3be2038d8ae1b5c2",
+          "unmapped_chunks": 0,
+          "rejected": true,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVN04",
+          "status": "ok",
+          "document_recall": null,
+          "ranges": {
+            "evidence_spans": 0,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "retrieved": [
+            "NHC-HL2024-41"
+          ],
+          "pack_sha256": "5293ab3f1867751f6420dafe6ccb9c63016332d43176ea76c0ef4dbf3c97027e",
+          "unmapped_chunks": 0,
+          "rejected": false,
+          "urgent_detected": null
+        },
+        {
+          "id": "EVU01",
+          "status": "rule_only_not_agent_test",
+          "document_recall": null,
+          "ranges": null,
+          "retrieved": null,
+          "pack_sha256": null,
+          "unmapped_chunks": null,
+          "rejected": null,
+          "urgent_detected": true
+        },
+        {
+          "id": "EVU02",
+          "status": "rule_only_not_agent_test",
+          "document_recall": null,
+          "ranges": null,
+          "retrieved": null,
+          "pack_sha256": null,
+          "unmapped_chunks": null,
+          "rejected": null,
+          "urgent_detected": true
+        },
+        {
+          "id": "EVU03",
+          "status": "rule_only_not_agent_test",
+          "document_recall": null,
+          "ranges": null,
+          "retrieved": null,
+          "pack_sha256": null,
+          "unmapped_chunks": null,
+          "rejected": null,
+          "urgent_detected": true
+        },
+        {
+          "id": "EVU04",
+          "status": "rule_only_not_agent_test",
+          "document_recall": null,
+          "ranges": null,
+          "retrieved": null,
+          "pack_sha256": null,
+          "unmapped_chunks": null,
+          "rejected": null,
+          "urgent_detected": true
+        }
+      ],
+      "answerable_cases": 16,
+      "supported_cases": 12,
+      "followup_cases": 4,
+      "unanswerable_cases": 4,
+      "urgent_cases": 4,
+      "error_cases": 0,
+      "document_recall_at_budget": 0.8125,
+      "followup_document_recall_at_budget": 1.0,
+      "evidence_labelled_cases": 16,
+      "evidence_span_recall_at_budget": 0.7647,
+      "critical_condition_retention": 0.9,
+      "labelled_context_chunk_precision": 0.4194,
+      "context_chunks_with_reference": 13,
+      "context_chunks_considered": 31,
+      "candidate_union_document_recall": 1.0,
+      "candidate_rerank_pool_document_recall": 1.0,
+      "candidate_trace_cases": {
+        "union": 16,
+        "rerank_pool": 16
+      },
+      "candidate_coverage_basis": "full_source_chunks_not_model_token_visibility",
+      "unanswerable_rejection_rate": 0.75,
+      "urgent_detection_rate": 1.0,
+      "evidence_spans": 17,
+      "retained_spans": 13,
+      "critical_conditions": 10,
+      "retained_conditions": 9,
+      "first_search_ms": 3612.31,
+      "subsequent_search_p95_ms": 4669.37,
+      "reranker_status_counts": {
+        "applied": 20,
+        "not_searched": 4
+      }
+    }
+  }
+}

@@ -267,6 +267,8 @@ def _run_experiment(manifest_path, corpus_path, output, groups, profiles, k, met
             report["index_build_and_embedding_load_ms"] = round((time.perf_counter()-started)*1000, 1)
             keyword = KeywordBaseline(kb)
             for profile in profiles:
+                report["stage"] = f"prepare_profile:{profile}"
+                save()
                 kb.use_lexical = profile in {"hybrid", "rerank"}
                 kb.reranker = None
                 kb.reranker_requested = profile == "rerank"

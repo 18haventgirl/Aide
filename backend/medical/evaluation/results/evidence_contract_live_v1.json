@@ -1,0 +1,46 @@
+{
+  "scope": "real_MCP_and_citation_parser_not_LLM_answer_test",
+  "passed": true,
+  "probes": [
+    {
+      "id": "exercise",
+      "knowledge_status": "grounded",
+      "chunks": 2,
+      "contract_version": "medical_evidence_pack_v1",
+      "pack_sha256": "3ec3412aba3eeaab11aca3b42de4aa0a96dea8bb857d70e406ce00745a84a4f1",
+      "unmapped_chunks": 0,
+      "citation_count": 1,
+      "passed": true
+    },
+    {
+      "id": "single_chunk",
+      "knowledge_status": "grounded",
+      "chunks": 1,
+      "contract_version": "medical_evidence_pack_v1",
+      "pack_sha256": "aea428ba984fe4a12d5dcc8e6fe09dad8e5534e1bd86c2856396a34e7284c240",
+      "unmapped_chunks": 0,
+      "citation_count": 1,
+      "passed": true
+    },
+    {
+      "id": "scope",
+      "knowledge_status": "not_covered",
+      "chunks": 0,
+      "contract_version": "medical_evidence_pack_v1",
+      "pack_sha256": "340ea7cd1bb1cd3c80490aa9b03e57b6a0a36c094fcf3b2d3be2038d8ae1b5c2",
+      "unmapped_chunks": 0,
+      "citation_count": 0,
+      "passed": true
+    },
+    {
+      "id": "unsupported_audience",
+      "knowledge_status": "not_covered",
+      "chunks": 0,
+      "contract_version": "medical_evidence_pack_v1",
+      "pack_sha256": "340ea7cd1bb1cd3c80490aa9b03e57b6a0a36c094fcf3b2d3be2038d8ae1b5c2",
+      "unmapped_chunks": 0,
+      "citation_count": 0,
+      "passed": true
+    }
+  ]
+}

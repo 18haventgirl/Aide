@@ -149,7 +149,7 @@ class EvidenceContractTests(unittest.TestCase):
     def test_label_snapshot_and_ranges_fail_before_search(self):
         doc = document()
         case = {"id": "bad", "query": "合成问题", "expected_doc_ids": ["A"], "expected_evidence": [reference(doc)]}
-        for change in ({"body_sha256": "wrong"}, {"ranges": [[-1, 4]]}, {"ranges": [[0, 99999]]}, {"ranges": []}):
+        for change in ({"body_sha256": "wrong"}, {"version": True}, {"ranges": [[-1, 4]]}, {"ranges": [[0, 99999]]}, {"ranges": []}):
             with self.subTest(change=change), self.assertRaises(ValueError):
                 validate_references([{**case, "expected_evidence": [{**reference(doc), **change}]}], [doc])
         with self.assertRaises(ValueError):
@@ -198,6 +198,16 @@ class EvidenceContractTests(unittest.TestCase):
         self.assertEqual(len(cases), 24)
         self.assertEqual(sum(bool(c.get("expected_evidence")) for c in cases), 16)
         validate_references(cases, load_corpus(MEDICAL/"source_corpus"))
+
+    def test_forbidden_sources_and_unknown_errors_are_not_silently_ignored(self):
+        docs = [document("A"), document("B")]
+        case = {"id": "forbidden", "query": "合成问题", "expected_doc_ids": ["A"], "forbidden_doc_ids": ["B"]}
+        result = evaluate_evidence(Search(hits_for(docs[0])+hits_for(docs[1])), [case], docs)
+        self.assertEqual(result["forbidden_hit_rate_at_budget"], 1)
+        self.assertEqual(result["details"][0]["forbidden_retrieved"], ["B"])
+        failed = evaluate_evidence(Search([], broken=True), [case], docs)
+        self.assertIsNone(failed["forbidden_hit_rate_at_budget"])
+        self.assertEqual(failed["forbidden_unverified_cases"], 1)
 
 
 if __name__ == "__main__": unittest.main()

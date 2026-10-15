@@ -8,7 +8,7 @@
 
 ```powershell
 # 在 backend 目录运行；不调用生成模型，不修改线上索引
-.\.venv\python.exe -m medical.experiment --group legacy-regression --group chinese-symptoms --output data/evaluation_reports/retrieval_baseline_20261006_v1.json
+.\.venv\python.exe -m medical.experiment --suite medical/evaluation/suite_v1.json --metric-contract legacy-doc-v3 --group legacy-regression --group chinese-symptoms --output data/evaluation_reports/retrieval_legacy_contract_reproduction.json
 .\.venv\python.exe -m unittest tests.test_evaluation_experiment tests.test_pilot_retrieval
 ```
 
