@@ -7,6 +7,9 @@ from unittest.mock import patch
 
 from medical.experiment import digest
 from medical.audit_source_snapshot import audit_snapshot
+from medical.experiment import prepare_origin_contract, run_experiment, MEDICAL
+from medical.knowledge_base import load_corpus
+from medical.source_provenance import body_hash
 from tests.test_source_origins import fixture
 
 
@@ -71,6 +74,58 @@ class SnapshotTests(unittest.TestCase):
             (raw/"capture.txt").write_text("被改过的内容", encoding="utf-8")
             with self.assertRaisesRegex(ValueError, "capture hash differs"):
                 self.audit(root, snapshot, medical, raw)
+
+    def test_strict_experiment_preflight_rejects_editorial_and_missing_gold(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory); snapshot, medical, raw, _ = self.make_snapshot(root)
+            docs = load_corpus(snapshot/"corpus")
+            doc = next(d for d in docs if d.doc_id != "NEW-SOURCE")
+            def case(text):
+                start = doc.body.index(text)
+                return {"id": "fixture", "query": "合成问题", "expected_doc_ids": [doc.doc_id],
+                        "expected_evidence": [{"doc_id": doc.doc_id, "version": doc.version,
+                            "body_sha256": body_hash(doc.body), "ranges": [[start, start+len(text)]]}]}
+            with patch("medical.audit_source_snapshot.ROOT", root), patch("medical.audit_source_snapshot.MEDICAL", medical):
+                audit, origins = prepare_origin_contract("source-evidence-v1", snapshot, snapshot/"corpus", docs,
+                                                         [case("明确结论。")], raw_root=raw)
+                self.assertEqual(audit["origin_verified_documents"], len(origins))
+                with self.assertRaisesRegex(ValueError, "editorial"):
+                    prepare_origin_contract("source-evidence-v1", snapshot, snapshot/"corpus", docs,
+                                             [case("编辑范围")], raw_root=raw)
+                without_ranges = case("明确结论。"); without_ranges.pop("expected_evidence")
+                with self.assertRaisesRegex(ValueError, "all positive"):
+                    prepare_origin_contract("source-evidence-v1", snapshot, snapshot/"corpus", docs,
+                                             [without_ranges], raw_root=raw)
+
+    def test_origin_snapshot_cannot_be_silently_ignored_or_paired_with_another_corpus(self):
+        with self.assertRaisesRegex(ValueError, "requires source-evidence-v1"):
+            prepare_origin_contract("evidence-v1", Path("snapshot"), Path("corpus"), [], [])
+        with self.assertRaisesRegex(ValueError, "matching isolated"):
+            prepare_origin_contract("source-evidence-v1", Path("snapshot"), Path("different"), [], [])
+        self.assertEqual(prepare_origin_contract("evidence-v1", None, Path("corpus"), [], []), (None, None))
+
+    def test_strict_preflight_failure_is_recorded_before_any_model_loading(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory)/"failed.json"
+            with self.assertRaisesRegex(ValueError, "matching isolated"):
+                run_experiment(MEDICAL/"evaluation/suite_v5.json", MEDICAL/"source_corpus", path,
+                               metric_contract="source-evidence-v1")
+            report = json.loads(path.read_text(encoding="utf-8"))
+            self.assertFalse(report["complete"])
+            self.assertEqual(report["failure_type"], "ValueError")
+            self.assertEqual(report["requested"]["metric_contract"], "source-evidence-v1")
+
+    def test_development_pilot_keeps_its_declared_source_contract(self):
+        from medical.experiment import load_suite
+        manifest, groups = load_suite(MEDICAL/"evaluation/source_pilot_suite_v1.json")
+        cases = groups["source-origin-pilot-development"]
+        self.assertEqual(len(cases), 12)
+        self.assertTrue(all(c["split"] == "development" and c["exposed_for_changes"] is True for c in cases))
+        self.assertEqual(sum(c["kind"] == "followup" for c in cases), 2)
+        with tempfile.TemporaryDirectory() as directory:
+            with self.assertRaisesRegex(ValueError, "declared metric contract"):
+                run_experiment(MEDICAL/"evaluation/source_pilot_suite_v1.json", MEDICAL/"source_corpus",
+                               Path(directory)/"wrong-contract.json")
 
 
 if __name__ == "__main__": unittest.main()

@@ -71,6 +71,9 @@ def validate_literal_references(cases, resolver):
     from .evaluation.metrics import validate_references
     validate_references(cases, list(resolver.documents.values()))
     for case in cases:
+        if (case.get("kind", "supported") in {"supported", "followup"}
+                and {r["doc_id"] for r in case.get("expected_evidence", [])} != set(case.get("expected_doc_ids", []))):
+            raise ValueError("all positive source IDs need literal range labels")
         for ref in case.get("expected_evidence", []):
             origin = resolver.origins.get(ref["doc_id"])
             if origin is None: raise ValueError("gold source origin is missing")

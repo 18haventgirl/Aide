@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "hash_scheme": "canonical-json-v1",
+  "suite_id": "aide-source-origin-development-pilot-v1",
+  "evaluation_date": "2026-10-17",
+  "authorship": "developer_source_derived_not_external_blind",
+  "query_contract": "explicit_user_facts_v1",
+  "metric_contract": "source-evidence-v1",
+  "groups": [
+    {
+      "name": "source-origin-pilot-development",
+      "purpose": "development",
+      "path": "source_pilot_cases_v1.json",
+      "count": 12,
+      "sha256": "1930b4a09d3068a946e2776966ec5b7b356a7ad5bca8a5b0ad0c6c9848a4e5c2",
+      "allow_historical_missing_ids": false,
+      "used_for_changes_after_first_run": true
+    }
+  ]
+}

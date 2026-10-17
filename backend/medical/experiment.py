@@ -153,6 +153,7 @@ def repository_version():
                  "evidence_contract.py", "source_provenance.py", "evaluation/evidence.py", "evaluation/metrics.py"]
         files += ["token_budget.py", "token_chunking.py"]
         files += ["source_origins.py", "capture_existing_origins.py", "build_sleep_snapshot.py", "audit_source_snapshot.py"]
+        files += ["evaluation/author_source_pilot_v1.py"]
         return {"commit": git("rev-parse", "HEAD"),
                 "retrieval_implementation_sha256": digest({name: hashlib.sha256((MEDICAL/name).read_bytes()).hexdigest() for name in files}),
                 "tracked_changes": bool(git("status", "--porcelain", "--untracked-files=no"))}
@@ -176,21 +177,43 @@ def mode_comparisons(results, k):
     return comparisons
 
 
+def prepare_origin_contract(metric_contract, source_snapshot, corpus_path, documents, selected_cases, *, raw_root=None):
+    """Opt-in strict source evidence; validate before importing model runtimes."""
+    if metric_contract != "source-evidence-v1":
+        if source_snapshot is not None:
+            raise ValueError("source snapshot requires source-evidence-v1")
+        return None, None
+    if source_snapshot is None or (Path(source_snapshot)/"corpus").resolve() != Path(corpus_path).resolve():
+        raise ValueError("source-evidence-v1 requires the matching isolated source snapshot")
+    from .audit_source_snapshot import audit_snapshot
+    from .source_origins import OriginResolver, validate_literal_references
+    raw_root = Path(raw_root) if raw_root is not None else ROOT/"medical-rag-data/raw"
+    audit = audit_snapshot(source_snapshot, raw_root)
+    if digest([d.model_dump(mode="json") for d in documents]) != audit["corpus_sha256"]:
+        raise ValueError("source contract documents differ from audited snapshot")
+    origins = {path.stem: json.loads(path.read_text(encoding="utf-8"))
+               for path in (Path(source_snapshot)/"origins").glob("*.json")}
+    resolver = OriginResolver(documents, origins, raw_root)
+    validate_literal_references(selected_cases, resolver)
+    return audit, origins
+
+
 def run_experiment(manifest_path, corpus_path, output, groups=None, profiles=PROFILES, k=5,
                    metric_contract="evidence-v1", *, rerank_max_length=256, input_policy="legacy",
-                   chunk_strategy="legacy", child_tokens=180):
+                   chunk_strategy="legacy", child_tokens=180, source_snapshot=None):
     output.parent.mkdir(parents=True, exist_ok=True)
     initial = {"report_version": "retrieval_experiment_v2", "complete": False,
                "stage": "preflight", "started_at_utc": datetime.now(timezone.utc).isoformat(),
                "requested": {"suite": str(manifest_path), "groups": groups, "profiles": list(profiles), "k": k,
                              "metric_contract": metric_contract, "rerank_max_length": rerank_max_length,
-                             "input_policy": input_policy, "chunk_strategy": chunk_strategy, "child_tokens": child_tokens}}
+                             "input_policy": input_policy, "chunk_strategy": chunk_strategy, "child_tokens": child_tokens,
+                             "source_snapshot": str(source_snapshot) if source_snapshot is not None else None}}
     # Exclusive reservation protects historical runs, including concurrent writers.
     with output.open("x", encoding="utf-8") as handle:
         json.dump(initial, handle)
     try:
         return _run_experiment(manifest_path, corpus_path, output, groups, profiles, k, metric_contract,
-                               rerank_max_length, input_policy, chunk_strategy, child_tokens)
+                               rerank_max_length, input_policy, chunk_strategy, child_tokens, source_snapshot)
     except Exception as exc:
         current = json.loads(output.read_text(encoding="utf-8"))
         current.update(complete=False, failure_type=type(exc).__name__)
@@ -199,7 +222,7 @@ def run_experiment(manifest_path, corpus_path, output, groups=None, profiles=PRO
 
 
 def _run_experiment(manifest_path, corpus_path, output, groups, profiles, k, metric_contract,
-                    rerank_max_length, input_policy, chunk_strategy, child_tokens):
+                    rerank_max_length, input_policy, chunk_strategy, child_tokens, source_snapshot):
     from .token_budget import POLICIES
     if (type(rerank_max_length) is not int or not 64 <= rerank_max_length <= 512
             or input_policy not in POLICIES or chunk_strategy not in {"legacy", "token-v1"}
@@ -207,9 +230,11 @@ def _run_experiment(manifest_path, corpus_path, output, groups, profiles, k, met
         raise ValueError("invalid experimental token settings")
     if chunk_strategy == "token-v1" and input_policy != "query_first_v1":
         raise ValueError("token chunks require explicit query/passage budgets")
-    if metric_contract not in {"evidence-v1", "legacy-doc-v3"}:
+    if metric_contract not in {"evidence-v1", "source-evidence-v1", "legacy-doc-v3"}:
         raise ValueError("unknown metric contract")
     manifest, cases_by_group = load_suite(manifest_path)
+    if manifest.get("metric_contract", metric_contract) != metric_contract:
+        raise ValueError("suite requires its declared metric contract")
     selected = groups or list(cases_by_group)
     if not selected or set(selected) - set(cases_by_group) or len(set(selected)) != len(selected):
         raise ValueError("unknown, duplicate or empty group selection")
@@ -217,11 +242,13 @@ def _run_experiment(manifest_path, corpus_path, output, groups, profiles, k, met
         raise ValueError("invalid profile selection")
     if not 1 <= k <= 20:
         raise ValueError("k must be between 1 and 20")
-    budget = EvidenceBudget(max_chunks=k) if metric_contract == "evidence-v1" else None
+    budget = EvidenceBudget(max_chunks=k) if metric_contract in {"evidence-v1", "source-evidence-v1"} else None
     documents = load_corpus(corpus_path)
     for group in selected:
         validate_source_bindings(cases_by_group[group], documents)
         validate_references(cases_by_group[group], documents)
+    origin_audit, origins = prepare_origin_contract(metric_contract, source_snapshot, corpus_path, documents,
+                                                    [case for group in selected for case in cases_by_group[group]])
     day = date.fromisoformat(manifest["evaluation_date"])
     eligible = {d.doc_id for d in documents if d.is_searchable(day, research_mode=True)}
     unavailable = {}
@@ -246,6 +273,7 @@ def _run_experiment(manifest_path, corpus_path, output, groups, profiles, k, met
         "corpus_sha256": digest([d.model_dump(mode="json") for d in documents]),
         "corpus_documents": len(documents), "eligible_documents": len(eligible),
         "unavailable_expected_doc_ids": unavailable, "index_version": INDEX_VERSION,
+        "source_origin_audit": origin_audit,
         "parameters": PARAMETERS, "cpu_threads": 2, "memory_before": before,
         "input_settings": {"rerank_max_length": rerank_max_length, "input_policy": input_policy,
                            "chunk_strategy": chunk_strategy, "child_tokens": child_tokens if chunk_strategy == "token-v1" else None},
@@ -293,7 +321,11 @@ def _run_experiment(manifest_path, corpus_path, output, groups, profiles, k, met
             report["index_sync"] = kb.sync(documents, today=day)
             report["index_chunks"] = kb.collection.count()
             from .source_provenance import SourceResolver
-            resolver = SourceResolver(documents, chunker=chunker)
+            if origins is None:
+                resolver = SourceResolver(documents, chunker=chunker)
+            else:
+                from .source_origins import OriginResolver
+                resolver = OriginResolver(documents, origins, ROOT/"medical-rag-data/raw", chunker=chunker)
             report["index_build_and_embedding_load_ms"] = round((time.perf_counter()-started)*1000, 1)
             keyword = KeywordBaseline(kb)
             for profile in profiles:
@@ -363,7 +395,8 @@ def main():
     parser.add_argument("--group", action="append")
     parser.add_argument("--profiles", nargs="+", choices=PROFILES, default=list(PROFILES))
     parser.add_argument("--k", type=int, default=5)
-    parser.add_argument("--metric-contract", choices=("evidence-v1", "legacy-doc-v3"), default="evidence-v1")
+    parser.add_argument("--metric-contract", choices=("evidence-v1", "source-evidence-v1", "legacy-doc-v3"), default="evidence-v1")
+    parser.add_argument("--source-snapshot", type=Path, help="matching isolated snapshot required for source-evidence-v1")
     parser.add_argument("--rerank-max-length", type=int, default=256)
     parser.add_argument("--input-policy", choices=("legacy", "query_first_v1"), default="legacy")
     parser.add_argument("--chunk-strategy", choices=("legacy", "token-v1"), default="legacy")
@@ -371,7 +404,7 @@ def main():
     args = parser.parse_args()
     run_experiment(args.suite, args.corpus, args.output, args.group, args.profiles, args.k, args.metric_contract,
                    rerank_max_length=args.rerank_max_length, input_policy=args.input_policy,
-                   chunk_strategy=args.chunk_strategy, child_tokens=args.child_tokens)
+                   chunk_strategy=args.chunk_strategy, child_tokens=args.child_tokens, source_snapshot=args.source_snapshot)
 
 
 if __name__ == "__main__":

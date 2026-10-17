@@ -1,0 +1,430 @@
+[
+  {
+    "id": "SOP01",
+    "kind": "supported",
+    "query": "成年人是不是每天必须正好睡满八小时？",
+    "expected_doc_ids": [
+      "NHC-SLEEP-CORE-20250318"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "NHC-SLEEP-CORE-20250318",
+        "version": 1,
+        "body_sha256": "476906de134ae81a1e4434181aedf6fd63cd6248a023dab7f75251cf58d9bc0f",
+        "ranges": [
+          [
+            258,
+            281
+          ]
+        ],
+        "required_conditions": [
+          [
+            232,
+            258
+          ]
+        ]
+      }
+    ],
+    "source_binding": {
+      "doc_id": "NHC-SLEEP-CORE-20250318",
+      "version": 1,
+      "source_locator": "全国爱卫办睡眠核心信息；DOM段落0-23中的成人适用子集；逐段范围见origin sidecar",
+      "normalized_document_sha256": "b5f6bf86e358a3d33403db8d83f89874d8a6e578ade27e0a01a539aeb8f852a1"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "sleep_duration_variation",
+    "template_id": "source_pilot_01",
+    "topic": "sleep",
+    "authorship": "developer_source_derived_not_external_blind"
+  },
+  {
+    "id": "SOP02",
+    "kind": "supported",
+    "query": "判断睡得好不好，除了时长还应该关注什么？",
+    "expected_doc_ids": [
+      "NHC-SLEEP-CORE-20250318"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "NHC-SLEEP-CORE-20250318",
+        "version": 1,
+        "body_sha256": "476906de134ae81a1e4434181aedf6fd63cd6248a023dab7f75251cf58d9bc0f",
+        "ranges": [
+          [
+            299,
+            378
+          ]
+        ],
+        "required_conditions": []
+      }
+    ],
+    "source_binding": {
+      "doc_id": "NHC-SLEEP-CORE-20250318",
+      "version": 1,
+      "source_locator": "全国爱卫办睡眠核心信息；DOM段落0-23中的成人适用子集；逐段范围见origin sidecar",
+      "normalized_document_sha256": "b5f6bf86e358a3d33403db8d83f89874d8a6e578ade27e0a01a539aeb8f852a1"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "sleep_quality_signs",
+    "template_id": "source_pilot_02",
+    "topic": "sleep",
+    "authorship": "developer_source_derived_not_external_blind"
+  },
+  {
+    "id": "SOP03",
+    "kind": "supported",
+    "query": "睡眠时间经常变来变去，只要总时长够就可以了吗？",
+    "expected_doc_ids": [
+      "NHC-SLEEP-CORE-20250318"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "NHC-SLEEP-CORE-20250318",
+        "version": 1,
+        "body_sha256": "476906de134ae81a1e4434181aedf6fd63cd6248a023dab7f75251cf58d9bc0f",
+        "ranges": [
+          [
+            408,
+            430
+          ]
+        ],
+        "required_conditions": []
+      }
+    ],
+    "source_binding": {
+      "doc_id": "NHC-SLEEP-CORE-20250318",
+      "version": 1,
+      "source_locator": "全国爱卫办睡眠核心信息；DOM段落0-23中的成人适用子集；逐段范围见origin sidecar",
+      "normalized_document_sha256": "b5f6bf86e358a3d33403db8d83f89874d8a6e578ade27e0a01a539aeb8f852a1"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "sleep_schedule_consistency",
+    "template_id": "source_pilot_03",
+    "topic": "sleep",
+    "authorship": "developer_source_derived_not_external_blind"
+  },
+  {
+    "id": "SOP04",
+    "kind": "supported",
+    "query": "睡前喝咖啡、吃得太饱和刷手机，会不会影响入睡？",
+    "expected_doc_ids": [
+      "NHC-SLEEP-CORE-20250318"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "NHC-SLEEP-CORE-20250318",
+        "version": 1,
+        "body_sha256": "476906de134ae81a1e4434181aedf6fd63cd6248a023dab7f75251cf58d9bc0f",
+        "ranges": [
+          [
+            1012,
+            1071
+          ]
+        ],
+        "required_conditions": []
+      }
+    ],
+    "source_binding": {
+      "doc_id": "NHC-SLEEP-CORE-20250318",
+      "version": 1,
+      "source_locator": "全国爱卫办睡眠核心信息；DOM段落0-23中的成人适用子集；逐段范围见origin sidecar",
+      "normalized_document_sha256": "b5f6bf86e358a3d33403db8d83f89874d8a6e578ade27e0a01a539aeb8f852a1"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "sleep_evening_habits",
+    "template_id": "source_pilot_04",
+    "topic": "sleep",
+    "authorship": "developer_source_derived_not_external_blind"
+  },
+  {
+    "id": "SOP05",
+    "kind": "supported",
+    "query": "为了睡得好些，卧室环境有哪些可以改善的地方？",
+    "expected_doc_ids": [
+      "NHC-SLEEP-CORE-20250318"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "NHC-SLEEP-CORE-20250318",
+        "version": 1,
+        "body_sha256": "476906de134ae81a1e4434181aedf6fd63cd6248a023dab7f75251cf58d9bc0f",
+        "ranges": [
+          [
+            880,
+            942
+          ]
+        ],
+        "required_conditions": []
+      }
+    ],
+    "source_binding": {
+      "doc_id": "NHC-SLEEP-CORE-20250318",
+      "version": 1,
+      "source_locator": "全国爱卫办睡眠核心信息；DOM段落0-23中的成人适用子集；逐段范围见origin sidecar",
+      "normalized_document_sha256": "b5f6bf86e358a3d33403db8d83f89874d8a6e578ade27e0a01a539aeb8f852a1"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "sleep_environment",
+    "template_id": "source_pilot_05",
+    "topic": "sleep",
+    "authorship": "developer_source_derived_not_external_blind"
+  },
+  {
+    "id": "SOP06",
+    "kind": "supported",
+    "query": "工作压力大，经常熬夜，想了解与睡眠相关的日常调整。",
+    "expected_doc_ids": [
+      "NHC-SLEEP-CORE-20250318"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "NHC-SLEEP-CORE-20250318",
+        "version": 1,
+        "body_sha256": "476906de134ae81a1e4434181aedf6fd63cd6248a023dab7f75251cf58d9bc0f",
+        "ranges": [
+          [
+            1188,
+            1219
+          ],
+          [
+            1269,
+            1302
+          ]
+        ],
+        "required_conditions": []
+      }
+    ],
+    "source_binding": {
+      "doc_id": "NHC-SLEEP-CORE-20250318",
+      "version": 1,
+      "source_locator": "全国爱卫办睡眠核心信息；DOM段落0-23中的成人适用子集；逐段范围见origin sidecar",
+      "normalized_document_sha256": "b5f6bf86e358a3d33403db8d83f89874d8a6e578ade27e0a01a539aeb8f852a1"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "sleep_occupational_stress",
+    "template_id": "source_pilot_06",
+    "topic": "sleep",
+    "authorship": "developer_source_derived_not_external_blind"
+  },
+  {
+    "id": "SOP07",
+    "kind": "supported",
+    "query": "老人一晚没睡好就非常焦虑，关于睡眠期望有什么提醒？",
+    "expected_doc_ids": [
+      "NHC-SLEEP-CORE-20250318"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "NHC-SLEEP-CORE-20250318",
+        "version": 1,
+        "body_sha256": "476906de134ae81a1e4434181aedf6fd63cd6248a023dab7f75251cf58d9bc0f",
+        "ranges": [
+          [
+            1394,
+            1442
+          ]
+        ],
+        "required_conditions": [
+          [
+            1304,
+            1325
+          ]
+        ]
+      }
+    ],
+    "source_binding": {
+      "doc_id": "NHC-SLEEP-CORE-20250318",
+      "version": 1,
+      "source_locator": "全国爱卫办睡眠核心信息；DOM段落0-23中的成人适用子集；逐段范围见origin sidecar",
+      "normalized_document_sha256": "b5f6bf86e358a3d33403db8d83f89874d8a6e578ade27e0a01a539aeb8f852a1"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "sleep_older_adult_expectations",
+    "template_id": "source_pilot_07",
+    "topic": "sleep",
+    "authorship": "developer_source_derived_not_external_blind"
+  },
+  {
+    "id": "SOP08",
+    "kind": "supported",
+    "query": "睡觉鼾声很响，家人还发现会停顿，这种情况需要求助吗？",
+    "expected_doc_ids": [
+      "NHC-SLEEP-CORE-20250318"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "NHC-SLEEP-CORE-20250318",
+        "version": 1,
+        "body_sha256": "476906de134ae81a1e4434181aedf6fd63cd6248a023dab7f75251cf58d9bc0f",
+        "ranges": [
+          [
+            2031,
+            2043
+          ],
+          [
+            2080,
+            2095
+          ]
+        ],
+        "required_conditions": []
+      }
+    ],
+    "source_binding": {
+      "doc_id": "NHC-SLEEP-CORE-20250318",
+      "version": 1,
+      "source_locator": "全国爱卫办睡眠核心信息；DOM段落0-23中的成人适用子集；逐段范围见origin sidecar",
+      "normalized_document_sha256": "b5f6bf86e358a3d33403db8d83f89874d8a6e578ade27e0a01a539aeb8f852a1"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "sleep_breathing_help",
+    "template_id": "source_pilot_08",
+    "topic": "sleep",
+    "authorship": "developer_source_derived_not_external_blind"
+  },
+  {
+    "id": "SOP09",
+    "kind": "followup",
+    "query": "已经影响白天的工作了，应该怎么办？",
+    "expected_doc_ids": [
+      "NHC-SLEEP-CORE-20250318"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "NHC-SLEEP-CORE-20250318",
+        "version": 1,
+        "body_sha256": "476906de134ae81a1e4434181aedf6fd63cd6248a023dab7f75251cf58d9bc0f",
+        "ranges": [
+          [
+            2101,
+            2136
+          ]
+        ],
+        "required_conditions": []
+      }
+    ],
+    "source_binding": {
+      "doc_id": "NHC-SLEEP-CORE-20250318",
+      "version": 1,
+      "source_locator": "全国爱卫办睡眠核心信息；DOM段落0-23中的成人适用子集；逐段范围见origin sidecar",
+      "normalized_document_sha256": "b5f6bf86e358a3d33403db8d83f89874d8a6e578ade27e0a01a539aeb8f852a1"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "sleep_daily_function_help",
+    "template_id": "source_pilot_09",
+    "topic": "sleep",
+    "authorship": "developer_source_derived_not_external_blind",
+    "history": "我最近经常入睡困难，夜里也反复醒来。"
+  },
+  {
+    "id": "SOP10",
+    "kind": "supported",
+    "query": "聚餐后腹痛越来越重，还发高烧、反复呕吐，原资料有哪些就医提示？",
+    "expected_doc_ids": [
+      "GZ-POSTMEAL-ABDOMEN-2026"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "GZ-POSTMEAL-ABDOMEN-2026",
+        "version": 2,
+        "body_sha256": "0a77f016657f33fc7160f157153b8ea15f87d4df399549c9dce6d955c9f84369",
+        "ranges": [
+          [
+            13,
+            76
+          ]
+        ],
+        "required_conditions": []
+      }
+    ],
+    "source_binding": {
+      "doc_id": "GZ-POSTMEAL-ABDOMEN-2026",
+      "version": 2,
+      "source_locator": "第二节危险信号，从‘如果疼痛在短时间内持续加重’至‘以免掩盖病情、延误诊治。’；不含第三节高危人群",
+      "normalized_document_sha256": "51207e9c2f5b3d8ca94ea23ffafd7dd2dadea9d6a9dad31b101a9a036d3ace4e"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "postmeal_abdominal_warning",
+    "template_id": "source_pilot_10",
+    "topic": "postmeal_abdominal_pain",
+    "authorship": "developer_source_derived_not_external_blind"
+  },
+  {
+    "id": "SOP11",
+    "kind": "supported",
+    "query": "聚餐后肚子痛，能不能自己多吃止痛药硬撑？",
+    "expected_doc_ids": [
+      "GZ-POSTMEAL-ABDOMEN-2026"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "GZ-POSTMEAL-ABDOMEN-2026",
+        "version": 2,
+        "body_sha256": "0a77f016657f33fc7160f157153b8ea15f87d4df399549c9dce6d955c9f84369",
+        "ranges": [
+          [
+            76,
+            105
+          ]
+        ],
+        "required_conditions": []
+      }
+    ],
+    "source_binding": {
+      "doc_id": "GZ-POSTMEAL-ABDOMEN-2026",
+      "version": 2,
+      "source_locator": "第二节危险信号，从‘如果疼痛在短时间内持续加重’至‘以免掩盖病情、延误诊治。’；不含第三节高危人群",
+      "normalized_document_sha256": "51207e9c2f5b3d8ca94ea23ffafd7dd2dadea9d6a9dad31b101a9a036d3ace4e"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "postmeal_painkiller_caution",
+    "template_id": "source_pilot_11",
+    "topic": "postmeal_abdominal_pain",
+    "authorship": "developer_source_derived_not_external_blind"
+  },
+  {
+    "id": "SOP12",
+    "kind": "followup",
+    "query": "现在疼痛持续加重，还不停吐，有什么求助提示？",
+    "expected_doc_ids": [
+      "GZ-POSTMEAL-ABDOMEN-2026"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "GZ-POSTMEAL-ABDOMEN-2026",
+        "version": 2,
+        "body_sha256": "0a77f016657f33fc7160f157153b8ea15f87d4df399549c9dce6d955c9f84369",
+        "ranges": [
+          [
+            13,
+            76
+          ]
+        ],
+        "required_conditions": []
+      }
+    ],
+    "source_binding": {
+      "doc_id": "GZ-POSTMEAL-ABDOMEN-2026",
+      "version": 2,
+      "source_locator": "第二节危险信号，从‘如果疼痛在短时间内持续加重’至‘以免掩盖病情、延误诊治。’；不含第三节高危人群",
+      "normalized_document_sha256": "51207e9c2f5b3d8ca94ea23ffafd7dd2dadea9d6a9dad31b101a9a036d3ace4e"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "postmeal_abdominal_warning",
+    "template_id": "source_pilot_12",
+    "topic": "postmeal_abdominal_pain",
+    "authorship": "developer_source_derived_not_external_blind",
+    "history": "我刚才聚餐后突然肚子痛。"
+  }
+]
