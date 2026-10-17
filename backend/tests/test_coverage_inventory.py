@@ -21,5 +21,16 @@ class CoverageTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "bindings changed"):
             inventory([d for d in documents if d.doc_id != "NHC-HL2024-39"], date(2026, 10, 17))
 
+    def test_snapshot_upgrade_does_not_mutate_the_historical_backlog(self):
+        documents = load_corpus(MEDICAL/"source_corpus")
+        # Metadata-only fixture: the inventory never judges clinical text quality.
+        extra = documents[0].model_copy(update={"doc_id": "NHC-SLEEP-CORE-20250318"})
+        expanded = inventory(documents+[extra], date(2026, 10, 17))
+        baseline = inventory(documents, date(2026, 10, 17))
+        sleep = lambda report: next(t for t in report["topics"] if t["id"] == "sleep")
+        self.assertIn(extra.doc_id, sleep(expanded)["source_ids"])
+        self.assertNotIn(extra.doc_id, sleep(baseline)["source_ids"])
+        self.assertEqual(sleep(expanded)["status"], "partial_source_scope")
+
 
 if __name__ == "__main__": unittest.main()

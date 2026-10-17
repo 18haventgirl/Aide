@@ -40,10 +40,15 @@ def inventory(documents, today):
     missing = {did for _, _, _, ids, _ in TOPICS for did in ids if did not in by_id}
     if missing: raise ValueError(f"backlog bindings changed: {sorted(missing)}")
     urls = Counter(str(d.source_url) for d in documents)
-    topics = [{"id": topic, "name": name, "priority": priority, "source_ids": ids,
-               "status": "partial_source_scope" if ids else "no_direct_source", "gap": gap,
-               "searchable_source_ids": [did for did in ids if by_id[did].is_searchable(today, research_mode=True)]}
-              for topic, name, priority, ids, gap in TOPICS]
+    topics = []
+    for topic, name, priority, baseline_ids, gap in TOPICS:
+        ids = list(baseline_ids)
+        if topic == "sleep" and "NHC-SLEEP-CORE-20250318" in by_id:
+            ids.append("NHC-SLEEP-CORE-20250318")
+            gap = "已补官方睡眠核心信息的成人子集；仍需多来源和独立情境验证，不等于临床覆盖完整"
+        topics.append({"id": topic, "name": name, "priority": priority, "source_ids": ids,
+                       "status": "partial_source_scope" if ids else "no_direct_source", "gap": gap,
+                       "searchable_source_ids": [did for did in ids if by_id[did].is_searchable(today, research_mode=True)]})
     return {"contract": "curated_topic_inventory_v1", "scope": "curated_source_backlog_not_clinical_completeness_or_retrieval_score",
             "as_of": today.isoformat(), "documents": len(documents), "distinct_source_urls": len(urls),
             "source_concentration": [{"url": url, "documents": count} for url, count in urls.most_common()],
@@ -59,8 +64,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--as-of", type=date.fromisoformat, required=True)
+    parser.add_argument("--corpus", type=Path, default=MEDICAL/"source_corpus")
     args = parser.parse_args()
-    result = inventory(load_corpus(MEDICAL/"source_corpus"), args.as_of)
+    result = inventory(load_corpus(args.corpus), args.as_of)
     result["code"] = repository_version()
     with args.output.open("x", encoding="utf-8") as handle:
         json.dump(result, handle, ensure_ascii=False, indent=2); handle.write("\n")
