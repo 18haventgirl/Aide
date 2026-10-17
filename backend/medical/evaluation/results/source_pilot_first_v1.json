@@ -1,0 +1,1504 @@
+{
+  "schema_version": 1,
+  "complete": true,
+  "scope": "source_derived_development_pilot_not_independent_validation",
+  "input_report": "source_pilot_20261017_v1.json",
+  "input_report_sha256": "d5d81d7b7180f60a61768129e40e32c4e1c83c8bebe0110882e50787db57b420",
+  "experiment_code": {
+    "commit": "a5824370bce2d5f001687d6ea6c78cd8bc7afd77",
+    "retrieval_implementation_sha256": "795850ce861f566a8550d3c462c27e7bd77bd27b5dc6a830d8e423ab3dbfc393",
+    "tracked_changes": false
+  },
+  "analysis_code": {
+    "commit": "1ea6151e95445341c66ef6e69dcb12a9b9173461",
+    "retrieval_implementation_sha256": "d13e73956d14fe8828c7a902e6356cd33282c44552949527816fe0fa4b190901",
+    "tracked_changes": false
+  },
+  "analysis_script_sha256": "3dc43a0a5b60ee4007b8885fd5f2dc091f9ef0e23782eb2a9a078c8cadf8f5df",
+  "corpus_sha256": "2539d5b0dfe456ed90655a366ab7582841c52b8d66b2d3ff7393cf5a964fdf49",
+  "origins_sha256": "d8c1642f94f7a8059573ddbb359e660472a4c0e6254bfb86c28bdfa2d2191add",
+  "metric_contract": "source-evidence-v1",
+  "suite_manifest_sha256": "6c653f3372b26e567bca7fc86ecfb59a1f3856f91037d5965cdb09afa378ed2f",
+  "input_settings": {
+    "rerank_max_length": 256,
+    "input_policy": "query_first_v1",
+    "chunk_strategy": "token-v1",
+    "child_tokens": 180
+  },
+  "index_chunks": 347,
+  "embedding": {
+    "name": "BAAI/bge-small-zh-v1.5@7999e1d3359715c523056ef9478215996d62a620",
+    "weight_sha256": "354763b9b1357bc9c44f62c6be2276321081ed2567773608c0d0785b61d5a026",
+    "batch_size": 4,
+    "dimensions": 512
+  },
+  "reranker": {
+    "name": "BAAI/bge-reranker-base@af37ed791788201a1cdcf513e0f584f3aa3be105",
+    "weight_sha256": "ced967c45fd1902eb92716c9ceeca7c95a936770ea9db611f5a841b926e33fbd",
+    "load_ms": 1589.3,
+    "max_length": 256,
+    "batch_size": 1,
+    "input_policy": "query_first_v1",
+    "tokenizer_sha256": "7b8ef0d9d92d2d27f31216ecefe6d77a7301434c4441b545eb686ebca54e2a3c"
+  },
+  "packages": {
+    "torch": "2.6.0",
+    "transformers": "4.49.0",
+    "chromadb": "1.0.15",
+    "jieba": "0.42.1"
+  },
+  "memory_before": {
+    "total_mib": 15556.9,
+    "available_mib": 7142.5,
+    "process_working_mib": 36.8,
+    "process_peak_mib": 40.5
+  },
+  "memory_after": {
+    "total_mib": 15556.9,
+    "available_mib": 5783.1,
+    "process_working_mib": 1366.7,
+    "process_peak_mib": 1366.7
+  },
+  "results": {
+    "source-origin-pilot-development": {
+      "hybrid": {
+        "metrics": {
+          "metric_version": "evidence_budget_v1",
+          "query_contract": "explicit_user_facts_v1",
+          "budget": {
+            "max_chunks": 5,
+            "max_chunks_per_document": 2,
+            "max_chars_per_chunk": 1600,
+            "max_content_chars": 8000
+          },
+          "cases": 12,
+          "answerable_cases": 12,
+          "supported_cases": 10,
+          "followup_cases": 2,
+          "unanswerable_cases": 0,
+          "urgent_cases": 0,
+          "error_cases": 0,
+          "document_recall_at_budget": 1.0,
+          "followup_document_recall_at_budget": 1.0,
+          "evidence_labelled_cases": 12,
+          "evidence_span_recall_at_budget": 0.9286,
+          "critical_condition_retention": 1.0,
+          "labelled_context_chunk_precision": 0.2857,
+          "context_chunks_with_reference": 12,
+          "context_chunks_considered": 42,
+          "candidate_union_document_recall": 1.0,
+          "candidate_rerank_pool_document_recall": 1.0,
+          "candidate_trace_cases": {
+            "union": 12,
+            "rerank_pool": 12
+          },
+          "candidate_coverage_basis": "full_source_chunks_not_model_token_visibility",
+          "rerank_visibility_labelled_cases": 0,
+          "unverified_rerank_visibility_cases": null,
+          "rerank_visibility_basis": "observed_input_traces_only",
+          "rerank_visibility_spans": 0,
+          "rerank_visibility_conditions": 0,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": null,
+          "forbidden_hit_rate_at_budget": null,
+          "forbidden_labelled_cases": 0,
+          "forbidden_unverified_cases": 0,
+          "urgent_detection_rate": null,
+          "evidence_spans": 14,
+          "retained_spans": 13,
+          "critical_conditions": 2,
+          "retained_conditions": 2,
+          "first_search_ms": 439.48,
+          "subsequent_search_p95_ms": 42.06,
+          "reranker_status_counts": {
+            "disabled": 12
+          },
+          "rerank_execution_failures": 0
+        },
+        "details": [
+          {
+            "id": "SOP01",
+            "status": "ok",
+            "kind": "supported",
+            "expected_source_ids": [
+              "NHC-SLEEP-CORE-20250318"
+            ],
+            "retrieved_source_ids": [
+              "NHC-SLEEP-CORE-20250318"
+            ],
+            "document_recall_at_budget": 1.0,
+            "final_ranges": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 1,
+              "retained_conditions": 1
+            },
+            "final_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0",
+              "NHC-SLEEP-CORE-20250318:required_conditions:0"
+            ],
+            "gold": [
+              {
+                "doc_id": "NHC-SLEEP-CORE-20250318",
+                "version": 1,
+                "body_sha256": "476906de134ae81a1e4434181aedf6fd63cd6248a023dab7f75251cf58d9bc0f",
+                "ranges": [
+                  [
+                    258,
+                    281
+                  ]
+                ],
+                "required_conditions": [
+                  [
+                    232,
+                    258
+                  ]
+                ]
+              }
+            ],
+            "latency_ms": 439.48
+          },
+          {
+            "id": "SOP02",
+            "status": "ok",
+            "kind": "supported",
+            "expected_source_ids": [
+              "NHC-SLEEP-CORE-20250318"
+            ],
+            "retrieved_source_ids": [
+              "NHC-SLEEP-CORE-20250318",
+              "FJ-HEADACHE-20260626",
+              "NHC-HL2024-53"
+            ],
+            "document_recall_at_budget": 1.0,
+            "final_ranges": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "final_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0"
+            ],
+            "gold": [
+              {
+                "doc_id": "NHC-SLEEP-CORE-20250318",
+                "version": 1,
+                "body_sha256": "476906de134ae81a1e4434181aedf6fd63cd6248a023dab7f75251cf58d9bc0f",
+                "ranges": [
+                  [
+                    299,
+                    378
+                  ]
+                ],
+                "required_conditions": []
+              }
+            ],
+            "latency_ms": 34.56
+          },
+          {
+            "id": "SOP03",
+            "status": "ok",
+            "kind": "supported",
+            "expected_source_ids": [
+              "NHC-SLEEP-CORE-20250318"
+            ],
+            "retrieved_source_ids": [
+              "NHC-SLEEP-CORE-20250318"
+            ],
+            "document_recall_at_budget": 1.0,
+            "final_ranges": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "final_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0"
+            ],
+            "gold": [
+              {
+                "doc_id": "NHC-SLEEP-CORE-20250318",
+                "version": 1,
+                "body_sha256": "476906de134ae81a1e4434181aedf6fd63cd6248a023dab7f75251cf58d9bc0f",
+                "ranges": [
+                  [
+                    408,
+                    430
+                  ]
+                ],
+                "required_conditions": []
+              }
+            ],
+            "latency_ms": 41.43
+          },
+          {
+            "id": "SOP04",
+            "status": "ok",
+            "kind": "supported",
+            "expected_source_ids": [
+              "NHC-SLEEP-CORE-20250318"
+            ],
+            "retrieved_source_ids": [
+              "NHC-SLEEP-CORE-20250318"
+            ],
+            "document_recall_at_budget": 1.0,
+            "final_ranges": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "final_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0"
+            ],
+            "gold": [
+              {
+                "doc_id": "NHC-SLEEP-CORE-20250318",
+                "version": 1,
+                "body_sha256": "476906de134ae81a1e4434181aedf6fd63cd6248a023dab7f75251cf58d9bc0f",
+                "ranges": [
+                  [
+                    1012,
+                    1071
+                  ]
+                ],
+                "required_conditions": []
+              }
+            ],
+            "latency_ms": 35.95
+          },
+          {
+            "id": "SOP05",
+            "status": "ok",
+            "kind": "supported",
+            "expected_source_ids": [
+              "NHC-SLEEP-CORE-20250318"
+            ],
+            "retrieved_source_ids": [
+              "NHC-SLEEP-CORE-20250318",
+              "NHC-HL2024-04",
+              "NHC-HL2024-39",
+              "NHC-HL2024-23"
+            ],
+            "document_recall_at_budget": 1.0,
+            "final_ranges": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "final_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0"
+            ],
+            "gold": [
+              {
+                "doc_id": "NHC-SLEEP-CORE-20250318",
+                "version": 1,
+                "body_sha256": "476906de134ae81a1e4434181aedf6fd63cd6248a023dab7f75251cf58d9bc0f",
+                "ranges": [
+                  [
+                    880,
+                    942
+                  ]
+                ],
+                "required_conditions": []
+              }
+            ],
+            "latency_ms": 37.67
+          },
+          {
+            "id": "SOP06",
+            "status": "ok",
+            "kind": "supported",
+            "expected_source_ids": [
+              "NHC-SLEEP-CORE-20250318"
+            ],
+            "retrieved_source_ids": [
+              "NHC-SLEEP-CORE-20250318"
+            ],
+            "document_recall_at_budget": 1.0,
+            "final_ranges": {
+              "evidence_spans": 2,
+              "retained_spans": 2,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "final_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0",
+              "NHC-SLEEP-CORE-20250318:ranges:1"
+            ],
+            "gold": [
+              {
+                "doc_id": "NHC-SLEEP-CORE-20250318",
+                "version": 1,
+                "body_sha256": "476906de134ae81a1e4434181aedf6fd63cd6248a023dab7f75251cf58d9bc0f",
+                "ranges": [
+                  [
+                    1188,
+                    1219
+                  ],
+                  [
+                    1269,
+                    1302
+                  ]
+                ],
+                "required_conditions": []
+              }
+            ],
+            "latency_ms": 38.95
+          },
+          {
+            "id": "SOP07",
+            "status": "ok",
+            "kind": "supported",
+            "expected_source_ids": [
+              "NHC-SLEEP-CORE-20250318"
+            ],
+            "retrieved_source_ids": [
+              "NHC-SLEEP-CORE-20250318",
+              "NHC-HL2024-39"
+            ],
+            "document_recall_at_budget": 1.0,
+            "final_ranges": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 1,
+              "retained_conditions": 1
+            },
+            "final_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0",
+              "NHC-SLEEP-CORE-20250318:required_conditions:0"
+            ],
+            "gold": [
+              {
+                "doc_id": "NHC-SLEEP-CORE-20250318",
+                "version": 1,
+                "body_sha256": "476906de134ae81a1e4434181aedf6fd63cd6248a023dab7f75251cf58d9bc0f",
+                "ranges": [
+                  [
+                    1394,
+                    1442
+                  ]
+                ],
+                "required_conditions": [
+                  [
+                    1304,
+                    1325
+                  ]
+                ]
+              }
+            ],
+            "latency_ms": 34.19
+          },
+          {
+            "id": "SOP08",
+            "status": "ok",
+            "kind": "supported",
+            "expected_source_ids": [
+              "NHC-SLEEP-CORE-20250318"
+            ],
+            "retrieved_source_ids": [
+              "NHC-SLEEP-CORE-20250318",
+              "NHC-HL2024-39",
+              "FJ-HEADACHE-20260626",
+              "NHC-HL2024-58"
+            ],
+            "document_recall_at_budget": 1.0,
+            "final_ranges": {
+              "evidence_spans": 2,
+              "retained_spans": 2,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "final_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0",
+              "NHC-SLEEP-CORE-20250318:ranges:1"
+            ],
+            "gold": [
+              {
+                "doc_id": "NHC-SLEEP-CORE-20250318",
+                "version": 1,
+                "body_sha256": "476906de134ae81a1e4434181aedf6fd63cd6248a023dab7f75251cf58d9bc0f",
+                "ranges": [
+                  [
+                    2031,
+                    2043
+                  ],
+                  [
+                    2080,
+                    2095
+                  ]
+                ],
+                "required_conditions": []
+              }
+            ],
+            "latency_ms": 37.58
+          },
+          {
+            "id": "SOP09",
+            "status": "ok",
+            "kind": "followup",
+            "expected_source_ids": [
+              "NHC-SLEEP-CORE-20250318"
+            ],
+            "retrieved_source_ids": [
+              "NHC-SLEEP-CORE-20250318"
+            ],
+            "document_recall_at_budget": 1.0,
+            "final_ranges": {
+              "evidence_spans": 1,
+              "retained_spans": 0,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "final_label_ids": [],
+            "gold": [
+              {
+                "doc_id": "NHC-SLEEP-CORE-20250318",
+                "version": 1,
+                "body_sha256": "476906de134ae81a1e4434181aedf6fd63cd6248a023dab7f75251cf58d9bc0f",
+                "ranges": [
+                  [
+                    2101,
+                    2136
+                  ]
+                ],
+                "required_conditions": []
+              }
+            ],
+            "latency_ms": 34.57
+          },
+          {
+            "id": "SOP10",
+            "status": "ok",
+            "kind": "supported",
+            "expected_source_ids": [
+              "GZ-POSTMEAL-ABDOMEN-2026"
+            ],
+            "retrieved_source_ids": [
+              "GZ-POSTMEAL-ABDOMEN-2026",
+              "BJ-DIARRHEA-20210406",
+              "NHC-FLU-CARE-20250117",
+              "NHC-HL2024-29",
+              "NHC-HL2024-30"
+            ],
+            "document_recall_at_budget": 1.0,
+            "final_ranges": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "final_label_ids": [
+              "GZ-POSTMEAL-ABDOMEN-2026:ranges:0"
+            ],
+            "gold": [
+              {
+                "doc_id": "GZ-POSTMEAL-ABDOMEN-2026",
+                "version": 2,
+                "body_sha256": "0a77f016657f33fc7160f157153b8ea15f87d4df399549c9dce6d955c9f84369",
+                "ranges": [
+                  [
+                    13,
+                    76
+                  ]
+                ],
+                "required_conditions": []
+              }
+            ],
+            "latency_ms": 40.54
+          },
+          {
+            "id": "SOP11",
+            "status": "ok",
+            "kind": "supported",
+            "expected_source_ids": [
+              "GZ-POSTMEAL-ABDOMEN-2026"
+            ],
+            "retrieved_source_ids": [
+              "GZ-POSTMEAL-ABDOMEN-2026",
+              "FJ-HEADACHE-20260626",
+              "NHC-HL2024-29",
+              "NHC-HL2024-30",
+              "BJ-EMERG-CHEST-2022"
+            ],
+            "document_recall_at_budget": 1.0,
+            "final_ranges": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "final_label_ids": [
+              "GZ-POSTMEAL-ABDOMEN-2026:ranges:0"
+            ],
+            "gold": [
+              {
+                "doc_id": "GZ-POSTMEAL-ABDOMEN-2026",
+                "version": 2,
+                "body_sha256": "0a77f016657f33fc7160f157153b8ea15f87d4df399549c9dce6d955c9f84369",
+                "ranges": [
+                  [
+                    76,
+                    105
+                  ]
+                ],
+                "required_conditions": []
+              }
+            ],
+            "latency_ms": 32.77
+          },
+          {
+            "id": "SOP12",
+            "status": "ok",
+            "kind": "followup",
+            "expected_source_ids": [
+              "GZ-POSTMEAL-ABDOMEN-2026"
+            ],
+            "retrieved_source_ids": [
+              "GZ-POSTMEAL-ABDOMEN-2026",
+              "BJ-EMERG-CHEST-2022",
+              "FJ-HEADACHE-20260626",
+              "BJ-DIARRHEA-20210406"
+            ],
+            "document_recall_at_budget": 1.0,
+            "final_ranges": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "final_label_ids": [
+              "GZ-POSTMEAL-ABDOMEN-2026:ranges:0"
+            ],
+            "gold": [
+              {
+                "doc_id": "GZ-POSTMEAL-ABDOMEN-2026",
+                "version": 2,
+                "body_sha256": "0a77f016657f33fc7160f157153b8ea15f87d4df399549c9dce6d955c9f84369",
+                "ranges": [
+                  [
+                    13,
+                    76
+                  ]
+                ],
+                "required_conditions": []
+              }
+            ],
+            "latency_ms": 42.06
+          }
+        ],
+        "final_missing_range_cases": [
+          "SOP09"
+        ]
+      },
+      "rerank": {
+        "metrics": {
+          "metric_version": "evidence_budget_v1",
+          "query_contract": "explicit_user_facts_v1",
+          "budget": {
+            "max_chunks": 5,
+            "max_chunks_per_document": 2,
+            "max_chars_per_chunk": 1600,
+            "max_content_chars": 8000
+          },
+          "cases": 12,
+          "answerable_cases": 12,
+          "supported_cases": 10,
+          "followup_cases": 2,
+          "unanswerable_cases": 0,
+          "urgent_cases": 0,
+          "error_cases": 0,
+          "document_recall_at_budget": 1.0,
+          "followup_document_recall_at_budget": 1.0,
+          "evidence_labelled_cases": 12,
+          "evidence_span_recall_at_budget": 0.9286,
+          "critical_condition_retention": 1.0,
+          "labelled_context_chunk_precision": 0.48,
+          "context_chunks_with_reference": 12,
+          "context_chunks_considered": 25,
+          "candidate_union_document_recall": 1.0,
+          "candidate_rerank_pool_document_recall": 1.0,
+          "candidate_trace_cases": {
+            "union": 12,
+            "rerank_pool": 12
+          },
+          "candidate_coverage_basis": "full_source_chunks_not_model_token_visibility",
+          "rerank_visibility_labelled_cases": 12,
+          "unverified_rerank_visibility_cases": 0,
+          "rerank_visibility_basis": "all_labelled_ranges_in_requested_run_errors_zero",
+          "rerank_visibility_spans": 14,
+          "rerank_visibility_conditions": 2,
+          "rerank_visible_span_recall": 0.8571,
+          "rerank_visible_condition_retention": 1.0,
+          "unanswerable_rejection_rate": null,
+          "forbidden_hit_rate_at_budget": null,
+          "forbidden_labelled_cases": 0,
+          "forbidden_unverified_cases": 0,
+          "urgent_detection_rate": null,
+          "evidence_spans": 14,
+          "retained_spans": 13,
+          "critical_conditions": 2,
+          "retained_conditions": 2,
+          "first_search_ms": 2577.51,
+          "subsequent_search_p95_ms": 2621.12,
+          "reranker_status_counts": {
+            "applied": 12
+          },
+          "rerank_execution_failures": 0
+        },
+        "details": [
+          {
+            "id": "SOP01",
+            "status": "ok",
+            "kind": "supported",
+            "expected_source_ids": [
+              "NHC-SLEEP-CORE-20250318"
+            ],
+            "retrieved_source_ids": [
+              "NHC-SLEEP-CORE-20250318"
+            ],
+            "document_recall_at_budget": 1.0,
+            "final_ranges": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 1,
+              "retained_conditions": 1
+            },
+            "final_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0",
+              "NHC-SLEEP-CORE-20250318:required_conditions:0"
+            ],
+            "gold": [
+              {
+                "doc_id": "NHC-SLEEP-CORE-20250318",
+                "version": 1,
+                "body_sha256": "476906de134ae81a1e4434181aedf6fd63cd6248a023dab7f75251cf58d9bc0f",
+                "ranges": [
+                  [
+                    258,
+                    281
+                  ]
+                ],
+                "required_conditions": [
+                  [
+                    232,
+                    258
+                  ]
+                ]
+              }
+            ],
+            "latency_ms": 2577.51,
+            "full_recorded_pool": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 1,
+              "retained_conditions": 1
+            },
+            "actual_model_input": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 1,
+              "retained_conditions": 1
+            },
+            "unknown_recorded_chunks": [],
+            "full_pool_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0",
+              "NHC-SLEEP-CORE-20250318:required_conditions:0"
+            ],
+            "visible_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0",
+              "NHC-SLEEP-CORE-20250318:required_conditions:0"
+            ],
+            "encoder_lost_label_ids": [],
+            "final_lost_visible_label_ids": [],
+            "unverified_input_trace": false
+          },
+          {
+            "id": "SOP02",
+            "status": "ok",
+            "kind": "supported",
+            "expected_source_ids": [
+              "NHC-SLEEP-CORE-20250318"
+            ],
+            "retrieved_source_ids": [
+              "NHC-SLEEP-CORE-20250318"
+            ],
+            "document_recall_at_budget": 1.0,
+            "final_ranges": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "final_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0"
+            ],
+            "gold": [
+              {
+                "doc_id": "NHC-SLEEP-CORE-20250318",
+                "version": 1,
+                "body_sha256": "476906de134ae81a1e4434181aedf6fd63cd6248a023dab7f75251cf58d9bc0f",
+                "ranges": [
+                  [
+                    299,
+                    378
+                  ]
+                ],
+                "required_conditions": []
+              }
+            ],
+            "latency_ms": 2367.86,
+            "full_recorded_pool": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "actual_model_input": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "unknown_recorded_chunks": [
+              [
+                "FJ-HEADACHE-20260626",
+                "4e351d1e5efe0182b0e4fcc94d5c4b14"
+              ],
+              [
+                "FJ-HEADACHE-20260626",
+                "4e351d1e5efe0182b0e4fcc94d5c4b14"
+              ]
+            ],
+            "full_pool_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0"
+            ],
+            "visible_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0"
+            ],
+            "encoder_lost_label_ids": [],
+            "final_lost_visible_label_ids": [],
+            "unverified_input_trace": true
+          },
+          {
+            "id": "SOP03",
+            "status": "ok",
+            "kind": "supported",
+            "expected_source_ids": [
+              "NHC-SLEEP-CORE-20250318"
+            ],
+            "retrieved_source_ids": [
+              "NHC-SLEEP-CORE-20250318"
+            ],
+            "document_recall_at_budget": 1.0,
+            "final_ranges": {
+              "evidence_spans": 1,
+              "retained_spans": 0,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "final_label_ids": [],
+            "gold": [
+              {
+                "doc_id": "NHC-SLEEP-CORE-20250318",
+                "version": 1,
+                "body_sha256": "476906de134ae81a1e4434181aedf6fd63cd6248a023dab7f75251cf58d9bc0f",
+                "ranges": [
+                  [
+                    408,
+                    430
+                  ]
+                ],
+                "required_conditions": []
+              }
+            ],
+            "latency_ms": 2491.84,
+            "full_recorded_pool": {
+              "evidence_spans": 1,
+              "retained_spans": 0,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "actual_model_input": {
+              "evidence_spans": 1,
+              "retained_spans": 0,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "unknown_recorded_chunks": [],
+            "full_pool_label_ids": [],
+            "visible_label_ids": [],
+            "encoder_lost_label_ids": [],
+            "final_lost_visible_label_ids": [],
+            "unverified_input_trace": false
+          },
+          {
+            "id": "SOP04",
+            "status": "ok",
+            "kind": "supported",
+            "expected_source_ids": [
+              "NHC-SLEEP-CORE-20250318"
+            ],
+            "retrieved_source_ids": [
+              "NHC-SLEEP-CORE-20250318"
+            ],
+            "document_recall_at_budget": 1.0,
+            "final_ranges": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "final_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0"
+            ],
+            "gold": [
+              {
+                "doc_id": "NHC-SLEEP-CORE-20250318",
+                "version": 1,
+                "body_sha256": "476906de134ae81a1e4434181aedf6fd63cd6248a023dab7f75251cf58d9bc0f",
+                "ranges": [
+                  [
+                    1012,
+                    1071
+                  ]
+                ],
+                "required_conditions": []
+              }
+            ],
+            "latency_ms": 2451.35,
+            "full_recorded_pool": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "actual_model_input": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "unknown_recorded_chunks": [],
+            "full_pool_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0"
+            ],
+            "visible_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0"
+            ],
+            "encoder_lost_label_ids": [],
+            "final_lost_visible_label_ids": [],
+            "unverified_input_trace": false
+          },
+          {
+            "id": "SOP05",
+            "status": "ok",
+            "kind": "supported",
+            "expected_source_ids": [
+              "NHC-SLEEP-CORE-20250318"
+            ],
+            "retrieved_source_ids": [
+              "NHC-SLEEP-CORE-20250318"
+            ],
+            "document_recall_at_budget": 1.0,
+            "final_ranges": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "final_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0"
+            ],
+            "gold": [
+              {
+                "doc_id": "NHC-SLEEP-CORE-20250318",
+                "version": 1,
+                "body_sha256": "476906de134ae81a1e4434181aedf6fd63cd6248a023dab7f75251cf58d9bc0f",
+                "ranges": [
+                  [
+                    880,
+                    942
+                  ]
+                ],
+                "required_conditions": []
+              }
+            ],
+            "latency_ms": 2352.85,
+            "full_recorded_pool": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "actual_model_input": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "unknown_recorded_chunks": [],
+            "full_pool_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0"
+            ],
+            "visible_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0"
+            ],
+            "encoder_lost_label_ids": [],
+            "final_lost_visible_label_ids": [],
+            "unverified_input_trace": false
+          },
+          {
+            "id": "SOP06",
+            "status": "ok",
+            "kind": "supported",
+            "expected_source_ids": [
+              "NHC-SLEEP-CORE-20250318"
+            ],
+            "retrieved_source_ids": [
+              "NHC-SLEEP-CORE-20250318"
+            ],
+            "document_recall_at_budget": 1.0,
+            "final_ranges": {
+              "evidence_spans": 2,
+              "retained_spans": 2,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "final_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0",
+              "NHC-SLEEP-CORE-20250318:ranges:1"
+            ],
+            "gold": [
+              {
+                "doc_id": "NHC-SLEEP-CORE-20250318",
+                "version": 1,
+                "body_sha256": "476906de134ae81a1e4434181aedf6fd63cd6248a023dab7f75251cf58d9bc0f",
+                "ranges": [
+                  [
+                    1188,
+                    1219
+                  ],
+                  [
+                    1269,
+                    1302
+                  ]
+                ],
+                "required_conditions": []
+              }
+            ],
+            "latency_ms": 2350.46,
+            "full_recorded_pool": {
+              "evidence_spans": 2,
+              "retained_spans": 2,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "actual_model_input": {
+              "evidence_spans": 2,
+              "retained_spans": 2,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "unknown_recorded_chunks": [],
+            "full_pool_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0",
+              "NHC-SLEEP-CORE-20250318:ranges:1"
+            ],
+            "visible_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0",
+              "NHC-SLEEP-CORE-20250318:ranges:1"
+            ],
+            "encoder_lost_label_ids": [],
+            "final_lost_visible_label_ids": [],
+            "unverified_input_trace": false
+          },
+          {
+            "id": "SOP07",
+            "status": "ok",
+            "kind": "supported",
+            "expected_source_ids": [
+              "NHC-SLEEP-CORE-20250318"
+            ],
+            "retrieved_source_ids": [
+              "NHC-SLEEP-CORE-20250318",
+              "NHC-HL2024-39"
+            ],
+            "document_recall_at_budget": 1.0,
+            "final_ranges": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 1,
+              "retained_conditions": 1
+            },
+            "final_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0",
+              "NHC-SLEEP-CORE-20250318:required_conditions:0"
+            ],
+            "gold": [
+              {
+                "doc_id": "NHC-SLEEP-CORE-20250318",
+                "version": 1,
+                "body_sha256": "476906de134ae81a1e4434181aedf6fd63cd6248a023dab7f75251cf58d9bc0f",
+                "ranges": [
+                  [
+                    1394,
+                    1442
+                  ]
+                ],
+                "required_conditions": [
+                  [
+                    1304,
+                    1325
+                  ]
+                ]
+              }
+            ],
+            "latency_ms": 2555.67,
+            "full_recorded_pool": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 1,
+              "retained_conditions": 1
+            },
+            "actual_model_input": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 1,
+              "retained_conditions": 1
+            },
+            "unknown_recorded_chunks": [],
+            "full_pool_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0",
+              "NHC-SLEEP-CORE-20250318:required_conditions:0"
+            ],
+            "visible_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0",
+              "NHC-SLEEP-CORE-20250318:required_conditions:0"
+            ],
+            "encoder_lost_label_ids": [],
+            "final_lost_visible_label_ids": [],
+            "unverified_input_trace": false
+          },
+          {
+            "id": "SOP08",
+            "status": "ok",
+            "kind": "supported",
+            "expected_source_ids": [
+              "NHC-SLEEP-CORE-20250318"
+            ],
+            "retrieved_source_ids": [
+              "NHC-SLEEP-CORE-20250318",
+              "NHC-HL2024-58"
+            ],
+            "document_recall_at_budget": 1.0,
+            "final_ranges": {
+              "evidence_spans": 2,
+              "retained_spans": 2,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "final_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0",
+              "NHC-SLEEP-CORE-20250318:ranges:1"
+            ],
+            "gold": [
+              {
+                "doc_id": "NHC-SLEEP-CORE-20250318",
+                "version": 1,
+                "body_sha256": "476906de134ae81a1e4434181aedf6fd63cd6248a023dab7f75251cf58d9bc0f",
+                "ranges": [
+                  [
+                    2031,
+                    2043
+                  ],
+                  [
+                    2080,
+                    2095
+                  ]
+                ],
+                "required_conditions": []
+              }
+            ],
+            "latency_ms": 2621.12,
+            "full_recorded_pool": {
+              "evidence_spans": 2,
+              "retained_spans": 1,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "actual_model_input": {
+              "evidence_spans": 2,
+              "retained_spans": 1,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "unknown_recorded_chunks": [
+              [
+                "FJ-HEADACHE-20260626",
+                "73de545919f11c385fc4eb1dceca2423"
+              ],
+              [
+                "FJ-HEADACHE-20260626",
+                "73de545919f11c385fc4eb1dceca2423"
+              ]
+            ],
+            "full_pool_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0"
+            ],
+            "visible_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0"
+            ],
+            "encoder_lost_label_ids": [],
+            "final_lost_visible_label_ids": [],
+            "unverified_input_trace": true
+          },
+          {
+            "id": "SOP09",
+            "status": "ok",
+            "kind": "followup",
+            "expected_source_ids": [
+              "NHC-SLEEP-CORE-20250318"
+            ],
+            "retrieved_source_ids": [
+              "NHC-SLEEP-CORE-20250318"
+            ],
+            "document_recall_at_budget": 1.0,
+            "final_ranges": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "final_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0"
+            ],
+            "gold": [
+              {
+                "doc_id": "NHC-SLEEP-CORE-20250318",
+                "version": 1,
+                "body_sha256": "476906de134ae81a1e4434181aedf6fd63cd6248a023dab7f75251cf58d9bc0f",
+                "ranges": [
+                  [
+                    2101,
+                    2136
+                  ]
+                ],
+                "required_conditions": []
+              }
+            ],
+            "latency_ms": 2593.76,
+            "full_recorded_pool": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "actual_model_input": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "unknown_recorded_chunks": [],
+            "full_pool_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0"
+            ],
+            "visible_label_ids": [
+              "NHC-SLEEP-CORE-20250318:ranges:0"
+            ],
+            "encoder_lost_label_ids": [],
+            "final_lost_visible_label_ids": [],
+            "unverified_input_trace": false
+          },
+          {
+            "id": "SOP10",
+            "status": "ok",
+            "kind": "supported",
+            "expected_source_ids": [
+              "GZ-POSTMEAL-ABDOMEN-2026"
+            ],
+            "retrieved_source_ids": [
+              "GZ-POSTMEAL-ABDOMEN-2026"
+            ],
+            "document_recall_at_budget": 1.0,
+            "final_ranges": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "final_label_ids": [
+              "GZ-POSTMEAL-ABDOMEN-2026:ranges:0"
+            ],
+            "gold": [
+              {
+                "doc_id": "GZ-POSTMEAL-ABDOMEN-2026",
+                "version": 2,
+                "body_sha256": "0a77f016657f33fc7160f157153b8ea15f87d4df399549c9dce6d955c9f84369",
+                "ranges": [
+                  [
+                    13,
+                    76
+                  ]
+                ],
+                "required_conditions": []
+              }
+            ],
+            "latency_ms": 2374.7,
+            "full_recorded_pool": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "actual_model_input": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "unknown_recorded_chunks": [
+              [
+                "BJ-DIARRHEA-20210406",
+                "4569b95ee8f962ee7cf173b2ecc187e5"
+              ],
+              [
+                "NHC-FLU-CARE-20250117",
+                "c8375f56be52368294711aff8750e662"
+              ],
+              [
+                "BJ-DIARRHEA-20210406",
+                "5fa2308587ccbda7fa7f56aa6673f2ca"
+              ],
+              [
+                "FJ-HEADACHE-20260626",
+                "cdf20a26b2a4d1091943c2f5a52581c9"
+              ],
+              [
+                "FJ-HEADACHE-20260626",
+                "4e351d1e5efe0182b0e4fcc94d5c4b14"
+              ],
+              [
+                "BJ-DIARRHEA-20210406",
+                "4569b95ee8f962ee7cf173b2ecc187e5"
+              ],
+              [
+                "NHC-FLU-CARE-20250117",
+                "c8375f56be52368294711aff8750e662"
+              ],
+              [
+                "BJ-DIARRHEA-20210406",
+                "5fa2308587ccbda7fa7f56aa6673f2ca"
+              ],
+              [
+                "FJ-HEADACHE-20260626",
+                "cdf20a26b2a4d1091943c2f5a52581c9"
+              ],
+              [
+                "FJ-HEADACHE-20260626",
+                "4e351d1e5efe0182b0e4fcc94d5c4b14"
+              ]
+            ],
+            "full_pool_label_ids": [
+              "GZ-POSTMEAL-ABDOMEN-2026:ranges:0"
+            ],
+            "visible_label_ids": [
+              "GZ-POSTMEAL-ABDOMEN-2026:ranges:0"
+            ],
+            "encoder_lost_label_ids": [],
+            "final_lost_visible_label_ids": [],
+            "unverified_input_trace": true
+          },
+          {
+            "id": "SOP11",
+            "status": "ok",
+            "kind": "supported",
+            "expected_source_ids": [
+              "GZ-POSTMEAL-ABDOMEN-2026"
+            ],
+            "retrieved_source_ids": [
+              "GZ-POSTMEAL-ABDOMEN-2026",
+              "FJ-HEADACHE-20260626"
+            ],
+            "document_recall_at_budget": 1.0,
+            "final_ranges": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "final_label_ids": [
+              "GZ-POSTMEAL-ABDOMEN-2026:ranges:0"
+            ],
+            "gold": [
+              {
+                "doc_id": "GZ-POSTMEAL-ABDOMEN-2026",
+                "version": 2,
+                "body_sha256": "0a77f016657f33fc7160f157153b8ea15f87d4df399549c9dce6d955c9f84369",
+                "ranges": [
+                  [
+                    76,
+                    105
+                  ]
+                ],
+                "required_conditions": []
+              }
+            ],
+            "latency_ms": 2587.56,
+            "full_recorded_pool": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "actual_model_input": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "unknown_recorded_chunks": [
+              [
+                "FJ-HEADACHE-20260626",
+                "cdf20a26b2a4d1091943c2f5a52581c9"
+              ],
+              [
+                "FJ-HEADACHE-20260626",
+                "65ec1a69372b37542687e692de4670d7"
+              ],
+              [
+                "FJ-HEADACHE-20260626",
+                "cdf20a26b2a4d1091943c2f5a52581c9"
+              ],
+              [
+                "FJ-HEADACHE-20260626",
+                "65ec1a69372b37542687e692de4670d7"
+              ]
+            ],
+            "full_pool_label_ids": [
+              "GZ-POSTMEAL-ABDOMEN-2026:ranges:0"
+            ],
+            "visible_label_ids": [
+              "GZ-POSTMEAL-ABDOMEN-2026:ranges:0"
+            ],
+            "encoder_lost_label_ids": [],
+            "final_lost_visible_label_ids": [],
+            "unverified_input_trace": true
+          },
+          {
+            "id": "SOP12",
+            "status": "ok",
+            "kind": "followup",
+            "expected_source_ids": [
+              "GZ-POSTMEAL-ABDOMEN-2026"
+            ],
+            "retrieved_source_ids": [
+              "GZ-POSTMEAL-ABDOMEN-2026",
+              "FJ-HEADACHE-20260626"
+            ],
+            "document_recall_at_budget": 1.0,
+            "final_ranges": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "final_label_ids": [
+              "GZ-POSTMEAL-ABDOMEN-2026:ranges:0"
+            ],
+            "gold": [
+              {
+                "doc_id": "GZ-POSTMEAL-ABDOMEN-2026",
+                "version": 2,
+                "body_sha256": "0a77f016657f33fc7160f157153b8ea15f87d4df399549c9dce6d955c9f84369",
+                "ranges": [
+                  [
+                    13,
+                    76
+                  ]
+                ],
+                "required_conditions": []
+              }
+            ],
+            "latency_ms": 2557.62,
+            "full_recorded_pool": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "actual_model_input": {
+              "evidence_spans": 1,
+              "retained_spans": 1,
+              "critical_conditions": 0,
+              "retained_conditions": 0
+            },
+            "unknown_recorded_chunks": [
+              [
+                "FJ-HEADACHE-20260626",
+                "73de545919f11c385fc4eb1dceca2423"
+              ],
+              [
+                "BJ-DIARRHEA-20210406",
+                "4569b95ee8f962ee7cf173b2ecc187e5"
+              ],
+              [
+                "FJ-HEADACHE-20260626",
+                "4e351d1e5efe0182b0e4fcc94d5c4b14"
+              ],
+              [
+                "FJ-HEADACHE-20260626",
+                "73de545919f11c385fc4eb1dceca2423"
+              ],
+              [
+                "BJ-DIARRHEA-20210406",
+                "4569b95ee8f962ee7cf173b2ecc187e5"
+              ],
+              [
+                "FJ-HEADACHE-20260626",
+                "4e351d1e5efe0182b0e4fcc94d5c4b14"
+              ]
+            ],
+            "full_pool_label_ids": [
+              "GZ-POSTMEAL-ABDOMEN-2026:ranges:0"
+            ],
+            "visible_label_ids": [
+              "GZ-POSTMEAL-ABDOMEN-2026:ranges:0"
+            ],
+            "encoder_lost_label_ids": [],
+            "final_lost_visible_label_ids": [],
+            "unverified_input_trace": true
+          }
+        ],
+        "final_missing_range_cases": [
+          "SOP03"
+        ],
+        "pool_missing_range_cases": [
+          "SOP03",
+          "SOP08"
+        ],
+        "encoder_lost_range_cases": [],
+        "final_lost_visible_range_cases": [],
+        "unverified_trace_cases": [
+          "SOP02",
+          "SOP08",
+          "SOP10",
+          "SOP11",
+          "SOP12"
+        ]
+      }
+    }
+  },
+  "release_ready": false,
+  "generation_api_calls": 0,
+  "limitations": [
+    "12 source-derived positive cases across two topics; no negative or independent validation estimates",
+    "one pass per mode; latency is descriptive and excludes HTTP/LLM",
+    "literal range coverage is not answer or clinical correctness",
+    "source body remains in local data; archive contains coordinates and hashes"
+  ]
+}

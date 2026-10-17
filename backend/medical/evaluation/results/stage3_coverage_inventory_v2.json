@@ -1,0 +1,312 @@
+{
+  "contract": "curated_topic_inventory_v1",
+  "scope": "curated_source_backlog_not_clinical_completeness_or_retrieval_score",
+  "as_of": "2026-10-17",
+  "documents": 73,
+  "distinct_source_urls": 8,
+  "source_concentration": [
+    {
+      "url": "https://www.gov.cn/lianbo/bumen/202405/P020240530783730074981.pdf",
+      "documents": 66
+    },
+    {
+      "url": "https://wjw.beijing.gov.cn/bmfw_20143/jkzs/jksh/202104/t20210406_2345583.html",
+      "documents": 1
+    },
+    {
+      "url": "https://wjw.beijing.gov.cn/bmfw_20143/jkzs/jzjj/202211/t20221102_2850165.html",
+      "documents": 1
+    },
+    {
+      "url": "https://wjw.fj.gov.cn/ztzl/jkjy/jksh/202606/t20260626_7168302.htm",
+      "documents": 1
+    },
+    {
+      "url": "https://kepu.wjw.gz.gov.cn/zs/content/post_5255.html",
+      "documents": 1
+    },
+    {
+      "url": "https://www.nhc.gov.cn/xcs/c100122/202501/4c0f023143ae4fd39b1a0339dd6bdecb.shtml",
+      "documents": 1
+    },
+    {
+      "url": "https://www.nhc.gov.cn/guihuaxxs/c100133/202503/70d5836afe804a858b899ee951a24a13.shtml",
+      "documents": 1
+    },
+    {
+      "url": "https://www.nhc.gov.cn/xcs/c100122/202408/4d237f4151a543d4943caff389baa451.shtml",
+      "documents": 1
+    }
+  ],
+  "eligible_research_documents": 73,
+  "corpus_sha256": "2539d5b0dfe456ed90655a366ab7582841c52b8d66b2d3ff7393cf5a964fdf49",
+  "topics": [
+    {
+      "id": "fever",
+      "name": "发热",
+      "priority": "P0",
+      "source_ids": [
+        "NHC-FLU-CARE-20250117",
+        "NHC-HL2024-08",
+        "NHC-HL2024-57"
+      ],
+      "status": "partial_source_scope",
+      "gap": "已有流感与生命体征资料；缺少普通成人发热的通用观察资料",
+      "searchable_source_ids": [
+        "NHC-FLU-CARE-20250117",
+        "NHC-HL2024-08",
+        "NHC-HL2024-57"
+      ]
+    },
+    {
+      "id": "cough",
+      "name": "咳嗽",
+      "priority": "P0",
+      "source_ids": [
+        "NHC-HL2024-12",
+        "NHC-HL2024-18"
+      ],
+      "status": "partial_source_scope",
+      "gap": "侧重持续咳嗽筛查与慢阻肺；缺少常见短期咳嗽的配套科普",
+      "searchable_source_ids": [
+        "NHC-HL2024-12",
+        "NHC-HL2024-18"
+      ]
+    },
+    {
+      "id": "throat",
+      "name": "咽喉不适",
+      "priority": "P0",
+      "source_ids": [
+        "NHC-THROAT-20240821"
+      ],
+      "status": "partial_source_scope",
+      "gap": "现有节选范围有限，需补充适用人群与就医变化",
+      "searchable_source_ids": [
+        "NHC-THROAT-20240821"
+      ]
+    },
+    {
+      "id": "abdomen",
+      "name": "腹痛",
+      "priority": "P0",
+      "source_ids": [
+        "GZ-POSTMEAL-ABDOMEN-2026"
+      ],
+      "status": "partial_source_scope",
+      "gap": "侧重聚餐后腹痛加重；不代表所有腹痛情况均有依据",
+      "searchable_source_ids": [
+        "GZ-POSTMEAL-ABDOMEN-2026"
+      ]
+    },
+    {
+      "id": "diarrhea",
+      "name": "腹泻",
+      "priority": "P0",
+      "source_ids": [
+        "BJ-DIARRHEA-20210406"
+      ],
+      "status": "partial_source_scope",
+      "gap": "已有脱水与就医信号节选；需补充常见成人情境",
+      "searchable_source_ids": [
+        "BJ-DIARRHEA-20210406"
+      ]
+    },
+    {
+      "id": "headache",
+      "name": "头痛",
+      "priority": "P0",
+      "source_ids": [
+        "FJ-HEADACHE-20260626"
+      ],
+      "status": "partial_source_scope",
+      "gap": "已有生活调整/记录/就医信号；需扩展问法和来源",
+      "searchable_source_ids": [
+        "FJ-HEADACHE-20260626"
+      ]
+    },
+    {
+      "id": "dizziness",
+      "name": "头晕",
+      "priority": "P0",
+      "source_ids": [],
+      "status": "no_direct_source",
+      "gap": "缺少面向普通成人的专门原文",
+      "searchable_source_ids": []
+    },
+    {
+      "id": "chest",
+      "name": "胸部不适与求助",
+      "priority": "P0",
+      "source_ids": [
+        "BJ-EMERG-CHEST-2022",
+        "NHC-HL2024-58"
+      ],
+      "status": "partial_source_scope",
+      "gap": "侧重求助与信息准备；不用于聊天鉴别诊断",
+      "searchable_source_ids": [
+        "BJ-EMERG-CHEST-2022",
+        "NHC-HL2024-58"
+      ]
+    },
+    {
+      "id": "sleep",
+      "name": "睡眠",
+      "priority": "P0",
+      "source_ids": [
+        "NHC-HL2024-39",
+        "NHC-SLEEP-CORE-20250318"
+      ],
+      "status": "partial_source_scope",
+      "gap": "已补官方睡眠核心信息的成人子集；仍需多来源和独立情境验证，不等于临床覆盖完整",
+      "searchable_source_ids": [
+        "NHC-HL2024-39",
+        "NHC-SLEEP-CORE-20250318"
+      ]
+    },
+    {
+      "id": "exercise",
+      "name": "运动与久坐",
+      "priority": "P1",
+      "source_ids": [
+        "NHC-HL2024-32"
+      ],
+      "status": "partial_source_scope",
+      "gap": "已有基本运动量与特殊人群提醒；需更多情境验证",
+      "searchable_source_ids": [
+        "NHC-HL2024-32"
+      ]
+    },
+    {
+      "id": "nutrition",
+      "name": "膳食营养",
+      "priority": "P1",
+      "source_ids": [
+        "NHC-HL2024-25",
+        "NHC-HL2024-26",
+        "NHC-HL2024-27",
+        "NHC-HL2024-28",
+        "NHC-HL2024-29",
+        "NHC-HL2024-30",
+        "NHC-HL2024-31",
+        "NHC-HL2024-54"
+      ],
+      "status": "partial_source_scope",
+      "gap": "基础素养为主；营养建议需明确人群/单位/来源",
+      "searchable_source_ids": [
+        "NHC-HL2024-25",
+        "NHC-HL2024-26",
+        "NHC-HL2024-27",
+        "NHC-HL2024-28",
+        "NHC-HL2024-29",
+        "NHC-HL2024-30",
+        "NHC-HL2024-31",
+        "NHC-HL2024-54"
+      ]
+    },
+    {
+      "id": "medication",
+      "name": "一般用药与储存",
+      "priority": "P1",
+      "source_ids": [
+        "NHC-HL2024-43",
+        "NHC-HL2024-44",
+        "NHC-HL2024-56"
+      ],
+      "status": "partial_source_scope",
+      "gap": "现有一般用药资料不能充当具体药物说明书或相互作用库",
+      "searchable_source_ids": [
+        "NHC-HL2024-43",
+        "NHC-HL2024-44",
+        "NHC-HL2024-56"
+      ]
+    },
+    {
+      "id": "allergy",
+      "name": "常见过敏相关科普",
+      "priority": "P1",
+      "source_ids": [],
+      "status": "no_direct_source",
+      "gap": "缺少专门资料；病媒条目中的提及不视为本主题完整覆盖",
+      "searchable_source_ids": []
+    },
+    {
+      "id": "constipation",
+      "name": "便秘相关科普",
+      "priority": "P1",
+      "source_ids": [],
+      "status": "no_direct_source",
+      "gap": "缺少专门原文；不以膳食条目代替就医引导",
+      "searchable_source_ids": []
+    },
+    {
+      "id": "backpain",
+      "name": "腰背不适",
+      "priority": "P1",
+      "source_ids": [],
+      "status": "no_direct_source",
+      "gap": "缺少专门原文",
+      "searchable_source_ids": []
+    },
+    {
+      "id": "oral",
+      "name": "口腔卫生与不适",
+      "priority": "P1",
+      "source_ids": [
+        "NHC-HL2024-41"
+      ],
+      "status": "partial_source_scope",
+      "gap": "已有口腔卫生；牙痛等具体情况需要独立来源",
+      "searchable_source_ids": [
+        "NHC-HL2024-41"
+      ]
+    },
+    {
+      "id": "skin",
+      "name": "皮肤不适与皮疹",
+      "priority": "P1",
+      "source_ids": [],
+      "status": "no_direct_source",
+      "gap": "缺少专门原文；不进行图片诊断",
+      "searchable_source_ids": []
+    },
+    {
+      "id": "fatigue",
+      "name": "疲劳与一般生活调整",
+      "priority": "P2",
+      "source_ids": [],
+      "status": "no_direct_source",
+      "gap": "缺少专门原文，不能将睡眠条目外推为所有疲劳解释",
+      "searchable_source_ids": []
+    },
+    {
+      "id": "mental",
+      "name": "心理健康与寻求帮助",
+      "priority": "P1",
+      "source_ids": [
+        "NHC-HL2024-36",
+        "NHC-HL2024-37"
+      ],
+      "status": "partial_source_scope",
+      "gap": "现有概述不替代专业心理评估",
+      "searchable_source_ids": [
+        "NHC-HL2024-36",
+        "NHC-HL2024-37"
+      ]
+    }
+  ],
+  "topic_status_counts": {
+    "partial_source_scope": 13,
+    "no_direct_source": 6
+  },
+  "notes": [
+    "Shared source corpus does not make held-out question families independent automatically.",
+    "The health-literacy PDF includes age-specific material; chapter-level audience controls remain a governance task.",
+    "Source discovery URLs are not imported/answer-eligible evidence until extraction and provenance checks pass."
+  ],
+  "code": {
+    "commit": "587b78dd48fb97af6f020706e83366e6c1eff731",
+    "retrieval_implementation_sha256": "d13e73956d14fe8828c7a902e6356cd33282c44552949527816fe0fa4b190901",
+    "tracked_changes": false
+  }
+}
