@@ -34,3 +34,4 @@ drugcentral,UNKNOWN,UNKNOWN,https://drugcentral.org/,unknown,unknown,unknown,unk
 sider,UNKNOWN,UNKNOWN,https://sideeffects.embl.de/,unknown,unknown,unknown,unknown,unknown,unknown,no,2026-09-23,Audit terms
 pubchem,UNKNOWN,UNKNOWN,https://pubchem.ncbi.nlm.nih.gov/,unknown,unknown,unknown,unknown,unknown,unknown,no,2026-09-23,Audit API terms
 clinicaltrials,UNKNOWN,UNKNOWN,https://clinicaltrials.gov/data-api/api,unknown,unknown,unknown,unknown,unknown,unknown,no,2026-09-23,Audit reuse terms
+nhc_sleep_health_core_2025,UNKNOWN,No open data license confirmed,https://www.nhc.gov.cn/guihuaxxs/c100133/202503/70d5836afe804a858b899ee951a24a13.shtml,unknown,unknown,unknown,unknown,unknown,no,no,2026-10-17,Official public article; local research source checking only; no inferred permission for public redistribution

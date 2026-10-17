@@ -152,6 +152,7 @@ def repository_version():
                  "chat.py", "schema.py", "bge_embedding.py", "bge_reranker.py",
                  "evidence_contract.py", "source_provenance.py", "evaluation/evidence.py", "evaluation/metrics.py"]
         files += ["token_budget.py", "token_chunking.py"]
+        files += ["source_origins.py", "capture_existing_origins.py", "build_sleep_snapshot.py", "audit_source_snapshot.py"]
         return {"commit": git("rev-parse", "HEAD"),
                 "retrieval_implementation_sha256": digest({name: hashlib.sha256((MEDICAL/name).read_bytes()).hexdigest() for name in files}),
                 "tracked_changes": bool(git("status", "--porcelain", "--untracked-files=no"))}
