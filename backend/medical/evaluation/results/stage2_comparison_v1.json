@@ -1,0 +1,3895 @@
+{
+  "scope": "stage2_exposed_engineering_not_independent_validation_or_answer_acceptance",
+  "report_version": "stage2_comparison_v1",
+  "complete": true,
+  "model_runs_complete": true,
+  "matrix_signature": {
+    "code": {
+      "commit": "58498465ce0eb769357b254ad2747fac9f09761f",
+      "retrieval_implementation_sha256": "1665baa425383e80bce545e4ec33ee3e0207393a64f52940ed0b2f5a69c06985",
+      "tracked_changes": false
+    },
+    "suite_sha256": "59015645192841e857c6a02e3461e51df63292e73a727c63c191d11ab860bc63",
+    "corpus_sha256": "3bf1713ffd0dd9ca89394a0875661ff7cbf2425d8cf3267da0491563a515afe9",
+    "configurations": {
+      "legacy-256": {
+        "rerank_max_length": 256,
+        "input_policy": "legacy",
+        "chunk_strategy": "legacy"
+      },
+      "bridge-512": {
+        "rerank_max_length": 512,
+        "input_policy": "legacy",
+        "chunk_strategy": "legacy"
+      },
+      "child180-pair256": {
+        "rerank_max_length": 256,
+        "input_policy": "query_first_v1",
+        "chunk_strategy": "token-v1",
+        "child_tokens": 180
+      },
+      "child220-pair384": {
+        "rerank_max_length": 384,
+        "input_policy": "query_first_v1",
+        "chunk_strategy": "token-v1",
+        "child_tokens": 220
+      }
+    },
+    "profiles": [
+      "hybrid",
+      "rerank"
+    ],
+    "metric_contract": "evidence-v1",
+    "k": 5
+  },
+  "input_files": {
+    "legacy-256": {
+      "name": "legacy-256_attempt01.json",
+      "sha256": "80a55bdf9eb397a206f8f642c4367bbd3b34c939bafe4e1afbbf840454b8432e"
+    },
+    "bridge-512": {
+      "name": "bridge-512_attempt01.json",
+      "sha256": "06fd4b8be4c2ae0d06b2c0fbe9620923a163daf200a3671f98d8c037ce067ad1"
+    },
+    "child180-pair256": {
+      "name": "child180-pair256_attempt01.json",
+      "sha256": "af6b8796dc5a64b9b4c7735e1f20c83cfab6a6329e445ad7538311570cb8b021"
+    },
+    "child220-pair384": {
+      "name": "child220-pair384_attempt01.json",
+      "sha256": "c700476433911f19ddf46adaf1acaf1eb0fd7809dbc53de7204d27b0bf089220"
+    }
+  },
+  "analyzer": {
+    "code": {
+      "commit": "c8e65136b9b09b3a54a4fdf57b2f59b93ff8c572",
+      "retrieval_implementation_sha256": "1665baa425383e80bce545e4ec33ee3e0207393a64f52940ed0b2f5a69c06985",
+      "tracked_changes": false
+    },
+    "script_sha256": "8f8848d8aabd49e956773dc05de633a42c23251f0d83699a2566faf35179202f"
+  },
+  "gates_predeclared_in": "docs/rag-stage2-input-and-chunking.md@5849846",
+  "label_origin_audit": {
+    "scope": "known_editorial_heading_labels_not_full_raw_origin_verification",
+    "manifest_sha256": "4c8424e1c84c1ff4926fdd849e3441998825b423b3e2b37201c87143569def98",
+    "flags": [
+      {
+        "group": "evidence-regression",
+        "case": "EVS09",
+        "doc_id": "NHC-FLU-CARE-20250117",
+        "field": "required_conditions",
+        "range": [
+          2,
+          14
+        ],
+        "origin": "editorial_scope_heading"
+      },
+      {
+        "group": "evidence-regression",
+        "case": "EVF03",
+        "doc_id": "NHC-FLU-CARE-20250117",
+        "field": "required_conditions",
+        "range": [
+          2,
+          14
+        ],
+        "origin": "editorial_scope_heading"
+      },
+      {
+        "group": "token-input-regression",
+        "case": "TKT03",
+        "doc_id": "NHC-FLU-CARE-20250117",
+        "field": "required_conditions",
+        "range": [
+          2,
+          14
+        ],
+        "origin": "editorial_scope_heading"
+      }
+    ],
+    "condition_metric_caveat": "Canonical body retention includes these scope markers; do not call it literal raw-page medical support."
+  },
+  "decisions": {
+    "legacy-256": {
+      "gates": {
+        "three_source_regressions_visible_and_retained": false,
+        "all_ten_labelled_conditions_retained": false,
+        "evidence_not_below_own_hybrid": false,
+        "documents_not_below_own_hybrid_all_groups": false,
+        "negative_filter_not_below_same_code_legacy256": true,
+        "current_question_checks": false
+      },
+      "input_and_regression_gates_passed": false,
+      "three_probes": {
+        "EVS01": {
+          "model_input": false,
+          "final_pack": false
+        },
+        "EVS02": {
+          "model_input": false,
+          "final_pack": false
+        },
+        "EVS03": {
+          "model_input": false,
+          "final_pack": false
+        }
+      },
+      "document_regression_groups": [
+        "chinese-general-regression",
+        "evidence-regression",
+        "token-input-regression"
+      ],
+      "negative_regression_groups": [],
+      "query_checks": [
+        {
+          "id": "TKF01",
+          "passed": false
+        },
+        {
+          "id": "TKF02",
+          "passed": false
+        },
+        {
+          "id": "TKF03",
+          "passed": false
+        },
+        {
+          "id": "TKF04",
+          "passed": false
+        },
+        {
+          "id": "TKF05",
+          "passed": false
+        },
+        {
+          "id": "TKF06",
+          "passed": false
+        },
+        {
+          "id": "TKT01",
+          "passed": false
+        },
+        {
+          "id": "TKT02",
+          "passed": false
+        },
+        {
+          "id": "TKT03",
+          "passed": false
+        },
+        {
+          "id": "TKT04",
+          "passed": false
+        },
+        {
+          "id": "TKL01",
+          "passed": false
+        },
+        {
+          "id": "TKL02",
+          "passed": false
+        }
+      ]
+    },
+    "bridge-512": {
+      "gates": {
+        "three_source_regressions_visible_and_retained": true,
+        "all_ten_labelled_conditions_retained": true,
+        "evidence_not_below_own_hybrid": true,
+        "documents_not_below_own_hybrid_all_groups": false,
+        "negative_filter_not_below_same_code_legacy256": false,
+        "current_question_checks": false
+      },
+      "input_and_regression_gates_passed": false,
+      "three_probes": {
+        "EVS01": {
+          "model_input": true,
+          "final_pack": true
+        },
+        "EVS02": {
+          "model_input": true,
+          "final_pack": true
+        },
+        "EVS03": {
+          "model_input": true,
+          "final_pack": true
+        }
+      },
+      "document_regression_groups": [
+        "legacy-development",
+        "legacy-regression"
+      ],
+      "negative_regression_groups": [
+        "legacy-regression",
+        "token-input-regression"
+      ],
+      "query_checks": [
+        {
+          "id": "TKF01",
+          "passed": false
+        },
+        {
+          "id": "TKF02",
+          "passed": false
+        },
+        {
+          "id": "TKF03",
+          "passed": false
+        },
+        {
+          "id": "TKF04",
+          "passed": false
+        },
+        {
+          "id": "TKF05",
+          "passed": false
+        },
+        {
+          "id": "TKF06",
+          "passed": false
+        },
+        {
+          "id": "TKT01",
+          "passed": false
+        },
+        {
+          "id": "TKT02",
+          "passed": false
+        },
+        {
+          "id": "TKT03",
+          "passed": false
+        },
+        {
+          "id": "TKT04",
+          "passed": false
+        },
+        {
+          "id": "TKL01",
+          "passed": false
+        },
+        {
+          "id": "TKL02",
+          "passed": false
+        }
+      ]
+    },
+    "child180-pair256": {
+      "gates": {
+        "three_source_regressions_visible_and_retained": true,
+        "all_ten_labelled_conditions_retained": true,
+        "evidence_not_below_own_hybrid": true,
+        "documents_not_below_own_hybrid_all_groups": false,
+        "negative_filter_not_below_same_code_legacy256": false,
+        "current_question_checks": true
+      },
+      "input_and_regression_gates_passed": false,
+      "three_probes": {
+        "EVS01": {
+          "model_input": true,
+          "final_pack": true
+        },
+        "EVS02": {
+          "model_input": true,
+          "final_pack": true
+        },
+        "EVS03": {
+          "model_input": true,
+          "final_pack": true
+        }
+      },
+      "document_regression_groups": [
+        "legacy-regression"
+      ],
+      "negative_regression_groups": [
+        "legacy-development",
+        "legacy-regression"
+      ],
+      "query_checks": [
+        {
+          "id": "TKF01",
+          "passed": true
+        },
+        {
+          "id": "TKF02",
+          "passed": true
+        },
+        {
+          "id": "TKF03",
+          "passed": true
+        },
+        {
+          "id": "TKF04",
+          "passed": true
+        },
+        {
+          "id": "TKF05",
+          "passed": true
+        },
+        {
+          "id": "TKF06",
+          "passed": true
+        },
+        {
+          "id": "TKT01",
+          "passed": true
+        },
+        {
+          "id": "TKT02",
+          "passed": true
+        },
+        {
+          "id": "TKT03",
+          "passed": true
+        },
+        {
+          "id": "TKT04",
+          "passed": true
+        },
+        {
+          "id": "TKL01",
+          "passed": true
+        },
+        {
+          "id": "TKL02",
+          "passed": true
+        }
+      ]
+    },
+    "child220-pair384": {
+      "gates": {
+        "three_source_regressions_visible_and_retained": true,
+        "all_ten_labelled_conditions_retained": true,
+        "evidence_not_below_own_hybrid": true,
+        "documents_not_below_own_hybrid_all_groups": false,
+        "negative_filter_not_below_same_code_legacy256": false,
+        "current_question_checks": true
+      },
+      "input_and_regression_gates_passed": false,
+      "three_probes": {
+        "EVS01": {
+          "model_input": true,
+          "final_pack": true
+        },
+        "EVS02": {
+          "model_input": true,
+          "final_pack": true
+        },
+        "EVS03": {
+          "model_input": true,
+          "final_pack": true
+        }
+      },
+      "document_regression_groups": [
+        "legacy-development",
+        "legacy-regression"
+      ],
+      "negative_regression_groups": [
+        "legacy-development",
+        "legacy-regression"
+      ],
+      "query_checks": [
+        {
+          "id": "TKF01",
+          "passed": true
+        },
+        {
+          "id": "TKF02",
+          "passed": true
+        },
+        {
+          "id": "TKF03",
+          "passed": true
+        },
+        {
+          "id": "TKF04",
+          "passed": true
+        },
+        {
+          "id": "TKF05",
+          "passed": true
+        },
+        {
+          "id": "TKF06",
+          "passed": true
+        },
+        {
+          "id": "TKT01",
+          "passed": true
+        },
+        {
+          "id": "TKT02",
+          "passed": true
+        },
+        {
+          "id": "TKT03",
+          "passed": true
+        },
+        {
+          "id": "TKT04",
+          "passed": true
+        },
+        {
+          "id": "TKL01",
+          "passed": true
+        },
+        {
+          "id": "TKL02",
+          "passed": true
+        }
+      ]
+    }
+  },
+  "online_ready": false,
+  "remaining_release_gates": [
+    "stage4_independent_validation_and_evidence_gate",
+    "stage6_performance_and_atomic_index_rollback"
+  ],
+  "metrics": {
+    "legacy-256": {
+      "legacy-development": {
+        "hybrid": {
+          "document_recall_at_budget": 0.8662,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 0.8,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 38.39
+        },
+        "rerank": {
+          "document_recall_at_budget": 0.8662,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 1.0,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 4558.72
+        }
+      },
+      "legacy-regression": {
+        "hybrid": {
+          "document_recall_at_budget": 0.6833,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 0.875,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 41.76
+        },
+        "rerank": {
+          "document_recall_at_budget": 0.6833,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 1.0,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 4320.96
+        }
+      },
+      "chinese-symptoms": {
+        "hybrid": {
+          "document_recall_at_budget": 1.0,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": null,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 39.76
+        },
+        "rerank": {
+          "document_recall_at_budget": 1.0,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": null,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 3895.88
+        }
+      },
+      "chinese-general-regression": {
+        "hybrid": {
+          "document_recall_at_budget": 1.0,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 0.75,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 41.24
+        },
+        "rerank": {
+          "document_recall_at_budget": 0.9559,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 1.0,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 4821.24
+        }
+      },
+      "evidence-regression": {
+        "hybrid": {
+          "document_recall_at_budget": 1.0,
+          "evidence_span_recall_at_budget": 1.0,
+          "critical_condition_retention": 1.0,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 0.25,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 46.14
+        },
+        "rerank": {
+          "document_recall_at_budget": 0.8125,
+          "evidence_span_recall_at_budget": 0.7647,
+          "critical_condition_retention": 0.9,
+          "rerank_visible_span_recall": 0.6471,
+          "rerank_visible_condition_retention": 0.9,
+          "unanswerable_rejection_rate": 0.75,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 4530.89
+        }
+      },
+      "token-input-regression": {
+        "hybrid": {
+          "document_recall_at_budget": 0.25,
+          "evidence_span_recall_at_budget": 0.0,
+          "critical_condition_retention": 0.0,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 0.3333,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 229.05
+        },
+        "rerank": {
+          "document_recall_at_budget": 0.1667,
+          "evidence_span_recall_at_budget": 0.0,
+          "critical_condition_retention": 0.0,
+          "rerank_visible_span_recall": 0.0,
+          "rerank_visible_condition_retention": 0.0,
+          "unanswerable_rejection_rate": 1.0,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 4701.37
+        }
+      }
+    },
+    "bridge-512": {
+      "legacy-development": {
+        "hybrid": {
+          "document_recall_at_budget": 0.8662,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 0.8,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 38.91
+        },
+        "rerank": {
+          "document_recall_at_budget": 0.8521,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 1.0,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 6927.51
+        }
+      },
+      "legacy-regression": {
+        "hybrid": {
+          "document_recall_at_budget": 0.6833,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 0.875,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 38.52
+        },
+        "rerank": {
+          "document_recall_at_budget": 0.6167,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 0.875,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 6627.6
+        }
+      },
+      "chinese-symptoms": {
+        "hybrid": {
+          "document_recall_at_budget": 1.0,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": null,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 35.27
+        },
+        "rerank": {
+          "document_recall_at_budget": 1.0,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": null,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 5004.29
+        }
+      },
+      "chinese-general-regression": {
+        "hybrid": {
+          "document_recall_at_budget": 1.0,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 0.75,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 41.32
+        },
+        "rerank": {
+          "document_recall_at_budget": 1.0,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 1.0,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 6644.29
+        }
+      },
+      "evidence-regression": {
+        "hybrid": {
+          "document_recall_at_budget": 1.0,
+          "evidence_span_recall_at_budget": 1.0,
+          "critical_condition_retention": 1.0,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 0.25,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 43.01
+        },
+        "rerank": {
+          "document_recall_at_budget": 1.0,
+          "evidence_span_recall_at_budget": 1.0,
+          "critical_condition_retention": 1.0,
+          "rerank_visible_span_recall": 1.0,
+          "rerank_visible_condition_retention": 1.0,
+          "unanswerable_rejection_rate": 1.0,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 7295.54
+        }
+      },
+      "token-input-regression": {
+        "hybrid": {
+          "document_recall_at_budget": 0.25,
+          "evidence_span_recall_at_budget": 0.0,
+          "critical_condition_retention": 0.0,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 0.3333,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 217.73
+        },
+        "rerank": {
+          "document_recall_at_budget": 0.4167,
+          "evidence_span_recall_at_budget": 0.0,
+          "critical_condition_retention": 0.0,
+          "rerank_visible_span_recall": 0.0,
+          "rerank_visible_condition_retention": 0.0,
+          "unanswerable_rejection_rate": 0.3333,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 9180.09
+        }
+      }
+    },
+    "child180-pair256": {
+      "legacy-development": {
+        "hybrid": {
+          "document_recall_at_budget": 0.8662,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 0.65,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 40.38
+        },
+        "rerank": {
+          "document_recall_at_budget": 0.8662,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 0.95,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 2803.24
+        }
+      },
+      "legacy-regression": {
+        "hybrid": {
+          "document_recall_at_budget": 0.725,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 0.75,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 45.12
+        },
+        "rerank": {
+          "document_recall_at_budget": 0.7083,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 0.875,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 2676.11
+        }
+      },
+      "chinese-symptoms": {
+        "hybrid": {
+          "document_recall_at_budget": 1.0,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": null,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 38.5
+        },
+        "rerank": {
+          "document_recall_at_budget": 1.0,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": null,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 2750.63
+        }
+      },
+      "chinese-general-regression": {
+        "hybrid": {
+          "document_recall_at_budget": 1.0,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 0.25,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 43.05
+        },
+        "rerank": {
+          "document_recall_at_budget": 1.0,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 1.0,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 2773.51
+        }
+      },
+      "evidence-regression": {
+        "hybrid": {
+          "document_recall_at_budget": 1.0,
+          "evidence_span_recall_at_budget": 1.0,
+          "critical_condition_retention": 1.0,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 0.0,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 47.96
+        },
+        "rerank": {
+          "document_recall_at_budget": 1.0,
+          "evidence_span_recall_at_budget": 1.0,
+          "critical_condition_retention": 1.0,
+          "rerank_visible_span_recall": 1.0,
+          "rerank_visible_condition_retention": 1.0,
+          "unanswerable_rejection_rate": 1.0,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 2742.42
+        }
+      },
+      "token-input-regression": {
+        "hybrid": {
+          "document_recall_at_budget": 0.9167,
+          "evidence_span_recall_at_budget": 0.7692,
+          "critical_condition_retention": 1.0,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 0.3333,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 231.1
+        },
+        "rerank": {
+          "document_recall_at_budget": 0.9167,
+          "evidence_span_recall_at_budget": 0.9231,
+          "critical_condition_retention": 1.0,
+          "rerank_visible_span_recall": 0.8462,
+          "rerank_visible_condition_retention": 0.8,
+          "unanswerable_rejection_rate": 1.0,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 3053.91
+        }
+      }
+    },
+    "child220-pair384": {
+      "legacy-development": {
+        "hybrid": {
+          "document_recall_at_budget": 0.8662,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 0.65,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 42.0
+        },
+        "rerank": {
+          "document_recall_at_budget": 0.8592,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 0.95,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 3071.32
+        }
+      },
+      "legacy-regression": {
+        "hybrid": {
+          "document_recall_at_budget": 0.725,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 0.75,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 42.59
+        },
+        "rerank": {
+          "document_recall_at_budget": 0.6167,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 0.875,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 3179.92
+        }
+      },
+      "chinese-symptoms": {
+        "hybrid": {
+          "document_recall_at_budget": 1.0,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": null,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 41.52
+        },
+        "rerank": {
+          "document_recall_at_budget": 1.0,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": null,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 3172.59
+        }
+      },
+      "chinese-general-regression": {
+        "hybrid": {
+          "document_recall_at_budget": 1.0,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 0.5,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 42.23
+        },
+        "rerank": {
+          "document_recall_at_budget": 1.0,
+          "evidence_span_recall_at_budget": null,
+          "critical_condition_retention": null,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 1.0,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 2793.0
+        }
+      },
+      "evidence-regression": {
+        "hybrid": {
+          "document_recall_at_budget": 1.0,
+          "evidence_span_recall_at_budget": 1.0,
+          "critical_condition_retention": 1.0,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 0.0,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 49.89
+        },
+        "rerank": {
+          "document_recall_at_budget": 1.0,
+          "evidence_span_recall_at_budget": 1.0,
+          "critical_condition_retention": 1.0,
+          "rerank_visible_span_recall": 1.0,
+          "rerank_visible_condition_retention": 1.0,
+          "unanswerable_rejection_rate": 1.0,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 3375.15
+        }
+      },
+      "token-input-regression": {
+        "hybrid": {
+          "document_recall_at_budget": 0.8333,
+          "evidence_span_recall_at_budget": 0.6154,
+          "critical_condition_retention": 0.8,
+          "rerank_visible_span_recall": null,
+          "rerank_visible_condition_retention": null,
+          "unanswerable_rejection_rate": 0.3333,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 241.65
+        },
+        "rerank": {
+          "document_recall_at_budget": 0.9167,
+          "evidence_span_recall_at_budget": 0.9231,
+          "critical_condition_retention": 0.8,
+          "rerank_visible_span_recall": 0.8462,
+          "rerank_visible_condition_retention": 0.6,
+          "unanswerable_rejection_rate": 1.0,
+          "error_cases": 0,
+          "rerank_execution_failures": 0,
+          "subsequent_search_p95_ms": 4339.27
+        }
+      }
+    }
+  },
+  "resources": {
+    "legacy-256": {
+      "before": {
+        "total_mib": 15556.9,
+        "available_mib": 3222.0,
+        "process_working_mib": 33.1,
+        "process_peak_mib": 33.1
+      },
+      "after": {
+        "total_mib": 15556.9,
+        "available_mib": 3770.5,
+        "process_working_mib": 1118.7,
+        "process_peak_mib": 1138.0
+      },
+      "chunks": 95
+    },
+    "bridge-512": {
+      "before": {
+        "total_mib": 15556.9,
+        "available_mib": 4849.8,
+        "process_working_mib": 33.1,
+        "process_peak_mib": 33.1
+      },
+      "after": {
+        "total_mib": 15556.9,
+        "available_mib": 1765.5,
+        "process_working_mib": 985.3,
+        "process_peak_mib": 1165.2
+      },
+      "chunks": 95
+    },
+    "child180-pair256": {
+      "before": {
+        "total_mib": 15556.9,
+        "available_mib": 2687.9,
+        "process_working_mib": 33.1,
+        "process_peak_mib": 33.1
+      },
+      "after": {
+        "total_mib": 15556.9,
+        "available_mib": 2308.5,
+        "process_working_mib": 1425.6,
+        "process_peak_mib": 1437.8
+      },
+      "chunks": 322
+    },
+    "child220-pair384": {
+      "before": {
+        "total_mib": 15556.9,
+        "available_mib": 3689.7,
+        "process_working_mib": 33.1,
+        "process_peak_mib": 33.1
+      },
+      "after": {
+        "total_mib": 15556.9,
+        "available_mib": 2887.8,
+        "process_working_mib": 1417.5,
+        "process_peak_mib": 1434.3
+      },
+      "chunks": 249
+    }
+  },
+  "paired_case_changes": {
+    "legacy-256": {
+      "legacy-development": {
+        "versus_legacy256_rerank": {
+          "document_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 71,
+            "unmeasured": 40
+          },
+          "negative_rejection": {
+            "wins": [],
+            "losses": [],
+            "ties": 20,
+            "unmeasured": 91
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 71,
+            "unmeasured": 40
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 71,
+            "unmeasured": 40
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          }
+        },
+        "versus_own_hybrid": {
+          "document_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 71,
+            "unmeasured": 40
+          },
+          "negative_rejection": {
+            "wins": [
+              "N02",
+              "N06",
+              "N16",
+              "N18"
+            ],
+            "losses": [],
+            "ties": 16,
+            "unmeasured": 91
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 71,
+            "unmeasured": 40
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 71,
+            "unmeasured": 40
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          }
+        }
+      },
+      "legacy-regression": {
+        "versus_legacy256_rerank": {
+          "document_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 20,
+            "unmeasured": 13
+          },
+          "negative_rejection": {
+            "wins": [],
+            "losses": [],
+            "ties": 8,
+            "unmeasured": 25
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 20,
+            "unmeasured": 13
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 20,
+            "unmeasured": 13
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          }
+        },
+        "versus_own_hybrid": {
+          "document_recall": {
+            "wins": [
+              "VS03"
+            ],
+            "losses": [
+              "VS05"
+            ],
+            "ties": 18,
+            "unmeasured": 13
+          },
+          "negative_rejection": {
+            "wins": [
+              "VN04"
+            ],
+            "losses": [],
+            "ties": 7,
+            "unmeasured": 25
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 20,
+            "unmeasured": 13
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 20,
+            "unmeasured": 13
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          }
+        }
+      },
+      "chinese-symptoms": {
+        "versus_legacy256_rerank": {
+          "document_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 0
+          },
+          "negative_rejection": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 0
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 0
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          }
+        },
+        "versus_own_hybrid": {
+          "document_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 0
+          },
+          "negative_rejection": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 0
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 0
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          }
+        }
+      },
+      "chinese-general-regression": {
+        "versus_legacy256_rerank": {
+          "document_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 68,
+            "unmeasured": 12
+          },
+          "negative_rejection": {
+            "wins": [],
+            "losses": [],
+            "ties": 8,
+            "unmeasured": 72
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 68,
+            "unmeasured": 12
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 68,
+            "unmeasured": 12
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          }
+        },
+        "versus_own_hybrid": {
+          "document_recall": {
+            "wins": [],
+            "losses": [
+              "CGS024",
+              "CGS035",
+              "CGS042"
+            ],
+            "ties": 65,
+            "unmeasured": 12
+          },
+          "negative_rejection": {
+            "wins": [
+              "CGN01",
+              "CGN05"
+            ],
+            "losses": [],
+            "ties": 6,
+            "unmeasured": 72
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 68,
+            "unmeasured": 12
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 68,
+            "unmeasured": 12
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          }
+        }
+      },
+      "evidence-regression": {
+        "versus_legacy256_rerank": {
+          "document_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 16,
+            "unmeasured": 8
+          },
+          "negative_rejection": {
+            "wins": [],
+            "losses": [],
+            "ties": 4,
+            "unmeasured": 20
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 16,
+            "unmeasured": 8
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 16,
+            "unmeasured": 8
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 16,
+            "unmeasured": 8
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 14
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 16,
+            "unmeasured": 8
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 14
+          }
+        },
+        "versus_own_hybrid": {
+          "document_recall": {
+            "wins": [],
+            "losses": [
+              "EVS01",
+              "EVS02",
+              "EVS03"
+            ],
+            "ties": 13,
+            "unmeasured": 8
+          },
+          "negative_rejection": {
+            "wins": [
+              "EVN01",
+              "EVN02",
+              "EVN03"
+            ],
+            "losses": [
+              "EVN04"
+            ],
+            "ties": 0,
+            "unmeasured": 20
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 16,
+            "unmeasured": 8
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 16,
+            "unmeasured": 8
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [
+              "EVS01",
+              "EVS02",
+              "EVS03"
+            ],
+            "ties": 13,
+            "unmeasured": 8
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [
+              "EVS02"
+            ],
+            "ties": 9,
+            "unmeasured": 14
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 24
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 24
+          }
+        }
+      },
+      "token-input-regression": {
+        "versus_legacy256_rerank": {
+          "document_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 12,
+            "unmeasured": 4
+          },
+          "negative_rejection": {
+            "wins": [],
+            "losses": [],
+            "ties": 3,
+            "unmeasured": 13
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 12,
+            "unmeasured": 4
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 12,
+            "unmeasured": 4
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 12,
+            "unmeasured": 4
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 5,
+            "unmeasured": 11
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 12,
+            "unmeasured": 4
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 5,
+            "unmeasured": 11
+          }
+        },
+        "versus_own_hybrid": {
+          "document_recall": {
+            "wins": [
+              "TKF03",
+              "TKT04"
+            ],
+            "losses": [
+              "TKF05",
+              "TKT01",
+              "TKT03"
+            ],
+            "ties": 7,
+            "unmeasured": 4
+          },
+          "negative_rejection": {
+            "wins": [
+              "TKN01",
+              "TKN02"
+            ],
+            "losses": [],
+            "ties": 1,
+            "unmeasured": 13
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 12,
+            "unmeasured": 4
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 12,
+            "unmeasured": 4
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 12,
+            "unmeasured": 4
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 5,
+            "unmeasured": 11
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 16
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 16
+          }
+        }
+      }
+    },
+    "bridge-512": {
+      "legacy-development": {
+        "versus_legacy256_rerank": {
+          "document_recall": {
+            "wins": [],
+            "losses": [
+              "S03"
+            ],
+            "ties": 70,
+            "unmeasured": 40
+          },
+          "negative_rejection": {
+            "wins": [],
+            "losses": [],
+            "ties": 20,
+            "unmeasured": 91
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 71,
+            "unmeasured": 40
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 71,
+            "unmeasured": 40
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          }
+        },
+        "versus_own_hybrid": {
+          "document_recall": {
+            "wins": [],
+            "losses": [
+              "S03"
+            ],
+            "ties": 70,
+            "unmeasured": 40
+          },
+          "negative_rejection": {
+            "wins": [
+              "N02",
+              "N06",
+              "N16",
+              "N18"
+            ],
+            "losses": [],
+            "ties": 16,
+            "unmeasured": 91
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 71,
+            "unmeasured": 40
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 71,
+            "unmeasured": 40
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          }
+        }
+      },
+      "legacy-regression": {
+        "versus_legacy256_rerank": {
+          "document_recall": {
+            "wins": [],
+            "losses": [
+              "VS03",
+              "VS15"
+            ],
+            "ties": 18,
+            "unmeasured": 13
+          },
+          "negative_rejection": {
+            "wins": [],
+            "losses": [
+              "VN04"
+            ],
+            "ties": 7,
+            "unmeasured": 25
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 20,
+            "unmeasured": 13
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 20,
+            "unmeasured": 13
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          }
+        },
+        "versus_own_hybrid": {
+          "document_recall": {
+            "wins": [],
+            "losses": [
+              "VS05",
+              "VS15"
+            ],
+            "ties": 18,
+            "unmeasured": 13
+          },
+          "negative_rejection": {
+            "wins": [],
+            "losses": [],
+            "ties": 8,
+            "unmeasured": 25
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 20,
+            "unmeasured": 13
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 20,
+            "unmeasured": 13
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          }
+        }
+      },
+      "chinese-symptoms": {
+        "versus_legacy256_rerank": {
+          "document_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 0
+          },
+          "negative_rejection": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 0
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 0
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          }
+        },
+        "versus_own_hybrid": {
+          "document_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 0
+          },
+          "negative_rejection": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 0
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 0
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          }
+        }
+      },
+      "chinese-general-regression": {
+        "versus_legacy256_rerank": {
+          "document_recall": {
+            "wins": [
+              "CGS024",
+              "CGS035",
+              "CGS042"
+            ],
+            "losses": [],
+            "ties": 65,
+            "unmeasured": 12
+          },
+          "negative_rejection": {
+            "wins": [],
+            "losses": [],
+            "ties": 8,
+            "unmeasured": 72
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 68,
+            "unmeasured": 12
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 68,
+            "unmeasured": 12
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          }
+        },
+        "versus_own_hybrid": {
+          "document_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 68,
+            "unmeasured": 12
+          },
+          "negative_rejection": {
+            "wins": [
+              "CGN01",
+              "CGN05"
+            ],
+            "losses": [],
+            "ties": 6,
+            "unmeasured": 72
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 68,
+            "unmeasured": 12
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 68,
+            "unmeasured": 12
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          }
+        }
+      },
+      "evidence-regression": {
+        "versus_legacy256_rerank": {
+          "document_recall": {
+            "wins": [
+              "EVS01",
+              "EVS02",
+              "EVS03"
+            ],
+            "losses": [],
+            "ties": 13,
+            "unmeasured": 8
+          },
+          "negative_rejection": {
+            "wins": [
+              "EVN04"
+            ],
+            "losses": [],
+            "ties": 3,
+            "unmeasured": 20
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 16,
+            "unmeasured": 8
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 16,
+            "unmeasured": 8
+          },
+          "final_spans": {
+            "wins": [
+              "EVS01",
+              "EVS02",
+              "EVS03"
+            ],
+            "losses": [],
+            "ties": 13,
+            "unmeasured": 8
+          },
+          "final_conditions": {
+            "wins": [
+              "EVS02"
+            ],
+            "losses": [],
+            "ties": 9,
+            "unmeasured": 14
+          },
+          "model_visible_spans": {
+            "wins": [
+              "EVS01",
+              "EVS02",
+              "EVS03",
+              "EVS04",
+              "EVF04"
+            ],
+            "losses": [],
+            "ties": 11,
+            "unmeasured": 8
+          },
+          "model_visible_conditions": {
+            "wins": [
+              "EVS02"
+            ],
+            "losses": [],
+            "ties": 9,
+            "unmeasured": 14
+          }
+        },
+        "versus_own_hybrid": {
+          "document_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 16,
+            "unmeasured": 8
+          },
+          "negative_rejection": {
+            "wins": [
+              "EVN01",
+              "EVN02",
+              "EVN03"
+            ],
+            "losses": [],
+            "ties": 1,
+            "unmeasured": 20
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 16,
+            "unmeasured": 8
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 16,
+            "unmeasured": 8
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 16,
+            "unmeasured": 8
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 14
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 24
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 24
+          }
+        }
+      },
+      "token-input-regression": {
+        "versus_legacy256_rerank": {
+          "document_recall": {
+            "wins": [
+              "TKF05",
+              "TKT01",
+              "TKT03"
+            ],
+            "losses": [],
+            "ties": 9,
+            "unmeasured": 4
+          },
+          "negative_rejection": {
+            "wins": [],
+            "losses": [
+              "TKN01",
+              "TKN02"
+            ],
+            "ties": 1,
+            "unmeasured": 13
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 12,
+            "unmeasured": 4
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 12,
+            "unmeasured": 4
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 12,
+            "unmeasured": 4
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 5,
+            "unmeasured": 11
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 12,
+            "unmeasured": 4
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 5,
+            "unmeasured": 11
+          }
+        },
+        "versus_own_hybrid": {
+          "document_recall": {
+            "wins": [
+              "TKF03",
+              "TKT04"
+            ],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 4
+          },
+          "negative_rejection": {
+            "wins": [],
+            "losses": [],
+            "ties": 3,
+            "unmeasured": 13
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 12,
+            "unmeasured": 4
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 12,
+            "unmeasured": 4
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 12,
+            "unmeasured": 4
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 5,
+            "unmeasured": 11
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 16
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 16
+          }
+        }
+      }
+    },
+    "child180-pair256": {
+      "legacy-development": {
+        "versus_legacy256_rerank": {
+          "document_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 71,
+            "unmeasured": 40
+          },
+          "negative_rejection": {
+            "wins": [],
+            "losses": [
+              "N01"
+            ],
+            "ties": 19,
+            "unmeasured": 91
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 71,
+            "unmeasured": 40
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 71,
+            "unmeasured": 40
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          }
+        },
+        "versus_own_hybrid": {
+          "document_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 71,
+            "unmeasured": 40
+          },
+          "negative_rejection": {
+            "wins": [
+              "N02",
+              "N06",
+              "N10",
+              "N13",
+              "N18",
+              "N19"
+            ],
+            "losses": [],
+            "ties": 14,
+            "unmeasured": 91
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 71,
+            "unmeasured": 40
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 71,
+            "unmeasured": 40
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          }
+        }
+      },
+      "legacy-regression": {
+        "versus_legacy256_rerank": {
+          "document_recall": {
+            "wins": [
+              "VF05"
+            ],
+            "losses": [],
+            "ties": 19,
+            "unmeasured": 13
+          },
+          "negative_rejection": {
+            "wins": [],
+            "losses": [
+              "VN05"
+            ],
+            "ties": 7,
+            "unmeasured": 25
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 20,
+            "unmeasured": 13
+          },
+          "candidate_pool_recall": {
+            "wins": [
+              "VF05"
+            ],
+            "losses": [],
+            "ties": 19,
+            "unmeasured": 13
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          }
+        },
+        "versus_own_hybrid": {
+          "document_recall": {
+            "wins": [],
+            "losses": [
+              "VS05"
+            ],
+            "ties": 19,
+            "unmeasured": 13
+          },
+          "negative_rejection": {
+            "wins": [
+              "VN04"
+            ],
+            "losses": [],
+            "ties": 7,
+            "unmeasured": 25
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 20,
+            "unmeasured": 13
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 20,
+            "unmeasured": 13
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          }
+        }
+      },
+      "chinese-symptoms": {
+        "versus_legacy256_rerank": {
+          "document_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 0
+          },
+          "negative_rejection": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 0
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 0
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          }
+        },
+        "versus_own_hybrid": {
+          "document_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 0
+          },
+          "negative_rejection": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 0
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 0
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          }
+        }
+      },
+      "chinese-general-regression": {
+        "versus_legacy256_rerank": {
+          "document_recall": {
+            "wins": [
+              "CGS024",
+              "CGS035",
+              "CGS042"
+            ],
+            "losses": [],
+            "ties": 65,
+            "unmeasured": 12
+          },
+          "negative_rejection": {
+            "wins": [],
+            "losses": [],
+            "ties": 8,
+            "unmeasured": 72
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 68,
+            "unmeasured": 12
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 68,
+            "unmeasured": 12
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          }
+        },
+        "versus_own_hybrid": {
+          "document_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 68,
+            "unmeasured": 12
+          },
+          "negative_rejection": {
+            "wins": [
+              "CGN01",
+              "CGN03",
+              "CGN04",
+              "CGN05",
+              "CGN07",
+              "CGN08"
+            ],
+            "losses": [],
+            "ties": 2,
+            "unmeasured": 72
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 68,
+            "unmeasured": 12
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 68,
+            "unmeasured": 12
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          }
+        }
+      },
+      "evidence-regression": {
+        "versus_legacy256_rerank": {
+          "document_recall": {
+            "wins": [
+              "EVS01",
+              "EVS02",
+              "EVS03"
+            ],
+            "losses": [],
+            "ties": 13,
+            "unmeasured": 8
+          },
+          "negative_rejection": {
+            "wins": [
+              "EVN04"
+            ],
+            "losses": [],
+            "ties": 3,
+            "unmeasured": 20
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 16,
+            "unmeasured": 8
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 16,
+            "unmeasured": 8
+          },
+          "final_spans": {
+            "wins": [
+              "EVS01",
+              "EVS02",
+              "EVS03"
+            ],
+            "losses": [],
+            "ties": 13,
+            "unmeasured": 8
+          },
+          "final_conditions": {
+            "wins": [
+              "EVS02"
+            ],
+            "losses": [],
+            "ties": 9,
+            "unmeasured": 14
+          },
+          "model_visible_spans": {
+            "wins": [
+              "EVS01",
+              "EVS02",
+              "EVS03",
+              "EVS04",
+              "EVF04"
+            ],
+            "losses": [],
+            "ties": 11,
+            "unmeasured": 8
+          },
+          "model_visible_conditions": {
+            "wins": [
+              "EVS02"
+            ],
+            "losses": [],
+            "ties": 9,
+            "unmeasured": 14
+          }
+        },
+        "versus_own_hybrid": {
+          "document_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 16,
+            "unmeasured": 8
+          },
+          "negative_rejection": {
+            "wins": [
+              "EVN01",
+              "EVN02",
+              "EVN03",
+              "EVN04"
+            ],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 20
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 16,
+            "unmeasured": 8
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 16,
+            "unmeasured": 8
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 16,
+            "unmeasured": 8
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 14
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 24
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 24
+          }
+        }
+      },
+      "token-input-regression": {
+        "versus_legacy256_rerank": {
+          "document_recall": {
+            "wins": [
+              "TKF01",
+              "TKF02",
+              "TKF04",
+              "TKF05",
+              "TKF06",
+              "TKT01",
+              "TKT02",
+              "TKT03",
+              "TKL02"
+            ],
+            "losses": [],
+            "ties": 3,
+            "unmeasured": 4
+          },
+          "negative_rejection": {
+            "wins": [],
+            "losses": [],
+            "ties": 3,
+            "unmeasured": 13
+          },
+          "candidate_union_recall": {
+            "wins": [
+              "TKF02",
+              "TKF06"
+            ],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 4
+          },
+          "candidate_pool_recall": {
+            "wins": [
+              "TKF01",
+              "TKF02",
+              "TKF04",
+              "TKF06",
+              "TKT02",
+              "TKL02"
+            ],
+            "losses": [],
+            "ties": 6,
+            "unmeasured": 4
+          },
+          "final_spans": {
+            "wins": [
+              "TKF01",
+              "TKF02",
+              "TKF03",
+              "TKF04",
+              "TKF05",
+              "TKF06",
+              "TKT01",
+              "TKT02",
+              "TKT03",
+              "TKT04",
+              "TKL02"
+            ],
+            "losses": [],
+            "ties": 1,
+            "unmeasured": 4
+          },
+          "final_conditions": {
+            "wins": [
+              "TKF02",
+              "TKF04",
+              "TKF06",
+              "TKT02",
+              "TKT03"
+            ],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 11
+          },
+          "model_visible_spans": {
+            "wins": [
+              "TKF01",
+              "TKF02",
+              "TKF03",
+              "TKF04",
+              "TKF05",
+              "TKF06",
+              "TKT01",
+              "TKT03",
+              "TKT04",
+              "TKL02"
+            ],
+            "losses": [],
+            "ties": 2,
+            "unmeasured": 4
+          },
+          "model_visible_conditions": {
+            "wins": [
+              "TKF02",
+              "TKF04",
+              "TKF06",
+              "TKT03"
+            ],
+            "losses": [],
+            "ties": 1,
+            "unmeasured": 11
+          }
+        },
+        "versus_own_hybrid": {
+          "document_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 12,
+            "unmeasured": 4
+          },
+          "negative_rejection": {
+            "wins": [
+              "TKN01",
+              "TKN02"
+            ],
+            "losses": [],
+            "ties": 1,
+            "unmeasured": 13
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 12,
+            "unmeasured": 4
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 12,
+            "unmeasured": 4
+          },
+          "final_spans": {
+            "wins": [
+              "TKF05",
+              "TKT01"
+            ],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 4
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 5,
+            "unmeasured": 11
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 16
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 16
+          }
+        }
+      }
+    },
+    "child220-pair384": {
+      "legacy-development": {
+        "versus_legacy256_rerank": {
+          "document_recall": {
+            "wins": [],
+            "losses": [
+              "S61"
+            ],
+            "ties": 70,
+            "unmeasured": 40
+          },
+          "negative_rejection": {
+            "wins": [],
+            "losses": [
+              "N01"
+            ],
+            "ties": 19,
+            "unmeasured": 91
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 71,
+            "unmeasured": 40
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 71,
+            "unmeasured": 40
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          }
+        },
+        "versus_own_hybrid": {
+          "document_recall": {
+            "wins": [],
+            "losses": [
+              "S61"
+            ],
+            "ties": 70,
+            "unmeasured": 40
+          },
+          "negative_rejection": {
+            "wins": [
+              "N02",
+              "N06",
+              "N10",
+              "N16",
+              "N18",
+              "N19"
+            ],
+            "losses": [],
+            "ties": 14,
+            "unmeasured": 91
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 71,
+            "unmeasured": 40
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 71,
+            "unmeasured": 40
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 111
+          }
+        }
+      },
+      "legacy-regression": {
+        "versus_legacy256_rerank": {
+          "document_recall": {
+            "wins": [],
+            "losses": [
+              "VS03",
+              "VS15"
+            ],
+            "ties": 18,
+            "unmeasured": 13
+          },
+          "negative_rejection": {
+            "wins": [],
+            "losses": [
+              "VN04"
+            ],
+            "ties": 7,
+            "unmeasured": 25
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 20,
+            "unmeasured": 13
+          },
+          "candidate_pool_recall": {
+            "wins": [
+              "VF05"
+            ],
+            "losses": [],
+            "ties": 19,
+            "unmeasured": 13
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          }
+        },
+        "versus_own_hybrid": {
+          "document_recall": {
+            "wins": [],
+            "losses": [
+              "VS03",
+              "VS05",
+              "VS15",
+              "VF05"
+            ],
+            "ties": 16,
+            "unmeasured": 13
+          },
+          "negative_rejection": {
+            "wins": [
+              "VN05"
+            ],
+            "losses": [],
+            "ties": 7,
+            "unmeasured": 25
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 20,
+            "unmeasured": 13
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 20,
+            "unmeasured": 13
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 33
+          }
+        }
+      },
+      "chinese-symptoms": {
+        "versus_legacy256_rerank": {
+          "document_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 0
+          },
+          "negative_rejection": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 0
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 0
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          }
+        },
+        "versus_own_hybrid": {
+          "document_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 0
+          },
+          "negative_rejection": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 0
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 0
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 10
+          }
+        }
+      },
+      "chinese-general-regression": {
+        "versus_legacy256_rerank": {
+          "document_recall": {
+            "wins": [
+              "CGS024",
+              "CGS035",
+              "CGS042"
+            ],
+            "losses": [],
+            "ties": 65,
+            "unmeasured": 12
+          },
+          "negative_rejection": {
+            "wins": [],
+            "losses": [],
+            "ties": 8,
+            "unmeasured": 72
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 68,
+            "unmeasured": 12
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 68,
+            "unmeasured": 12
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          }
+        },
+        "versus_own_hybrid": {
+          "document_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 68,
+            "unmeasured": 12
+          },
+          "negative_rejection": {
+            "wins": [
+              "CGN01",
+              "CGN03",
+              "CGN05",
+              "CGN08"
+            ],
+            "losses": [],
+            "ties": 4,
+            "unmeasured": 72
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 68,
+            "unmeasured": 12
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 68,
+            "unmeasured": 12
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 80
+          }
+        }
+      },
+      "evidence-regression": {
+        "versus_legacy256_rerank": {
+          "document_recall": {
+            "wins": [
+              "EVS01",
+              "EVS02",
+              "EVS03"
+            ],
+            "losses": [],
+            "ties": 13,
+            "unmeasured": 8
+          },
+          "negative_rejection": {
+            "wins": [
+              "EVN04"
+            ],
+            "losses": [],
+            "ties": 3,
+            "unmeasured": 20
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 16,
+            "unmeasured": 8
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 16,
+            "unmeasured": 8
+          },
+          "final_spans": {
+            "wins": [
+              "EVS01",
+              "EVS02",
+              "EVS03"
+            ],
+            "losses": [],
+            "ties": 13,
+            "unmeasured": 8
+          },
+          "final_conditions": {
+            "wins": [
+              "EVS02"
+            ],
+            "losses": [],
+            "ties": 9,
+            "unmeasured": 14
+          },
+          "model_visible_spans": {
+            "wins": [
+              "EVS01",
+              "EVS02",
+              "EVS03",
+              "EVS04",
+              "EVF04"
+            ],
+            "losses": [],
+            "ties": 11,
+            "unmeasured": 8
+          },
+          "model_visible_conditions": {
+            "wins": [
+              "EVS02"
+            ],
+            "losses": [],
+            "ties": 9,
+            "unmeasured": 14
+          }
+        },
+        "versus_own_hybrid": {
+          "document_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 16,
+            "unmeasured": 8
+          },
+          "negative_rejection": {
+            "wins": [
+              "EVN01",
+              "EVN02",
+              "EVN03",
+              "EVN04"
+            ],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 20
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 16,
+            "unmeasured": 8
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 16,
+            "unmeasured": 8
+          },
+          "final_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 16,
+            "unmeasured": 8
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 14
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 24
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 24
+          }
+        }
+      },
+      "token-input-regression": {
+        "versus_legacy256_rerank": {
+          "document_recall": {
+            "wins": [
+              "TKF01",
+              "TKF04",
+              "TKF05",
+              "TKF06",
+              "TKT01",
+              "TKT02",
+              "TKT03",
+              "TKL01",
+              "TKL02"
+            ],
+            "losses": [],
+            "ties": 3,
+            "unmeasured": 4
+          },
+          "negative_rejection": {
+            "wins": [],
+            "losses": [],
+            "ties": 3,
+            "unmeasured": 13
+          },
+          "candidate_union_recall": {
+            "wins": [
+              "TKF02",
+              "TKF06"
+            ],
+            "losses": [],
+            "ties": 10,
+            "unmeasured": 4
+          },
+          "candidate_pool_recall": {
+            "wins": [
+              "TKF01",
+              "TKF04",
+              "TKF06",
+              "TKT02",
+              "TKL01",
+              "TKL02"
+            ],
+            "losses": [],
+            "ties": 6,
+            "unmeasured": 4
+          },
+          "final_spans": {
+            "wins": [
+              "TKF01",
+              "TKF03",
+              "TKF04",
+              "TKF05",
+              "TKF06",
+              "TKT01",
+              "TKT02",
+              "TKT03",
+              "TKT04",
+              "TKL01",
+              "TKL02"
+            ],
+            "losses": [],
+            "ties": 1,
+            "unmeasured": 4
+          },
+          "final_conditions": {
+            "wins": [
+              "TKF04",
+              "TKF06",
+              "TKT02",
+              "TKT03"
+            ],
+            "losses": [],
+            "ties": 1,
+            "unmeasured": 11
+          },
+          "model_visible_spans": {
+            "wins": [
+              "TKF01",
+              "TKF03",
+              "TKF04",
+              "TKF05",
+              "TKF06",
+              "TKT01",
+              "TKT03",
+              "TKT04",
+              "TKL01",
+              "TKL02"
+            ],
+            "losses": [],
+            "ties": 2,
+            "unmeasured": 4
+          },
+          "model_visible_conditions": {
+            "wins": [
+              "TKF04",
+              "TKF06",
+              "TKT03"
+            ],
+            "losses": [],
+            "ties": 2,
+            "unmeasured": 11
+          }
+        },
+        "versus_own_hybrid": {
+          "document_recall": {
+            "wins": [
+              "TKL01"
+            ],
+            "losses": [],
+            "ties": 11,
+            "unmeasured": 4
+          },
+          "negative_rejection": {
+            "wins": [
+              "TKN01",
+              "TKN02"
+            ],
+            "losses": [],
+            "ties": 1,
+            "unmeasured": 13
+          },
+          "candidate_union_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 12,
+            "unmeasured": 4
+          },
+          "candidate_pool_recall": {
+            "wins": [],
+            "losses": [],
+            "ties": 12,
+            "unmeasured": 4
+          },
+          "final_spans": {
+            "wins": [
+              "TKF05",
+              "TKT01",
+              "TKL01",
+              "TKL02"
+            ],
+            "losses": [],
+            "ties": 8,
+            "unmeasured": 4
+          },
+          "final_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 5,
+            "unmeasured": 11
+          },
+          "model_visible_spans": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 16
+          },
+          "model_visible_conditions": {
+            "wins": [],
+            "losses": [],
+            "ties": 0,
+            "unmeasured": 16
+          }
+        }
+      }
+    }
+  },
+  "performance_scope": "fixed_order_descriptive_not_randomized_performance_acceptance"
+}

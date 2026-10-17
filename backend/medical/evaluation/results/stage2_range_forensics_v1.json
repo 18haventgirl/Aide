@@ -1,0 +1,4052 @@
+{
+  "scope": "exact_source_range_forensics_not_semantic_or_clinical_judgement",
+  "complete": true,
+  "code": {
+    "commit": "c8e65136b9b09b3a54a4fdf57b2f59b93ff8c572",
+    "retrieval_implementation_sha256": "1665baa425383e80bce545e4ec33ee3e0207393a64f52940ed0b2f5a69c06985",
+    "tracked_changes": false
+  },
+  "script_sha256": "f9d89b6128001406d151b7ee4d11db353e36ceba87272c23b7a76bb86e8bfc47",
+  "matrix_signature": {
+    "code": {
+      "commit": "58498465ce0eb769357b254ad2747fac9f09761f",
+      "retrieval_implementation_sha256": "1665baa425383e80bce545e4ec33ee3e0207393a64f52940ed0b2f5a69c06985",
+      "tracked_changes": false
+    },
+    "suite_sha256": "59015645192841e857c6a02e3461e51df63292e73a727c63c191d11ab860bc63",
+    "corpus_sha256": "3bf1713ffd0dd9ca89394a0875661ff7cbf2425d8cf3267da0491563a515afe9",
+    "configurations": {
+      "legacy-256": {
+        "rerank_max_length": 256,
+        "input_policy": "legacy",
+        "chunk_strategy": "legacy"
+      },
+      "bridge-512": {
+        "rerank_max_length": 512,
+        "input_policy": "legacy",
+        "chunk_strategy": "legacy"
+      },
+      "child180-pair256": {
+        "rerank_max_length": 256,
+        "input_policy": "query_first_v1",
+        "chunk_strategy": "token-v1",
+        "child_tokens": 180
+      },
+      "child220-pair384": {
+        "rerank_max_length": 384,
+        "input_policy": "query_first_v1",
+        "chunk_strategy": "token-v1",
+        "child_tokens": 220
+      }
+    },
+    "profiles": [
+      "hybrid",
+      "rerank"
+    ],
+    "metric_contract": "evidence-v1",
+    "k": 5
+  },
+  "results": {
+    "legacy-256": {
+      "input_report_sha256": "80a55bdf9eb397a206f8f642c4367bbd3b34c939bafe4e1afbbf840454b8432e",
+      "details": [
+        {
+          "id": "EVS01",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 2,
+            "retained_spans": 2,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 2,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 2,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-14:ranges:0",
+            "NHC-HL2024-14:ranges:1"
+          ],
+          "visible_label_ids": [],
+          "final_label_ids": [],
+          "encoder_lost_label_ids": [
+            "NHC-HL2024-14:ranges:0",
+            "NHC-HL2024-14:ranges:1"
+          ],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS02",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-23:ranges:0",
+            "NHC-HL2024-23:required_conditions:0"
+          ],
+          "visible_label_ids": [],
+          "final_label_ids": [],
+          "encoder_lost_label_ids": [
+            "NHC-HL2024-23:ranges:0",
+            "NHC-HL2024-23:required_conditions:0"
+          ],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS03",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "visible_label_ids": [],
+          "final_label_ids": [],
+          "encoder_lost_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS04",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [
+            "NHC-HL2024-32:ranges:0"
+          ],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS05",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS06",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS07",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-56:ranges:0",
+            "NHC-HL2024-56:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-56:ranges:0",
+            "NHC-HL2024-56:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-56:ranges:0",
+            "NHC-HL2024-56:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS08",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "BJ-DIARRHEA-20210406:ranges:0",
+            "BJ-DIARRHEA-20210406:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "BJ-DIARRHEA-20210406:ranges:0",
+            "BJ-DIARRHEA-20210406:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "BJ-DIARRHEA-20210406:ranges:0",
+            "BJ-DIARRHEA-20210406:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS09",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-FLU-CARE-20250117:ranges:0",
+            "NHC-FLU-CARE-20250117:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-FLU-CARE-20250117:ranges:0",
+            "NHC-FLU-CARE-20250117:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-FLU-CARE-20250117:ranges:0",
+            "NHC-FLU-CARE-20250117:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS10",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "GZ-POSTMEAL-ABDOMEN-2026:ranges:0",
+            "GZ-POSTMEAL-ABDOMEN-2026:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "GZ-POSTMEAL-ABDOMEN-2026:ranges:0",
+            "GZ-POSTMEAL-ABDOMEN-2026:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "GZ-POSTMEAL-ABDOMEN-2026:ranges:0",
+            "GZ-POSTMEAL-ABDOMEN-2026:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS11",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "FJ-HEADACHE-20260626:ranges:0",
+            "FJ-HEADACHE-20260626:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "FJ-HEADACHE-20260626:ranges:0",
+            "FJ-HEADACHE-20260626:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "FJ-HEADACHE-20260626:ranges:0",
+            "FJ-HEADACHE-20260626:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS12",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-THROAT-20240821:ranges:0"
+          ],
+          "visible_label_ids": [
+            "NHC-THROAT-20240821:ranges:0"
+          ],
+          "final_label_ids": [
+            "NHC-THROAT-20240821:ranges:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVF01",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVF02",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVF03",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-FLU-CARE-20250117:ranges:0",
+            "NHC-FLU-CARE-20250117:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-FLU-CARE-20250117:ranges:0",
+            "NHC-FLU-CARE-20250117:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-FLU-CARE-20250117:ranges:0",
+            "NHC-FLU-CARE-20250117:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVF04",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "visible_label_ids": [],
+          "final_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "encoder_lost_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKF01",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 2,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 2,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 2,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [],
+          "visible_label_ids": [],
+          "final_label_ids": [],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKF02",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [],
+          "visible_label_ids": [],
+          "final_label_ids": [],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKF03",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "visible_label_ids": [],
+          "final_label_ids": [],
+          "encoder_lost_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKF04",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [],
+          "visible_label_ids": [],
+          "final_label_ids": [],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKF05",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [],
+          "visible_label_ids": [],
+          "final_label_ids": [],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKF06",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [],
+          "visible_label_ids": [],
+          "final_label_ids": [],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKT01",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [],
+          "visible_label_ids": [],
+          "final_label_ids": [],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKT02",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [],
+          "visible_label_ids": [],
+          "final_label_ids": [],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKT03",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [],
+          "visible_label_ids": [],
+          "final_label_ids": [],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKT04",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "visible_label_ids": [],
+          "final_label_ids": [],
+          "encoder_lost_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKL01",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [],
+          "visible_label_ids": [],
+          "final_label_ids": [],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKL02",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [],
+          "visible_label_ids": [],
+          "final_label_ids": [],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        }
+      ],
+      "unverified_trace_cases": [],
+      "pool_missing_span_cases": [
+        "TKF01",
+        "TKF02",
+        "TKF04",
+        "TKF05",
+        "TKF06",
+        "TKT01",
+        "TKT02",
+        "TKT03",
+        "TKL01",
+        "TKL02"
+      ],
+      "encoder_lost_span_cases": [
+        "EVS01",
+        "EVS02",
+        "EVS03",
+        "EVS04",
+        "EVF04",
+        "TKF03",
+        "TKT04"
+      ],
+      "final_lost_visible_span_cases": []
+    },
+    "bridge-512": {
+      "input_report_sha256": "06fd4b8be4c2ae0d06b2c0fbe9620923a163daf200a3671f98d8c037ce067ad1",
+      "details": [
+        {
+          "id": "EVS01",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 2,
+            "retained_spans": 2,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 2,
+            "retained_spans": 2,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 2,
+            "retained_spans": 2,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-14:ranges:0",
+            "NHC-HL2024-14:ranges:1"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-14:ranges:0",
+            "NHC-HL2024-14:ranges:1"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-14:ranges:0",
+            "NHC-HL2024-14:ranges:1"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS02",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-23:ranges:0",
+            "NHC-HL2024-23:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-23:ranges:0",
+            "NHC-HL2024-23:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-23:ranges:0",
+            "NHC-HL2024-23:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS03",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS04",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS05",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS06",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS07",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-56:ranges:0",
+            "NHC-HL2024-56:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-56:ranges:0",
+            "NHC-HL2024-56:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-56:ranges:0",
+            "NHC-HL2024-56:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS08",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "BJ-DIARRHEA-20210406:ranges:0",
+            "BJ-DIARRHEA-20210406:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "BJ-DIARRHEA-20210406:ranges:0",
+            "BJ-DIARRHEA-20210406:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "BJ-DIARRHEA-20210406:ranges:0",
+            "BJ-DIARRHEA-20210406:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS09",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-FLU-CARE-20250117:ranges:0",
+            "NHC-FLU-CARE-20250117:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-FLU-CARE-20250117:ranges:0",
+            "NHC-FLU-CARE-20250117:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-FLU-CARE-20250117:ranges:0",
+            "NHC-FLU-CARE-20250117:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS10",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "GZ-POSTMEAL-ABDOMEN-2026:ranges:0",
+            "GZ-POSTMEAL-ABDOMEN-2026:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "GZ-POSTMEAL-ABDOMEN-2026:ranges:0",
+            "GZ-POSTMEAL-ABDOMEN-2026:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "GZ-POSTMEAL-ABDOMEN-2026:ranges:0",
+            "GZ-POSTMEAL-ABDOMEN-2026:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS11",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "FJ-HEADACHE-20260626:ranges:0",
+            "FJ-HEADACHE-20260626:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "FJ-HEADACHE-20260626:ranges:0",
+            "FJ-HEADACHE-20260626:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "FJ-HEADACHE-20260626:ranges:0",
+            "FJ-HEADACHE-20260626:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS12",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-THROAT-20240821:ranges:0"
+          ],
+          "visible_label_ids": [
+            "NHC-THROAT-20240821:ranges:0"
+          ],
+          "final_label_ids": [
+            "NHC-THROAT-20240821:ranges:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVF01",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVF02",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVF03",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-FLU-CARE-20250117:ranges:0",
+            "NHC-FLU-CARE-20250117:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-FLU-CARE-20250117:ranges:0",
+            "NHC-FLU-CARE-20250117:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-FLU-CARE-20250117:ranges:0",
+            "NHC-FLU-CARE-20250117:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVF04",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKF01",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 2,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 2,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 2,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [],
+          "visible_label_ids": [],
+          "final_label_ids": [],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKF02",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [],
+          "visible_label_ids": [],
+          "final_label_ids": [],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKF03",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "visible_label_ids": [],
+          "final_label_ids": [],
+          "encoder_lost_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKF04",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [],
+          "visible_label_ids": [],
+          "final_label_ids": [],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKF05",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [],
+          "visible_label_ids": [],
+          "final_label_ids": [],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKF06",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [],
+          "visible_label_ids": [],
+          "final_label_ids": [],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKT01",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [],
+          "visible_label_ids": [],
+          "final_label_ids": [],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKT02",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [],
+          "visible_label_ids": [],
+          "final_label_ids": [],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKT03",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [],
+          "visible_label_ids": [],
+          "final_label_ids": [],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKT04",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "visible_label_ids": [],
+          "final_label_ids": [],
+          "encoder_lost_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKL01",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [],
+          "visible_label_ids": [],
+          "final_label_ids": [],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKL02",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [],
+          "visible_label_ids": [],
+          "final_label_ids": [],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        }
+      ],
+      "unverified_trace_cases": [],
+      "pool_missing_span_cases": [
+        "TKF01",
+        "TKF02",
+        "TKF04",
+        "TKF05",
+        "TKF06",
+        "TKT01",
+        "TKT02",
+        "TKT03",
+        "TKL01",
+        "TKL02"
+      ],
+      "encoder_lost_span_cases": [
+        "TKF03",
+        "TKT04"
+      ],
+      "final_lost_visible_span_cases": []
+    },
+    "child180-pair256": {
+      "input_report_sha256": "af6b8796dc5a64b9b4c7735e1f20c83cfab6a6329e445ad7538311570cb8b021",
+      "details": [
+        {
+          "id": "EVS01",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 2,
+            "retained_spans": 2,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 2,
+            "retained_spans": 2,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 2,
+            "retained_spans": 2,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-14:ranges:0",
+            "NHC-HL2024-14:ranges:1"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-14:ranges:0",
+            "NHC-HL2024-14:ranges:1"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-14:ranges:0",
+            "NHC-HL2024-14:ranges:1"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS02",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-23:ranges:0",
+            "NHC-HL2024-23:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-23:ranges:0",
+            "NHC-HL2024-23:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-23:ranges:0",
+            "NHC-HL2024-23:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS03",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS04",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS05",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS06",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS07",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-56:ranges:0",
+            "NHC-HL2024-56:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-56:ranges:0",
+            "NHC-HL2024-56:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-56:ranges:0",
+            "NHC-HL2024-56:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS08",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "BJ-DIARRHEA-20210406:ranges:0",
+            "BJ-DIARRHEA-20210406:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "BJ-DIARRHEA-20210406:ranges:0",
+            "BJ-DIARRHEA-20210406:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "BJ-DIARRHEA-20210406:ranges:0",
+            "BJ-DIARRHEA-20210406:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS09",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-FLU-CARE-20250117:ranges:0",
+            "NHC-FLU-CARE-20250117:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-FLU-CARE-20250117:ranges:0",
+            "NHC-FLU-CARE-20250117:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-FLU-CARE-20250117:ranges:0",
+            "NHC-FLU-CARE-20250117:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS10",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "GZ-POSTMEAL-ABDOMEN-2026:ranges:0",
+            "GZ-POSTMEAL-ABDOMEN-2026:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "GZ-POSTMEAL-ABDOMEN-2026:ranges:0",
+            "GZ-POSTMEAL-ABDOMEN-2026:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "GZ-POSTMEAL-ABDOMEN-2026:ranges:0",
+            "GZ-POSTMEAL-ABDOMEN-2026:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS11",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "FJ-HEADACHE-20260626:ranges:0",
+            "FJ-HEADACHE-20260626:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "FJ-HEADACHE-20260626:ranges:0",
+            "FJ-HEADACHE-20260626:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "FJ-HEADACHE-20260626:ranges:0",
+            "FJ-HEADACHE-20260626:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS12",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-THROAT-20240821:ranges:0"
+          ],
+          "visible_label_ids": [
+            "NHC-THROAT-20240821:ranges:0"
+          ],
+          "final_label_ids": [
+            "NHC-THROAT-20240821:ranges:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVF01",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVF02",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVF03",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-FLU-CARE-20250117:ranges:0",
+            "NHC-FLU-CARE-20250117:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-FLU-CARE-20250117:ranges:0",
+            "NHC-FLU-CARE-20250117:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-FLU-CARE-20250117:ranges:0",
+            "NHC-FLU-CARE-20250117:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVF04",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKF01",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 2,
+            "retained_spans": 2,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 2,
+            "retained_spans": 2,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 2,
+            "retained_spans": 2,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-14:ranges:0",
+            "NHC-HL2024-14:ranges:1"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-14:ranges:0",
+            "NHC-HL2024-14:ranges:1"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-14:ranges:0",
+            "NHC-HL2024-14:ranges:1"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKF02",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-23:ranges:0",
+            "NHC-HL2024-23:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-23:ranges:0",
+            "NHC-HL2024-23:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-23:ranges:0",
+            "NHC-HL2024-23:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKF03",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKF04",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKF05",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKF06",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "BJ-DIARRHEA-20210406:ranges:0",
+            "BJ-DIARRHEA-20210406:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "BJ-DIARRHEA-20210406:ranges:0",
+            "BJ-DIARRHEA-20210406:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "BJ-DIARRHEA-20210406:ranges:0",
+            "BJ-DIARRHEA-20210406:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKT01",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKT02",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [],
+          "visible_label_ids": [],
+          "final_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKT03",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-FLU-CARE-20250117:ranges:0",
+            "NHC-FLU-CARE-20250117:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-FLU-CARE-20250117:ranges:0",
+            "NHC-FLU-CARE-20250117:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-FLU-CARE-20250117:ranges:0",
+            "NHC-FLU-CARE-20250117:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKT04",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKL01",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [],
+          "visible_label_ids": [],
+          "final_label_ids": [],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKL02",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        }
+      ],
+      "unverified_trace_cases": [],
+      "pool_missing_span_cases": [
+        "TKT02",
+        "TKL01"
+      ],
+      "encoder_lost_span_cases": [],
+      "final_lost_visible_span_cases": []
+    },
+    "child220-pair384": {
+      "input_report_sha256": "c700476433911f19ddf46adaf1acaf1eb0fd7809dbc53de7204d27b0bf089220",
+      "details": [
+        {
+          "id": "EVS01",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 2,
+            "retained_spans": 2,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 2,
+            "retained_spans": 2,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 2,
+            "retained_spans": 2,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-14:ranges:0",
+            "NHC-HL2024-14:ranges:1"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-14:ranges:0",
+            "NHC-HL2024-14:ranges:1"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-14:ranges:0",
+            "NHC-HL2024-14:ranges:1"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS02",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-23:ranges:0",
+            "NHC-HL2024-23:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-23:ranges:0",
+            "NHC-HL2024-23:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-23:ranges:0",
+            "NHC-HL2024-23:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS03",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS04",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS05",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS06",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS07",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-56:ranges:0",
+            "NHC-HL2024-56:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-56:ranges:0",
+            "NHC-HL2024-56:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-56:ranges:0",
+            "NHC-HL2024-56:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS08",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "BJ-DIARRHEA-20210406:ranges:0",
+            "BJ-DIARRHEA-20210406:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "BJ-DIARRHEA-20210406:ranges:0",
+            "BJ-DIARRHEA-20210406:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "BJ-DIARRHEA-20210406:ranges:0",
+            "BJ-DIARRHEA-20210406:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS09",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-FLU-CARE-20250117:ranges:0",
+            "NHC-FLU-CARE-20250117:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-FLU-CARE-20250117:ranges:0",
+            "NHC-FLU-CARE-20250117:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-FLU-CARE-20250117:ranges:0",
+            "NHC-FLU-CARE-20250117:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS10",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "GZ-POSTMEAL-ABDOMEN-2026:ranges:0",
+            "GZ-POSTMEAL-ABDOMEN-2026:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "GZ-POSTMEAL-ABDOMEN-2026:ranges:0",
+            "GZ-POSTMEAL-ABDOMEN-2026:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "GZ-POSTMEAL-ABDOMEN-2026:ranges:0",
+            "GZ-POSTMEAL-ABDOMEN-2026:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS11",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "FJ-HEADACHE-20260626:ranges:0",
+            "FJ-HEADACHE-20260626:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "FJ-HEADACHE-20260626:ranges:0",
+            "FJ-HEADACHE-20260626:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "FJ-HEADACHE-20260626:ranges:0",
+            "FJ-HEADACHE-20260626:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVS12",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-THROAT-20240821:ranges:0"
+          ],
+          "visible_label_ids": [
+            "NHC-THROAT-20240821:ranges:0"
+          ],
+          "final_label_ids": [
+            "NHC-THROAT-20240821:ranges:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVF01",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVF02",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVF03",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-FLU-CARE-20250117:ranges:0",
+            "NHC-FLU-CARE-20250117:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-FLU-CARE-20250117:ranges:0",
+            "NHC-FLU-CARE-20250117:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-FLU-CARE-20250117:ranges:0",
+            "NHC-FLU-CARE-20250117:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "EVF04",
+          "group": "evidence-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKF01",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 2,
+            "retained_spans": 2,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 2,
+            "retained_spans": 2,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 2,
+            "retained_spans": 2,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-14:ranges:0",
+            "NHC-HL2024-14:ranges:1"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-14:ranges:0",
+            "NHC-HL2024-14:ranges:1"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-14:ranges:0",
+            "NHC-HL2024-14:ranges:1"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKF02",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [],
+          "visible_label_ids": [],
+          "final_label_ids": [],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKF03",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKF04",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKF05",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKF06",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "BJ-DIARRHEA-20210406:ranges:0",
+            "BJ-DIARRHEA-20210406:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "BJ-DIARRHEA-20210406:ranges:0",
+            "BJ-DIARRHEA-20210406:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "BJ-DIARRHEA-20210406:ranges:0",
+            "BJ-DIARRHEA-20210406:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKT01",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKT02",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 0,
+            "critical_conditions": 1,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [],
+          "visible_label_ids": [],
+          "final_label_ids": [
+            "NHC-HL2024-32:ranges:0",
+            "NHC-HL2024-32:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKT03",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 1,
+            "retained_conditions": 1
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-FLU-CARE-20250117:ranges:0",
+            "NHC-FLU-CARE-20250117:required_conditions:0"
+          ],
+          "visible_label_ids": [
+            "NHC-FLU-CARE-20250117:ranges:0",
+            "NHC-FLU-CARE-20250117:required_conditions:0"
+          ],
+          "final_label_ids": [
+            "NHC-FLU-CARE-20250117:ranges:0",
+            "NHC-FLU-CARE-20250117:required_conditions:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKT04",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKL01",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-26:ranges:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        },
+        {
+          "id": "TKL02",
+          "group": "token-input-regression",
+          "full_recorded_pool": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "actual_model_input": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "final_pack": {
+            "evidence_spans": 1,
+            "retained_spans": 1,
+            "critical_conditions": 0,
+            "retained_conditions": 0
+          },
+          "unknown_recorded_chunks": [],
+          "input_trace_present": true,
+          "full_pool_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "visible_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "final_label_ids": [
+            "NHC-HL2024-56:ranges:0"
+          ],
+          "encoder_lost_label_ids": [],
+          "final_lost_visible_label_ids": []
+        }
+      ],
+      "unverified_trace_cases": [],
+      "pool_missing_span_cases": [
+        "TKF02",
+        "TKT02"
+      ],
+      "encoder_lost_span_cases": [],
+      "final_lost_visible_span_cases": []
+    }
+  }
+}
