@@ -12,6 +12,8 @@ import os
 import threading
 from pathlib import Path
 
+from .token_budget import PairBudget, POLICIES, prepare_pair, tokenizer_fingerprint
+
 
 MODEL_ID = "BAAI/bge-reranker-base"
 MODEL_REVISION = "af37ed791788201a1cdcf513e0f584f3aa3be105"
@@ -36,11 +38,13 @@ class BGEReranker:
     """Lazy CPU cross encoder returning sigmoid-normalized relevance scores."""
 
     def __init__(self, model_dir: Path | str | None = None, batch_size: int = 4,
-                 max_length: int = 384):
+                 max_length: int = 384, input_policy: str = "legacy"):
         if batch_size < 1:
             raise ValueError("batch_size must be positive")
-        if max_length < 64:
-            raise ValueError("max_length must be at least 64")
+        if type(max_length) is not int or not 64 <= max_length <= 512:
+            raise ValueError("max_length must be between 64 and 512")
+        if input_policy not in POLICIES:
+            raise ValueError("unknown encoder input policy")
         self.model_dir = Path(
             model_dir or os.getenv("MEDICAL_RERANKER_MODEL_DIR", DEFAULT_MODEL_DIR)
         ).resolve()
@@ -54,6 +58,9 @@ class BGEReranker:
             raise ValueError("local BGE reranker weights differ from the pinned official model")
         self.batch_size = batch_size
         self.max_length = max_length
+        self.input_policy = input_policy
+        self.tokenizer_sha256 = tokenizer_fingerprint(self.model_dir)
+        self._trace = threading.local()
         self._tokenizer = None
         self._model = None
         self._torch = None
@@ -62,6 +69,10 @@ class BGEReranker:
 
     def name(self) -> str:
         return f"{MODEL_ID}@{MODEL_REVISION}"
+
+    def input_trace(self) -> list[dict]:
+        """Token counts/ranges only; never persist a user's question or passage."""
+        return list(getattr(self._trace, "rows", []))
 
     def _load(self) -> None:
         if self._model is not None:
@@ -82,20 +93,25 @@ class BGEReranker:
             self._torch = torch
 
     def score(self, query: str, passages: list[str]) -> list[float]:
+        self._trace.rows = []
         if not passages:
             return []
         self._load()
         scores: list[float] = []
-        pairs = [[query, passage] for passage in passages]
         # A single shared CPU model is cheaper and more predictable than
         # allowing concurrent forwards to oversubscribe all worker threads.
         with self._inference_lock:
-            for start in range(0, len(pairs), self.batch_size):
-                batch = pairs[start : start + self.batch_size]
-                tokens = self._tokenizer(
-                    batch, padding=True, truncation=True, max_length=self.max_length,
-                    return_tensors="pt",
-                )
+            self._trace.rows = []
+            inputs = []
+            # Small experimental lengths must still reserve body space.
+            budget = PairBudget(self.max_length, min(64, self.max_length//4),
+                                min(32, self.max_length//8), min(32, self.max_length//4))
+            for passage in passages:
+                item, trace = prepare_pair(self._tokenizer, query, passage, budget, self.input_policy)
+                inputs.append(item)
+                self._trace.rows.append(trace)
+            for start in range(0, len(inputs), self.batch_size):
+                tokens = self._tokenizer.pad(inputs[start:start+self.batch_size], padding=True, return_tensors="pt")
                 with self._torch.inference_mode():
                     logits = self._model(**tokens, return_dict=True).logits.view(-1)
                 # Stable sigmoid avoids overflow for large negative logits.

@@ -4,7 +4,7 @@ import json
 import time
 
 from medical.runtime import last_search_metrics, search_with_metrics
-from medical.chat import contextual_facts_query, is_out_of_scope, is_urgent
+from medical.chat import contextual_facts_query, clip_retrieval_query, is_out_of_scope, is_urgent
 from medical.evidence_contract import EvidenceBudget, build_evidence_pack
 
 
@@ -38,7 +38,7 @@ def register_medical_tools(mcp):
             last_error = None
             for attempt in range(2):
                 try:
-                    hits = search_with_metrics(retrieval_query[:1000], preview=False, limit=max(1, min(top_k, 8)))
+                    hits = search_with_metrics(clip_retrieval_query(retrieval_query), preview=False, limit=max(1, min(top_k, 8)))
                     break
                 except (RuntimeError, ValueError) as exc:
                     last_error = exc

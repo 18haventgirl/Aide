@@ -7,7 +7,7 @@ import time
 from pathlib import Path
 
 from .runtime import get_knowledge_base
-from .chat import is_urgent, is_out_of_scope, contextual_facts_query
+from .chat import is_urgent, is_out_of_scope, contextual_facts_query, clip_retrieval_query
 
 QUERY_CONTRACT = "explicit_user_facts_v1"
 
@@ -71,7 +71,7 @@ def evaluate(kb, cases: list[dict], k: int = 3) -> dict:
         outside_scope = is_out_of_scope(query)
         search_started = time.perf_counter()
         retrieved = ([] if outside_scope else
-                     list(dict.fromkeys(hit.doc_id for hit in kb.search(query[:1000], limit=20))))
+                     list(dict.fromkeys(hit.doc_id for hit in kb.search(clip_retrieval_query(query), limit=20))))
         latency_ms = (time.perf_counter() - search_started) * 1000
         retrieval_latencies.append(latency_ms)
         operational = {"latency_ms": round(latency_ms, 2),

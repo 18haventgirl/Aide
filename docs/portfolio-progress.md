@@ -1,6 +1,6 @@
 # Aide 升级进度与交接记录
 
-更新：2026-10-15。主方案：`portfolio-upgrade-plan.md`；原因分析：`rag-evaluation-engineering-review.md`；当前执行清单：`rag-engineering-execution-plan.md`。
+更新：2026-10-16。主方案：`portfolio-upgrade-plan.md`；原因分析：`rag-evaluation-engineering-review.md`；当前执行清单：`rag-engineering-execution-plan.md`。
 
 ## 当前状态
 
@@ -102,3 +102,12 @@
 - 真实MCP HTTP四项及引用解析通过；UI3000/API8004/MCP8002启动，其他8000保留，同源health healthy。临时前端页显示已连接admin，3条启动WebSocket错误保留，不宣称零错误或生成链路已验。
 - 新增`evidence-contract-stage1-acceptance.md`；执行清单1.1～1.5已勾选。阶段1验收边界为工具证据包/原文范围与基线；完整LLM消息和答案仍由阶段5验收。
 - 下一阶段：token预算、长追问与512桥接对照，然后结构切片。未修改重排在线长度/门槛来抬高本轮分数。
+## 2026-10-16 阶段2候选实现（待模型对照）
+
+- 继续按六阶段方案推进；当前阶段1已验收，阶段2没有宣称完成。
+- 新增token预算、当前问题优先、原文offset父子切片、QA/表格结构处理、父段扩展与重复上下文去重。旧切片和默认重排输入策略保留。
+- 评测增加“实际重排可见范围”检查；真实执行失败或降级不会被计为成功的rerank实验。新16题工程回归及suite_v5共274题，均非新独立验证集。
+- 新增四配置串行/可恢复的真实实验入口；文件锁阻止同目录并发，失败报告保留，恢复需相同代码/数据/配置。
+- 80项相关测试通过。首次真实tokenizer审计：180-token方案322块/2处长单元拆分，220-token方案249块/0处拆分；原文映射与实际句对子块正文裁剪检查均无失败。之后补强真实heading映射，提交后会重新审计。
+- 内存检查约984MiB，不满足1536MiB模型实验门槛；未关闭用户其他程序，用户表示释放后通知。当前无本项目服务可释放。模型效果/资源矩阵尚未运行；线上索引和`.env`未切换。
+- 详细参数、预设验收门槛、执行/恢复方法见`rag-stage2-input-and-chunking.md`。

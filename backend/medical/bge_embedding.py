@@ -35,9 +35,13 @@ def model_file_hash(model_dir: Path) -> str:
 class BGEEmbedding:
     dimensions = DIMENSIONS
 
-    def __init__(self, model_dir: Path | str | None = None, batch_size: int = 8):
+    def __init__(self, model_dir: Path | str | None = None, batch_size: int = 8,
+                 query_input_policy: str = "legacy"):
         if batch_size < 1:
             raise ValueError("batch_size must be positive")
+        if query_input_policy not in {"legacy", "query_first_v1"}:
+            raise ValueError("unknown embedding query policy")
+        self.query_input_policy = query_input_policy
         self.model_dir = Path(model_dir or os.getenv("MEDICAL_BGE_MODEL_DIR", DEFAULT_MODEL_DIR)).resolve()
         missing = [name for name in REQUIRED_FILES if not (self.model_dir / name).is_file()]
         if missing:
@@ -97,6 +101,24 @@ class BGEEmbedding:
         return self._encode(list(texts))
 
     def embed_queries(self, queries: list[str]) -> list[list[float]]:
+        if self.query_input_policy == "query_first_v1" and queries:
+            from .token_budget import prepare_query
+            self._load()
+            instruction = self._tokenizer(QUERY_INSTRUCTION, add_special_tokens=False)["input_ids"]
+            budget = 512-self._tokenizer.num_special_tokens_to_add(pair=False)-len(instruction)
+            prepared = []
+            for query in queries:
+                ids, _, _ = prepare_query(self._tokenizer, query, budget)
+                prepared.append(dict(self._tokenizer.prepare_for_model(instruction+ids, truncation=False,
+                                                                        return_attention_mask=True)))
+            output = []
+            for start in range(0, len(prepared), self.batch_size):
+                tokens = self._tokenizer.pad(prepared[start:start+self.batch_size], padding=True, return_tensors="pt")
+                with self._torch.inference_mode():
+                    hidden = self._model(**tokens).last_hidden_state[:, 0]
+                    vectors = self._torch.nn.functional.normalize(hidden, p=2, dim=1)
+                output.extend(vectors.cpu().tolist())
+            return output
         return self._encode([QUERY_INSTRUCTION + query for query in queries])
 
     def __call__(self, input: list[str]) -> list[list[float]]:

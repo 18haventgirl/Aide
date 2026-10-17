@@ -2,17 +2,17 @@
 from dataclasses import asdict
 import time
 
-from ..chat import contextual_facts_query, is_out_of_scope, is_urgent
+from ..chat import contextual_facts_query, clip_retrieval_query, is_out_of_scope, is_urgent
 from ..evaluate import validate_cases, QUERY_CONTRACT
 from ..evidence_contract import EvidenceBudget, build_evidence_pack, canonical_hash
 from ..source_provenance import SourceResolver
 from .metrics import validate_references, score_ranges
 
 
-def evaluate_evidence(searcher, cases, documents, budget=None):
+def evaluate_evidence(searcher, cases, documents, budget=None, resolver=None, measure_rerank_visibility=None):
     validate_cases(cases)
     validate_references(cases, documents)
-    resolver = SourceResolver(documents)
+    resolver = resolver or SourceResolver(documents)
     budget = budget or EvidenceBudget()
     rows = []
     positive = followup = negative = urgent = rejected = urgent_ok = errors = 0
@@ -21,6 +21,8 @@ def evaluate_evidence(searcher, cases, documents, budget=None):
     totals = {key: 0 for key in ("evidence_spans", "retained_spans", "critical_conditions", "retained_conditions")}
     relevant_chunks = judged_chunks = 0
     forbidden_cases = forbidden_hits = forbidden_unknown = 0
+    visible_spans = visible_conditions = visible_labelled_cases = 0
+    visible_span_total = visible_condition_total = 0
     for case in cases:
         kind = case.get("kind", "supported")
         expected = set(case.get("expected_doc_ids", []))
@@ -36,6 +38,9 @@ def evaluate_evidence(searcher, cases, documents, budget=None):
         for reference in refs:
             totals["evidence_spans"] += len(reference["ranges"])
             totals["critical_conditions"] += len(reference.get("required_conditions", []))
+            if measure_rerank_visibility:
+                visible_span_total += len(reference["ranges"])
+                visible_condition_total += len(reference.get("required_conditions", []))
         row = {"id": case["id"], "kind": kind, "status": "ok"}
         started = time.perf_counter()
         try:
@@ -46,7 +51,7 @@ def evaluate_evidence(searcher, cases, documents, budget=None):
             else:
                 query = contextual_facts_query(case["query"], case["history"] if kind == "followup" else "")
                 gated = is_out_of_scope(query)
-                hits = [] if gated else searcher.search(query[:1000], limit=budget.max_chunks)
+                hits = [] if gated else searcher.search(clip_retrieval_query(query), limit=budget.max_chunks)
                 pack = build_evidence_pack(hits, budget, resolver)
                 found = set(hit["doc_id"] for hit in pack["hits"])
                 row["forbidden_retrieved"] = sorted(found & forbidden)
@@ -62,6 +67,21 @@ def evaluate_evidence(searcher, cases, documents, budget=None):
                             stage_ids = {h.doc_id for h in trace[name]}
                             value = len(expected & stage_ids)/len(expected)
                             row[f"candidate_{name}_recall"] = value
+                    visibility = trace.get("rerank_visibility")
+                    if refs and visibility is not None:
+                        visible_pack = {"hits": [{"doc_id": item["hit"].doc_id,
+                            "source_mapping": resolver.resolve_intervals(item["hit"], item["input"]["passage_ranges"])}
+                            for item in visibility]}
+                        retained = score_ranges(visible_pack, refs, resolver.documents)
+                        row["rerank_visible_ranges"] = retained
+                        row["rerank_inputs"] = [{"chunk_id": item["hit"].chunk_id, "doc_id": item["hit"].doc_id,
+                                                **item["input"]} for item in visibility]
+                        visible_labelled_cases += 1
+                        visible_spans += retained["retained_spans"]
+                        visible_conditions += retained["retained_conditions"]
+                        if not measure_rerank_visibility:
+                            visible_span_total += retained["evidence_spans"]
+                            visible_condition_total += retained["critical_conditions"]
                 if kind == "unanswerable":
                     row["rejected"] = not bool(pack["hits"])
                 ranges = score_ranges(pack, refs, resolver.documents)
@@ -104,6 +124,13 @@ def evaluate_evidence(searcher, cases, documents, budget=None):
             "candidate_rerank_pool_document_recall": ratio(pool_recall, pool_count),
             "candidate_trace_cases": {"union": union_count, "rerank_pool": pool_count},
             "candidate_coverage_basis": "full_source_chunks_not_model_token_visibility",
+            "rerank_visibility_labelled_cases": visible_labelled_cases,
+            "unverified_rerank_visibility_cases": labelled-visible_labelled_cases if measure_rerank_visibility else None,
+            "rerank_visibility_basis": ("all_labelled_ranges_in_requested_run_errors_zero" if measure_rerank_visibility
+                                        else "observed_input_traces_only"),
+            "rerank_visibility_spans": visible_span_total, "rerank_visibility_conditions": visible_condition_total,
+            "rerank_visible_span_recall": ratio(visible_spans, visible_span_total),
+            "rerank_visible_condition_retention": ratio(visible_conditions, visible_condition_total),
             "unanswerable_rejection_rate": ratio(rejected, negative),
             "forbidden_hit_rate_at_budget": ratio(forbidden_hits, forbidden_cases) if not forbidden_unknown else None,
             "forbidden_labelled_cases": forbidden_cases, "forbidden_unverified_cases": forbidden_unknown,

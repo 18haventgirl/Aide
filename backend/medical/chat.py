@@ -92,3 +92,21 @@ def contextual_facts_query(question: str, prior_user_facts: str = "") -> str:
     if not facts:
         return current
     return f"用户此前明确陈述：{facts}\n当前问题：{current}"
+
+
+def clip_retrieval_query(query: str, max_chars: int = 1000) -> str:
+    """Bound retrieval input without letting old facts evict the question.
+
+    Run scope/urgency checks on the FULL query before using this function.
+    This is a transport cap, separate from the tokenizer's actual budget.
+    """
+    if len(query) <= max_chars:
+        return query
+    from .token_budget import query_parts
+    current, _, facts, _ = query_parts(query)
+    if len(current) >= max_chars:
+        head = (max_chars-3)//2
+        return current[:head]+" … "+current[-(max_chars-head-3):]
+    prefix, marker = "用户此前明确陈述：", "\n当前问题："
+    room = max_chars-len(current)-len(prefix)-len(marker)
+    return prefix+facts[-room:]+marker+current if facts and room > 0 else current

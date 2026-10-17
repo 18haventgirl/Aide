@@ -102,7 +102,7 @@ class KeywordBaseline:
         ranked = self.index.ranked(query, len(self.rows))
         self._last_ranked = [cid for cid, _ in ranked
                              if self.kb._metadata_is_current(self.rows[cid]["metadata"], today or date.today())]
-        counts, output = Counter(), []
+        counts, output, seen_contexts = Counter(), [], set()
         for cid, score in ranked:
             row = self.rows[cid]
             if not self.kb._metadata_is_current(row["metadata"], today or date.today()):
@@ -110,8 +110,12 @@ class KeywordBaseline:
             doc_id = row["metadata"]["doc_id"]
             if counts[doc_id] >= int(PARAMETERS["MEDICAL_MAX_CHUNKS_PER_DOCUMENT"]):
                 continue
+            hit = self.kb._to_hit({**row, "lexical_score": score}, expand=True)
+            if self.kb.chunker and (doc_id, hit.text) in seen_contexts:
+                continue
+            seen_contexts.add((doc_id, hit.text))
             counts[doc_id] += 1
-            output.append(self.kb._to_hit({**row, "lexical_score": score}))
+            output.append(hit)
             if len(output) == limit:
                 break
         self.metrics = {"candidate_count": len(ranked), "selected_count": len(output),
@@ -147,6 +151,7 @@ def repository_version():
         files = ["experiment.py", "evaluate.py", "knowledge_base.py", "chunking.py", "lexical.py",
                  "chat.py", "schema.py", "bge_embedding.py", "bge_reranker.py",
                  "evidence_contract.py", "source_provenance.py", "evaluation/evidence.py", "evaluation/metrics.py"]
+        files += ["token_budget.py", "token_chunking.py"]
         return {"commit": git("rev-parse", "HEAD"),
                 "retrieval_implementation_sha256": digest({name: hashlib.sha256((MEDICAL/name).read_bytes()).hexdigest() for name in files}),
                 "tracked_changes": bool(git("status", "--porcelain", "--untracked-files=no"))}
@@ -171,15 +176,20 @@ def mode_comparisons(results, k):
 
 
 def run_experiment(manifest_path, corpus_path, output, groups=None, profiles=PROFILES, k=5,
-                   metric_contract="evidence-v1"):
+                   metric_contract="evidence-v1", *, rerank_max_length=256, input_policy="legacy",
+                   chunk_strategy="legacy", child_tokens=180):
     output.parent.mkdir(parents=True, exist_ok=True)
     initial = {"report_version": "retrieval_experiment_v2", "complete": False,
-               "stage": "preflight", "started_at_utc": datetime.now(timezone.utc).isoformat()}
+               "stage": "preflight", "started_at_utc": datetime.now(timezone.utc).isoformat(),
+               "requested": {"suite": str(manifest_path), "groups": groups, "profiles": list(profiles), "k": k,
+                             "metric_contract": metric_contract, "rerank_max_length": rerank_max_length,
+                             "input_policy": input_policy, "chunk_strategy": chunk_strategy, "child_tokens": child_tokens}}
     # Exclusive reservation protects historical runs, including concurrent writers.
     with output.open("x", encoding="utf-8") as handle:
         json.dump(initial, handle)
     try:
-        return _run_experiment(manifest_path, corpus_path, output, groups, profiles, k, metric_contract)
+        return _run_experiment(manifest_path, corpus_path, output, groups, profiles, k, metric_contract,
+                               rerank_max_length, input_policy, chunk_strategy, child_tokens)
     except Exception as exc:
         current = json.loads(output.read_text(encoding="utf-8"))
         current.update(complete=False, failure_type=type(exc).__name__)
@@ -187,7 +197,15 @@ def run_experiment(manifest_path, corpus_path, output, groups=None, profiles=PRO
         raise
 
 
-def _run_experiment(manifest_path, corpus_path, output, groups, profiles, k, metric_contract):
+def _run_experiment(manifest_path, corpus_path, output, groups, profiles, k, metric_contract,
+                    rerank_max_length, input_policy, chunk_strategy, child_tokens):
+    from .token_budget import POLICIES
+    if (type(rerank_max_length) is not int or not 64 <= rerank_max_length <= 512
+            or input_policy not in POLICIES or chunk_strategy not in {"legacy", "token-v1"}
+            or type(child_tokens) is not int or not 64 <= child_tokens <= 220):
+        raise ValueError("invalid experimental token settings")
+    if chunk_strategy == "token-v1" and input_policy != "query_first_v1":
+        raise ValueError("token chunks require explicit query/passage budgets")
     if metric_contract not in {"evidence-v1", "legacy-doc-v3"}:
         raise ValueError("unknown metric contract")
     manifest, cases_by_group = load_suite(manifest_path)
@@ -222,11 +240,14 @@ def _run_experiment(manifest_path, corpus_path, output, groups, profiles, k, met
         "started_at_utc": datetime.now(timezone.utc).isoformat(), "code": repository_version(),
         "suite": manifest, "suite_manifest_sha256": hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
         "query_contract": QUERY_CONTRACT,
+        "query_transport_contract": "current_question_first_charcap_v1",
         "selected_groups": selected, "profiles": list(profiles), "k": k,
         "corpus_sha256": digest([d.model_dump(mode="json") for d in documents]),
         "corpus_documents": len(documents), "eligible_documents": len(eligible),
         "unavailable_expected_doc_ids": unavailable, "index_version": INDEX_VERSION,
         "parameters": PARAMETERS, "cpu_threads": 2, "memory_before": before,
+        "input_settings": {"rerank_max_length": rerank_max_length, "input_policy": input_policy,
+                           "chunk_strategy": chunk_strategy, "child_tokens": child_tokens if chunk_strategy == "token-v1" else None},
         "ranking_constants": {"rrf_k": 60, "dense_weight": .6, "lexical_weight": .4,
                               "rerank_pool_dense_quota": 5, "rerank_pool_lexical_quota": 3},
         "metric_definitions": {"mrr": "first relevant document within top K only",
@@ -250,7 +271,7 @@ def _run_experiment(manifest_path, corpus_path, output, groups, profiles, k, met
         from .bge_reranker import BGEReranker
         torch.set_num_threads(2)
         started = time.perf_counter()
-        embedding = BGEEmbedding(batch_size=4)
+        embedding = BGEEmbedding(batch_size=4, query_input_policy=input_policy)
         report["embedding"] = {"name": embedding.name(), "weight_sha256": embedding.weight_sha256,
                                "batch_size": 4, "dimensions": 512}
         report["packages"] = {p: importlib.metadata.version(p) for p in ("torch", "transformers", "chromadb", "jieba")}
@@ -260,10 +281,18 @@ def _run_experiment(manifest_path, corpus_path, output, groups, profiles, k, met
             client = chromadb.EphemeralClient(settings=Settings(anonymized_telemetry=False))
             if client.list_collections():
                 raise ValueError("experiment requires a fresh isolated Chroma process")
-            kb = MedicalKnowledgeBase(client, embedding, embedding.name(), research_mode=True)
+            chunker = None
+            if chunk_strategy == "token-v1":
+                from .token_chunking import TokenChunker
+                chunker = TokenChunker.local(child_tokens=child_tokens)
+                report["chunking"] = {**chunker.config, "index_version": chunker.version}
+            kb = MedicalKnowledgeBase(client, embedding, embedding.name(), research_mode=True, chunker=chunker)
+            report["index_version"] = kb.index_version
             cleanup.callback(client.delete_collection, kb.collection.name)
             report["index_sync"] = kb.sync(documents, today=day)
             report["index_chunks"] = kb.collection.count()
+            from .source_provenance import SourceResolver
+            resolver = SourceResolver(documents, chunker=chunker)
             report["index_build_and_embedding_load_ms"] = round((time.perf_counter()-started)*1000, 1)
             keyword = KeywordBaseline(kb)
             for profile in profiles:
@@ -274,18 +303,20 @@ def _run_experiment(manifest_path, corpus_path, output, groups, profiles, k, met
                 kb.reranker_requested = profile == "rerank"
                 if profile == "rerank":
                     require_available(1536)
-                    model = BGEReranker(batch_size=1, max_length=256)
+                    model = BGEReranker(batch_size=1, max_length=rerank_max_length, input_policy=input_policy)
                     started = time.perf_counter()
                     model._load()
                     report["reranker"] = {"name": model.name(), "weight_sha256": model.weight_sha256,
                                           "load_ms": round((time.perf_counter()-started)*1000, 1),
-                                          "max_length": 256, "batch_size": 1}
+                                          "max_length": rerank_max_length, "batch_size": 1,
+                                          "input_policy": input_policy, "tokenizer_sha256": model.tokenizer_sha256}
                     kb.reranker = model
                 for name in selected:
                     report["stage"] = f"evaluate:{profile}:{name}"
                     save()
                     searcher = DatedSearch(keyword if profile == "keyword" else kb, day)
-                    result = (evaluate_evidence(searcher, cases_by_group[name], documents, budget)
+                    result = (evaluate_evidence(searcher, cases_by_group[name], documents, budget, resolver,
+                                                measure_rerank_visibility=profile == "rerank")
                               if budget else evaluate(searcher, cases_by_group[name], k))
                     timings = [r["latency_ms"] for r in result["details"] if "latency_ms" in r
                                and (not budget or ("evidence_pack" in r and not r.get("scope_gated")))]
@@ -293,6 +324,9 @@ def _run_experiment(manifest_path, corpus_path, output, groups, profiles, k, met
                     result["first_search_ms"] = timings[0] if timings else None
                     result["subsequent_search_p95_ms"] = warm[math.ceil(.95*len(warm))-1] if warm else None
                     result["reranker_status_counts"] = dict(Counter(r.get("diagnostics", {}).get("reranker_status", "not_searched") for r in result["details"]))
+                    result["rerank_execution_failures"] = (sum(
+                        count for status, count in result["reranker_status_counts"].items()
+                        if status not in {"applied", "not_searched"}) if profile == "rerank" else 0)
                     report["results"][name][profile] = result
                     report["memory_after"] = memory_status()
                     save()
@@ -302,7 +336,8 @@ def _run_experiment(manifest_path, corpus_path, output, groups, profiles, k, met
                         "reranker_status": result["reranker_status_counts"]}), flush=True)
             report["comparisons"] = mode_comparisons(report["results"], k)
             report["evaluation_error_cases"] = sum(r.get("error_cases", 0) for modes in report["results"].values() for r in modes.values())
-            report["complete"] = report["evaluation_error_cases"] == 0
+            report["rerank_execution_failures"] = sum(r["rerank_execution_failures"] for modes in report["results"].values() for r in modes.values())
+            report["complete"] = report["evaluation_error_cases"] == report["rerank_execution_failures"] == 0
             report["stage"] = "finished"
             save()
     except Exception as exc:
@@ -328,8 +363,14 @@ def main():
     parser.add_argument("--profiles", nargs="+", choices=PROFILES, default=list(PROFILES))
     parser.add_argument("--k", type=int, default=5)
     parser.add_argument("--metric-contract", choices=("evidence-v1", "legacy-doc-v3"), default="evidence-v1")
+    parser.add_argument("--rerank-max-length", type=int, default=256)
+    parser.add_argument("--input-policy", choices=("legacy", "query_first_v1"), default="legacy")
+    parser.add_argument("--chunk-strategy", choices=("legacy", "token-v1"), default="legacy")
+    parser.add_argument("--child-tokens", type=int, default=180)
     args = parser.parse_args()
-    run_experiment(args.suite, args.corpus, args.output, args.group, args.profiles, args.k, args.metric_contract)
+    run_experiment(args.suite, args.corpus, args.output, args.group, args.profiles, args.k, args.metric_contract,
+                   rerank_max_length=args.rerank_max_length, input_policy=args.input_policy,
+                   chunk_strategy=args.chunk_strategy, child_tokens=args.child_tokens)
 
 
 if __name__ == "__main__":

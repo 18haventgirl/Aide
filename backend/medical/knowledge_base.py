@@ -35,7 +35,7 @@ def load_corpus(directory: Path) -> list[MedicalDocument]:
 class MedicalKnowledgeBase:
     def __init__(self, chroma_client: Any, embedding_function: Any, embedding_model: str,
                  preview: bool = False, research_mode: bool = False, reranker: Any = None,
-                 reranker_requested: bool = False):
+                 reranker_requested: bool = False, chunker: Any = None):
         self.preview = preview
         self.research_mode = research_mode and not preview
         self.max_distance = (float(os.getenv("MEDICAL_RESEARCH_MAX_DISTANCE", "0.50"))
@@ -43,6 +43,7 @@ class MedicalKnowledgeBase:
                              else None)
         self.use_lexical = self.max_distance is not None and os.getenv("MEDICAL_RESEARCH_USE_LEXICAL", "true").lower() == "true"
         self.embedding_function = embedding_function
+        self.chunker = chunker
         self.reranker = reranker
         self.reranker_requested = reranker_requested
         self._lexical_index = None
@@ -51,10 +52,15 @@ class MedicalKnowledgeBase:
         self._search_state = threading.local()
         collection_name = (PREVIEW_COLLECTION_NAME if preview else
                            RESEARCH_COLLECTION_NAME if self.research_mode else COLLECTION_NAME)
+        if chunker is not None:
+            if preview:
+                raise ValueError("token chunks require the real embedding index")
+            collection_name += "_"+chunker.version
+        self.index_version = chunker.version if chunker else (PREVIEW_INDEX_VERSION if preview else INDEX_VERSION)
         expected_metadata = {
             "embedding_model": embedding_model,
             "embedding_weight_sha256": getattr(embedding_function, "weight_sha256", "unversioned"),
-            "index_version": PREVIEW_INDEX_VERSION if preview else INDEX_VERSION,
+            "index_version": self.index_version,
             "preview": preview,
             "research_mode": self.research_mode,
             "hnsw:space": "cosine",
@@ -99,15 +105,16 @@ class MedicalKnowledgeBase:
                 and document.language in {"zh", "zh-CN", "zh-TW", "zh-Hans", "zh-Hant"}
             )
             if eligible:
-                chunks = chunk_document(document.body, document.title)
+                chunks = (self.chunker.chunks(document) if self.chunker
+                          else chunk_document(document.body, document.title))
                 if not chunks:
                     raise ValueError(f"reviewed document {document.doc_id} has no chunks")
                 chunk_ids = []
                 metadatas = []
                 texts = []
                 for chunk in chunks:
-                    text = f"{document.title}\n{chunk.section_path}\n{chunk.text}"
-                    chunk_id = hashlib.sha256(
+                    text = chunk.text if self.chunker else f"{document.title}\n{chunk.section_path}\n{chunk.text}"
+                    chunk_id = chunk.chunk_id if self.chunker else hashlib.sha256(
                         f"{document.doc_id}:{document.version}:{chunk.section_path}:{chunk.index}:{chunk.text}".encode("utf-8")
                     ).hexdigest()[:32]
                     new_ids.add(chunk_id)
@@ -134,6 +141,10 @@ class MedicalKnowledgeBase:
                         "reviewed_at": document.reviewed_at.isoformat() if document.reviewed_at else "",
                         "next_review_at": document.next_review_at.isoformat() if document.next_review_at else "",
                         "status": document.status,
+                        **({"parent_id": chunk.parent_id, "parent_start": chunk.parent_range[0],
+                            "parent_end": chunk.parent_range[1], "chunk_strategy": self.chunker.version,
+                            "structure_kind": chunk.kind, "atomic_boundary_split": chunk.boundary_split}
+                           if self.chunker else {}),
                     })
                 # Upsert first, then remove stale chunks for an updated document.
                 self.collection.upsert(
@@ -178,12 +189,18 @@ class MedicalKnowledgeBase:
                 and bool(metadata.get("next_review_at"))
                 and date.fromisoformat(metadata["next_review_at"]) >= today)
 
-    def _to_hit(self, candidate: dict) -> MedicalHit:
+    def _to_hit(self, candidate: dict, expand: bool = False) -> MedicalHit:
         metadata = candidate["metadata"]
+        text = candidate["text"]
+        if expand and self.chunker:
+            record = self.chunker.records.get((metadata["doc_id"], candidate["chunk_id"]))
+            if record is None or record.text != text:
+                raise ValueError("token chunk context is missing or differs from the index")
+            text = record.context
         return MedicalHit(
             chunk_id=candidate["chunk_id"], doc_id=metadata["doc_id"],
             title=metadata["title"], section_path=metadata["section_path"],
-            text=candidate["text"], source_org=metadata["source_org"],
+            text=text, source_org=metadata["source_org"],
             usage_scope=metadata.get("usage_scope") or None,
             source_url=metadata["source_url"],
             source_locator=metadata.get("source_locator") or None,
@@ -317,6 +334,10 @@ class MedicalKnowledgeBase:
                     raise ValueError("reranker returned invalid scores")
                 for candidate, score in zip(ranked, scores):
                     candidate["rerank_score"] = score
+                input_trace = self.reranker.input_trace() if hasattr(self.reranker, "input_trace") else []
+                if len(input_trace) == len(ranked):
+                    self._search_state.candidates["rerank_visibility"] = [
+                        {"hit": self._to_hit(item), "input": trace} for item, trace in zip(ranked, input_trace)]
                 ranked.sort(key=lambda item: (item["rerank_score"], item["fusion_score"]), reverse=True)
                 reranker_status = "applied"
             except Exception as error:
@@ -354,10 +375,19 @@ class MedicalKnowledgeBase:
         per_doc_limit = int(os.getenv("MEDICAL_MAX_CHUNKS_PER_DOCUMENT", "2"))
         doc_counts: dict[str, int] = {}
         selected: list[dict] = []
+        expanded_seen = set()
+        expanded_duplicates = 0
         for item in accepted:
             doc_id = item["metadata"]["doc_id"]
             if doc_counts.get(doc_id, 0) >= per_doc_limit:
                 continue
+            if self.chunker:
+                context = self._to_hit(item, expand=True).text
+                identity = (doc_id, context)
+                if identity in expanded_seen:
+                    expanded_duplicates += 1
+                    continue
+                expanded_seen.add(identity)
             doc_counts[doc_id] = doc_counts.get(doc_id, 0) + 1
             selected.append(item)
             if len(selected) >= limit:
@@ -370,5 +400,17 @@ class MedicalKnowledgeBase:
             "top_rerank_score": (round(ranked[0]["rerank_score"], 6)
                                  if ranked and ranked[0].get("rerank_score") is not None else None),
             "dense_ms": dense_ms, "lexical_ms": lexical_ms, "rerank_ms": rerank_ms,
+            "index_version": self.index_version,
+            "rerank_input": self._input_summary(),
+            "duplicate_expanded_contexts_omitted": expanded_duplicates,
         }
-        return [self._to_hit(item) for item in selected]
+        return [self._to_hit(item, expand=True) for item in selected]
+
+    def _input_summary(self):
+        rows = [row["input"] for row in self.candidate_trace().get("rerank_visibility", [])]
+        if not rows:
+            return None
+        return {"policy": rows[0]["policy"], "max_length": rows[0]["max_length"], "pairs": len(rows),
+                "max_actual_pair_tokens": max(row["actual_pair_tokens"] for row in rows),
+                "overlength_raw_pairs": sum(row["raw_pair_tokens"] > row["max_length"] for row in rows),
+                "current_question_truncated_pairs": sum(row.get("current_question_truncated", False) for row in rows)}
