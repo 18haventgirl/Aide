@@ -53,6 +53,12 @@ class OriginTests(unittest.TestCase):
                 validate_literal_references(cases, resolver)
             ref["required_conditions"] = [span("原始标题")]
             validate_literal_references(cases, resolver)
+            from medical.diagnose_input_ranges import pool_pack
+            hit = hits_for(doc)[0]
+            pool, unknown = pool_pack([{"doc_id": doc.doc_id, "chunk_id": hit.chunk_id}], resolver)
+            self.assertEqual(unknown, [])
+            ref["required_conditions"] = [span("编辑范围")]
+            self.assertEqual(score_ranges(pool, [ref], resolver.documents)["retained_conditions"], 0)
 
     def test_forged_offsets_overlap_unclassified_body_and_version_fail(self):
         with tempfile.TemporaryDirectory() as directory:

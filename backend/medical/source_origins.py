@@ -92,6 +92,7 @@ class OriginResolver:
     def __init__(self, documents, manifests, raw_root, chunker=None):
         self.base = SourceResolver(documents, chunker)
         self.documents = self.base.documents
+        self.bindings = self.base.bindings
         self.origins = {}
         for doc_id, manifest in manifests.items():
             if doc_id not in self.documents:
