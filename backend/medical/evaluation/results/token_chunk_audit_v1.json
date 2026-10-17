@@ -1,0 +1,81 @@
+{
+  "scope": "tokenizer_only_not_model_quality",
+  "complete": true,
+  "started_at_utc": "2026-10-17T08:44:03.402666+00:00",
+  "stage": "finished",
+  "memory_before": {
+    "total_mib": 15556.9,
+    "available_mib": 3623.0,
+    "process_working_mib": 31.2,
+    "process_peak_mib": 31.2
+  },
+  "code": {
+    "commit": "58498465ce0eb769357b254ad2747fac9f09761f",
+    "retrieval_implementation_sha256": "1665baa425383e80bce545e4ec33ee3e0207393a64f52940ed0b2f5a69c06985",
+    "tracked_changes": false
+  },
+  "corpus_sha256": "3bf1713ffd0dd9ca89394a0875661ff7cbf2425d8cf3267da0491563a515afe9",
+  "documents": 72,
+  "real_tokenizer_legacy_parity": {
+    "checked_pairs": 570,
+    "mismatches": 0
+  },
+  "memory_after": {
+    "total_mib": 15556.9,
+    "available_mib": 2502.5,
+    "process_working_mib": 636.1,
+    "process_peak_mib": 916.3
+  },
+  "raw_report": {
+    "name": "token_chunk_audit_5849846_20261017.json",
+    "sha256": "cfab4b0f32600efbfa67802e19351109a13328adf1c0b37cdf9af095a8deb5a6"
+  },
+  "candidates": [
+    {
+      "config": {
+        "strategy": "source_token_parent_child_v1",
+        "child_tokens": 180,
+        "context_tokens": 480,
+        "overlap_tokens": 32,
+        "tokenizer_sha256": "2934c7b62003822bc0b2a26e695174026e94a2b47061e64c9da71fd13ae4aeb5"
+      },
+      "pair_max_length": 256,
+      "index_version": "medical-token-v1-b5ca2b85e8011142",
+      "chunks": 322,
+      "unmapped": 0,
+      "wrong_source_offsets": 0,
+      "max_child_tokens": 180,
+      "max_context_tokens": 480,
+      "max_context_chars": 543,
+      "context_over_evidence_char_limit": 0,
+      "atomic_boundary_splits": 2,
+      "limited_contexts": 234,
+      "max_actual_pair_tokens": 235,
+      "children_with_source_clipped_in_pair": 0,
+      "audit_ms": 11389.1
+    },
+    {
+      "config": {
+        "strategy": "source_token_parent_child_v1",
+        "child_tokens": 220,
+        "context_tokens": 480,
+        "overlap_tokens": 32,
+        "tokenizer_sha256": "2934c7b62003822bc0b2a26e695174026e94a2b47061e64c9da71fd13ae4aeb5"
+      },
+      "pair_max_length": 384,
+      "index_version": "medical-token-v1-0ab2bfdbbacd7f9a",
+      "chunks": 249,
+      "unmapped": 0,
+      "wrong_source_offsets": 0,
+      "max_child_tokens": 220,
+      "max_context_tokens": 480,
+      "max_context_chars": 543,
+      "context_over_evidence_char_limit": 0,
+      "atomic_boundary_splits": 0,
+      "limited_contexts": 181,
+      "max_actual_pair_tokens": 279,
+      "children_with_source_clipped_in_pair": 0,
+      "audit_ms": 10342.0
+    }
+  ]
+}
