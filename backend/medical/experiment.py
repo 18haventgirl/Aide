@@ -154,6 +154,8 @@ def repository_version():
         files += ["token_budget.py", "token_chunking.py"]
         files += ["source_origins.py", "capture_existing_origins.py", "build_sleep_snapshot.py", "audit_source_snapshot.py"]
         files += ["evaluation/author_source_pilot_v1.py"]
+        files += ["build_source_snapshot.py", "capture_headache_origin.py", "capture_official_batch.py"]
+        files += ["evaluation/author_source_batch_v1.py"]
         return {"commit": git("rev-parse", "HEAD"),
                 "retrieval_implementation_sha256": digest({name: hashlib.sha256((MEDICAL/name).read_bytes()).hexdigest() for name in files}),
                 "tracked_changes": bool(git("status", "--porcelain", "--untracked-files=no"))}

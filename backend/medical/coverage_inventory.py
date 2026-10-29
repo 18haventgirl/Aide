@@ -46,6 +46,13 @@ def inventory(documents, today):
         if topic == "sleep" and "NHC-SLEEP-CORE-20250318" in by_id:
             ids.append("NHC-SLEEP-CORE-20250318")
             gap = "已补官方睡眠核心信息的成人子集；仍需多来源和独立情境验证，不等于临床覆盖完整"
+        additions = {
+            "dizziness": ("BJ-DIZZINESS-20240301", "已补头晕/眩晕描述与不能自行归因的专门原文；尚缺急症警示及更广情境，不能用于鉴别诊断"),
+            "constipation": ("BJ-CONSTIPATION-20250331", "已补成人行为习惯和部分就医变化；仅为原文选段，不覆盖具体药物方案或所有人群"),
+        }
+        if topic in additions and additions[topic][0] in by_id:
+            doc_id, gap = additions[topic]
+            ids.append(doc_id)
         topics.append({"id": topic, "name": name, "priority": priority, "source_ids": ids,
                        "status": "partial_source_scope" if ids else "no_direct_source", "gap": gap,
                        "searchable_source_ids": [did for did in ids if by_id[did].is_searchable(today, research_mode=True)]})

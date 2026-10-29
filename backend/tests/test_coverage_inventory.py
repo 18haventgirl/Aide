@@ -32,5 +32,15 @@ class CoverageTests(unittest.TestCase):
         self.assertNotIn(extra.doc_id, sleep(baseline)["source_ids"])
         self.assertEqual(sleep(expanded)["status"], "partial_source_scope")
 
+    def test_two_dedicated_sources_reduce_gaps_without_claiming_completeness(self):
+        documents = load_corpus(MEDICAL/"source_corpus")
+        additions = [documents[0].model_copy(update={"doc_id": name}) for name in
+                     ("BJ-DIZZINESS-20240301", "BJ-CONSTIPATION-20250331")]
+        report = inventory(documents+additions, date(2026, 10, 28))
+        self.assertEqual(report["topic_status_counts"]["no_direct_source"], 4)
+        self.assertEqual(report["topic_status_counts"]["partial_source_scope"], 15)
+        self.assertFalse(any(t["status"] == "complete" for t in report["topics"]))
+        self.assertEqual(inventory(documents, date(2026, 10, 28))["topic_status_counts"]["no_direct_source"], 6)
+
 
 if __name__ == "__main__": unittest.main()
