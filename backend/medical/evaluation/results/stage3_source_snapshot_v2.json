@@ -1,0 +1,750 @@
+{
+  "schema_version": 1,
+  "complete": true,
+  "contract": "source_origin_v1",
+  "analysis_code": {
+    "commit": "953ec414ae6cf5f3706f11b7fe0c993ad753af9f",
+    "retrieval_implementation_sha256": "254e8dd6e3012ca181b2cee2e7b55349aa199bb1cbaf994428cc70be6e0c4e41",
+    "tracked_changes": false
+  },
+  "snapshot": "medical-rag-data/datasets/official-zh-v3/2026-10-29",
+  "build_code": {
+    "commit": "953ec414ae6cf5f3706f11b7fe0c993ad753af9f",
+    "retrieval_implementation_sha256": "254e8dd6e3012ca181b2cee2e7b55349aa199bb1cbaf994428cc70be6e0c4e41",
+    "tracked_changes": false
+  },
+  "corpus_sha256": "b48452cc0aa478b6b82f917d6f6d428441e32d7e822f46d78c35420a0ce04e82",
+  "origins_sha256": "0c8528cbe81c10fef808e2291d17d2616bd7e653ef631d111e8ca0ed1585249e",
+  "documents": 75,
+  "unique_source_urls": 10,
+  "origin_verified_documents": 72,
+  "pending_origin_documents": [
+    "BJ-DIARRHEA-20210406",
+    "NHC-FLU-CARE-20250117",
+    "NHC-THROAT-20240821"
+  ],
+  "literal_parts": 135,
+  "part_kinds": {
+    "markup": 103,
+    "editorial_heading": 70,
+    "source_heading": 13,
+    "source_text": 122
+  },
+  "unchanged_historical_files": 71,
+  "changed_documents": [
+    {
+      "doc_id": "GZ-POSTMEAL-ABDOMEN-2026",
+      "from_version": 1,
+      "to_version": 2,
+      "old_body_sha256": "007a666cc52b93792dfb11e0c65639f4105b8332e42c69dd351c350f3eb53e23",
+      "new_body_sha256": "0a77f016657f33fc7160f157153b8ea15f87d4df399549c9dce6d955c9f84369",
+      "reason": "versioned_source_snapshot_change"
+    }
+  ],
+  "added_doc_ids": [
+    "BJ-CONSTIPATION-20250331",
+    "BJ-DIZZINESS-20240301",
+    "NHC-SLEEP-CORE-20250318"
+  ],
+  "parent_snapshot": {
+    "path": "medical-rag-data/datasets/official-zh-v2/2026-10-17",
+    "manifest_sha256": "8fec07b504c7b558ee3e90ea310562fedf8343fbed06fb1a880d2c381d97a3a1",
+    "corpus_sha256": "2539d5b0dfe456ed90655a366ab7582841c52b8d66b2d3ff7393cf5a964fdf49",
+    "origins_sha256": "d8c1642f94f7a8059573ddbb359e660472a4c0e6254bfb86c28bdfa2d2191add"
+  },
+  "original_assets_sha256": {
+    "raw:bj-constipation-20250331/2026-10-27/page.html": "71c4026e9436740d2b0c8735581d5759408e259183ccb1e6c19d5378c804f889",
+    "raw:bj-dizziness-20240301/2026-10-27/page.html": "4002a16c6617daf5076dd1dab1a8a2355d720e26d650e22dcd12e787f72f638e",
+    "beijing_chest_pain_2022.html": "114537579abc2d47c45ab52ac801b62058b81a2e21c900a7bd5a2464e684facb",
+    "raw:fj-headache-20260626/2026-09-28/original.html": "a75a2d8d43d938b17aad54d605fb98431a7b4b18b010127229bed799279f87e6",
+    "guangzhou_postmeal_abdominal_2026.html": "cf077baa2f9f7bd6ca4e2f685a6167c98819251c9b822627f9d7895a9b8e6572",
+    "health_literacy_2024_explanation.pdf": "084cb6c696ae6ab08f1e2e238427b9c90b071d29c6e2c238016d9254a88464df",
+    "health_literacy_2024_wnd.html": "f4520cd0b32dbd75d39777f59cb514adcdd4270af4fd52e0768bd674d736704d"
+  },
+  "documents_audit": [
+    {
+      "doc_id": "BJ-CONSTIPATION-20250331",
+      "version": 1,
+      "body_sha256": "21200fc234fe9beb9ac1b580365883d41c3f0bf2fd5a03b7ff7fdf38ef3afdb1",
+      "origin_verified": true,
+      "capture_path": "bj-constipation-20250331/2026-10-27/extracted-paragraphs.txt",
+      "capture_sha256": "030c25bdaa3c5ab847b464bcae392151b40b470f9c950d79b91be5946fd6628f",
+      "origin_sha256": "8ff82af66eacc3c1d22c08c2b081a3d255fffb7c280c308f24b18140d2f14e1c"
+    },
+    {
+      "doc_id": "BJ-DIARRHEA-20210406",
+      "version": 1,
+      "body_sha256": "d3b31d779b87b194cbb14aafcd10808e8b42030912cdda18286e2143c9000314",
+      "origin_verified": false,
+      "capture_path": null,
+      "capture_sha256": null,
+      "origin_sha256": null
+    },
+    {
+      "doc_id": "BJ-DIZZINESS-20240301",
+      "version": 1,
+      "body_sha256": "3971ee20168aa3e2a3affbb13d7909b6f77ca8e00cb2e15dd296bd4ffd38a3df",
+      "origin_verified": true,
+      "capture_path": "bj-dizziness-20240301/2026-10-27/extracted-paragraphs.txt",
+      "capture_sha256": "2c952326bc05764697fa0d87519e029227b75b2414aa9a2962df048c2ba4f6a0",
+      "origin_sha256": "1a7b40ab3e9b4e30d4bb0391a6ffb57ecea126f30b5a04a705ebc241505f2a6a"
+    },
+    {
+      "doc_id": "BJ-EMERG-CHEST-2022",
+      "version": 1,
+      "body_sha256": "83bd6ff4836d5e8ca790c29b385bc35281eb3bf494fea949e8c83e52fe6df316",
+      "origin_verified": true,
+      "capture_path": "chest-official-html/2026-10-17/extracted-paragraphs.txt",
+      "capture_sha256": "215b6940c5b39e37ee262735a6be5a940e0af34c1143af9367ade78eb11e18c6",
+      "origin_sha256": "1f9926240d68536ee4d975d059c3c9cb507ff24be016d21d9fb7b7829893e56c"
+    },
+    {
+      "doc_id": "FJ-HEADACHE-20260626",
+      "version": 1,
+      "body_sha256": "fb81f5ec714a111b181d1a611f90bcbd4257cf45b501742f6b2c188b0f453aa6",
+      "origin_verified": true,
+      "capture_path": "fj-headache-20260626/2026-10-27/extracted-paragraphs.txt",
+      "capture_sha256": "cbad763e36ee2ae6d423e5a94bbc207db28a80bad5e900c7a7ce75fba6c2bd5b",
+      "origin_sha256": "d15f750803a9f622d0e76121526110c29454cf785cc2a7bbc4e32ad9b3b062eb"
+    },
+    {
+      "doc_id": "GZ-POSTMEAL-ABDOMEN-2026",
+      "version": 2,
+      "body_sha256": "0a77f016657f33fc7160f157153b8ea15f87d4df399549c9dce6d955c9f84369",
+      "origin_verified": true,
+      "capture_path": "abdomen-official-html/2026-10-17/extracted-paragraphs.txt",
+      "capture_sha256": "ed126eaa4264c3270b0ca6cf5111af0ba40affdc5c1805fd3b057b24f4018e0a",
+      "origin_sha256": "00c6ffa5724a9d18bc6d469a5fad5c696ee2d064f03b4bf5ea36572869c9f3a3"
+    },
+    {
+      "doc_id": "NHC-FLU-CARE-20250117",
+      "version": 1,
+      "body_sha256": "1a974fe6b7e2b979a5a4dd90d8110c6d26e7345db07156c78d0536720c3d8c65",
+      "origin_verified": false,
+      "capture_path": null,
+      "capture_sha256": null,
+      "origin_sha256": null
+    },
+    {
+      "doc_id": "NHC-HL2024-01",
+      "version": 1,
+      "body_sha256": "a19441f115e14bfce9f1a28b67267380de07472e59de2f27d57a7d0d564f70d5",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "0571059989b685f656f0ae65ff97c30d57b355cebf7a3a5808bd161d4762fe31"
+    },
+    {
+      "doc_id": "NHC-HL2024-02",
+      "version": 1,
+      "body_sha256": "f43582c3e065e5049fdd0cba0ebb47299463a030df2fe645cf7c3dec465ffedf",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "c84e6dc28a48efb68fb5a254d21065d0dc7b18131275317c17da5199b9078545"
+    },
+    {
+      "doc_id": "NHC-HL2024-03",
+      "version": 1,
+      "body_sha256": "a054b086073a21d4b58780a9e704ebc03c233905c73c96ff9b2cf72aee5cc67c",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "7cf3ebe8a907ad833a8c65066c538d4a7f5c74371a4499330c8b307b0e7b1d4e"
+    },
+    {
+      "doc_id": "NHC-HL2024-04",
+      "version": 1,
+      "body_sha256": "62ae5b10f63536c86d5269f810b6a315b6657b445c120900b8a562503913ee80",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "47ca521c531f57125e333a878bbfe77602c5100bdc50a0218d26dc1f26dd1018"
+    },
+    {
+      "doc_id": "NHC-HL2024-05",
+      "version": 1,
+      "body_sha256": "1b65636fd06e8688d81ab01246156df32c9ef80feb3971b18afe44abe738747d",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "c31f72a435a297e715abe3fdec5a8373cfe308c4971737fb98bc28f15d8bfd60"
+    },
+    {
+      "doc_id": "NHC-HL2024-06",
+      "version": 1,
+      "body_sha256": "584ac114bc0fde79afe2b5c131c03e1718c02437d89f0642aeff9b6ac44334d7",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "bc74c7aefad9867dcb45c0faa5bd89a7395bc12f129f8b1ad28a94fb1285c240"
+    },
+    {
+      "doc_id": "NHC-HL2024-07",
+      "version": 1,
+      "body_sha256": "cc147fbc64b75372f6a76ca40152b47190f5428fb4d3531c0468e3bc626505bd",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "7edcd02ef2f65035e0df344b9f3f9a7a7ce69fe6b4af17524002684af626872e"
+    },
+    {
+      "doc_id": "NHC-HL2024-08",
+      "version": 1,
+      "body_sha256": "9bb2328ed463501831cd42f87f3732de02efe046c39d46a6b5088790a63412be",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "5e16f618b4972b24e6a8faf5b73a993be2dfdd50055845bcaae924d69db5eb78"
+    },
+    {
+      "doc_id": "NHC-HL2024-09",
+      "version": 1,
+      "body_sha256": "be8fe97332b3ee75672502ff0b091479d3879314b801b2bb9c57fbe86c2c353d",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "6374dab0f60864dd06124264cca318961ea2c2306c896dadc981d9eb2bd210d9"
+    },
+    {
+      "doc_id": "NHC-HL2024-10",
+      "version": 1,
+      "body_sha256": "d39d7901717eee271e24677904ceaea79cfacc03f1c8d702f756671e92efaf89",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "0f1e9c1fcad0bb371e871b464379ee2229144d826eea4e972cfde3c5ca0383fa"
+    },
+    {
+      "doc_id": "NHC-HL2024-11",
+      "version": 1,
+      "body_sha256": "35c81505ae1ddc7ddb4663d4ac07e0e6e4e4a0bf9e88e5ca2803a5b424e4fa71",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "49aac81b0945442a2252588c94f4d1311fce4320980c5e61062f4003d4df9f2d"
+    },
+    {
+      "doc_id": "NHC-HL2024-12",
+      "version": 1,
+      "body_sha256": "943b251e1bc360f71030c827ac636093ce9323815037df8608b36fc642a1321d",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "41f4fd81f01665dc33244eaf431f6e4959ee3eea9bbdabe60cfc392551fe9108"
+    },
+    {
+      "doc_id": "NHC-HL2024-13",
+      "version": 1,
+      "body_sha256": "e8df97f534d31241ba032196d4db1fe711f2b3ea5d464aa65dfcf321850b7acb",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "a8740dee3b5f3c1a0293df267a8b4c40333b3f59e2d1a889c6b7dca4c48e9c3f"
+    },
+    {
+      "doc_id": "NHC-HL2024-14",
+      "version": 1,
+      "body_sha256": "a51c0b5d277801fd987712eaba848d6b4d9d4f0a78142224359d831b8041fba7",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "696029ee3687e6a62c1c7ec176096effb28c87585d618c04ac19971627041063"
+    },
+    {
+      "doc_id": "NHC-HL2024-15",
+      "version": 1,
+      "body_sha256": "2e22748978915c0b9cf407e39605cd8c7ce0d241f567971f4f768996ecd4f773",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "5a802600f06319c828542b693a27423212a09880eaaedf23d7fb83c34dce5ba9"
+    },
+    {
+      "doc_id": "NHC-HL2024-16",
+      "version": 1,
+      "body_sha256": "fe9c20145b32701357966a3e95d220d3a76fd3b710d22321789359a9111be0e4",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "4146e94d98e20ec4dac83b4f2afb79cbf3b0c995a31447572812634453a20f7c"
+    },
+    {
+      "doc_id": "NHC-HL2024-17",
+      "version": 1,
+      "body_sha256": "ede7ff580dfc0f667cffe79c2984c225dd24b1082472b9b402341f89d30b84d8",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "2adcc2371e78977f7412ebdcedff09b397c03cc50cda87556efc4053e1e3b30f"
+    },
+    {
+      "doc_id": "NHC-HL2024-18",
+      "version": 1,
+      "body_sha256": "e1aad35b82301b13328c046f002300e1931c423f47f1199b1ab9e6059078d1e2",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "c95c9a0f607b622b8902f8da11165ddfbd74a2ada7e34e265a9fd7cf6daaa164"
+    },
+    {
+      "doc_id": "NHC-HL2024-19",
+      "version": 1,
+      "body_sha256": "3395fc4b82941647613950b0f60be2afa23ec1623aa347dbd20469dfb1e7ead5",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "daa5f179141c2a7421c8a4c3fbc1ae955d508c1b589dd3dcfcf2e041fe5b9191"
+    },
+    {
+      "doc_id": "NHC-HL2024-20",
+      "version": 1,
+      "body_sha256": "04723d13ec027ef5e9af10d7c43ca416d6504b0a69cf05f9c004214c20b68bfa",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "f1bc027b03c747860f8273aeb989fc71423d467bb4e6cd4e405b7471956f3752"
+    },
+    {
+      "doc_id": "NHC-HL2024-21",
+      "version": 1,
+      "body_sha256": "2aa62740aed1cccfd5dc8a2a82aa1a2ef3c6b32863e2b1b6bb1668c0e5c3660d",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "d2a2fbeaac7d7a3e68c0a3f743a00d6dc482151643926e34d12b7827a3f4c18e"
+    },
+    {
+      "doc_id": "NHC-HL2024-22",
+      "version": 1,
+      "body_sha256": "255034c059739f7722aedcfcc0e7bef6d541d8cfa3201d86fc0dbc95f7d6b9fe",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "15423f7e363efb8eafcb3e9cdfd65c10199ff53f1b00d00bc6d30308670b058a"
+    },
+    {
+      "doc_id": "NHC-HL2024-23",
+      "version": 1,
+      "body_sha256": "5225b2827f0825c2b51da399d4aab67bbd361713034ba5446315a2ded4f24e11",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "b8c921a94c1f420cf34bfb913db41c6a0a7e071f98be58767232624903a42df0"
+    },
+    {
+      "doc_id": "NHC-HL2024-24",
+      "version": 1,
+      "body_sha256": "8c0355ca782ea65d6ce70a7aabdf09bf2ab110f1d3e4d1f693f19dfd68c2215f",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "4be3b5e86d790130b90e070a06cbb5ca319995d3ac2f5ffaf35ea9119e2908bc"
+    },
+    {
+      "doc_id": "NHC-HL2024-25",
+      "version": 1,
+      "body_sha256": "51ad4bb6e31a180080bd62c024aa2dc3b46c492edd2c59528638a357bf2b7366",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "5fb0fb8f10f579c8d3134105bba438278a47faaac7fc542732f65cf15069c7a6"
+    },
+    {
+      "doc_id": "NHC-HL2024-26",
+      "version": 1,
+      "body_sha256": "e5a612c7a4b37c8c04e48c2c45ccbc5fd93fe1e41707128359d950d7bf1ac681",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "06f6f18d56045008a4d58b4a1d6db84207158c2fdf120a0e1846bd60ddcb69d4"
+    },
+    {
+      "doc_id": "NHC-HL2024-27",
+      "version": 1,
+      "body_sha256": "a75fee4d14914830f77351c8db69f0ea0832802dcf12ca5bd4985a9e25a26ecc",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "6d33a8a0d4268bbee4825487ea8ea42fc29b9eaf8987076b2ccb931993fbe87a"
+    },
+    {
+      "doc_id": "NHC-HL2024-28",
+      "version": 1,
+      "body_sha256": "dd0f6e3da35c36a7ad596ed092af1019597b352cceaa5a280a3c34491f705d25",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "42f5bff7e2ffd8f1f849882f3759ecf8e6ec3ff9bdbfce27369d0c5473ea0c9c"
+    },
+    {
+      "doc_id": "NHC-HL2024-29",
+      "version": 1,
+      "body_sha256": "e28460dff50e37216b92e753253bcc442b672bbe30f3123df56b974923c55b19",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "d2e442e8b251654974132214f3a9852e7abb7854e881c2a91d7deb04c08623e2"
+    },
+    {
+      "doc_id": "NHC-HL2024-30",
+      "version": 1,
+      "body_sha256": "2d72aa4eeb8e7ddc487bebcb24e9437e4da2ee424e1e56daf1372945659beec6",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "cb37327d0bcad9f5280fb7ac284cbe89cc9eda762850edf509e58abb94c2d1af"
+    },
+    {
+      "doc_id": "NHC-HL2024-31",
+      "version": 1,
+      "body_sha256": "fb5a9de5f6e34fc2e20f24da29b64890b5453fd07c5723363c6018010dbba83d",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "836794e87568fa8eb5c684d254b644630ec6fb8287c920a5c47e6ac3b00656ef"
+    },
+    {
+      "doc_id": "NHC-HL2024-32",
+      "version": 1,
+      "body_sha256": "ef3f35cda0ef2d1700e3db48330036726e329521d1470dc3e37a9258b749cd34",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "179b66727f06c80ef5d2ab0616d166e9f0b418a0b3e68e148c07e727782d01ec"
+    },
+    {
+      "doc_id": "NHC-HL2024-33",
+      "version": 1,
+      "body_sha256": "d947ae20bb576a133e55c15e3c892716731d51db448f6109d1d1a9ca0efd2e0b",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "4536014f2d2e4f33655f4a1094be53f18c3c9c369a593a6f2437bd196deefb87"
+    },
+    {
+      "doc_id": "NHC-HL2024-34",
+      "version": 1,
+      "body_sha256": "365c45a85a18d7cb76dd9a0828fd503241491a73ba6201d86e7edba3053889c7",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "0cbd7f7eece8b39b91918f5b12172c0a3b950c70f76b62824741db7d8e1072a3"
+    },
+    {
+      "doc_id": "NHC-HL2024-35",
+      "version": 1,
+      "body_sha256": "fb0f2b6c3354c24019636dddd1561d058246b04ec98c3c8e366fb5fbac526d9d",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "bd5fd0b08d3d92d50acb5aa006c0df7c77c3f0ef175ab4cc85dd7e1a650daef0"
+    },
+    {
+      "doc_id": "NHC-HL2024-36",
+      "version": 1,
+      "body_sha256": "f06a35b7a0a0e5e4f661d41a7c72e2d35c7c2434c8b873dd332b0db3b908abc6",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "7c7384fe0aa76be3239aa5aff74552d35b6a7ff57d4e1fc65b0e175e1543f791"
+    },
+    {
+      "doc_id": "NHC-HL2024-37",
+      "version": 1,
+      "body_sha256": "745235c7d5dc0c7ea9b25d3f06d4aadcd7eebaaab68fdd83b0bc6504b5fa7a2a",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "6c57a253199459d6b06dcd3e6989fd1bb1fbf56dd11ee3c207bfb7d83cd0793b"
+    },
+    {
+      "doc_id": "NHC-HL2024-38",
+      "version": 1,
+      "body_sha256": "d0cff87117c2659cb653c4388481685e862f084d81195e24038efa698614a2d9",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "b919fb466bfd8c88000f35b15709561546fee78916bf37afa9e8f71e5d5787ab"
+    },
+    {
+      "doc_id": "NHC-HL2024-39",
+      "version": 1,
+      "body_sha256": "8edea1355803f33241fa65bcab32b068eb1db3d072daa1963acfd929788e0146",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "a78e435f7aba8e1d58dda4fe426d3d7b4aa9944d024d94f048756539f086fb76"
+    },
+    {
+      "doc_id": "NHC-HL2024-40",
+      "version": 1,
+      "body_sha256": "d0d15b76175744c9f814a46142674c8299e0b9a1c8c60a257a7ac6f9ecebff89",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "322efaad50da9a09c6b2d3196ec8424b8b18e22020e982f8c91be4f6fbb0f4e7"
+    },
+    {
+      "doc_id": "NHC-HL2024-41",
+      "version": 1,
+      "body_sha256": "ccae5b0d7283a6bd4415d1a61dbd403f4af92989f5f2036e064dd31b531920b4",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "3a38949098f73c450cbcd5874db2bffd1d6aa0d3d9c9293de4f6421398dad836"
+    },
+    {
+      "doc_id": "NHC-HL2024-42",
+      "version": 1,
+      "body_sha256": "cd4080c40743ea2e3b08503721469d2ffa6da5b91bc8c4a4b3de0d81c7303137",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "3dfa21d7c2120f8a6a49cd50c79a186b5d18cabfa584743d65fb703cbf8295f3"
+    },
+    {
+      "doc_id": "NHC-HL2024-43",
+      "version": 1,
+      "body_sha256": "f7e5e24f70967ca2d4e7c7d9e4fb1aa1d053a82d0cd1860f7587b43a6afe6ec3",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "c0811b456180018e31906d64536317fffd3989c1d10dcab4693ac8e3adccf986"
+    },
+    {
+      "doc_id": "NHC-HL2024-44",
+      "version": 1,
+      "body_sha256": "7ea06adb87283ad289f7fe704d422e432e2f98805062866fb27f76132b4d9485",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "9d2d7529ca8caaa57ad9355e95f5f3bc8ea82492411377245b9ea6f36a1be4a8"
+    },
+    {
+      "doc_id": "NHC-HL2024-45",
+      "version": 1,
+      "body_sha256": "fb8ebe28c8e418dcf96ea4cefb510482dc0c9bea8143b5549a75ecfc4118b59a",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "d6bb998ae0305caf16438f6d5acc8a0288fef3a221b4f60e4eb4c93e5537ace2"
+    },
+    {
+      "doc_id": "NHC-HL2024-46",
+      "version": 1,
+      "body_sha256": "14eb7107324e0ad13a8acf4ac96e5b97c5989842d22bf2e1c61b95f12b5f2ddc",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "6ad56777b6f6c4ea0ab41318d344c10a63a106f67739da05844eacd1a0f1bc57"
+    },
+    {
+      "doc_id": "NHC-HL2024-47",
+      "version": 1,
+      "body_sha256": "e63f6a2acd43679009f8c7643469defb60f214367f6d8f2edf542389091ff231",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "2ccbc4f19d9eeaed2419f40d5a8e46d3b22eaf8894ff95b92f90f6862b36f0f1"
+    },
+    {
+      "doc_id": "NHC-HL2024-48",
+      "version": 1,
+      "body_sha256": "487248350c0a41f79c871455639c8220dd8e590a42b35c6861b6623f58b158a4",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "3d8843b5ac3f3afd4a36cd9971f55a336e2ced7f2ee14cd54fde4d77c08a3b92"
+    },
+    {
+      "doc_id": "NHC-HL2024-49",
+      "version": 1,
+      "body_sha256": "e7322123b1b3c5dbe90cb5c3db9cce185965b681416cb7f743736a763aec7bac",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "56c98ea6a4d3d56ef95652cd8978e472f3baa648aa2898dbce890183aad3193d"
+    },
+    {
+      "doc_id": "NHC-HL2024-50",
+      "version": 1,
+      "body_sha256": "6e3419676617cb0e923fd39553e6c0863ac9c3b32b9ea979ccee1cc68e35f856",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "0caa263d73dd238cc88836a340592695abbd097785836572f96fb8093e0eaac4"
+    },
+    {
+      "doc_id": "NHC-HL2024-51",
+      "version": 1,
+      "body_sha256": "7eca67479ce92b7cabd897297618312d4b062e3ed5ce6b1690a65fa68a98eb8b",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "22b84159df5b98e9921bc950e6428614b9ffce8d52258ea4d7225865d3c97fdf"
+    },
+    {
+      "doc_id": "NHC-HL2024-52",
+      "version": 1,
+      "body_sha256": "0f0597b00cdc522b42d03d14f4712c9d7caa1e59b8a7b3ef785303a10597d5b6",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "b2d8d88fc8666c673a068b4d93c23aeacfba9840ab7c3ca6b1736e42784a1477"
+    },
+    {
+      "doc_id": "NHC-HL2024-53",
+      "version": 1,
+      "body_sha256": "fcee2555115b459a87995a68f9c37aa3b91601915474e60180068d0de3cf10e1",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "7793e488f764c40eed4521fb21cb25926820b437564cd5e5c25a23bbcdde7d69"
+    },
+    {
+      "doc_id": "NHC-HL2024-54",
+      "version": 1,
+      "body_sha256": "a18eefd8aeff1ca24d7ddd62123007ffdbe32ccdfb77e9fa181248962bf29378",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "206f7505194189b916dcc2dde48bf56bb54534c4c3c3e886ae0977827e8591e3"
+    },
+    {
+      "doc_id": "NHC-HL2024-55",
+      "version": 1,
+      "body_sha256": "5611e8b0bb66ab2e551b35fed6e89b1a51a34bdf54666211ddbeeaf2e88087c6",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "56cd70be681234f361956654aafcae67098f59aaf99870cd005c1da770a8f9a4"
+    },
+    {
+      "doc_id": "NHC-HL2024-56",
+      "version": 1,
+      "body_sha256": "8a14ce3852f1863726d83a6d5ec93e9e06159bfe79b27cf5d2cce45e3524bb2d",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "538175486a30562d88885dd747473587cf2dc67bc92f4da3643b054586ada973"
+    },
+    {
+      "doc_id": "NHC-HL2024-57",
+      "version": 1,
+      "body_sha256": "4efb082a489a6fb3fa05487ee461b27cf24c680b1a39b92680ce1fc3d77a0ab6",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "ac2df69964fdf6f1208ac584be50c4b50805d98dfea8d6425f556eb38ed9099a"
+    },
+    {
+      "doc_id": "NHC-HL2024-58",
+      "version": 1,
+      "body_sha256": "fed77ca496781a62b801dfa2726d71f92f1ac3d0ef29cbd7ee8b2bd8f607999c",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "8dbae7031062302ae5f95289d0a1063b0a8752bc5495de1a91e20e64abcb460e"
+    },
+    {
+      "doc_id": "NHC-HL2024-59",
+      "version": 1,
+      "body_sha256": "c6d445f2009a06d3bd656574ab805b62cd96cd1a696e50f54d37817c89f18091",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "b5e6abc0fe15cfe8494eef5f574955ad26d6b62eedb677e2fc5df948e4c25e36"
+    },
+    {
+      "doc_id": "NHC-HL2024-60",
+      "version": 1,
+      "body_sha256": "010aaa36b476e57ad014c9f13676de0854051eae6a4e02bd2914fff10bfc9dba",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "d109dc2cb829b73f88bff1d773cff695f67bfb503493e8a9ff8786af149348c3"
+    },
+    {
+      "doc_id": "NHC-HL2024-61",
+      "version": 1,
+      "body_sha256": "adbbde294115605f526e71900811794590d565002d9aa02830435dc9d8391fe6",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "25be50d261d47e8374c5dcbded34be5fa2a72d0b319c511d36e408664d1d36a5"
+    },
+    {
+      "doc_id": "NHC-HL2024-62",
+      "version": 1,
+      "body_sha256": "74ff95141862eca8b00e8e269c8453c92751a63b5c7f7f0104d2bf274f52d4e3",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "c3c6435484927fa309164a1e026f16c2d7cfddb3c6cd4e9aed9046faecf6a65e"
+    },
+    {
+      "doc_id": "NHC-HL2024-63",
+      "version": 1,
+      "body_sha256": "cd949677ba0e1a69f107490704e0fb49b4aaf5142034297654dc53a6002a7566",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "f0e6731805fa499e8bfed27d18a3769d8f586b1c691c3506358622a7f4e5deb5"
+    },
+    {
+      "doc_id": "NHC-HL2024-64",
+      "version": 1,
+      "body_sha256": "bb3a69940f920bfaafe43eb574da3f3d145f3c6e9ca3c9f4f7a1745ff86c53f9",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "c070183a0e4c16aa66074fc8269efbc98d5e9b45a35f85b7b7d59f2a2fab010a"
+    },
+    {
+      "doc_id": "NHC-HL2024-65",
+      "version": 1,
+      "body_sha256": "922ae51081b9e8a54fbe1e056a889087406dfe6a3a9ddd81fa71e29ed20bdb8e",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "ec78f5445f38846daf1211002aa64971615531ea9309dffe007851399e4d6c16"
+    },
+    {
+      "doc_id": "NHC-HL2024-66",
+      "version": 1,
+      "body_sha256": "b2b257bdfee3fbfafff8b45958660da3ec98eced57e0b2fd34c692becf422d18",
+      "origin_verified": true,
+      "capture_path": "nhc-health-literacy-2024/2026-10-17/extracted-clauses.txt",
+      "capture_sha256": "3817e8ac3193a534b12ea56cf97ef97b459e7db46e1d233ac5e536a9e43e00b9",
+      "origin_sha256": "820b528a61ab785b12f1e679e6e80e2932555492f0df401f7ac55b755f9178e9"
+    },
+    {
+      "doc_id": "NHC-SLEEP-CORE-20250318",
+      "version": 1,
+      "body_sha256": "476906de134ae81a1e4434181aedf6fd63cd6248a023dab7f75251cf58d9bc0f",
+      "origin_verified": true,
+      "capture_path": "nhc-sleep-core-20250318/2026-10-17/article-rendered.txt",
+      "capture_sha256": "6626dab162e77f0145225fda8d3b14595db04a4bdc792b565d34196470086925",
+      "origin_sha256": "63caba24d27c79dca5f3d22be859ce4f58f261631cbdd2bb3454b346cf45d47f"
+    },
+    {
+      "doc_id": "NHC-THROAT-20240821",
+      "version": 1,
+      "body_sha256": "3a7212b79b4d142327853610564911a556dbe386837ba91f6df1bf81cc82f64f",
+      "origin_verified": false,
+      "capture_path": null,
+      "capture_sha256": null,
+      "origin_sha256": null
+    }
+  ],
+  "limitations": [
+    "canonical capture matching is not clinical review or permission to publish",
+    "derived PDF/HTML captures include declared extraction normalization",
+    "sleep capture is browser-rendered paragraph text, not an original HTTP response",
+    "literal range verification does not establish audience or semantic sufficiency",
+    "new snapshot is isolated; active retrieval and historical evaluation reports are unchanged"
+  ],
+  "serving_index_switched": false,
+  "release_ready": false
+}

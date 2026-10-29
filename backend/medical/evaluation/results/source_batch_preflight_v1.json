@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "complete": true,
+  "run_kind": "source_preflight_not_retrieval",
+  "as_of": "2026-10-29",
+  "code": {
+    "commit": "953ec414ae6cf5f3706f11b7fe0c993ad753af9f",
+    "retrieval_implementation_sha256": "254e8dd6e3012ca181b2cee2e7b55349aa199bb1cbaf994428cc70be6e0c4e41",
+    "tracked_changes": false
+  },
+  "source_snapshot": "medical-rag-data/datasets/official-zh-v3/2026-10-29",
+  "suite_sha256": "d8ffea99fe08b880f57fe8b15df28afe72ccbf23016d71444060ca4847292ed1",
+  "corpus_sha256": "b48452cc0aa478b6b82f917d6f6d428441e32d7e822f46d78c35420a0ce04e82",
+  "origins_sha256": "0c8528cbe81c10fef808e2291d17d2616bd7e653ef631d111e8ca0ed1585249e",
+  "documents": 75,
+  "origin_verified_documents": 72,
+  "groups": {
+    "source-batch-development": {
+      "cases": 12,
+      "kinds": {
+        "supported": 10,
+        "followup": 2
+      },
+      "topics": {
+        "headache": 4,
+        "dizziness": 3,
+        "constipation": 5
+      },
+      "evidence_spans": 15,
+      "conditions": 1
+    },
+    "source-origin-pilot-regression": {
+      "cases": 12,
+      "kinds": {
+        "supported": 10,
+        "followup": 2
+      },
+      "topics": {
+        "sleep": 9,
+        "postmeal_abdominal_pain": 3
+      },
+      "evidence_spans": 14,
+      "conditions": 2
+    }
+  },
+  "all_gold_literal": true,
+  "duplicate_ids": 0,
+  "duplicate_normalized_queries": 0,
+  "historical_corpus_files_sha256": "0a6eb5e5094cf63c4db0c64f10f880d40d7527be96a4a8472cdd52730caf7632",
+  "retrieval_executed": false,
+  "llm_generation_calls": 0,
+  "independent_validation_cases": 0,
+  "model_test_status": "deferred_by_user_after_memory_precheck",
+  "memory_precheck_available_mib": 1388.5,
+  "model_minimum_available_mib": 1536,
+  "serving_index_switched": false
+}

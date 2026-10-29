@@ -1,0 +1,429 @@
+[
+  {
+    "id": "SCB01",
+    "kind": "supported",
+    "query": "轻微而短暂的头痛，有哪些生活调整可以先了解？",
+    "expected_doc_ids": [
+      "FJ-HEADACHE-20260626"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "FJ-HEADACHE-20260626",
+        "version": 1,
+        "body_sha256": "fb81f5ec714a111b181d1a611f90bcbd4257cf45b501742f6b2c188b0f453aa6",
+        "ranges": [
+          [
+            41,
+            67
+          ],
+          [
+            68,
+            82
+          ]
+        ],
+        "required_conditions": [
+          [
+            17,
+            40
+          ]
+        ]
+      }
+    ],
+    "source_binding": {
+      "doc_id": "FJ-HEADACHE-20260626",
+      "version": 1,
+      "source_locator": "原文第三、四节；完整HTML本地快照SHA256=a75a2d8d43d938b17aad54d605fb98431a7b4b18b010127229bed799279f87e6",
+      "normalized_document_sha256": "d87c5b75fa893f153bd778a4b289651df621edcc699b0ea70f6aa137f22a3678"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "headache_gentle_adjustment",
+    "template_id": "source_batch_20261028_01",
+    "topic": "headache",
+    "authorship": "developer_source_derived_not_external_blind"
+  },
+  {
+    "id": "SCB02",
+    "kind": "supported",
+    "query": "头痛经常反复，想记个日记，应该记哪些信息？",
+    "expected_doc_ids": [
+      "FJ-HEADACHE-20260626"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "FJ-HEADACHE-20260626",
+        "version": 1,
+        "body_sha256": "fb81f5ec714a111b181d1a611f90bcbd4257cf45b501742f6b2c188b0f453aa6",
+        "ranges": [
+          [
+            214,
+            256
+          ]
+        ],
+        "required_conditions": []
+      }
+    ],
+    "source_binding": {
+      "doc_id": "FJ-HEADACHE-20260626",
+      "version": 1,
+      "source_locator": "原文第三、四节；完整HTML本地快照SHA256=a75a2d8d43d938b17aad54d605fb98431a7b4b18b010127229bed799279f87e6",
+      "normalized_document_sha256": "d87c5b75fa893f153bd778a4b289651df621edcc699b0ea70f6aa137f22a3678"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "headache_diary_details",
+    "template_id": "source_batch_20261028_02",
+    "topic": "headache",
+    "authorship": "developer_source_derived_not_external_blind"
+  },
+  {
+    "id": "SCB03",
+    "kind": "supported",
+    "query": "没头痛的时候也每天吃止痛药预防，可以吗？",
+    "expected_doc_ids": [
+      "FJ-HEADACHE-20260626"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "FJ-HEADACHE-20260626",
+        "version": 1,
+        "body_sha256": "fb81f5ec714a111b181d1a611f90bcbd4257cf45b501742f6b2c188b0f453aa6",
+        "ranges": [
+          [
+            127,
+            161
+          ]
+        ],
+        "required_conditions": []
+      }
+    ],
+    "source_binding": {
+      "doc_id": "FJ-HEADACHE-20260626",
+      "version": 1,
+      "source_locator": "原文第三、四节；完整HTML本地快照SHA256=a75a2d8d43d938b17aad54d605fb98431a7b4b18b010127229bed799279f87e6",
+      "normalized_document_sha256": "d87c5b75fa893f153bd778a4b289651df621edcc699b0ea70f6aa137f22a3678"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "headache_preventive_painkiller",
+    "template_id": "source_batch_20261028_03",
+    "topic": "headache",
+    "authorship": "developer_source_derived_not_external_blind"
+  },
+  {
+    "id": "SCB04",
+    "kind": "followup",
+    "query": "现在次数越来越多，是否还应该一直自己加药？",
+    "expected_doc_ids": [
+      "FJ-HEADACHE-20260626"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "FJ-HEADACHE-20260626",
+        "version": 1,
+        "body_sha256": "fb81f5ec714a111b181d1a611f90bcbd4257cf45b501742f6b2c188b0f453aa6",
+        "ranges": [
+          [
+            548,
+            567
+          ],
+          [
+            568,
+            595
+          ]
+        ],
+        "required_conditions": []
+      }
+    ],
+    "source_binding": {
+      "doc_id": "FJ-HEADACHE-20260626",
+      "version": 1,
+      "source_locator": "原文第三、四节；完整HTML本地快照SHA256=a75a2d8d43d938b17aad54d605fb98431a7b4b18b010127229bed799279f87e6",
+      "normalized_document_sha256": "d87c5b75fa893f153bd778a4b289651df621edcc699b0ea70f6aa137f22a3678"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "headache_increasing_painkiller",
+    "template_id": "source_batch_20261028_04",
+    "topic": "headache",
+    "authorship": "developer_source_derived_not_external_blind",
+    "history": "我最近反复头痛，止痛药也吃得越来越频繁。"
+  },
+  {
+    "id": "SCB05",
+    "kind": "supported",
+    "query": "头晕和周围东西在旋转的感觉有什么区别？",
+    "expected_doc_ids": [
+      "BJ-DIZZINESS-20240301"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "BJ-DIZZINESS-20240301",
+        "version": 1,
+        "body_sha256": "3971ee20168aa3e2a3affbb13d7909b6f77ca8e00cb2e15dd296bd4ffd38a3df",
+        "ranges": [
+          [
+            81,
+            128
+          ],
+          [
+            130,
+            191
+          ]
+        ],
+        "required_conditions": []
+      }
+    ],
+    "source_binding": {
+      "doc_id": "BJ-DIZZINESS-20240301",
+      "version": 1,
+      "source_locator": "原始HTML提取13个非空p段落，采用0起算段落1、2、3、4、5、11；标题为编辑标题；逐段原文范围见origin sidecar",
+      "normalized_document_sha256": "14955df9c7d9df44e41ab8b7f69542e695103ae471f6a8389a752f8fbf8ad75d"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "dizziness_symptom_description",
+    "template_id": "source_batch_20261028_05",
+    "topic": "dizziness",
+    "authorship": "developer_source_derived_not_external_blind"
+  },
+  {
+    "id": "SCB06",
+    "kind": "supported",
+    "query": "发飘、像没睡醒，和天旋地转是一回事吗？",
+    "expected_doc_ids": [
+      "BJ-DIZZINESS-20240301"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "BJ-DIZZINESS-20240301",
+        "version": 1,
+        "body_sha256": "3971ee20168aa3e2a3affbb13d7909b6f77ca8e00cb2e15dd296bd4ffd38a3df",
+        "ranges": [
+          [
+            193,
+            252
+          ]
+        ],
+        "required_conditions": []
+      }
+    ],
+    "source_binding": {
+      "doc_id": "BJ-DIZZINESS-20240301",
+      "version": 1,
+      "source_locator": "原始HTML提取13个非空p段落，采用0起算段落1、2、3、4、5、11；标题为编辑标题；逐段原文范围见origin sidecar",
+      "normalized_document_sha256": "14955df9c7d9df44e41ab8b7f69542e695103ae471f6a8389a752f8fbf8ad75d"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "dizziness_lightheadedness",
+    "template_id": "source_batch_20261028_06",
+    "topic": "dizziness",
+    "authorship": "developer_source_derived_not_external_blind"
+  },
+  {
+    "id": "SCB07",
+    "kind": "followup",
+    "query": "那就能直接认定是颈椎病引起的吗？",
+    "expected_doc_ids": [
+      "BJ-DIZZINESS-20240301"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "BJ-DIZZINESS-20240301",
+        "version": 1,
+        "body_sha256": "3971ee20168aa3e2a3affbb13d7909b6f77ca8e00cb2e15dd296bd4ffd38a3df",
+        "ranges": [
+          [
+            296,
+            423
+          ]
+        ],
+        "required_conditions": []
+      }
+    ],
+    "source_binding": {
+      "doc_id": "BJ-DIZZINESS-20240301",
+      "version": 1,
+      "source_locator": "原始HTML提取13个非空p段落，采用0起算段落1、2、3、4、5、11；标题为编辑标题；逐段原文范围见origin sidecar",
+      "normalized_document_sha256": "14955df9c7d9df44e41ab8b7f69542e695103ae471f6a8389a752f8fbf8ad75d"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "dizziness_cause_uncertainty",
+    "template_id": "source_batch_20261028_07",
+    "topic": "dizziness",
+    "authorship": "developer_source_derived_not_external_blind",
+    "history": "我最近经常觉得头晕。"
+  },
+  {
+    "id": "SCB08",
+    "kind": "supported",
+    "query": "工作时一直坐着不动，和排便困难有没有关系？",
+    "expected_doc_ids": [
+      "BJ-CONSTIPATION-20250331"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "BJ-CONSTIPATION-20250331",
+        "version": 1,
+        "body_sha256": "21200fc234fe9beb9ac1b580365883d41c3f0bf2fd5a03b7ff7fdf38ef3afdb1",
+        "ranges": [
+          [
+            37,
+            93
+          ]
+        ],
+        "required_conditions": []
+      }
+    ],
+    "source_binding": {
+      "doc_id": "BJ-CONSTIPATION-20250331",
+      "version": 1,
+      "source_locator": "原始HTML提取65个非空p段落；选段11、12、13、36、39、40、49、50、51、54、57、58、59（0起算）；保留来源标题与原序号，逐段范围见origin sidecar",
+      "normalized_document_sha256": "29bc52f33d30d1ba9bde2773072c6e5a35b383d8a3466967a06fa225f52c1057"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "constipation_sedentary_habit",
+    "template_id": "source_batch_20261028_08",
+    "topic": "constipation",
+    "authorship": "developer_source_derived_not_external_blind"
+  },
+  {
+    "id": "SCB09",
+    "kind": "supported",
+    "query": "忙起来总忍着便意，长期这样会怎样？",
+    "expected_doc_ids": [
+      "BJ-CONSTIPATION-20250331"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "BJ-CONSTIPATION-20250331",
+        "version": 1,
+        "body_sha256": "21200fc234fe9beb9ac1b580365883d41c3f0bf2fd5a03b7ff7fdf38ef3afdb1",
+        "ranges": [
+          [
+            95,
+            176
+          ]
+        ],
+        "required_conditions": []
+      }
+    ],
+    "source_binding": {
+      "doc_id": "BJ-CONSTIPATION-20250331",
+      "version": 1,
+      "source_locator": "原始HTML提取65个非空p段落；选段11、12、13、36、39、40、49、50、51、54、57、58、59（0起算）；保留来源标题与原序号，逐段范围见origin sidecar",
+      "normalized_document_sha256": "29bc52f33d30d1ba9bde2773072c6e5a35b383d8a3466967a06fa225f52c1057"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "constipation_suppressed_urge",
+    "template_id": "source_batch_20261028_09",
+    "topic": "constipation",
+    "authorship": "developer_source_derived_not_external_blind"
+  },
+  {
+    "id": "SCB10",
+    "kind": "supported",
+    "query": "排便时刷手机、用力憋气，有哪些习惯需要注意？",
+    "expected_doc_ids": [
+      "BJ-CONSTIPATION-20250331"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "BJ-CONSTIPATION-20250331",
+        "version": 1,
+        "body_sha256": "21200fc234fe9beb9ac1b580365883d41c3f0bf2fd5a03b7ff7fdf38ef3afdb1",
+        "ranges": [
+          [
+            209,
+            273
+          ]
+        ],
+        "required_conditions": []
+      }
+    ],
+    "source_binding": {
+      "doc_id": "BJ-CONSTIPATION-20250331",
+      "version": 1,
+      "source_locator": "原始HTML提取65个非空p段落；选段11、12、13、36、39、40、49、50、51、54、57、58、59（0起算）；保留来源标题与原序号，逐段范围见origin sidecar",
+      "normalized_document_sha256": "29bc52f33d30d1ba9bde2773072c6e5a35b383d8a3466967a06fa225f52c1057"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "constipation_toilet_attention",
+    "template_id": "source_batch_20261028_10",
+    "topic": "constipation",
+    "authorship": "developer_source_derived_not_external_blind"
+  },
+  {
+    "id": "SCB11",
+    "kind": "supported",
+    "query": "想了解便秘伴突然剧烈腹痛，或者肚子很胀又不排气时的就医提示。",
+    "expected_doc_ids": [
+      "BJ-CONSTIPATION-20250331"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "BJ-CONSTIPATION-20250331",
+        "version": 1,
+        "body_sha256": "21200fc234fe9beb9ac1b580365883d41c3f0bf2fd5a03b7ff7fdf38ef3afdb1",
+        "ranges": [
+          [
+            368,
+            459
+          ]
+        ],
+        "required_conditions": []
+      }
+    ],
+    "source_binding": {
+      "doc_id": "BJ-CONSTIPATION-20250331",
+      "version": 1,
+      "source_locator": "原始HTML提取65个非空p段落；选段11、12、13、36、39、40、49、50、51、54、57、58、59（0起算）；保留来源标题与原序号，逐段范围见origin sidecar",
+      "normalized_document_sha256": "29bc52f33d30d1ba9bde2773072c6e5a35b383d8a3466967a06fa225f52c1057"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "constipation_abdominal_warning",
+    "template_id": "source_batch_20261028_11",
+    "topic": "constipation",
+    "authorship": "developer_source_derived_not_external_blind"
+  },
+  {
+    "id": "SCB12",
+    "kind": "supported",
+    "query": "服药后顽固便秘，能自己随意加泻药吗？",
+    "expected_doc_ids": [
+      "BJ-CONSTIPATION-20250331"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "BJ-CONSTIPATION-20250331",
+        "version": 1,
+        "body_sha256": "21200fc234fe9beb9ac1b580365883d41c3f0bf2fd5a03b7ff7fdf38ef3afdb1",
+        "ranges": [
+          [
+            822,
+            910
+          ]
+        ],
+        "required_conditions": []
+      }
+    ],
+    "source_binding": {
+      "doc_id": "BJ-CONSTIPATION-20250331",
+      "version": 1,
+      "source_locator": "原始HTML提取65个非空p段落；选段11、12、13、36、39、40、49、50、51、54、57、58、59（0起算）；保留来源标题与原序号，逐段范围见origin sidecar",
+      "normalized_document_sha256": "29bc52f33d30d1ba9bde2773072c6e5a35b383d8a3466967a06fa225f52c1057"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "constipation_medication_review",
+    "template_id": "source_batch_20261028_12",
+    "topic": "constipation",
+    "authorship": "developer_source_derived_not_external_blind"
+  }
+]

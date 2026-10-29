@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "hash_scheme": "canonical-json-v1",
+  "suite_id": "aide-source-batch-development-v1",
+  "evaluation_date": "2026-10-29",
+  "authorship": "developer_source_derived_not_external_blind",
+  "query_contract": "explicit_user_facts_v1",
+  "metric_contract": "source-evidence-v1",
+  "groups": [
+    {
+      "name": "source-batch-development",
+      "purpose": "development",
+      "path": "source_batch_cases_v1.json",
+      "count": 12,
+      "sha256": "8e3652899653fc0e8f243367748706e1d5b04d1e9227eac941ed9d7c838177f9",
+      "allow_historical_missing_ids": false,
+      "used_for_changes_after_first_run": true
+    },
+    {
+      "name": "source-origin-pilot-regression",
+      "purpose": "development",
+      "path": "source_pilot_cases_v1.json",
+      "count": 12,
+      "sha256": "1930b4a09d3068a946e2776966ec5b7b356a7ad5bca8a5b0ad0c6c9848a4e5c2",
+      "allow_historical_missing_ids": false,
+      "used_for_changes_after_first_run": true
+    }
+  ]
+}
