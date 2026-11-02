@@ -1,14 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { CheckSquare, Plus, Calendar, AlertCircle, Edit3, Trash2, X, Save, Clock, Flag, CheckCircle, Circle, BarChart3, MoreHorizontal } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { CheckSquare, Plus, Calendar, AlertCircle, Edit3, Trash2, X, Flag, CheckCircle, Circle, BarChart3, MoreHorizontal } from 'lucide-react';
 import { Button } from './ui/button';
-import type { Todo, TodoCreateRequest, TodoUpdateRequest, PersonDataFilter } from '../lib/types';
+import type { Todo, TodoCreateRequest, TodoUpdateRequest, TodoStatsResponse, PersonDataFilter } from '../lib/types';
+import { useLatestRequest } from '../hooks/useLatestRequest';
 import { todoAPI } from '../services/apiService';
 
 interface TodosPanelProps { userId: number }
 
 export function TodosPanel({ userId }: TodosPanelProps) {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [stats, setStats] = useState<any>(null);
+  const [stats, setStats] = useState<TodoStatsResponse['data'] | null>(null);
   const [loading, setLoading] = useState(false);
   const [opLoading, setOpLoading] = useState(false);
   const [showForm, setShowForm] = useState(false);
@@ -22,15 +23,21 @@ export function TodosPanel({ userId }: TodosPanelProps) {
 
   const [form, setForm] = useState<TodoCreateRequest>({ title: '', description: '', priority: 'medium', due_date: undefined, note_id: undefined });
 
-  const load = async () => {
-    setLoading(true);
-    try { const r = await todoAPI.getTodos(userId.toString(), { completed: filter.completed, priority: filter.priority, overdue: filter.overdue, limit: 50 }); setTodos(r.data || []); } catch { setTodos([]); }
-    setLoading(false);
-  };
+  const listRequest = useLatestRequest();
+  const statsRequest = useLatestRequest();
+  const detailRequest = useLatestRequest();
 
-  const loadStats = async () => {
-    try { const r = await todoAPI.getStats(userId.toString()); setStats(r.data?.data); } catch { /* noop */ }
-  };
+  const load = useCallback(async () => {
+    const seq = listRequest.next();
+    setLoading(true);
+    try { const r = await todoAPI.getTodos(userId.toString(), { completed: filter.completed, priority: filter.priority, overdue: filter.overdue, limit: 50 }); if (listRequest.isCurrent(seq)) setTodos(r.data || []); } catch { if (listRequest.isCurrent(seq)) setTodos([]); }
+    if (listRequest.isCurrent(seq)) setLoading(false);
+  }, [userId, filter.completed, filter.priority, filter.overdue, listRequest]);
+
+  const loadStats = useCallback(async () => {
+    const seq = statsRequest.next();
+    try { const r = await todoAPI.getStats(userId.toString()); if (statsRequest.isCurrent(seq)) setStats(r.data?.data || null); } catch { /* noop */ }
+  }, [userId, statsRequest]);
 
   const submit = async () => {
     setOpLoading(true);
@@ -58,7 +65,7 @@ export function TodosPanel({ userId }: TodosPanelProps) {
 
   const toggle = async (t: Todo) => {
     setOpLoading(true);
-    try { t.completed ? await todoAPI.uncompleteTodo(userId.toString(), t.id.toString()) : await todoAPI.completeTodo(userId.toString(), t.id.toString()); await Promise.all([load(), loadStats()]); } catch { /* noop */ }
+    try { if (t.completed) { await todoAPI.uncompleteTodo(userId.toString(), t.id.toString()); } else { await todoAPI.completeTodo(userId.toString(), t.id.toString()); } await Promise.all([load(), loadStats()]); } catch { /* noop */ }
     setOpLoading(false);
   };
 
@@ -68,9 +75,22 @@ export function TodosPanel({ userId }: TodosPanelProps) {
     setShowForm(true);
     setMenuOpen(null);
   };
-  const openDetail = async (t: Todo) => { try { const r = await todoAPI.getTodo(userId.toString(), t.id.toString()); setDetail(r.data?.data || r.data || t); } catch { setDetail(t); } };
+  const openDetail = async (t: Todo) => {
+    const seq = detailRequest.next();
+    try {
+      const r = await todoAPI.getTodo(userId.toString(), t.id.toString());
+      if (detailRequest.isCurrent(seq) && r.data?.user_id === userId) setDetail(r.data);
+    } catch { /* The API error handler reports the failure. */ }
+  };
 
-  useEffect(() => { Promise.all([load(), loadStats()]).catch(() => {}); }, [userId, filter]);
+  useEffect(() => {
+    void Promise.all([load(), loadStats()]);
+    return () => { listRequest.invalidate(); statsRequest.invalidate(); };
+  }, [load, loadStats, listRequest, statsRequest]);
+  useEffect(() => {
+    setTodos([]); setStats(null); setDetail(null);
+    return () => detailRequest.invalidate();
+  }, [userId, detailRequest]);
   useEffect(() => { const h = (e: MouseEvent) => { if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(null); }; document.addEventListener('mousedown', h); return () => document.removeEventListener('mousedown', h); }, []);
 
   const fmt = (d: string | null) => d ? new Date(d).toLocaleDateString('zh-CN', { month: 'short', day: 'numeric' }) : '';
@@ -108,7 +128,7 @@ export function TodosPanel({ userId }: TodosPanelProps) {
           <select value={filter.completed !== undefined ? String(filter.completed) : ''} onChange={e => setFilter({ ...filter, completed: e.target.value === '' ? undefined : e.target.value === 'true' })} className="flex-1 px-2 py-1 text-xs border border-border rounded-md bg-white">
             <option value="">全部状态</option><option value="false">未完成</option><option value="true">已完成</option>
           </select>
-          <select value={filter.priority || ''} onChange={e => setFilter({ ...filter, priority: (e.target.value || undefined) as any })} className="flex-1 px-2 py-1 text-xs border border-border rounded-md bg-white">
+          <select value={filter.priority || ''} onChange={e => setFilter({ ...filter, priority: (e.target.value || undefined) as PersonDataFilter['priority'] })} className="flex-1 px-2 py-1 text-xs border border-border rounded-md bg-white">
             <option value="">全部优先级</option><option value="high">高</option><option value="medium">中</option><option value="low">低</option>
           </select>
           <select value={filter.overdue !== undefined ? String(filter.overdue) : ''} onChange={e => setFilter({ ...filter, overdue: e.target.value === '' ? undefined : e.target.value === 'true' })} className="flex-1 px-2 py-1 text-xs border border-border rounded-md bg-white">
@@ -184,7 +204,7 @@ export function TodosPanel({ userId }: TodosPanelProps) {
               <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} className="field-control" placeholder="标题" />
               <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} className="field-control" rows={2} placeholder="描述（可选）" />
               <div className="flex gap-3">
-                <select value={form.priority} onChange={e => setForm({ ...form, priority: e.target.value as any })} className="field-control min-w-0 flex-1 bg-white">
+                <select value={form.priority} onChange={e => setForm({ ...form, priority: e.target.value as Todo['priority'] })} className="field-control min-w-0 flex-1 bg-white">
                   <option value="low">低优先级</option><option value="medium">中优先级</option><option value="high">高优先级</option>
                 </select>
                 <input type="date" value={form.due_date || ''} onChange={e => setForm({ ...form, due_date: e.target.value || undefined })} className="field-control min-w-0 flex-1" />

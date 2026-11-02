@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { validateToken, restoreAuth } from '../store/slices/authSlice';
+import { validateToken, refreshToken } from '../store/slices/authSlice';
 import { AuthManager } from '../lib/auth';
 
 /**
@@ -10,7 +10,7 @@ import { AuthManager } from '../lib/auth';
  */
 export const useAuthInit = () => {
   const dispatch = useAppDispatch();
-  const { isAuthenticated, isLoading, token } = useAppSelector((state) => state.auth);
+  const { isAuthenticated, isLoading } = useAppSelector((state) => state.auth);
 
   useEffect(() => {
     console.log('🔐 开始认证初始化...');
@@ -55,7 +55,7 @@ export const useAuthInit = () => {
 export const useRouteTokenValidation = () => {
   const location = useLocation();
   const dispatch = useAppDispatch();
-  const { isAuthenticated, token, isLoading } = useAppSelector((state) => state.auth);
+  const { token, isLoading } = useAppSelector((state) => state.auth);
   const lastValidationTime = useRef<number>(0);
   const validationCooldown = 10000; // 10秒冷却时间，避免频繁验证
 
@@ -111,7 +111,7 @@ export const useAutoTokenRefresh = () => {
     const checkTokenExpiry = () => {
       if (AuthManager.isTokenExpiringSoon()) {
         console.log('⏰ Token即将过期，尝试刷新...');
-        dispatch(validateToken())
+        dispatch(refreshToken())
           .unwrap()
           .then(() => {
             console.log('✅ Token刷新成功');

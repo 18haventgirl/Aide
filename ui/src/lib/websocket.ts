@@ -1,386 +1,185 @@
+import { isRecord } from './api-errors';
+import { parseChatResponse, type ChatResponse } from './chat-payload';
+export type { ChatResponse } from './chat-payload';
+
 export interface WebSocketMessage {
   type: string;
-  content: any;
+  content: unknown;
   sender_id?: string;
   receiver_id?: string;
   room_id?: string;
   conversation_id?: string;
   timestamp?: string;
-}
-
-export interface ChatResponse {
-  conversation_id: string;
-  current_agent: string;
-  messages: Array<{
-    content: string;
-    agent: string;
-  }>;
-  events: Array<{
-    id: string;
-    type: string;
-    agent: string;
-    content: string;
-    metadata?: any;
-    timestamp?: number;
-  }>;
-  context: Record<string, any>;
-  agents: Array<Record<string, any>>;
-  raw_response: string;
-  is_finished: boolean;
-  is_error: boolean;
-  error_message: string;
-  guardrails: Array<{
-    id: string;
-    name: string;
-    input: string;
-    reasoning: string;
-    passed: boolean;
-    timestamp: number;
-  }>;
+  metadata?: { mode?: 'general' | 'medical'; conversation_id?: string };
 }
 
 export type WebSocketConnectionStatus = 'disconnected' | 'connecting' | 'connected' | 'error';
-
-export type WebSocketEventHandler = (data: any) => void;
+export interface WebSocketEvents {
+  status: WebSocketConnectionStatus;
+  connected: { connection_id?: string };
+  error: { error: string };
+  auth_error: { error: string };
+  ai_error: { error: string };
+  ai_response: ChatResponse;
+  ai_thinking: ChatResponse;
+  ai_finished: ChatResponse;
+  chat_response: ChatResponse;
+  conversation_switched: { conversation_id?: string };
+  notification: Record<string, unknown>;
+  message: WebSocketMessage;
+}
+export type WebSocketEventHandler<K extends keyof WebSocketEvents> = (data: WebSocketEvents[K]) => void;
 
 export class WebSocketService {
   private ws: WebSocket | null = null;
-  private reconnectTimer: NodeJS.Timeout | null = null;
+  private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
   private reconnectAttempts = 0;
-  private maxReconnectAttempts = 5;
-  private reconnectInterval = 3000;
-  private _userId: string;
-  private username?: string;
-  private token?: string;
-  
-  // 事件处理器
-  private handlers: Record<string, WebSocketEventHandler[]> = {};
-  
-  // 连接状态
+  private pendingConnection: Promise<void> | null = null;
+  private rejectConnection: ((error: Error) => void) | null = null;
   private _status: WebSocketConnectionStatus = 'disconnected';
-  
+  private _conversationId?: string;
+  private handlers: { [K in keyof WebSocketEvents]: Set<WebSocketEventHandler<K>> } = {
+    status: new Set(), connected: new Set(), error: new Set(), auth_error: new Set(), ai_error: new Set(),
+    ai_response: new Set(), ai_thinking: new Set(), ai_finished: new Set(), chat_response: new Set(),
+    conversation_switched: new Set(), notification: new Set(), message: new Set(),
+  };
+  private readonly _userId: string;
+  private readonly username?: string;
+  private readonly token?: string;
+
   constructor(userId: string, username?: string, conversationId?: string, token?: string) {
     this._userId = userId;
     this.username = username;
-    this._conversationId = conversationId;
     this.token = token;
+    this._conversationId = conversationId;
   }
-  
-  private _conversationId?: string;
-  
-  get status(): WebSocketConnectionStatus {
-    return this._status;
+  get status() { return this._status; }
+  get userId() { return this._userId; }
+  get conversationId() { return this._conversationId; }
+  matchesCredentials(userId: string, username?: string, token?: string) {
+    return this._userId === userId && this.username === username && this.token === token;
   }
-  
-  get userId(): string {
-    return this._userId;
-  }
-  
-  get conversationId(): string | undefined {
-    return this._conversationId;
-  }
-  
-  setConversationId(conversationId: string | null) {
-    console.log('🔄 WebSocket设置会话ID:', this._conversationId, '->', conversationId);
-    this._conversationId = conversationId || undefined;
-  }
-  
-  private setStatus(status: WebSocketConnectionStatus) {
-    console.log('📊 WebSocket状态变更:', this._status, '->', status);
-    this._status = status;
-    this.emit('status', status);
-  }
-  
-  // 连接WebSocket
+  setConversationId(conversationId: string | null) { this._conversationId = conversationId || undefined; }
+  private setStatus(status: WebSocketConnectionStatus) { this._status = status; this.emit('status', status); }
+
   connect(): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (this.ws?.readyState === WebSocket.OPEN) {
-        console.log('🔗 WebSocket已经连接，直接返回');
-        resolve();
-        return;
-      }
-      
-      console.log('🔌 开始建立WebSocket连接...');
-      this.setStatus('connecting');
-      
-      // 构建WebSocket URL
-      const wsUrl = new URL('/ws', window.location.origin);
-      wsUrl.protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-      wsUrl.searchParams.set('user_id', this._userId);
-      if (this.username) {
-        wsUrl.searchParams.set('username', this.username);
-      }
-      if (this._conversationId) {
-        wsUrl.searchParams.set('conversation_id', this._conversationId);
-      }
-      if (this.token) {
-        wsUrl.searchParams.set('token', this.token);
-      }
-      
-      // 如果是开发环境，使用固定端口
-      if (import.meta.env.DEV) {
-        wsUrl.host = 'localhost:8000';
-      }
-      
-      console.log('🌐 WebSocket 地址:', `${wsUrl.origin}${wsUrl.pathname}`);
-      console.log('🔐 连接参数详情:', {
-        userId: this._userId,
-        username: this.username,
-        hasToken: !!this.token,
-        tokenLength: this.token?.length || 0,
-        conversationId: this._conversationId
-      });
-      
-      this.ws = new WebSocket(wsUrl.toString());
-      
-      this.ws.onopen = () => {
-        console.log('✅ WebSocket连接已建立');
-        this.setStatus('connected');
-        this.reconnectAttempts = 0;
-        resolve();
+    if (this.ws?.readyState === WebSocket.OPEN) return Promise.resolve();
+    if (this.pendingConnection) return this.pendingConnection;
+    if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
+    this.reconnectTimer = null;
+    const url = new URL('/ws', window.location.origin);
+    url.protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    url.searchParams.set('user_id', this._userId);
+    if (this.username) url.searchParams.set('username', this.username);
+    if (this.token) url.searchParams.set('token', this.token);
+    if (this._conversationId) url.searchParams.set('conversation_id', this._conversationId);
+    // Use the same-origin Vite /ws proxy in development as well as production.
+    const socket = new WebSocket(url.toString());
+    this.ws = socket;
+    this.setStatus('connecting');
+    this.pendingConnection = new Promise<void>((resolve, reject) => {
+      this.rejectConnection = reject;
+      socket.onopen = () => {
+        if (this.ws !== socket) return;
+        this.pendingConnection = null; this.rejectConnection = null;
+        this.setStatus('connected'); resolve();
       };
-      
-      this.ws.onmessage = (event) => {
+      socket.onmessage = event => {
+        if (this.ws !== socket) return;
         try {
-          const message: WebSocketMessage = JSON.parse(event.data);
-          this.handleMessage(message);
-        } catch (error) {
-          console.error('❌ 解析WebSocket消息失败:', error);
-        }
+          const raw: unknown = JSON.parse(event.data);
+          if (isRecord(raw) && typeof raw.type === 'string') this.handleMessage({ type: raw.type, content: raw.content });
+        } catch { this.emit('error', { error: '无法读取服务端消息' }); }
       };
-      
-      this.ws.onclose = (event) => {
-        console.log('🔌 WebSocket连接已关闭:', { 
-          code: event.code, 
-          reason: event.reason,
-          wasClean: event.wasClean,
-          timestamp: new Date().toISOString()
-        });
-        
-        // 详细的关闭代码分析
-        switch (event.code) {
-          case 4001:
-            console.error('❌ 认证失败：JWT令牌无效或已过期');
-            this.emit('auth_error', { error: 'JWT令牌无效或已过期' });
-            break;
-          case 4003:
-            console.error('❌ 认证失败：用户ID与令牌不匹配');
-            this.emit('auth_error', { error: '用户ID与令牌不匹配' });
-            break;
-          case 1000:
-            console.log('✅ 正常关闭连接');
-            break;
-          default:
-            console.warn('⚠️ 连接异常关闭，代码:', event.code, '原因:', event.reason);
-        }
-        
-        this.setStatus('disconnected');
-        
-        // 认证失败时不进行重连
-        if (event.code === 1008 || event.code === 1011 || event.code === 4001 || event.code === 4003) {
-          console.error('❌ WebSocket认证失败，停止重连');
-          this.emit('auth_error', { error: 'WebSocket认证失败' });
-          reject(new Error('WebSocket认证失败'));
-          return;
-        }
-        
-        // 非正常关闭时尝试重连
-        if (event.code !== 1000 && this.reconnectAttempts < this.maxReconnectAttempts) {
-          console.log('🔄 准备重连...');
-          this.scheduleReconnect();
-        }
-      };
-      
-      this.ws.onerror = (error) => {
-        console.error('❌ WebSocket错误:', error);
+      socket.onerror = () => {
+        if (this.ws !== socket) return;
         this.setStatus('error');
-        reject(error);
+        this.pendingConnection = null; this.rejectConnection = null;
+        reject(new Error('WebSocket连接失败'));
+      };
+      socket.onclose = event => {
+        if (this.ws !== socket) return;
+        this.ws = null;
+        this.pendingConnection = null; this.rejectConnection = null;
+        this.setStatus('disconnected');
+        const authFailure = [1008, 4001, 4003].includes(event.code);
+        const message = authFailure ? 'WebSocket认证失败' : 'WebSocket连接已关闭';
+        reject(new Error(message));
+        if (authFailure) this.emit('auth_error', { error: message });
+        // 1011 is a server error, not evidence that credentials are invalid.
+        else if (event.code !== 1000 && this.reconnectAttempts < 5) this.scheduleReconnect();
       };
     });
+    return this.pendingConnection;
   }
-  
-  // 断开连接
+
   disconnect() {
-    console.log('🔌 手动断开WebSocket连接');
-    if (this.reconnectTimer) {
-      clearTimeout(this.reconnectTimer);
-      this.reconnectTimer = null;
-    }
-    
-    if (this.ws) {
-      this.ws.close(1000, 'Client disconnect');
-      this.ws = null;
-    }
-    
+    if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
+    this.reconnectTimer = null;
+    const socket = this.ws;
+    this.ws = null; // Ignore delayed callbacks from this socket after a reconnect.
+    this.rejectConnection?.(new Error('连接已取消'));
+    this.pendingConnection = null; this.rejectConnection = null;
+    socket?.close(1000, 'Client disconnect');
     this.setStatus('disconnected');
   }
-  
-  // 发送消息
-  send(message: WebSocketMessage) {
-    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) {
-      console.warn('⚠️ WebSocket未连接，无法发送消息');
-      return;
-    }
-    
+  send(message: WebSocketMessage): boolean {
+    if (!this.ws || this.ws.readyState !== WebSocket.OPEN) return false;
     this.ws.send(JSON.stringify(message));
+    return true;
   }
-  
-  // 发送聊天消息
-  sendChatMessage(content: string, mode: 'general' | 'medical' = 'general') {
-    
-    const message: WebSocketMessage = {
-      type: 'chat',
-      content: content,
-      timestamp: new Date().toISOString()
-    };
-    
-    (message as any).metadata = { mode };
-
-    // 如果有会话ID，添加到消息的metadata中
-    if (this._conversationId) {
-      message.conversation_id = this._conversationId;
-      // 也添加到metadata中以便后端处理
-      (message as any).metadata.conversation_id = this._conversationId;
-    }
-    
-    this.send(message);
+  sendChatMessage(content: string, mode: 'general' | 'medical' = 'general'): boolean {
+    return this.send({ type: 'chat', content, timestamp: new Date().toISOString(),
+      conversation_id: this._conversationId, metadata: { mode, conversation_id: this._conversationId } });
   }
-  
-  // 发送会话切换消息
   switchConversation(conversationId: string) {
-    console.log('🔄 切换会话:', conversationId);
-    
-    const message: WebSocketMessage = {
-      type: 'switch_conversation',
-      content: {
-        conversation_id: conversationId
-      },
-      timestamp: new Date().toISOString()
-    };
-    
-    this.send(message);
-    
-    // 立即更新本地会话ID
     this._conversationId = conversationId;
+    return this.send({ type: 'switch_conversation', content: { conversation_id: conversationId }, timestamp: new Date().toISOString() });
   }
-  
-  // 处理接收到的消息
   private handleMessage(message: WebSocketMessage) {
     const { type, content } = message;
-    
     switch (type) {
-      case 'ai_response':
-        this.emit('ai_response', content);
-        break;
-      case 'ai_thinking':
-        this.emit('ai_thinking', content);
-        break;
-      case 'ai_finished':
-        this.emit('ai_finished', content);
-        break;
-      case 'chat_response':
-        this.emit('chat_response', content);
-        break;
-      case 'connect':
-      case 'connected':
-        console.log('🎉 连接成功消息:', content);
-        this.emit('connected', content);
-        break;
+      case 'ai_response': case 'ai_thinking': case 'ai_finished': case 'chat_response':
+        this.emit(type, parseChatResponse(content)); break;
+      case 'connect': case 'connected':
+        // A transport handshake alone does not mean backend initialization succeeded.
+        this.reconnectAttempts = 0;
+        this.emit('connected', { connection_id: isRecord(content) && typeof content.connection_id === 'string' ? content.connection_id : undefined }); break;
+      case 'error': case 'auth_error': case 'ai_error':
+        this.emit(type, { error: isRecord(content) && typeof content.error === 'string' ? content.error : '服务暂时不可用' }); break;
       case 'notification':
-        console.log('📢 通知消息:', content);
-        // 检查是否是会话切换确认消息
-        if (content && content.type === 'conversation_switched') {
-          console.log('✅ 会话切换成功:', content.conversation_id);
-          this.emit('conversation_switched', content);
+        if (isRecord(content)) {
+          if (content.type === 'conversation_switched' && typeof content.conversation_id === 'string') {
+            this.emit('conversation_switched', { conversation_id: content.conversation_id });
+          }
+          this.emit('notification', content);
         }
-        this.emit('notification', content);
         break;
-      case 'error':
-        console.error('❌ 服务器错误:', content);
-        this.emit('error', content);
-        break;
-      case 'auth_error':
-        console.error('❌ 认证错误:', content);
-        this.emit('auth_error', content);
-        break;
-      default:
-        console.log('📨 其他消息类型:', type);
-        this.emit(type, content);
-        this.emit('message', message);
+      default: this.emit('message', message);
     }
   }
-  
-  // 安排重连
   private scheduleReconnect() {
-    if (this.reconnectTimer) {
-      clearTimeout(this.reconnectTimer);
-    }
-    
-    this.reconnectAttempts++;
-    const delay = Math.min(1000 * Math.pow(2, this.reconnectAttempts), 30000);
-    
-    console.log(`🔄 安排重连 (第${this.reconnectAttempts}次)，${delay}ms后重试`);
-    
-    this.reconnectTimer = setTimeout(async () => {
-      try {
-        await this.connect();
-      } catch (error) {
-        console.error('❌ 重连失败:', error);
-      }
+    if (this.reconnectTimer) clearTimeout(this.reconnectTimer);
+    const delay = Math.min(1000 * 2 ** ++this.reconnectAttempts, 30000);
+    this.reconnectTimer = setTimeout(() => {
+      this.reconnectTimer = null;
+      void this.connect().catch(() => { /* onclose controls bounded retry. */ });
     }, delay);
   }
-  
-  // 事件监听器
-  on(event: string, handler: WebSocketEventHandler) {
-    if (!this.handlers[event]) {
-      this.handlers[event] = [];
-    }
-    this.handlers[event].push(handler);
-  }
-  
-  // 移除事件监听器
-  off(event: string, handler: WebSocketEventHandler) {
-    if (this.handlers[event]) {
-      this.handlers[event] = this.handlers[event].filter(h => h !== handler);
-    }
-  }
-  
-  // 触发事件
-  private emit(event: string, data: any) {
-    if (this.handlers[event]) {
-      this.handlers[event].forEach(handler => {
-        try {
-          handler(data);
-        } catch (error) {
-          console.error(`事件处理器执行失败 (${event}):`, error);
-        }
-      });
-    }
+  on<K extends keyof WebSocketEvents>(event: K, handler: WebSocketEventHandler<K>) { this.handlers[event].add(handler); }
+  off<K extends keyof WebSocketEvents>(event: K, handler: WebSocketEventHandler<K>) { this.handlers[event].delete(handler); }
+  private emit<K extends keyof WebSocketEvents>(event: K, data: WebSocketEvents[K]) {
+    this.handlers[event].forEach(handler => {
+      try { handler(data); } catch (error) { console.error(`事件处理失败 (${event})`, error); }
+    });
   }
 }
 
-// 创建全局WebSocket实例
 let wsService: WebSocketService | null = null;
-
 export function createWebSocketService(userId: string, username?: string, conversationId?: string, token?: string): WebSocketService {
-  // 如果已存在服务且用户ID相同，返回现有服务
-  if (wsService && wsService.userId === userId) {
-    console.log('♻️ 复用现有WebSocket服务');
-    // 不在这里更新会话ID，而是通过专门的方法处理
-    return wsService;
-  }
-  
-  // 如果存在不同用户的服务，先断开
-  if (wsService) {
-    console.log('🔄 断开现有WebSocket服务（用户切换）');
-    wsService.disconnect();
-  }
-  
-  console.log('🆕 创建新的WebSocket服务:', { userId, username, conversationId, token: token ? '[TOKEN]' : undefined });
+  if (wsService?.matchesCredentials(userId, username, token)) return wsService;
+  wsService?.disconnect();
   wsService = new WebSocketService(userId, username, conversationId, token);
   return wsService;
 }
-
-export function getWebSocketService(): WebSocketService | null {
-  return wsService;
-}
+export function getWebSocketService(): WebSocketService | null { return wsService; }

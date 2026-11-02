@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getWebSocketService, type WebSocketConnectionStatus } from '../lib/websocket';
+import { getWebSocketService, type WebSocketConnectionStatus, type WebSocketEvents } from '../lib/websocket';
 
 interface UseWebSocketReturn {
   status: WebSocketConnectionStatus;
@@ -63,12 +63,12 @@ export function useWebSocket(): UseWebSocketReturn {
       }
     };
 
-    const handleConnected = (content: any) => {
+    const handleConnected = (content: WebSocketEvents['connected']) => {
       setConnectionId(content.connection_id || null);
       console.log('WebSocket连接成功:', content);
     };
 
-    const handleError = (content: any) => {
+    const handleError = (content: WebSocketEvents['error']) => {
       setError(new Error(content.error || 'WebSocket错误'));
     };
 

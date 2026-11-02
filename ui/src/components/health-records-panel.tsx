@@ -1,7 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { Activity, ChevronLeft, ChevronRight, Clock, Plus, X } from 'lucide-react';
 import { Button } from './ui/button';
 import type { HealthRecord, HealthRecordCreateRequest, HealthRecordType } from '../lib/types';
+import { useLatestRequest } from '../hooks/useLatestRequest';
 import { healthRecordAPI } from '../services/apiService';
 
 interface HealthRecordsPanelProps { userId: number }
@@ -46,21 +47,27 @@ export function HealthRecordsPanel({ userId }: HealthRecordsPanelProps) {
     title: '', summary: '',
   });
 
-  const load = async () => {
+  const request = useLatestRequest();
+  const year = month.getFullYear();
+  const monthIndex = month.getMonth();
+  const load = useCallback(async () => {
+    const seq = request.next();
     setLoading(true); setError(null);
-    const start = dateKey(new Date(month.getFullYear(), month.getMonth(), 1));
-    const end = dateKey(new Date(month.getFullYear(), month.getMonth() + 1, 0));
+    const start = dateKey(new Date(year, monthIndex, 1));
+    const end = dateKey(new Date(year, monthIndex + 1, 0));
     try {
       const response = await healthRecordAPI.getRecords(String(userId), { start_date: start, end_date: end, limit: 500 });
       if (response.success === false) throw new Error(response.message || '加载身体状况失败');
-      setRecords(response.data?.records || []);
+      if (request.isCurrent(seq)) setRecords(response.data?.records || []);
     } catch (err) {
+      if (!request.isCurrent(seq)) return;
       setError(err instanceof Error ? err.message : '加载身体状况失败');
       setRecords([]);
-    } finally { setLoading(false); }
-  };
+    } finally { if (request.isCurrent(seq)) setLoading(false); }
+  }, [userId, year, monthIndex, request]);
 
-  useEffect(() => { void load(); }, [userId, month.getFullYear(), month.getMonth()]);
+  useEffect(() => { void load(); return () => request.invalidate(); }, [load, request]);
+  useEffect(() => { setRecords([]); setDetail(null); }, [userId]);
 
   const grouped = useMemo(() => records.reduce<Record<string, HealthRecord[]>>((result, record) => {
     const key = dateKey(new Date(record.observed_at));

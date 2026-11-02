@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { FileText, Plus, Search, Tag, Edit3, Trash2, X, Save, MoreHorizontal, ChevronDown } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { FileText, Plus, Search, Tag, Edit3, Trash2, X, MoreHorizontal } from 'lucide-react';
 import { Button } from './ui/button';
-import type { Note, NoteCreateRequest, NoteUpdateRequest, PersonDataFilter } from '../lib/types';
+import type { Note, NoteCreateRequest, PersonDataFilter } from '../lib/types';
+import { useLatestRequest } from '../hooks/useLatestRequest';
 import { noteAPI } from '../services/apiService';
 
 const PREDEFINED_TAGS = [
@@ -31,34 +32,34 @@ export function NotesPanel({ userId }: NotesPanelProps) {
   const [showFilters, setShowFilters] = useState(false);
   const [menuOpen, setMenuOpen] = useState<number | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
-  const requestSeq = useRef(0);
-  const listSeq = useRef(0);
-  const tagsSeq = useRef(0);
-  const detailSeq = useRef(0);
+  const requestSeq = useLatestRequest();
+  const listSeq = useLatestRequest();
+  const tagsSeq = useLatestRequest();
+  const detailSeq = useLatestRequest();
   const activeSearch = showFilters && !!searchQ.trim();
   const loading = activeSearch ? searchLoading : listLoading;
 
   const [form, setForm] = useState<NoteCreateRequest>({ title: '', content: '', tag: '', status: 'draft' });
 
-  const load = async () => {
-    const seq = ++listSeq.current;
+  const load = useCallback(async () => {
+    const seq = listSeq.next();
     setListLoading(true);
     try {
       const r = await noteAPI.getNotes(userId.toString(), { tag: filter.tag, status: filter.status, search: filter.search, limit: 50 });
-      if (seq === listSeq.current && r.success !== false) setNotes(Array.isArray(r.data?.data) ? r.data.data : []);
+      if (listSeq.isCurrent(seq) && r.success !== false) setNotes(Array.isArray(r.data?.data) ? r.data.data : []);
     } catch { /* Keep the last successful list visible on transient failures. */ }
-    if (seq === listSeq.current) setListLoading(false);
-  };
+    if (listSeq.isCurrent(seq)) setListLoading(false);
+  }, [userId, filter.tag, filter.status, filter.search, listSeq]);
 
-  const loadTags = async () => {
-    const seq = ++tagsSeq.current;
-    try { const r = await noteAPI.getTags(userId.toString()); if (seq === tagsSeq.current) setTags(r.data?.data || []); } catch { if (seq === tagsSeq.current) setTags([]); }
-  };
+  const loadTags = useCallback(async () => {
+    const seq = tagsSeq.next();
+    try { const r = await noteAPI.getTags(userId.toString()); if (tagsSeq.isCurrent(seq)) setTags(r.data?.data || []); } catch { if (tagsSeq.isCurrent(seq)) setTags([]); }
+  }, [userId, tagsSeq]);
 
-  const search = async () => {
+  const search = useCallback(async () => {
     const query = searchQ.trim();
     if (!query) { await load(); return; }
-    const seq = ++requestSeq.current;
+    const seq = requestSeq.next();
     searchController.current?.abort();
     const controller = new AbortController();
     searchController.current = controller;
@@ -66,12 +67,14 @@ export function NotesPanel({ userId }: NotesPanelProps) {
     setSearchError('');
     try {
       const r = await noteAPI.searchNotes(userId.toString(), { query, tag: filter.tag, status: filter.status, limit: 20, use_vector_search: false }, controller.signal);
-      if (seq === requestSeq.current && r.success !== false) setSearchResults(Array.isArray(r.data?.data) ? r.data.data : []);
+      if (requestSeq.isCurrent(seq) && r.success !== false) setSearchResults(Array.isArray(r.data?.data) ? r.data.data : []);
     } catch {
-      if (!controller.signal.aborted && seq === requestSeq.current) setSearchError('搜索暂时失败，请重试');
+      if (!controller.signal.aborted && requestSeq.isCurrent(seq)) setSearchError('搜索暂时失败，请重试');
     }
-    if (seq === requestSeq.current) setSearchLoading(false);
-  };
+    if (requestSeq.isCurrent(seq)) setSearchLoading(false);
+  }, [searchQ, userId, filter.tag, filter.status, load, requestSeq]);
+
+  const cancelSearch = useCallback(() => { searchController.current?.abort(); requestSeq.invalidate(); }, [requestSeq]);
 
   const clearSearch = async () => { setSearchQ(''); setSearchResults([]); setSearchError(''); await load(); };
   const toggleSearchPanel = async () => {
@@ -112,25 +115,24 @@ export function NotesPanel({ userId }: NotesPanelProps) {
 
   const startEdit = (n: Note) => { setEditing(n); setForm({ title: n.title, content: n.content, tag: n.tag || '', status: n.status }); setShowForm(true); setMenuOpen(null); };
   const openDetail = async (n: Note) => {
-    const seq = ++detailSeq.current;
+    const seq = detailSeq.next();
     try {
       const r = await noteAPI.getNote(userId.toString(), n.id.toString());
-      const current = r.data?.data || r.data;
-      if (seq === detailSeq.current && current?.id === n.id && String(current.user_id) === String(userId)) setDetail(current);
+      const current = r.data;
+      if (detailSeq.isCurrent(seq) && current?.id === n.id && String(current.user_id) === String(userId)) setDetail(current);
     } catch { /* API interceptor reports failure; do not present a stale cached detail. */ }
   };
 
-  useEffect(() => { Promise.all([load(), loadTags()]).catch(() => {}); return () => { ++listSeq.current; ++tagsSeq.current; }; }, [userId, filter]);
+  useEffect(() => { Promise.all([load(), loadTags()]).catch(() => {}); return () => { listSeq.invalidate(); tagsSeq.invalidate(); }; }, [load, loadTags, listSeq, tagsSeq]);
   useEffect(() => {
-    ++requestSeq.current;
-    searchController.current?.abort();
+    cancelSearch();
     setSearchResults([]); setSearchError('');
     if (!showFilters || !searchQ.trim()) { setSearchLoading(false); return; }
     setSearchLoading(true);
     const timer = setTimeout(() => { void search(); }, 300);
-    return () => { clearTimeout(timer); searchController.current?.abort(); ++requestSeq.current; };
-  }, [searchQ, showFilters, userId, filter]);
-  useEffect(() => { setNotes([]); setDetail(null); setTags([]); return () => { ++detailSeq.current; }; }, [userId]);
+    return () => { clearTimeout(timer); cancelSearch(); };
+  }, [searchQ, showFilters, search, cancelSearch]);
+  useEffect(() => { setNotes([]); setDetail(null); setTags([]); return () => { detailSeq.invalidate(); }; }, [userId, detailSeq]);
   const displayedNotes: SearchNote[] = (showFilters && searchQ.trim() ? searchResults : notes).filter(n => String(n.user_id) === String(userId));
   useEffect(() => { const h = (e: MouseEvent) => { if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(null); }; document.addEventListener('mousedown', h); return () => document.removeEventListener('mousedown', h); }, []);
 

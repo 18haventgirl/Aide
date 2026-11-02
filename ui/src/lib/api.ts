@@ -1,59 +1,17 @@
 import { mockChatResponse, mockEvents } from './mockData';
 import { createWebSocketService, getWebSocketService, type ChatResponse } from './websocket';
-import type { Message, AgentEvent, GuardrailCheck, Agent } from './types';
-import { USE_WEBSOCKET, DEFAULT_USER_ID, DEFAULT_USERNAME, DEBUG } from './config';
+import { USE_WEBSOCKET } from './config';
 import { chatAPI } from '../services/apiService';
 
 // 开发模式使用 mock 数据
 const USE_MOCK_DATA = !USE_WEBSOCKET;
 
-// 数据格式转换函数
-function convertChatResponseToFrontend(chatResponse: ChatResponse): {
-  conversation_id: string;
-  current_agent: string;
-  messages: Array<{content: string; agent: string}>;
-  events: AgentEvent[];
-  context: Record<string, any>;
-  agents: Agent[];
-  guardrails: GuardrailCheck[];
-} {
-  return {
-    conversation_id: chatResponse.conversation_id,
-    current_agent: chatResponse.current_agent,
-    messages: chatResponse.messages || [],
-    events: (chatResponse.events || []).map(event => ({
-      id: event.id,
-      type: event.type as any,
-      agent: event.agent,
-      content: event.content,
-      timestamp: event.timestamp ? new Date(event.timestamp) : new Date(),
-      metadata: event.metadata
-    })),
-    context: chatResponse.context || {},
-    agents: (chatResponse.agents || []).map(agent => ({
-      name: agent.name || '',
-      description: agent.description || '',
-      handoffs: agent.handoffs || [],
-      tools: agent.tools || [],
-      input_guardrails: agent.input_guardrails || []
-    })),
-    guardrails: (chatResponse.guardrails || []).map(guard => ({
-      id: guard.id,
-      name: guard.name,
-      input: guard.input,
-      reasoning: guard.reasoning,
-      passed: guard.passed,
-      timestamp: new Date(guard.timestamp)
-    }))
-  };
-}
-
 // WebSocket API 实现
 class WebSocketAPI {
   private currentChatResponse: ChatResponse | null = null;
-  private responsePromise: Promise<any> | null = null;
-  private resolveResponse: ((value: any) => void) | null = null;
-  private rejectResponse: ((reason?: any) => void) | null = null;
+  private responsePromise: Promise<ChatResponse> | null = null;
+  private resolveResponse: ((value: ChatResponse) => void) | null = null;
+  private rejectResponse: ((reason?: unknown) => void) | null = null;
 
   async initializeWebSocket(userId: string, username?: string): Promise<void> {
     const wsService = createWebSocketService(userId, username);
@@ -88,15 +46,15 @@ class WebSocketAPI {
     await new Promise(resolve => setTimeout(resolve, 1000));
   }
 
-  private handleAIResponse(content: any) {
+  private handleAIResponse(content: ChatResponse) {
     if (typeof content === 'object') {
       if (content.type === 'completion') {
         // 对话完成
-        this.currentChatResponse = content.final_response;
+        this.currentChatResponse = content.final_response || null;
         console.log('对话完成, 最终响应:', this.currentChatResponse);
         
         if (this.resolveResponse && this.currentChatResponse) {
-          const convertedResponse = convertChatResponseToFrontend(this.currentChatResponse);
+          const convertedResponse = this.currentChatResponse;
           this.resolveResponse(convertedResponse);
           this.resolveResponse = null;
           this.rejectResponse = null;
@@ -112,7 +70,7 @@ class WebSocketAPI {
     }
   }
 
-  async sendMessage(message: string, conversationId: string): Promise<any> {
+  async sendMessage(message: string, conversationId: string): Promise<ChatResponse> {
     const wsService = getWebSocketService();
     if (!wsService) {
       throw new Error('WebSocket服务未初始化');
@@ -132,13 +90,14 @@ class WebSocketAPI {
     });
 
     // 发送消息
+    wsService.setConversationId(conversationId);
     wsService.sendChatMessage(message);
     
     // 等待响应
     return this.responsePromise;
   }
 
-  async getInitialResponse(): Promise<any> {
+  async getInitialResponse(): Promise<ChatResponse> {
     // 发送空消息获取初始响应
     return this.sendMessage('', '');
   }

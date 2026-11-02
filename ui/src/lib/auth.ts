@@ -84,10 +84,7 @@ export class AuthManager {
     const expiresAt = this.getExpiresAt();
     if (!expiresAt) return true;
     
-    // 提前5分钟认为过期，给刷新token留时间
-    const now = Date.now();
-    const fiveMinutes = 5 * 60 * 1000;
-    return now >= (expiresAt - fiveMinutes);
+    return !Number.isFinite(expiresAt) || Date.now() >= expiresAt;
   }
 
   /**
@@ -152,4 +149,4 @@ export const {
   clearAuth,
   isTokenExpired,
   isTokenExpiringSoon,
-} = AuthManager; 
+} = AuthManager;

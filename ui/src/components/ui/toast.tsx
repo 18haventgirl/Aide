@@ -1,36 +1,23 @@
-import React, { createContext, useContext, useCallback } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { CheckCircle, XCircle, AlertCircle, X } from 'lucide-react';
 
-// Toast类型定义
-export interface Toast {
-  id: string;
-  type: 'success' | 'error' | 'warning' | 'info';
-  title: string;
-  description?: string;
-  duration?: number;
-  action?: {
-    label: string;
-    onClick: () => void;
-  };
-}
-
-// Toast Context
-interface ToastContextType {
-  toasts: Toast[];
-  addToast: (toast: Omit<Toast, 'id'>) => void;
-  removeToast: (id: string) => void;
-  success: (title: string, description?: string) => void;
-  error: (title: string, description?: string) => void;
-  warning: (title: string, description?: string) => void;
-  info: (title: string, description?: string) => void;
-}
-
-const ToastContext = createContext<ToastContextType | undefined>(undefined);
+import { ToastContext, useToast, type Toast } from '../../hooks/useToast';
 
 // Toast Provider组件
 export function ToastProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = React.useState<Toast[]>([]);
+
+  const timers = useRef(new Map<string, ReturnType<typeof setTimeout>>());
+  useEffect(() => {
+    const pending = timers.current;
+    return () => { pending.forEach(clearTimeout); pending.clear(); };
+  }, []);
+  const removeToast = useCallback((id: string) => {
+    clearTimeout(timers.current.get(id));
+    timers.current.delete(id);
+    setToasts(prev => prev.filter(toast => toast.id !== id));
+  }, []);
 
   const addToast = useCallback((toast: Omit<Toast, 'id'>) => {
     const id = Math.random().toString(36).substr(2, 9);
@@ -44,15 +31,9 @@ export function ToastProvider({ children }: { children: ReactNode }) {
     
     // 自动移除toast
     if (newToast.duration && newToast.duration > 0) {
-      setTimeout(() => {
-        removeToast(id);
-      }, newToast.duration);
+      timers.current.set(id, setTimeout(() => removeToast(id), newToast.duration));
     }
-  }, []);
-
-  const removeToast = useCallback((id: string) => {
-    setToasts(prev => prev.filter(toast => toast.id !== id));
-  }, []);
+  }, [removeToast]);
 
   const success = useCallback((title: string, description?: string) => {
     addToast({ type: 'success', title, description });
@@ -84,15 +65,6 @@ export function ToastProvider({ children }: { children: ReactNode }) {
       <ToastContainer />
     </ToastContext.Provider>
   );
-}
-
-// Toast Hook
-export function useToast() {
-  const context = useContext(ToastContext);
-  if (!context) {
-    throw new Error('useToast must be used within a ToastProvider');
-  }
-  return context;
 }
 
 // Toast Container组件
@@ -189,6 +161,7 @@ function ToastItem({ toast }: { toast: Toast }) {
           )}
         </div>
         <button
+          aria-label="关闭提示"
           onClick={() => removeToast(toast.id)}
           className="flex-shrink-0 ml-3 text-gray-400 hover:text-gray-600"
         >

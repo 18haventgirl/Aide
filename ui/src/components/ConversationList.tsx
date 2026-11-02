@@ -1,20 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, ChevronDown, ChevronUp, X, Plus, Clock, User, Loader2, Trash2 } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { MessageSquare, X, Plus, Clock, Loader2, Trash2 } from 'lucide-react';
 import { conversationAPI } from '../services/apiService';
-import { useToast } from './ui/toast';
+import { useToast } from '../hooks/useToast';
+import { useLatestRequest } from '../hooks/useLatestRequest';
+import type { StoredConversation as Conversation } from '../lib/api-contracts';
 import { PAGINATION } from '../lib/config';
-
-interface Conversation {
-  id: number;
-  id_str: string;
-  user_id: number;
-  title: string;
-  description: string;
-  status: 'active' | 'inactive' | 'archived';
-  last_active: string;
-  created_at: string;
-  updated_at: string;
-}
 
 interface ConversationListProps {
   isOpen: boolean;
@@ -37,50 +27,43 @@ export function ConversationList({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState(true);
-  const [page, setPage] = useState(0);
+  const page = useRef(0);
+  const fetching = useRef(false);
+  const request = useLatestRequest();
   const listRef = useRef<HTMLDivElement>(null);
   const { error: showError } = useToast();
 
   const ITEMS_PER_PAGE = PAGINATION.DEFAULT_PAGE_SIZE;
 
   // 获取会话列表
-  const fetchConversations = async (reset: boolean = false) => {
-    if (loading) return;
-    
-    setLoading(true);
-    setError(null);
-    
+  const fetchConversations = useCallback(async (reset = false) => {
+    if (!reset && fetching.current) return;
+    const seq = request.next();
+    fetching.current = true;
+    setLoading(true); setError(null);
+    const nextPage = reset ? 0 : page.current;
     try {
-      const offset = reset ? 0 : page * ITEMS_PER_PAGE;
-      const response = await conversationAPI.getConversations(userId.toString(), ITEMS_PER_PAGE, offset);
-      
-      if (reset) {
-        setConversations(response.data || []);
-        setPage(0);
-      } else {
-        setConversations(prev => [...prev, ...(response.data || [])]);
-      }
-      
-      // 检查是否还有更多数据 - 如果返回的数据量小于请求的数量，说明没有更多了
-      const hasMoreData = (response.data || []).length >= ITEMS_PER_PAGE;
-      setHasMore(hasMoreData);
-      setPage(prev => prev + 1);
+      const response = await conversationAPI.getConversations(String(userId), ITEMS_PER_PAGE, nextPage * ITEMS_PER_PAGE);
+      if (!request.isCurrent(seq)) return;
+      if (!response.success) throw new Error(response.message || '获取会话列表失败');
+      const rows = response.data || [];
+      setConversations(prev => reset ? rows : [...prev, ...rows]);
+      setHasMore(rows.length >= ITEMS_PER_PAGE);
+      page.current = nextPage + 1;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : '获取会话列表失败';
-      setError(errorMessage);
-      showError('获取会话列表失败', errorMessage);
+      if (!request.isCurrent(seq)) return;
+      const message = err instanceof Error ? err.message : '获取会话列表失败';
+      setError(message); showError('获取会话列表失败', message);
     } finally {
-      setLoading(false);
+      if (request.isCurrent(seq)) { fetching.current = false; setLoading(false); }
     }
-  };
+  }, [userId, ITEMS_PER_PAGE, showError, request]);
 
-  // 初始加载和根据refreshKey刷新
   useEffect(() => {
-    if (isOpen) {
-      console.log('会话列表刷新，原因: key 变更或初始加载');
-      fetchConversations(true);
-    }
-  }, [isOpen, userId, refreshKey]);
+    setConversations([]);
+    if (isOpen) void fetchConversations(true);
+    return () => request.invalidate();
+  }, [isOpen, refreshKey, fetchConversations, request]);
 
   // 加载更多
   const loadMore = () => {
@@ -115,7 +98,8 @@ export function ConversationList({
   };
 
   // 格式化时间
-  const formatTime = (timeString: string) => {
+  const formatTime = (timeString: string | null) => {
+    if (!timeString) return '时间未知';
     const date = new Date(timeString);
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();

@@ -2,13 +2,16 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { AuthState, User, LoginCredentials, AuthToken } from '../../lib/types';
 import { authAPI } from '../../services/apiService';
+import { ApiError, isAuthenticationError, toApiError } from '../../lib/api-errors';
 import { AuthManager } from '../../lib/auth';
 
 // 从localStorage恢复初始状态
 const initialAuthState = AuthManager.getAuthState();
 
 // 初始状态
-const initialState: AuthState = {
+type SessionState = AuthState & { refreshRequestId: string | null };
+const initialState: SessionState = {
+  refreshRequestId: null,
   user: initialAuthState.user,
   token: initialAuthState.token,
   isAuthenticated: initialAuthState.isAuthenticated,
@@ -28,8 +31,8 @@ export const login = createAsyncThunk<AuthToken, LoginCredentials, { rejectValue
         return response.data;
       }
       return rejectWithValue(response.message || '登录失败');
-    } catch (error: any) {
-      return rejectWithValue(error.message);
+    } catch (error) {
+      return rejectWithValue(toApiError(error).message);
     }
   }
 );
@@ -40,28 +43,37 @@ export const logout = createAsyncThunk<void, void, { rejectValue: string }>(
     try {
       await authAPI.logout();
       AuthManager.clearAuth();
-    } catch (error: any) {
+    } catch (error) {
       // 即使登出API失败，也清除本地token
       AuthManager.clearAuth();
-      return rejectWithValue(error.message);
+      return rejectWithValue(toApiError(error).message);
     }
   }
 );
 
-export const refreshToken = createAsyncThunk<AuthToken, void, { rejectValue: string }>(
+export const refreshToken = createAsyncThunk<AuthToken, void, {
+  state: { auth: SessionState };
+  rejectValue: { message: string; sessionEnded: boolean };
+}>(
   'auth/refreshToken',
-  async (_, { rejectWithValue }) => {
+  async (_, { getState, requestId, rejectWithValue }) => {
     try {
       const response = await authAPI.refreshToken();
-      if (response.success && response.data) {
-        AuthManager.saveAuth(response.data);
-        return response.data;
+      if (!response.success || !response.data?.access_token || !response.data.user_info) {
+        throw new ApiError(response.message || '刷新令牌失败', undefined, response.code);
       }
-      return rejectWithValue(response.message || '刷新token失败');
-    } catch (error: any) {
-      return rejectWithValue(error.message);
+      if (getState().auth.refreshRequestId === requestId) AuthManager.saveAuth(response.data);
+      return response.data;
+    } catch (error) {
+      const sessionEnded = isAuthenticationError(error) || AuthManager.isTokenExpired();
+      if (sessionEnded && getState().auth.refreshRequestId === requestId) AuthManager.clearAuth();
+      return rejectWithValue({ message: toApiError(error).message, sessionEnded });
     }
-  }
+  },
+  { condition: (_, { getState }) => {
+    const { isAuthenticated, isLoading, refreshRequestId } = getState().auth;
+    return isAuthenticated && !isLoading && refreshRequestId === null;
+  } }
 );
 
 export const getCurrentUser = createAsyncThunk<User, void, { rejectValue: { message: string; isAuthError: boolean } }>(
@@ -69,12 +81,12 @@ export const getCurrentUser = createAsyncThunk<User, void, { rejectValue: { mess
   async (_, { rejectWithValue }) => {
     try {
       const response = await authAPI.getCurrentUser();
-      
+
       // 后端实际返回的格式是 { success: true, message: "...", user_info: {...} }
       if (response.success) {
         // 检查是否有用户信息（兼容不同的返回格式）
-        const userInfo = (response as any).user_info || response.data;
-        
+        const userInfo = response.user_info || response.data;
+
         if (userInfo) {
           console.log('✅ getCurrentUser: 获取用户信息成功:', userInfo);
           return userInfo;
@@ -85,26 +97,25 @@ export const getCurrentUser = createAsyncThunk<User, void, { rejectValue: { mess
       } else {
         return rejectWithValue({ message: response.message || '获取用户信息失败', isAuthError: false });
       }
-    } catch (error: any) {
+    } catch (error) {
       console.error('❌ getCurrentUser: 获取失败:', error);
-      
+
       // 检查是否是认证相关错误（401或特定业务错误码）
-      const isAuthError = error.response?.status === 401 || 
-                         (error.response?.data?.code >= 1001 && error.response?.data?.code <= 1004);
-      
+      const isAuthError = isAuthenticationError(error);
+
       if (isAuthError) {
         // 认证错误，静默处理
         console.log('🔇 getCurrentUser: 认证错误，静默处理');
-        return rejectWithValue({ 
-          message: error.response?.data?.message || error.message || '认证失败', 
-          isAuthError: true 
+        return rejectWithValue({
+          message: toApiError(error, '认证失败').message,
+          isAuthError: true
         });
       } else {
         // 其他错误（网络错误等）
         console.log('⚠️ getCurrentUser: 非认证错误');
-        return rejectWithValue({ 
-          message: error.message || '获取用户信息失败', 
-          isAuthError: false 
+        return rejectWithValue({
+          message: toApiError(error, '获取用户信息失败').message,
+          isAuthError: false
         });
       }
     }
@@ -122,16 +133,16 @@ export const validateToken = createAsyncThunk<User, void, { rejectValue: { messa
         AuthManager.clearAuth();
         return rejectWithValue({ message: 'Token已过期', isAuthError: true });
       }
-      
+
       // 验证token是否有效
       const response = await authAPI.getCurrentUser();
-      
+
       // 后端实际返回的格式是 { success: true, message: "...", user_info: {...} }
       // 而不是标准的 { success: true, data: {...} }
       if (response.success) {
         // 检查是否有用户信息（兼容不同的返回格式）
-        const userInfo = (response as any).user_info || response.data;
-        
+        const userInfo = response.user_info || response.data;
+
         if (userInfo) {
           console.log('✅ validateToken: token验证成功，用户信息:', userInfo);
           return userInfo;
@@ -142,28 +153,27 @@ export const validateToken = createAsyncThunk<User, void, { rejectValue: { messa
       } else {
         return rejectWithValue({ message: response.message || 'Token无效', isAuthError: true });
       }
-      
-    } catch (error: any) {
+
+    } catch (error) {
       console.error('❌ validateToken: 验证失败:', error);
-      
+
       // 检查是否是认证相关错误（401或特定业务错误码）
-      const isAuthError = error.response?.status === 401 || 
-                         (error.response?.data?.code >= 1001 && error.response?.data?.code <= 1004);
-      
+      const isAuthError = isAuthenticationError(error);
+
       if (isAuthError) {
         // 只有认证错误才清除本地存储
         console.log('🧹 validateToken: 认证错误，清除本地认证信息');
         AuthManager.clearAuth();
-        return rejectWithValue({ 
-          message: error.response?.data?.message || error.message || 'Token无效', 
-          isAuthError: true 
+        return rejectWithValue({
+          message: toApiError(error, 'Token无效').message,
+          isAuthError: true
         });
       } else {
         // 其他错误（网络错误等）不清除认证状态
         console.log('⚠️ validateToken: 非认证错误，保持认证状态');
-        return rejectWithValue({ 
-          message: error.message || '验证失败', 
-          isAuthError: false 
+        return rejectWithValue({
+          message: toApiError(error, '验证失败').message,
+          isAuthError: false
         });
       }
     }
@@ -183,6 +193,7 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
     },
     clearAuth: (state) => {
+      state.refreshRequestId = null;
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
@@ -202,6 +213,7 @@ const authSlice = createSlice({
     builder
       // 登录
       .addCase(login.pending, (state) => {
+        state.refreshRequestId = null;
         state.isLoading = true;
         state.error = null;
       })
@@ -221,6 +233,7 @@ const authSlice = createSlice({
       })
       // 登出
       .addCase(logout.pending, (state) => {
+        state.refreshRequestId = null;
         state.isLoading = true;
       })
       .addCase(logout.fulfilled, (state) => {
@@ -239,11 +252,12 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
       })
       // 刷新token
-      .addCase(refreshToken.pending, (state) => {
-        state.isLoading = true;
+      .addCase(refreshToken.pending, (state, action) => {
+        state.refreshRequestId = action.meta.requestId;
       })
       .addCase(refreshToken.fulfilled, (state, action) => {
-        state.isLoading = false;
+        if (state.refreshRequestId !== action.meta.requestId) return;
+        state.refreshRequestId = null;
         state.error = null;
         if (action.payload.access_token && action.payload.user_info) {
           state.token = action.payload.access_token;
@@ -252,12 +266,14 @@ const authSlice = createSlice({
         }
       })
       .addCase(refreshToken.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload as string;
-        // token刷新失败，清除认证状态
-        state.user = null;
-        state.token = null;
-        state.isAuthenticated = false;
+        if (state.refreshRequestId !== action.meta.requestId) return;
+        state.refreshRequestId = null;
+        state.error = action.payload?.message || '刷新令牌失败';
+        if (action.payload?.sessionEnded) {
+          state.user = null;
+          state.token = null;
+          state.isAuthenticated = false;
+        }
       })
       // 获取当前用户
       .addCase(getCurrentUser.pending, (state) => {
@@ -273,11 +289,12 @@ const authSlice = createSlice({
       })
       .addCase(getCurrentUser.rejected, (state, action) => {
         state.isLoading = false;
-        
+
         // 检查是否是认证错误
         const payload = action.payload as { message: string; isAuthError: boolean };
-        
+
         if (payload?.isAuthError) {
+          state.refreshRequestId = null;
           // 认证错误静默处理，不设置错误状态，避免显示弹窗
           console.log('🔇 getCurrentUser.rejected: 认证错误，静默清除认证状态');
           state.user = null;
@@ -307,11 +324,12 @@ const authSlice = createSlice({
       })
       .addCase(validateToken.rejected, (state, action) => {
         state.isLoading = false;
-        
+
         // 检查是否是认证错误
         const payload = action.payload as { message: string; isAuthError: boolean };
-        
+
         if (payload?.isAuthError) {
+          state.refreshRequestId = null;
           // 认证错误静默处理，不设置错误状态，避免显示弹窗
           console.log('🔇 validateToken.rejected: 认证错误，静默清除认证状态');
           state.user = null;
@@ -328,4 +346,4 @@ const authSlice = createSlice({
 });
 
 export const { clearError, setUser, clearAuth, restoreAuth } = authSlice.actions;
-export default authSlice.reducer; 
+export default authSlice.reducer;

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import type { Message } from "../lib/types";
+import { readCitations } from '../lib/chat-payload';
 import { ChatMarkdown } from "./ChatMarkdown";
 import type { WebSocketConnectionStatus } from "../lib/websocket";
 import { WifiOff, Send, History, Loader2, Bot, FileText, CheckSquare, MessageCircle, ArrowUpRight, User as UserIcon } from "lucide-react";
@@ -93,7 +94,7 @@ export function Chat({
           if (msg.content === "DISPLAY_SEAT_MAP") return null;
           const isUser = msg.type === 'user';
           const isError = msg.content.startsWith('系统异常:');
-          const citations = Array.isArray(msg.metadata?.citations) ? msg.metadata.citations : [];
+          const citations = readCitations(msg.metadata?.citations);
           return (
             <div key={msg.id || idx} className={`flex mb-4 msg-enter ${isUser ? 'justify-end' : 'justify-start'}`} style={{ animationDelay: `${Math.min(idx * 30, 300)}ms` }}>
               {!isUser && (
@@ -110,7 +111,7 @@ export function Chat({
                 {!isUser && citations.length > 0 && (
                   <div className="mt-3 border-t border-blue-100 pt-2 space-y-1.5">
                     <p className="text-xs font-semibold text-slate-600">资料来源</p>
-                    {citations.map((source: any, sourceIndex: number) => {
+                    {citations.map((source, sourceIndex) => {
                       const url = typeof source.url === 'string' && /^https?:\/\//i.test(source.url)
                         ? source.url : null;
                       return (

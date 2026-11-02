@@ -11,13 +11,13 @@ export function ChatMarkdown({ content }: ChatMarkdownProps) {
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
-          table: ({ node: _node, ...props }) => (
+          table: ({ children, className }) => (
             <div className="chat-table-scroll" role="region" aria-label="回复表格" tabIndex={0}>
-              <table {...props} />
+              <table className={className}>{children}</table>
             </div>
           ),
-          a: ({ node: _node, ...props }) => (
-            <a {...props} target="_blank" rel="noopener noreferrer" />
+          a: ({ children, href, title, className }) => (
+            <a href={href} title={title} className={className} target="_blank" rel="noopener noreferrer">{children}</a>
           ),
         }}
       >

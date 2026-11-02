@@ -11,9 +11,12 @@
     "build:prod": "vite build --mode production",
     "build:simple": "vite build --mode production --minify false",
     "build:check": "tsc -b --noEmit && vite build",
-    "lint": "eslint .",
+    "lint": "eslint . --max-warnings=0",
     "preview": "vite preview",
-    "test:ws": "node test-websocket.js"
+    "test:ws": "node --test --test-name-pattern=\"connection|socket|subscription|sending|server internal|refreshed credentials|reconnect\" tests/frontend-regression.test.mjs",
+    "test:frontend": "node --test tests/frontend-regression.test.mjs",
+    "test:api": "node --test tests/frontend-api-smoke.test.mjs",
+    "check": "npm run lint && npm run typecheck && npm run test:frontend"
   },
   "dependencies": {
     "@radix-ui/react-scroll-area": "^1.2.9",
@@ -54,6 +57,7 @@
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.35.1",
     "vite": "^7.0.4",
-    "ws": "^8.18.0"
+    "ws": "^8.18.0",
+    "esbuild": "0.25.6"
   }
 }

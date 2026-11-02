@@ -6,7 +6,7 @@ export interface Message {
   type: 'user' | 'ai' | 'system'
   agent: string
   timestamp: Date
-  metadata?: any
+  metadata?: Record<string, unknown>
 }
 
 export interface Agent {
@@ -26,7 +26,7 @@ export interface AgentEvent {
   agent: string
   content: string
   timestamp: Date
-  metadata?: any
+  metadata?: Record<string, unknown>
 }
 
 export interface GuardrailCheck {
@@ -243,7 +243,7 @@ export interface AuthState {
   error: string | null
 }
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean
   code: number
   message: string

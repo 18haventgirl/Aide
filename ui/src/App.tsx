@@ -5,10 +5,11 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import ErrorBoundary from './components/ErrorBoundary';
 import { setGlobalErrorHandler, setAuthFailureHandler } from './services/apiService';
-import { useToast } from './components/ui/toast';
+import { useToast } from './hooks/useToast';
 import { useAppDispatch } from './store/hooks';
 import { logout } from './store/slices/authSlice';
 import { useAuthInit, useAutoTokenRefresh, useRouteTokenValidation } from './hooks/useAuthInit';
+import { responseErrorMessage } from './lib/api-errors';
 import { AppLogo } from './components/app-logo';
 
 function App() {
@@ -16,7 +17,7 @@ function App() {
   const dispatch = useAppDispatch();
   
   // 初始化认证状态
-  const { isInitialized, isAuthenticated } = useAuthInit();
+  const { isInitialized } = useAuthInit();
   
   // 自动token刷新
   useAutoTokenRefresh();
@@ -26,14 +27,15 @@ function App() {
 
   useEffect(() => {
     // 设置全局API错误处理
-    setGlobalErrorHandler((error: string, details?: any) => {
-      showError(error, details?.message || '请稍后重试');
+    setGlobalErrorHandler((error: string, details?: unknown) => {
+      showError(error, responseErrorMessage(details) || '请稍后重试');
     });
 
     // 设置认证失败处理
     setAuthFailureHandler(() => {
       dispatch(logout());
     });
+    return () => { setGlobalErrorHandler(null); setAuthFailureHandler(null); };
   }, [showError, dispatch]);
 
   // 认证初始化中，显示加载页面

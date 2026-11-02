@@ -7,12 +7,15 @@ import { PersonDataPanel } from "../components/person-data-panel";
 import { MedicalRecordParser } from "../components/medical-record-parser";
 import ErrorBoundary from "../components/ErrorBoundary";
 import type { Agent, AgentEvent, GuardrailCheck, Message } from "../lib/types";
-import { createWebSocketService, getWebSocketService, type WebSocketConnectionStatus } from "../lib/websocket";
+import { createWebSocketService, getWebSocketService, type WebSocketConnectionStatus, type WebSocketEvents, type ChatResponse } from "../lib/websocket";
 import {
   Bot, MessageCircle, Wifi, WifiOff, RefreshCw, AlertTriangle, LogOut, User,
   ScanLine, ChevronRight
 } from "lucide-react";
 import { Button } from "../components/ui/button";
+import { historyMessages } from '../lib/chat-payload';
+import { messageAPI } from '../services/apiService';
+import { useLatestRequest } from '../hooks/useLatestRequest';
 import { AppLogo } from "../components/app-logo";
 
 /* ================================================================
@@ -35,13 +38,6 @@ const clearPersistedSession = () => {
   try { localStorage.removeItem(STORAGE_KEY); } catch { /* noop */ }
 };
 
-const parseMessageMetadata = (raw: unknown): Record<string, any> => {
-  try {
-    if (typeof raw === 'string') return JSON.parse(raw) || {};
-    return raw && typeof raw === 'object' ? raw as Record<string, any> : {};
-  } catch { return {}; }
-};
-
 /* ================================================================
    Dashboard Component
    ================================================================ */
@@ -60,7 +56,7 @@ const Dashboard: React.FC = () => {
   const [agents, setAgents] = useState<Agent[]>([]);
   const [currentAgent, setCurrentAgent] = useState("");
   const [guardrails, setGuardrails] = useState<GuardrailCheck[]>([]);
-  const [context, setContext] = useState<Record<string, any>>({});
+  const [context, setContext] = useState<Record<string, unknown>>({});
   const [conversationId, setConversationId] = useState<string | null>(null);
   const [conversationListKey, setConversationListKey] = useState(0);
 
@@ -76,44 +72,34 @@ const Dashboard: React.FC = () => {
     conversationIdRef.current = conversationId;
   }, [conversationId]);
 
-  /* ---- Restore session on mount ---- */
+  const historyRequest = useLatestRequest();
+  const loadHistory = useCallback(async (cid: string) => {
+    const seq = historyRequest.next();
+    setIsRestoring(true);
+    try {
+      const response = await messageAPI.getMessages(cid, 50, 0);
+      if (!historyRequest.isCurrent(seq)) return;
+      if (!response.success) throw new Error(response.message || '无法加载会话');
+      setMessages(historyMessages(response.data || []));
+    } catch {
+      if (historyRequest.isCurrent(seq)) {
+        setWsError('无法加载会话记录，请重试');
+      }
+    } finally {
+      if (historyRequest.isCurrent(seq)) setIsRestoring(false);
+    }
+  }, [historyRequest]);
+
   useEffect(() => {
     if (!user || !token) return;
     const saved = restoreConversationId();
     if (saved) {
+      conversationIdRef.current = saved;
       setConversationId(saved);
-      loadHistory(saved);
+      void loadHistory(saved);
     }
-  }, [user, token]);
-
-  const loadHistory = async (cid: string) => {
-    setIsRestoring(true);
-    try {
-      const { messageAPI } = await import('../services/apiService');
-      const res = await messageAPI.getMessages(cid, 50, 0);
-      if (res.success && res.data) {
-        const msgs: Message[] = res.data
-          .map((m: any) => ({
-            id: m.id.toString(),
-            content: m.content,
-            type: (m.sender_type === 'human' ? 'user' : 'ai') as Message['type'],
-            agent: m.sender_type === 'human' ? 'user' : (m.sender_id || 'ai'),
-            timestamp: new Date(m.created_at || Date.now()),
-            metadata: parseMessageMetadata(m.extra_data),
-          }))
-          .sort((a: Message, b: Message) => a.timestamp.getTime() - b.timestamp.getTime());
-        setMessages(msgs);
-      } else {
-        saveConversationId(null);
-        setConversationId(null);
-      }
-    } catch {
-      saveConversationId(null);
-      setConversationId(null);
-    } finally {
-      setIsRestoring(false);
-    }
-  };
+    return () => historyRequest.invalidate();
+  }, [user, token, loadHistory, historyRequest]);
 
   /* ---- WebSocket ---- */
   useEffect(() => {
@@ -126,13 +112,13 @@ const Dashboard: React.FC = () => {
     if (conversationIdRef.current) ws.setConversationId(conversationIdRef.current);
 
     const onStatus = (s: WebSocketConnectionStatus) => { setWsStatus(s); if (s === 'connected') setWsError(''); };
-    const onError = (c: any) => { setWsStatus('error'); setWsError(c?.error || '连接失败'); setIsLoading(false); setStreamingResponse(''); };
-    const onSwitched = (c: any) => {
+    const onError = (c: WebSocketEvents['error']) => { setWsStatus('error'); setWsError(c?.error || '连接失败'); setIsLoading(false); setStreamingResponse(''); };
+    const onSwitched = (c: WebSocketEvents['conversation_switched']) => {
       const nid = c.conversation_id;
       if (nid) { setConversationId(nid); saveConversationId(nid); }
     };
 
-    const onStream = (content: any) => {
+    const onStream = (content: ChatResponse) => {
       if (!content || typeof content !== 'object') return;
       if (content.type === 'completion' || content.is_finished) {
         setStreamingResponse('');
@@ -164,7 +150,7 @@ const Dashboard: React.FC = () => {
       if (content.context) setContext(content.context);
     };
 
-    const processResponse = (r: any) => {
+    const processResponse = (r: ChatResponse) => {
       if (!r) return;
       if (r.conversation_id && !conversationIdRef.current) {
         conversationIdRef.current = r.conversation_id;
@@ -182,7 +168,7 @@ const Dashboard: React.FC = () => {
         setIsLoading(false); setStreamingResponse(''); return;
       }
       if (r.messages && Array.isArray(r.messages)) {
-        const newMsgs: Message[] = r.messages.map((m: any) => ({
+        const newMsgs: Message[] = r.messages.map((m) => ({
           id: `${Date.now()}-${Math.random()}`,
           content: m.content, type: m.agent === 'user' ? 'user' : 'ai',
           agent: m.agent, timestamp: new Date(),
@@ -203,21 +189,25 @@ const Dashboard: React.FC = () => {
       if (r.context) setContext(r.context);
     };
 
+    let active = true;
+    const onConnected = () => { setWsStatus('connected'); setWsError(''); };
     ws.on('status', onStatus);
-    ws.on('connected', () => { setWsStatus('connected'); setWsError(''); });
+    ws.on('connected', onConnected);
     ws.on('error', onError);
     ws.on('auth_error', onError);
     ws.on('ai_error', onError);
     ws.on('ai_response', onStream);
     ws.on('ai_thinking', onStream);
     ws.on('ai_finished', onStream);
-    const onChatResponse = (r: any) => processResponse(r);
+    const onChatResponse = (r: ChatResponse) => processResponse(r);
     ws.on('chat_response', onChatResponse);
     ws.on('conversation_switched', onSwitched);
 
-    ws.connect().catch(() => { setWsStatus('error'); });
+    ws.connect().catch(() => { if (active) setWsStatus('error'); });
 
     return () => {
+      active = false;
+      ws.off('connected', onConnected);
       ws.off('status', onStatus);
       ws.off('error', onError);
       ws.off('auth_error', onError);
@@ -235,6 +225,7 @@ const Dashboard: React.FC = () => {
   const handleSelectConversation = useCallback(async (cid: string) => {
     const ws = getWebSocketService();
     if (cid === 'new') {
+      historyRequest.invalidate(); setIsRestoring(false);
       conversationIdRef.current = null;
       setConversationId(null); setMessages([]); setEvents([]);
       setGuardrails([]); setContext({}); setCurrentAgent("");
@@ -248,24 +239,9 @@ const Dashboard: React.FC = () => {
     saveConversationId(cid);
     if (ws?.status === 'connected') ws.switchConversation(cid);
     else ws?.setConversationId(cid);
-    setMessages([]); setIsLoading(true);
-    try {
-      const { messageAPI } = await import('../services/apiService');
-      const res = await messageAPI.getMessages(cid, 50, 0);
-      if (res.success && res.data) {
-        setMessages(res.data
-          .map((m: any) => ({
-            id: m.id.toString(), content: m.content,
-            type: (m.sender_type === 'human' ? 'user' : 'ai') as Message['type'],
-            agent: m.sender_type === 'human' ? 'user' : (m.sender_id || 'ai'),
-            timestamp: new Date(m.created_at || Date.now()),
-            metadata: parseMessageMetadata(m.extra_data),
-          }))
-          .sort((a: Message, b: Message) => a.timestamp.getTime() - b.timestamp.getTime()));
-      }
-    } catch { /* noop */ }
-    setIsLoading(false);
-  }, []);
+    setMessages([]); setIsLoading(false); setStreamingResponse('');
+    await loadHistory(cid);
+  }, [loadHistory, historyRequest]);
 
   const handleSendMessage = useCallback(async (content: string, mode: 'general' | 'medical' = 'general') => {
     if (!content.trim() || isLoading) return;
@@ -275,7 +251,9 @@ const Dashboard: React.FC = () => {
       type: 'user', agent: 'user', timestamp: new Date(),
     }]);
     const ws = getWebSocketService();
-    ws?.sendChatMessage(content.trim(), mode);
+    if (!ws?.sendChatMessage(content.trim(), mode)) {
+      setIsLoading(false); setWsError('连接已断开，请重新连接后发送');
+    }
   }, [isLoading]);
 
   const handleLogout = () => {

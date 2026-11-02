@@ -1,11 +1,15 @@
 import axios from 'axios';
 import type { AxiosInstance, AxiosError, AxiosResponse } from 'axios';
-import { API_BASE_URL, API_ENDPOINTS, REQUEST_TIMEOUT } from '../lib/config';
-import type { LoginCredentials, AuthToken, User, HealthRecord, HealthRecordCreateRequest } from '../lib/types';
+import { API_ENDPOINTS, REQUEST_TIMEOUT } from '../lib/config';
+import type { LoginCredentials, AuthToken, HealthRecord, HealthRecordCreateRequest } from '../lib/types';
+import type { Note, NoteCreateRequest, NoteUpdateRequest, Todo, TodoCreateRequest, TodoUpdateRequest, TodoStatsResponse } from '../lib/types';
+import type { StoredConversation, StoredMessage, UserList, SearchNote, NoteSearchRequest, ListParams, CurrentUserResponse } from '../lib/api-contracts';
+import type { ChatResponse } from '../lib/websocket';
+import { isRecord, responseErrorMessage, toApiError } from '../lib/api-errors';
 import { AuthManager } from '../lib/auth';
 
 // 通用API响应类型
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   success: boolean;
   data: T;
   message?: string;
@@ -14,7 +18,7 @@ export interface ApiResponse<T = any> {
 }
 
 // 分页响应类型
-export interface PaginatedResponse<T = any> {
+export interface PaginatedResponse<T = unknown> {
   data: T[];
   total: number;
   page: number;
@@ -23,7 +27,7 @@ export interface PaginatedResponse<T = any> {
 }
 
 // 错误处理回调类型
-export type ErrorCallback = (error: string, details?: any) => void;
+export type ErrorCallback = (error: string, details?: unknown) => void;
 
 // 全局错误处理回调
 let globalErrorHandler: ErrorCallback | null = null;
@@ -31,12 +35,12 @@ let globalErrorHandler: ErrorCallback | null = null;
 let authFailureHandler: (() => void) | null = null;
 
 // 设置全局错误处理
-export function setGlobalErrorHandler(handler: ErrorCallback) {
+export function setGlobalErrorHandler(handler: ErrorCallback | null) {
   globalErrorHandler = handler;
 }
 
 // 设置认证失败处理
-export function setAuthFailureHandler(handler: () => void) {
+export function setAuthFailureHandler(handler: (() => void) | null) {
   authFailureHandler = handler;
 }
 
@@ -74,11 +78,11 @@ apiClient.interceptors.request.use(
 
 // 响应拦截器
 apiClient.interceptors.response.use(
-  (response: AxiosResponse) => {
+  (response: AxiosResponse<unknown>) => {
     console.log(`✅ API Response: ${response.status} ${response.config.url}`);
     
     // 检查统一API响应格式中的success字段
-    if (response.data && typeof response.data === 'object' && 'success' in response.data) {
+    if (isRecord(response.data) && 'success' in response.data) {
       if (!response.data.success) {
         // API业务层面的错误，但HTTP状态码可能是200
         console.warn('API业务错误:', response.data);
@@ -89,16 +93,16 @@ apiClient.interceptors.response.use(
         // 对于登录失败(1002)，不触发路由守卫，只显示错误信息
         if (errorCode === 1002) { // INVALID_CREDENTIALS
           if (globalErrorHandler) {
-            const errorMessage = response.data.message || '用户名或密码错误';
+            const errorMessage = responseErrorMessage(response.data) || '用户名或密码错误';
             globalErrorHandler(errorMessage, response.data);
           }
         }
         // 对于其他认证相关错误，静默处理
-        else if (errorCode >= 1001 && errorCode <= 1004) {
+        else if (typeof errorCode === 'number' && errorCode >= 1001 && errorCode <= 1004) {
           console.log('🔇 认证相关错误，静默处理:', response.data.message);
           
           // 对于令牌过期等情况，调用认证失败处理器
-          if (authFailureHandler && (
+          if (response.config.url !== API_ENDPOINTS.AUTH.REFRESH && authFailureHandler && (
             errorCode === 1003 || // TOKEN_EXPIRED
             errorCode === 1004    // TOKEN_INVALID
           )) {
@@ -110,7 +114,7 @@ apiClient.interceptors.response.use(
         // 其他业务错误
         else {
           if (globalErrorHandler) {
-            const errorMessage = response.data.message || '操作失败';
+            const errorMessage = responseErrorMessage(response.data) || '操作失败';
             globalErrorHandler(errorMessage, response.data);
           }
         }
@@ -124,7 +128,7 @@ apiClient.interceptors.response.use(
     console.error(`❌ API Error: ${error.response?.status} ${error.config?.url}`, error.response?.data);
     
     // 处理HTTP级别的认证失败 (401)
-    const responseData = error.response?.data as any;
+    const responseData = isRecord(error.response?.data) ? error.response.data : undefined;
     const isAuthError = error.response?.status === 401 || 
       (responseData && 
        typeof responseData.code === 'number' &&
@@ -135,7 +139,7 @@ apiClient.interceptors.response.use(
       console.log('🔇 HTTP认证错误，静默处理:', error.response?.status, responseData?.message);
       
       // 对于令牌过期等情况，调用认证失败处理器
-      if (authFailureHandler && (
+      if (error.config?.url !== API_ENDPOINTS.AUTH.REFRESH && authFailureHandler && (
         error.response?.status === 401 || // HTTP 401
         responseData?.code === 1003 || // TOKEN_EXPIRED
         responseData?.code === 1004    // TOKEN_INVALID
@@ -158,43 +162,14 @@ apiClient.interceptors.response.use(
 );
 
 // 获取错误消息
-function getErrorMessage(error: AxiosError): string {
-  if (error.response?.data) {
-    const data = error.response.data as any;
-    // 优先使用统一API响应格式中的message
-    if (data.message) return data.message;
-    if (data.error) return data.error;
-    if (data.detail) return data.detail;
-  }
-  
-  switch (error.response?.status) {
-    case 400:
-      return '请求参数错误';
-    case 401:
-      return '认证失败';
-    case 403:
-      return '权限不足';
-    case 404:
-      return '请求的资源不存在';
-    case 409:
-      return '资源冲突';
-    case 422:
-      return '数据验证失败';
-    case 500:
-      return '服务器内部错误';
-    case 502:
-      return '网关错误';
-    case 503:
-      return '服务暂时不可用';
-    default:
-      return error.message || '网络连接失败';
-  }
+function getErrorMessage(error: unknown): string {
+  return toApiError(error).message;
 }
 
 // 基础API服务类
 class ApiService {
   // 通用GET请求
-  async get<T>(url: string, params?: any): Promise<ApiResponse<T>> {
+  async get<T>(url: string, params?: ListParams): Promise<ApiResponse<T>> {
     try {
       const response = await apiClient.get(url, { params });
       return response.data;
@@ -204,7 +179,7 @@ class ApiService {
   }
 
   // 通用POST请求
-  async post<T>(url: string, data?: any): Promise<ApiResponse<T>> {
+  async post<T>(url: string, data?: unknown): Promise<ApiResponse<T>> {
     try {
       const response = await apiClient.post(url, data);
       return response.data;
@@ -214,7 +189,7 @@ class ApiService {
   }
 
   // 通用PUT请求
-  async put<T>(url: string, data?: any): Promise<ApiResponse<T>> {
+  async put<T>(url: string, data?: unknown): Promise<ApiResponse<T>> {
     try {
       const response = await apiClient.put(url, data);
       return response.data;
@@ -223,7 +198,7 @@ class ApiService {
     }
   }
 
-  async patch<T>(url: string, data?: any): Promise<ApiResponse<T>> {
+  async patch<T>(url: string, data?: unknown): Promise<ApiResponse<T>> {
     try {
       const response = await apiClient.patch(url, data);
       return response.data;
@@ -243,12 +218,9 @@ class ApiService {
   }
 
   // 错误处理
-  private handleError(error: any): Error {
-    if (error.response) {
-      const message = getErrorMessage(error);
-      return new Error(message);
-    }
-    return error;
+  private handleError(error: unknown): Error {
+    // Preserve status/code so authentication failures remain distinguishable.
+    return toApiError(error);
   }
 }
 
@@ -258,27 +230,27 @@ export const apiService = new ApiService();
 // 会话相关API
 export const conversationAPI = {
   // 获取会话列表 - 修复返回类型
-  async getConversations(userId: string, limit: number = 10, offset: number = 0): Promise<ApiResponse<any[]>> {
+  async getConversations(userId: string, limit: number = 10, offset: number = 0): Promise<ApiResponse<StoredConversation[]>> {
     return apiService.get(API_ENDPOINTS.CONVERSATION.LIST(userId), { limit, offset });
   },
 
   // 获取会话详情
-  async getConversation(conversationId: string): Promise<ApiResponse<any>> {
+  async getConversation(conversationId: string): Promise<ApiResponse<unknown>> {
     return apiService.get(API_ENDPOINTS.CONVERSATION.DETAIL(conversationId));
   },
 
   // 创建会话
-  async createConversation(data: any): Promise<ApiResponse<any>> {
+  async createConversation(data: unknown): Promise<ApiResponse<unknown>> {
     return apiService.post(API_ENDPOINTS.CONVERSATION.CREATE, data);
   },
 
   // 更新会话
-  async updateConversation(conversationId: string, data: any): Promise<ApiResponse<any>> {
+  async updateConversation(conversationId: string, data: unknown): Promise<ApiResponse<unknown>> {
     return apiService.put(API_ENDPOINTS.CONVERSATION.UPDATE(conversationId), data);
   },
 
   // 删除会话
-  async deleteConversation(conversationId: string): Promise<ApiResponse<any>> {
+  async deleteConversation(conversationId: string): Promise<ApiResponse<unknown>> {
     return apiService.delete(API_ENDPOINTS.CONVERSATION.DELETE(conversationId));
   },
 };
@@ -286,12 +258,12 @@ export const conversationAPI = {
 // 消息相关API
 export const messageAPI = {
   // 获取消息列表 - 修复返回类型
-  async getMessages(conversationId: string, limit: number = 10, offset: number = 0): Promise<ApiResponse<any[]>> {
+  async getMessages(conversationId: string, limit: number = 10, offset: number = 0): Promise<ApiResponse<StoredMessage[]>> {
     return apiService.get(API_ENDPOINTS.MESSAGE.LIST(conversationId), { limit, offset });
   },
 
   // 发送消息
-  async sendMessage(data: any): Promise<ApiResponse<any>> {
+  async sendMessage(data: unknown): Promise<ApiResponse<unknown>> {
     return apiService.post(API_ENDPOINTS.MESSAGE.CREATE, data);
   },
 };
@@ -299,7 +271,7 @@ export const messageAPI = {
 // 聊天相关API
 export const chatAPI = {
   // 发送聊天消息
-  async sendChatMessage(data: { conversation_id: string; message: string }): Promise<ApiResponse<any>> {
+  async sendChatMessage(data: { conversation_id: string; message: string }): Promise<ApiResponse<ChatResponse>> {
     return apiService.post(API_ENDPOINTS.CHAT.SEND, data);
   },
 };
@@ -307,50 +279,50 @@ export const chatAPI = {
 // 笔记相关API
 export const noteAPI = {
   // 获取笔记列表 - 修正：后端返回包含data字段的结构
-  async getNotes(userId: string, params?: any): Promise<ApiResponse<{data: any[], total: number, user_id: number}>> {
+  async getNotes(userId: string, params?: ListParams): Promise<ApiResponse<UserList<Note>>> {
     return apiService.get(API_ENDPOINTS.NOTE.LIST(userId), params);
   },
 
-  async getNote(userId: string, noteId: string): Promise<ApiResponse<any>> {
+  async getNote(userId: string, noteId: string): Promise<ApiResponse<Note>> {
     return apiService.get(API_ENDPOINTS.NOTE.UPDATE(userId, noteId));
   },
 
   // 创建笔记
-  async createNote(userId: string, data: any): Promise<ApiResponse<any>> {
+  async createNote(userId: string, data: NoteCreateRequest): Promise<ApiResponse<Note>> {
     return apiService.post(API_ENDPOINTS.NOTE.CREATE(userId), data);
   },
 
   // 更新笔记
-  async updateNote(userId: string, noteId: string, data: any): Promise<ApiResponse<any>> {
+  async updateNote(userId: string, noteId: string, data: NoteUpdateRequest): Promise<ApiResponse<Note>> {
     return apiService.put(API_ENDPOINTS.NOTE.UPDATE(userId, noteId), data);
   },
 
   // 删除笔记
-  async deleteNote(userId: string, noteId: string): Promise<ApiResponse<any>> {
+  async deleteNote(userId: string, noteId: string): Promise<ApiResponse<unknown>> {
     return apiService.delete(API_ENDPOINTS.NOTE.DELETE(userId, noteId));
   },
 
   // 搜索笔记 - 修正：后端返回包含data字段的结构
-  async searchNotes(userId: string, searchData: any, signal?: AbortSignal): Promise<ApiResponse<{data: any[], total: number, user_id: number}>> {
+  async searchNotes(userId: string, searchData: NoteSearchRequest, signal?: AbortSignal): Promise<ApiResponse<UserList<SearchNote>>> {
     if (signal) {
       const response = await apiClient.post(API_ENDPOINTS.NOTE.SEARCH(userId), searchData, { signal });
       if (response.data?.success === false) throw new Error(response.data.message || '搜索失败');
       return response.data;
     }
     try {
-      const response = await apiService.post<{data: any[], total: number, user_id: number}>(API_ENDPOINTS.NOTE.SEARCH(userId), searchData);
+      const response = await apiService.post<UserList<Note>>(API_ENDPOINTS.NOTE.SEARCH(userId), searchData);
       if (response.success === false || !Array.isArray(response.data?.data)) {
-        return apiService.get<{data: any[], total: number, user_id: number}>(API_ENDPOINTS.NOTE.LIST(userId), { search: searchData.query, tag: searchData.tag, status: searchData.status, limit: searchData.limit });
+        return apiService.get<UserList<Note>>(API_ENDPOINTS.NOTE.LIST(userId), { search: searchData.query, tag: searchData.tag, status: searchData.status, limit: searchData.limit });
       }
       return response;
     } catch {
       // Keep keyword search usable when vector dependencies are unavailable.
-      return apiService.get<{data: any[], total: number, user_id: number}>(API_ENDPOINTS.NOTE.LIST(userId), { search: searchData.query, tag: searchData.tag, status: searchData.status, limit: searchData.limit });
+      return apiService.get<UserList<Note>>(API_ENDPOINTS.NOTE.LIST(userId), { search: searchData.query, tag: searchData.tag, status: searchData.status, limit: searchData.limit });
     }
   },
 
   // 获取笔记标签 - 修正：后端返回包含data字段的结构
-  async getTags(userId: string): Promise<ApiResponse<{data: any[], total: number, user_id: number}>> {
+  async getTags(userId: string): Promise<ApiResponse<UserList<string>>> {
     return apiService.get(API_ENDPOINTS.NOTE.TAGS(userId));
   },
 };
@@ -358,46 +330,46 @@ export const noteAPI = {
 // 待办事项相关API
 export const todoAPI = {
   // 获取待办事项列表 - 修正：后端直接返回Todo数组，不是分页结构
-  async getTodos(userId: string, params?: any): Promise<ApiResponse<any[]>> {
+  async getTodos(userId: string, params?: ListParams): Promise<ApiResponse<Todo[]>> {
     return apiService.get(API_ENDPOINTS.TODO.LIST(userId), params);
   },
 
-  async getTodo(userId: string, todoId: string): Promise<ApiResponse<any>> {
+  async getTodo(userId: string, todoId: string): Promise<ApiResponse<Todo>> {
     return apiService.get(API_ENDPOINTS.TODO.UPDATE(userId, todoId));
   },
 
   // 创建待办事项
-  async createTodo(userId: string, data: any): Promise<ApiResponse<any>> {
+  async createTodo(userId: string, data: TodoCreateRequest): Promise<ApiResponse<Todo>> {
     return apiService.post(API_ENDPOINTS.TODO.CREATE(userId), data);
   },
 
   // 更新待办事项
-  async updateTodo(userId: string, todoId: string, data: any): Promise<ApiResponse<any>> {
+  async updateTodo(userId: string, todoId: string, data: TodoUpdateRequest): Promise<ApiResponse<Todo>> {
     return apiService.put(API_ENDPOINTS.TODO.UPDATE(userId, todoId), data);
   },
 
   // 删除待办事项
-  async deleteTodo(userId: string, todoId: string): Promise<ApiResponse<any>> {
+  async deleteTodo(userId: string, todoId: string): Promise<ApiResponse<unknown>> {
     return apiService.delete(API_ENDPOINTS.TODO.DELETE(userId, todoId));
   },
 
   // 完成待办事项
-  async completeTodo(userId: string, todoId: string): Promise<ApiResponse<any>> {
+  async completeTodo(userId: string, todoId: string): Promise<ApiResponse<unknown>> {
     return apiService.post(API_ENDPOINTS.TODO.COMPLETE(userId, todoId));
   },
 
   // 取消完成待办事项
-  async uncompleteTodo(userId: string, todoId: string): Promise<ApiResponse<any>> {
+  async uncompleteTodo(userId: string, todoId: string): Promise<ApiResponse<unknown>> {
     return apiService.post(API_ENDPOINTS.TODO.UNCOMPLETE(userId, todoId));
   },
 
   // 获取待办事项统计 - 后端返回包含data字段的结构
-  async getStats(userId: string): Promise<ApiResponse<{data: any}>> {
+  async getStats(userId: string): Promise<ApiResponse<{data: TodoStatsResponse['data']}>> {
     return apiService.get(API_ENDPOINTS.TODO.STATS(userId));
   },
 
   // 获取关联笔记的待办事项 - 后端返回包含data字段的结构
-  async getTodosByNote(userId: string, noteId: string): Promise<ApiResponse<{data: any[], total: number}>> {
+  async getTodosByNote(userId: string, noteId: string): Promise<ApiResponse<{data: Todo[], total: number}>> {
     return apiService.get(API_ENDPOINTS.TODO.BY_NOTE(userId, noteId));
   },
 };
@@ -423,17 +395,17 @@ export const healthRecordAPI = {
 // 用户相关API
 export const userAPI = {
   // 获取用户信息
-  async getProfile(): Promise<ApiResponse<any>> {
+  async getProfile(): Promise<ApiResponse<unknown>> {
     return apiService.get(API_ENDPOINTS.USER.PROFILE);
   },
 
   // 获取用户偏好设置
-  async getPreferences(): Promise<ApiResponse<any>> {
+  async getPreferences(): Promise<ApiResponse<unknown>> {
     return apiService.get(API_ENDPOINTS.USER.PREFERENCES);
   },
 
   // 更新用户偏好设置
-  async updatePreferences(data: any): Promise<ApiResponse<any>> {
+  async updatePreferences(data: unknown): Promise<ApiResponse<unknown>> {
     return apiService.put(API_ENDPOINTS.USER.PREFERENCES, data);
   },
 };
@@ -444,16 +416,18 @@ export const authAPI = {
     return apiService.post(API_ENDPOINTS.AUTH.LOGIN, credentials);
   },
 
-  async logout(): Promise<ApiResponse<any>> {
+  async logout(): Promise<ApiResponse<unknown>> {
     return apiService.post(API_ENDPOINTS.AUTH.LOGOUT);
   },
 
-  async refreshToken(): Promise<ApiResponse<AuthToken>> {
-    return apiService.post(API_ENDPOINTS.AUTH.REFRESH);
+  async refreshToken(): Promise<ApiResponse<AuthToken | undefined>> {
+    const response = await apiClient.post<{ success: boolean; code?: number; message?: string; token?: AuthToken; data?: AuthToken }>(API_ENDPOINTS.AUTH.REFRESH);
+    return { success: response.data.success, code: response.data.code, message: response.data.message, data: response.data.token ?? response.data.data };
   },
 
-  async getCurrentUser(): Promise<ApiResponse<User>> {
-    return apiService.get(API_ENDPOINTS.USER.PROFILE);
+  async getCurrentUser(): Promise<CurrentUserResponse> {
+    const response = await apiClient.get<CurrentUserResponse>(API_ENDPOINTS.USER.PROFILE);
+    return response.data;
   },
 };
 
