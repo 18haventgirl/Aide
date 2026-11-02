@@ -6,7 +6,7 @@
 
 登录后点击顶部 **病历解析**，上传门诊病历或出院小结，也可以粘贴原文。解析后逐项查看原文依据、修正信息，并确认日期后保存到 **个人数据 → 身体状况**。页面提供明确标注的虚构样例；专门的 Medical Record Parser Agent 也可以整理对话中粘贴的病历。
 
-支持文字 PDF、DOCX、TXT；图片和扫描 PDF 需额外安装 `backend/requirements-medical-parser-ocr.txt`。模型默认复用现有 `OPENAI_*` 配置。完整接入规范、限制和验证方式见 [病历解析设计](docs/medical-record-parser.md)。
+支持 TXT、DOCX、文字 PDF，以及需要 OCR 的 PNG、JPG、JPEG、扫描 PDF 和混合 PDF。图片与扫描页需要安装 `backend/requirements-medical-parser-ocr.txt`。模型默认复用现有 `OPENAI_*` 配置。手动测试可按[病历解析指南](docs/medical-record-parser.md#验证与边界)生成虚构样例，再从 `logs/parser-format-matrix/` 选择文件上传。各格式的实测结果见[文件格式验证记录](docs/medical-record-parser-validation.md)。
 
 ## 项目结构 (Project Structure)
 
@@ -144,7 +144,7 @@ Windows 推荐从项目根目录运行 `启动Aide.ps1`，以隐藏窗口启动�
 
 ### 前置要求 (Prerequisites)
 
-- Node.js 16+
+- Node.js 24（前端构建与回归测试使用 24.19.0）
 - npm 或 yarn
 
 ### 1. 安装前端依赖 (Install Frontend Dependencies)
@@ -154,31 +154,20 @@ Windows 推荐从项目根目录运行 `启动Aide.ps1`，以隐藏窗口启动�
 cd ui
 
 # 安装依赖 (Install dependencies)
-npm install
+npm ci
 
 # 或使用 yarn (Or use yarn)
 yarn install
 ```
 
-### 2. 配置前端环境 (Configure Frontend Environment)
+### 2. 连接本地后端
 
-在 `ui` 目录下创建 `.env` 文件（如果需要）：
-
-```env
-# API 基础地址 (API Base URL)
-VITE_API_BASE_URL=http://localhost:8000
-
-# WebSocket 地址 (WebSocket URL)
-VITE_WS_URL=ws://localhost:8000/ws
-```
+工作台通过当前页面所在站点的 `/api` 读取数据，通过 `/ws` 连接聊天。开发环境由 [Vite 配置](ui/vite.config.ts)将两者转发到本机后端的 8000 端口。使用聊天功能时还需启动 8002 端口的 MCP 服务。
 
 ### 3. 运行前端开发服务器 (Run Frontend Development Server)
 
 ```bash
-# 确保在 ui 目录下 (Make sure you are in the ui directory)
-cd ui
-
-# 启动开发服务器 (Start development server)
+# 在上一步的 ui 目录内启动开发服务器
 npm run dev
 
 # 或使用 yarn (Or use yarn)
@@ -187,15 +176,18 @@ yarn dev
 
 前端开发服务器默认运行在 `http://localhost:3000`
 
-### 4. 构建生产版本 (Build for Production)
+### 4. 前端检查与生产构建
 
 ```bash
-# 构建生产版本 (Build for production)
+# 检查代码规范、TypeScript 类型并运行前端回归测试
+npm run check
 npm run build
 
 # 预览构建结果 (Preview build)
 npm run preview
 ```
+
+2026-11-02 验证通过了 22 项前端回归和 11 项本机服务联调。要复测登录、令牌刷新、病历重开或聊天连接，请使用[前端验证记录中的联调命令](docs/frontend-quality-validation-20261102.md)。
 
 ## 开发注意事项 (Development Notes)
 

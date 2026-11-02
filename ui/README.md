@@ -1,69 +1,17 @@
-# React + TypeScript + Vite
+# Aide 前端工作台
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+工作台包含聊天、病历解析和个人数据页面。以下命令在 `ui/` 目录执行，已验证的 Node.js 版本为 24.19.0。
 
-Currently, two official plugins are available:
+| 命令 | 用途 |
+| --- | --- |
+| `npm ci` | 按锁文件安装依赖 |
+| `npm run dev` | 启动前端，访问终端输出的地址 |
+| `npm run check` | 检查代码规范、类型并运行前端回归测试 |
+| `npm run build` | 将生产版本及 PDF 预览资源构建到 `dist/` |
+| `npm run test:api` | 使用演示账号连接本机预览服务，需要先设置下述联调参数 |
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+前端通过同站点的 `/api` 和 `/ws` 访问后端。Windows 用户可从项目根目录运行 `启动Aide.ps1` 一起启动 API、MCP 和前端，详见[项目启动指南](../README.md)。
 
-## Expanding the ESLint configuration
+联调前请设置 `AIDE_SMOKE_BASE_URL`（本机前端地址）、`AIDE_SMOKE_USERNAME` 和 `AIDE_SMOKE_PASSWORD`。验证聊天连接时还需设置 `AIDE_SMOKE_WS=1`。未设置地址时，联调套件会显示跳过。命令示例和最近一次通过的场景见[前端验证记录](../docs/frontend-quality-validation-20261102.md)。
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+手动试传 PDF 或图片时，可按[病历测试样例生成步骤](../docs/medical-record-parser.md#验证与边界)生成虚构文件，再从“病历解析”页面上传。例如，`matrix-20261009-scanned.pdf` 和 `matrix-20261009.png` 分别用于检查扫描 PDF 和图片的 OCR 及原件预览。

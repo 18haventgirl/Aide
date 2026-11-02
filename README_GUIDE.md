@@ -37,7 +37,7 @@ Check `api_documentation_guide.md` for detailed information about the free APIs 
 ### 4. Set Up Your Environment
 You'll need:
 - Python 3.8+ for backend development
-- Node.js 16+ for frontend development
+- Node.js 24 for frontend development (build and regression tests verified on 24.19.0)
 - OpenAI API key (will be provided)
 - Git for version control
 

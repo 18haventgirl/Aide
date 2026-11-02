@@ -96,7 +96,7 @@ $env:MEDICAL_PARSER_TEST_FIXTURES = (Resolve-Path logs/parser-format-matrix).Pat
 cd backend
 python -m unittest tests.test_medical_parser tests.test_agent_coordination -v
 cd ../ui
-npm run typecheck
+npm run check
 npm run build
 ```
 
