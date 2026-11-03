@@ -1,6 +1,6 @@
 # 开发题与独立验证题的封存合同
 
-更新：2026-10-29。对应 `rag-engineering-execution-plan.md` 阶段3.3～3.6。实现为 `backend/medical/evaluation/partitioning.py` 和 `partition_manifest.py`。
+更新于2026-11-02，对应 `rag-engineering-execution-plan.md` 阶段3.3～3.6。题集检查由 `backend/medical/evaluation/partitioning.py` 和 `partition_manifest.py` 执行，正式验证通过 `backend/medical/experiment.py` 启动。
 
 ## 当前交付与边界
 
@@ -54,11 +54,44 @@
 
 默认data-root是 `D:\Workplace\Aide\backend\medical`，snapshot-root是 `D:\Workplace\Aide\medical-rag-data\datasets`，raw-root是 `D:\Workplace\Aide\medical-rag-data\raw`。使用另外的隔离测试目录时，seal和audit都需传相同的三个root参数。正式封存应先提交绑定代码，避免生成无法仅由所记Git提交恢复的未提交实现；工具会如实记录脏工作区和未跟踪实现，而不是隐藏它们。
 
-## 下一步接入
+## 登记并执行正式验证
+
+先在开发集确定实验参数，再为完整验证题文件编写单组 suite。沿用现有 `schema_version=1` 和 `hash_scheme=canonical-json-v1`，明确填写 `query_contract=explicit_user_facts_v1`、`metric_contract=source-evidence-v1` 和评测日期。组的 `purpose` 使用 `validation`，`path` 指向完整验证文件，`sha256` 与 `count` 取该文件的规范 JSON 哈希和题数。正式运行使用前述三个默认 root。实验入口会拒绝将带有 `split=validation` 的题目作为普通开发组运行。
+
+suite 顶层的 `validation_config` 登记全部可选运行参数。例如以下配置比较两种检索方式。
+
+```json
+{
+  "profiles": ["hybrid", "rerank"],
+  "k": 5,
+  "rerank_max_length": 256,
+  "input_policy": "query_first_v1",
+  "chunk_strategy": "token-v1",
+  "child_tokens": 180
+}
+```
+
+在前述 `seal` 命令增加 `--validation-suite medical/evaluation/validation_suite_v1.json`，并指定新的清单文件。登记会将 suite 文件字节、题文件身份、算法实现指纹、评测日期和运行参数绑定到清单。将输出的 `manifest_file_sha256` 随首次验收方案保存到版本记录。仅用于题集归档的清单仍可执行 `audit`。
+
+待实际题集、封存清单及验收门槛准备好后，下例从 `backend` 启动。将清单、快照及输出路径换成对应版本，将 `$recordedSealHash` 设为运行前已保存的清单哈希。
+
+```powershell
+.\.venv\python.exe -m medical.experiment --suite medical/evaluation/validation_suite_v1.json --partition-seal medical/evaluation/partitions_run_v1.json --seal-sha256 $recordedSealHash --source-snapshot ../medical-rag-data/datasets/official-zh-v3/2026-10-29 --corpus ../medical-rag-data/datasets/official-zh-v3/2026-10-29/corpus --metric-contract source-evidence-v1 --profiles hybrid rerank --k 5 --input-policy query_first_v1 --chunk-strategy token-v1 --child-tokens 180 --rerank-max-length 256 --output data/evaluation_reports/validation_first_v1.json
+```
+
+该入口只接受完整登记组。模型加载前会核对用户固定的清单哈希、重做划分审计、核对即将使用的题文件和来源，并比较实际参数与登记值。通过后报告保存 `validation` 绑定，正式运行的 `scope` 为 `sealed_local_validation`。普通开发、旧回归和原有 `frozen` suite 沿用原流程。每次正式运行的输出使用新文件。
+
+旧命令 `medical.evaluate --cases` 在初始化知识库前会拦截 `split=validation` 的题。公共 `load_suite()` 会在读取题文件前拦截 `purpose=validation` 的清单。正式运行通过 `medical.experiment` 完成清单核验后加载题目。
+
+验收阈值、首次使用与后续曝光记录由实验负责人另行登记。当前工具允许使用同一登记配置生成多个报告，操作人员须保存每次结果并指明首次运行。完整模型资源与依赖版本的可恢复性仍随阶段6验证。
+
+2026-11-02联合通过69项相关测试。其中8项新增测试通过合成数据调用真实实验入口，覆盖缺少清单、固定哈希不一致、改标签、换参数、换语料、部分题组和降级成开发组等情况。合法输入到达资源检查，测试在模型初始化前注入停止。记录位于 `logs/sealed-eval-gate-20261102.log`。
+
+## 下一步
 
 1. 按来源覆盖和题目家族编写真正的新开发/验证题，负例明确缺少何种依据；不要复用已暴露回归题充数。
 2. 汇总历史曝光文件并做语义层面的划分检查，再封存验证题和首次实验门槛。
-3. 将封存清单及其SHA256纳入实验启动前的强制检查。当前 `experiment.py` 尚未强制消费这个封存工具的清单，不能声称仅使用现有实验命令就会自动执行全套划分审计。
+3. 按已登记的 suite 和清单执行首次真实验证，并依据事先登记的阈值归档逐题结果和结论。
 4. 验证结果被用于修复或调参后，将相关题转为回归并补充新验证题，保留旧清单与首次结果。
 
 测试命令：

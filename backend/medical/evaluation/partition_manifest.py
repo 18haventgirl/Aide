@@ -13,10 +13,10 @@ import subprocess
 
 from ..audit_source_snapshot import audit_snapshot
 from ..evaluate import QUERY_CONTRACT, validate_cases
-from ..experiment import digest, validate_source_bindings
+from ..experiment import digest, repository_version, run_options, validate_source_bindings
 from ..knowledge_base import load_corpus
 from ..source_origins import OriginResolver, validate_literal_references
-from .partitioning import validate_partitions
+from .partitioning import validate_exposure_cases, validate_partitions
 
 
 ROOT = Path(__file__).resolve().parents[3]
@@ -33,7 +33,7 @@ LIMITATIONS = [
     "exposure history and authorship declarations are operator attestations, not access controls",
     "source matching is not clinical review, answer correctness, or permission to publish",
     "no retrieval, LLM generation, or model quality is measured by this audit",
-    "parameter preregistration and consuming this seal in experiment execution remain separate steps",
+    "validation_run binds settings when supplied; pass/fail thresholds and first-use exposure are separate",
 ]
 
 
@@ -65,13 +65,51 @@ def code_binding():
             "files_sha256": {name: sha256(ROOT/name) for name in CODE_FILES}}
 
 
-def case_file(path, data_root):
+def case_file(path, data_root, *, historical=False):
     path = confined(path, data_root)
     raw = path.read_bytes()
     cases = json.loads(raw)
-    validate_cases(cases)
+    if historical:
+        validate_exposure_cases(cases)
+    else:
+        validate_cases(cases)
     return {"path": path.relative_to(Path(data_root).resolve()).as_posix(), "file_sha256": hashlib.sha256(raw).hexdigest(),
             "canonical_json_sha256": digest(cases), "count": len(cases)}, cases
+
+
+def validation_registration(suite, data_root, validation_file):
+    suite = confined(suite, data_root)
+    raw = suite.read_bytes()
+    value = json.loads(raw)
+    groups = value.get("groups")
+    if (type(value.get("schema_version")) is not int or value["schema_version"] != 1
+            or value.get("hash_scheme") != "canonical-json-v1"
+            or value.get("query_contract") != QUERY_CONTRACT or value.get("metric_contract") != "source-evidence-v1"
+            or not isinstance(groups, list) or len(groups) != 1 or groups[0].get("purpose") != "validation"):
+        raise ValueError("register a dedicated strict-source validation suite with a single complete group")
+    group = groups[0]
+    if (not isinstance(group.get("name"), str) or not group["name"].strip()
+            or group.get("allow_historical_missing_ids", False) is not False
+            or group.get("used_for_changes_after_first_run", False) is not False):
+        raise ValueError("invalid validation group or exposure policy")
+    group_path = Path(group["path"])
+    if group_path.is_absolute() or confined(suite.parent/group_path, data_root) != stored_path(validation_file["path"], data_root):
+        raise ValueError("validation group must use the sealed validation file")
+    if (group.get("sha256") != validation_file["canonical_json_sha256"]
+            or type(group.get("count")) is not int or group["count"] != validation_file["count"]):
+        raise ValueError("validation group must contain the entire sealed partition")
+    try:
+        options = run_options(**value["validation_config"])
+        datetime.strptime(value["evaluation_date"], "%Y-%m-%d")
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ValueError("invalid registered validation configuration or date") from exc
+    implementation = repository_version().get("retrieval_implementation_sha256")
+    if not implementation:
+        raise ValueError("retrieval implementation fingerprint is unavailable")
+    return {"suite_path": suite.relative_to(Path(data_root).resolve()).as_posix(),
+            "suite_file_sha256": hashlib.sha256(raw).hexdigest(), "group": group["name"],
+            "evaluation_date": value["evaluation_date"], "options": options,
+            "retrieval_implementation_sha256": implementation}
 
 
 def source_binding(snapshot, snapshot_root, raw_root):
@@ -79,6 +117,9 @@ def source_binding(snapshot, snapshot_root, raw_root):
     audit = audit_snapshot(snapshot, raw_root)
     documents = load_corpus(snapshot/"corpus")
     origins = {p.stem: json.loads(p.read_text(encoding="utf-8")) for p in sorted((snapshot/"origins").glob("*.json"))}
+    if (digest([doc.model_dump(mode="json") for doc in documents]) != audit["corpus_sha256"]
+            or digest(origins) != audit["origins_sha256"]):
+        raise ValueError("source content changed during partition audit")
     binding = {"path": snapshot.relative_to(Path(snapshot_root).resolve()).as_posix(),
                "manifest_file_sha256": sha256(snapshot/"snapshot_manifest.json"),
                **{key: audit[key] for key in ("corpus_sha256", "origins_sha256", "documents",
@@ -104,7 +145,7 @@ def check_cases(partitions, exposures, documents, resolver, similarity_threshold
 
 
 def seal_partitions(development, validation, *, exposure_paths, snapshot, output, data_root,
-                    snapshot_root, raw_root, similarity_threshold=.85):
+                    snapshot_root, raw_root, similarity_threshold=.85, validation_suite=None):
     """Create a new local seal. No overwrite, silent relabel, or model calls."""
     output = confined(output, data_root)
     if output.exists():
@@ -116,7 +157,7 @@ def seal_partitions(development, validation, *, exposure_paths, snapshot, output
     for split, path in paths.items():
         files[split], partitions[split] = case_file(path, data_root)
     for path in exposure_paths:
-        binding, cases = case_file(path, data_root)
+        binding, cases = case_file(path, data_root, historical=True)
         if binding["path"] in exposures:
             raise ValueError("duplicate exposure file")
         exposures[binding["path"]] = cases
@@ -129,6 +170,8 @@ def seal_partitions(development, validation, *, exposure_paths, snapshot, output
                 "exposure_files": exposure_files, "source_snapshot": source,
                 "similarity_threshold": similarity_threshold, "mechanical_checks": report,
                 "code": code_binding(), "limitations": LIMITATIONS}
+    if validation_suite is not None:
+        manifest["validation_run"] = validation_registration(validation_suite, data_root, files["validation"])
     output.parent.mkdir(parents=True, exist_ok=True)
     # Exclusive creation also prevents concurrent writers from replacing a seal.
     with output.open("x", encoding="utf-8") as stream:
@@ -136,10 +179,14 @@ def seal_partitions(development, validation, *, exposure_paths, snapshot, output
     return manifest
 
 
-def audit_partition_manifest(path, *, data_root, snapshot_root, raw_root):
+def audit_partition_manifest(path, *, data_root, snapshot_root, raw_root, expected_sha256=None):
     """Re-read every input and return a compact report; this performs no writes."""
     path = confined(path, data_root)
-    manifest = json.loads(path.read_text(encoding="utf-8"))
+    raw = path.read_bytes()
+    seal_hash = hashlib.sha256(raw).hexdigest()
+    if expected_sha256 is not None and seal_hash != expected_sha256:
+        raise ValueError("partition seal SHA256 differs from the recorded value")
+    manifest = json.loads(raw)
     if (type(manifest.get("schema_version")) is not int or manifest["schema_version"] != 1
             or manifest.get("contract") != CONTRACT or manifest.get("metric_contract") != "source-evidence-v1"
             or manifest.get("query_contract") != QUERY_CONTRACT
@@ -154,7 +201,7 @@ def audit_partition_manifest(path, *, data_root, snapshot_root, raw_root):
             raise ValueError("sealed case file changed: "+split)
         partitions[split] = cases
     for expected in manifest["exposure_files"]:
-        actual, cases = case_file(stored_path(expected["path"], data_root), data_root)
+        actual, cases = case_file(stored_path(expected["path"], data_root), data_root, historical=True)
         if actual != expected or expected["path"] in exposures:
             raise ValueError("sealed exposure file changed or was duplicated")
         exposures[expected["path"]] = cases
@@ -169,7 +216,13 @@ def audit_partition_manifest(path, *, data_root, snapshot_root, raw_root):
     report = check_cases(partitions, exposures, documents, resolver, manifest["similarity_threshold"])
     if report != manifest["mechanical_checks"]:
         raise ValueError("sealed mechanical-check result changed")
-    return {"valid": True, "contract": CONTRACT, "manifest_file_sha256": sha256(path),
+    registration = manifest.get("validation_run")
+    if registration is not None:
+        suite = stored_path(registration["suite_path"], data_root)
+        if validation_registration(suite, data_root, manifest["partitions"]["validation"]) != registration:
+            raise ValueError("registered validation suite or retrieval implementation changed")
+    return {"valid": True, "contract": CONTRACT, "manifest_file_sha256": seal_hash,
+            "validation_run": registration, "validation_file": manifest["partitions"]["validation"],
             "counts": {split: len(cases) for split, cases in partitions.items()},
             "source_snapshot": source, "mechanical_checks": report,
             "sealed_code": manifest["code"], "audit_code": current_code, "limitations": LIMITATIONS}
@@ -186,6 +239,7 @@ def main():
     parser.add_argument("--validation", type=Path)
     parser.add_argument("--exposed", type=Path, action="append", default=[])
     parser.add_argument("--snapshot", type=Path)
+    parser.add_argument("--validation-suite", type=Path, help="bind a full validation suite and run settings when sealing")
     parser.add_argument("--similarity-threshold", type=float, default=.85)
     args = parser.parse_args()
     roots = {key: getattr(args, key) for key in ("data_root", "snapshot_root", "raw_root")}
@@ -195,8 +249,9 @@ def main():
                 parser.error("seal requires --development, --validation and --snapshot")
             result = seal_partitions(args.development, args.validation, exposure_paths=args.exposed,
                                      snapshot=args.snapshot, output=args.manifest,
-                                     similarity_threshold=args.similarity_threshold, **roots)
+                                     similarity_threshold=args.similarity_threshold, validation_suite=args.validation_suite, **roots)
             result = {"sealed": True, "contract": result["contract"],
+                      "manifest_file_sha256": sha256(args.manifest), "validation_run": result.get("validation_run"),
                       "counts": {k: v["count"] for k, v in result["partitions"].items()},
                       "limitations": LIMITATIONS}
         else:

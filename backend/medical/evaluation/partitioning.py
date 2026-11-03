@@ -27,6 +27,16 @@ def _grams(text):
     return {text[i:i+n] for i in range(max(1, len(text)-n+1))}
 
 
+def validate_exposure_cases(cases):
+    # Historical Huatuo candidate experiments labelled candidate IDs. Their
+    # questions count as exposed even though the answers are a separate corpus.
+    if isinstance(cases, list):
+        cases = [{**case, "expected_doc_ids": case["expected_ids"]}
+                 if isinstance(case, dict) and "expected_ids" in case and "expected_doc_ids" not in case
+                 else case for case in cases]
+    validate_cases(cases)
+
+
 def validate_partitions(partitions, documents, *, similarity_threshold=.85, exposure_sets=None):
     if set(partitions) != {"development", "validation"}:
         raise ValueError("expected development and validation partitions")
@@ -81,7 +91,7 @@ def validate_partitions(partitions, documents, *, similarity_threshold=.85, expo
         if not isinstance(name, str) or not name.strip():
             raise ValueError("exposure set requires a name")
         # Prior labels may refer to an older corpus, so validate their shape only.
-        validate_cases(cases)
+        validate_exposure_cases(cases)
         for prior in cases:
             norm = normalized_query(prior)
             grams = _grams(norm)

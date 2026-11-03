@@ -1,0 +1,401 @@
+[
+  {
+    "id": "SYM01",
+    "kind": "supported",
+    "query": "呼吸道感染之后还有咳嗽，一般会持续多久？",
+    "expected_doc_ids": [
+      "QJ-COUGH-20241010"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "QJ-COUGH-20241010",
+        "version": 1,
+        "body_sha256": "8225006c06909d06c4c25566858573d0ba264e37516327488f00902a7e6bdc46",
+        "ranges": [
+          [
+            76,
+            86
+          ]
+        ],
+        "required_conditions": [
+          [
+            59,
+            76
+          ]
+        ]
+      }
+    ],
+    "source_binding": {
+      "doc_id": "QJ-COUGH-20241010",
+      "version": 1,
+      "source_locator": "原HTML的26个非空p段落（从0起算）中第15至19段，含病程和全部四项就医信号，逐段位置见origin sidecar",
+      "normalized_document_sha256": "314bbc1da21bd0fc8446bdd52af0911bcafe386f9aa98d7fe2110ef9d76a3ce8"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "postinfection_cough_course",
+    "template_id": "symptom_usual_course",
+    "topic": "cough",
+    "authorship": "developer_source_derived_not_external_blind"
+  },
+  {
+    "id": "SYM02",
+    "kind": "followup",
+    "query": "今天变成了大量脓痰，还应该等到满三周再看吗？",
+    "expected_doc_ids": [
+      "QJ-COUGH-20241010"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "QJ-COUGH-20241010",
+        "version": 1,
+        "body_sha256": "8225006c06909d06c4c25566858573d0ba264e37516327488f00902a7e6bdc46",
+        "ranges": [
+          [
+            86,
+            100
+          ]
+        ],
+        "required_conditions": [
+          [
+            130,
+            141
+          ]
+        ]
+      }
+    ],
+    "source_binding": {
+      "doc_id": "QJ-COUGH-20241010",
+      "version": 1,
+      "source_locator": "原HTML的26个非空p段落（从0起算）中第15至19段，含病程和全部四项就医信号，逐段位置见origin sidecar",
+      "normalized_document_sha256": "314bbc1da21bd0fc8446bdd52af0911bcafe386f9aa98d7fe2110ef9d76a3ce8"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "postinfection_purulent_sputum",
+    "template_id": "symptom_new_warning_followup",
+    "topic": "cough",
+    "authorship": "developer_source_derived_not_external_blind",
+    "history": "这几天呼吸道感染后我一直在咳。"
+  },
+  {
+    "id": "SYM03",
+    "kind": "supported",
+    "query": "出汗、吹了冷风后，额温枪只测一次，数值有点高，怎么复核比较合适？",
+    "expected_doc_ids": [
+      "SZ-TEMPERATURE-20261023"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "SZ-TEMPERATURE-20261023",
+        "version": 1,
+        "body_sha256": "3750fbcc16f01c6ab122a4488128e78e7fb1cf6638eeffdd8f678149e9b34592",
+        "ranges": [
+          [
+            197,
+            214
+          ],
+          [
+            285,
+            304
+          ]
+        ],
+        "required_conditions": [
+          [
+            176,
+            196
+          ]
+        ]
+      }
+    ],
+    "source_binding": {
+      "doc_id": "SZ-TEMPERATURE-20261023",
+      "version": 1,
+      "source_locator": "原HTML提取25个非空p段落（从0起算），采用6、7、10、19、20、21；第20段含复测与独立的水银破损提醒，均按原文保留；逐段范围见origin sidecar。",
+      "normalized_document_sha256": "600a8fd95d1218e5adbef2c031e9be90a8a7602d78a5c3444d49f1f7af25a725"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "forehead_reading_confounds",
+    "template_id": "symptom_measurement_uncertainty",
+    "topic": "temperature",
+    "authorship": "developer_source_derived_not_external_blind"
+  },
+  {
+    "id": "SYM04",
+    "kind": "supported",
+    "query": "家里测体温发现反复高烧，人也越来越没精神，在家测温之外应该怎么做？",
+    "expected_doc_ids": [
+      "SZ-TEMPERATURE-20261023"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "SZ-TEMPERATURE-20261023",
+        "version": 1,
+        "body_sha256": "3750fbcc16f01c6ab122a4488128e78e7fb1cf6638eeffdd8f678149e9b34592",
+        "ranges": [
+          [
+            373,
+            407
+          ]
+        ],
+        "required_conditions": [
+          [
+            349,
+            372
+          ]
+        ]
+      }
+    ],
+    "source_binding": {
+      "doc_id": "SZ-TEMPERATURE-20261023",
+      "version": 1,
+      "source_locator": "原HTML提取25个非空p段落（从0起算），采用6、7、10、19、20、21；第20段含复测与独立的水银破损提醒，均按原文保留；逐段范围见origin sidecar。",
+      "normalized_document_sha256": "600a8fd95d1218e5adbef2c031e9be90a8a7602d78a5c3444d49f1f7af25a725"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "temperature_persistent_warning",
+    "template_id": "symptom_care_setting",
+    "topic": "temperature",
+    "authorship": "developer_source_derived_not_external_blind"
+  },
+  {
+    "id": "SYM05",
+    "kind": "followup",
+    "query": "已经第六天了，症状一点也没往好的方向走，还适合只在家休息吗？",
+    "expected_doc_ids": [
+      "NHC-FLU-CARE-20250117"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "NHC-FLU-CARE-20250117",
+        "version": 2,
+        "body_sha256": "8836188a58395c8ff1fa550597a3cd24d8b801f7bf800b9a6ba3fdec17c78b92",
+        "ranges": [
+          [
+            118,
+            145
+          ]
+        ],
+        "required_conditions": []
+      }
+    ],
+    "source_binding": {
+      "doc_id": "NHC-FLU-CARE-20250117",
+      "version": 2,
+      "source_locator": "国家卫生健康委2025-01-17发布会；新华社记者提问、北京佑安医院李侗曾答复。原始页非空p段0起算32、33，全文位置见sidecar。",
+      "normalized_document_sha256": "c23c1167d0ebfd552302c1da42151e67c9f52bb96a2bf8fd97bdb006af40947f"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "flu_without_improvement",
+    "template_id": "symptom_no_improvement_followup",
+    "topic": "flu",
+    "authorship": "developer_source_derived_not_external_blind",
+    "history": "医生之前说是流感，我一直在家休息。"
+  },
+  {
+    "id": "SYM06",
+    "kind": "supported",
+    "query": "流感在家休息但没有单独房间，跟家人同住时怎样减少传播？",
+    "expected_doc_ids": [
+      "NHC-FLU-CARE-20250117"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "NHC-FLU-CARE-20250117",
+        "version": 2,
+        "body_sha256": "8836188a58395c8ff1fa550597a3cd24d8b801f7bf800b9a6ba3fdec17c78b92",
+        "ranges": [
+          [
+            257,
+            296
+          ]
+        ],
+        "required_conditions": [
+          [
+            236,
+            255
+          ]
+        ]
+      }
+    ],
+    "source_binding": {
+      "doc_id": "NHC-FLU-CARE-20250117",
+      "version": 2,
+      "source_locator": "国家卫生健康委2025-01-17发布会；新华社记者提问、北京佑安医院李侗曾答复。原始页非空p段0起算32、33，全文位置见sidecar。",
+      "normalized_document_sha256": "c23c1167d0ebfd552302c1da42151e67c9f52bb96a2bf8fd97bdb006af40947f"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "flu_shared_home_precautions",
+    "template_id": "symptom_household_constraint",
+    "topic": "flu",
+    "authorship": "developer_source_derived_not_external_blind"
+  },
+  {
+    "id": "SYM07",
+    "kind": "supported",
+    "query": "过敏性鼻炎发作时，鼻涕倒流和鼻塞后张口呼吸，分别会怎样影响嗓子？",
+    "expected_doc_ids": [
+      "NHC-THROAT-20240821"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "NHC-THROAT-20240821",
+        "version": 2,
+        "body_sha256": "3a7212b79b4d142327853610564911a556dbe386837ba91f6df1bf81cc82f64f",
+        "ranges": [
+          [
+            139,
+            159
+          ],
+          [
+            176,
+            215
+          ]
+        ],
+        "required_conditions": [
+          [
+            129,
+            138
+          ]
+        ]
+      }
+    ],
+    "source_binding": {
+      "doc_id": "NHC-THROAT-20240821",
+      "version": 2,
+      "source_locator": "国家卫生健康委2024-08-21发布会；中国网记者提问、北京大学第一医院王全桂答复。原始页非空p段0起算38、40、41，末两句分别定位。",
+      "normalized_document_sha256": "c0cc5355935e5c9989bca09c13ab0925872c6a318e3d08c15f02da4138ae22f9"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "allergic_rhinitis_throat_mechanisms",
+    "template_id": "symptom_mechanism",
+    "topic": "throat",
+    "authorship": "developer_source_derived_not_external_blind"
+  },
+  {
+    "id": "SYM08",
+    "kind": "supported",
+    "query": "除了秋冬空气干，还有哪些和反流有关的情况会让嗓子不舒服？一直这样应该找谁评估？",
+    "expected_doc_ids": [
+      "NHC-THROAT-20240821"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "NHC-THROAT-20240821",
+        "version": 2,
+        "body_sha256": "3a7212b79b4d142327853610564911a556dbe386837ba91f6df1bf81cc82f64f",
+        "ranges": [
+          [
+            244,
+            278
+          ],
+          [
+            278,
+            312
+          ]
+        ],
+        "required_conditions": []
+      }
+    ],
+    "source_binding": {
+      "doc_id": "NHC-THROAT-20240821",
+      "version": 2,
+      "source_locator": "国家卫生健康委2024-08-21发布会；中国网记者提问、北京大学第一医院王全桂答复。原始页非空p段0起算38、40、41，末两句分别定位。",
+      "normalized_document_sha256": "c0cc5355935e5c9989bca09c13ab0925872c6a318e3d08c15f02da4138ae22f9"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "throat_reflux_evaluation",
+    "template_id": "symptom_cause_and_care",
+    "topic": "throat",
+    "authorship": "developer_source_derived_not_external_blind"
+  },
+  {
+    "id": "SYM09",
+    "kind": "supported",
+    "query": "腹泻引起的严重脱水和电解质紊乱，哪些成年人更应当留意？",
+    "expected_doc_ids": [
+      "BJ-DIARRHEA-20210406"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "BJ-DIARRHEA-20210406",
+        "version": 1,
+        "body_sha256": "d3b31d779b87b194cbb14aafcd10808e8b42030912cdda18286e2143c9000314",
+        "ranges": [
+          [
+            85,
+            122
+          ]
+        ],
+        "required_conditions": [
+          [
+            62,
+            85
+          ]
+        ]
+      }
+    ],
+    "source_binding": {
+      "doc_id": "BJ-DIARRHEA-20210406",
+      "version": 1,
+      "source_locator": "天坛科普——请您重视腹泻；第3自然段（以‘腹泻病情轻重缓急差异较大’开头）",
+      "normalized_document_sha256": "cbbd30e9bd85ff534a0b5ff8364717538fdadbf6189531e2af351bc7a443bfc2"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "diarrhea_vulnerable_adults",
+    "template_id": "symptom_risk_context",
+    "topic": "diarrhea",
+    "authorship": "developer_source_derived_not_external_blind"
+  },
+  {
+    "id": "SYM10",
+    "kind": "followup",
+    "query": "现在又频繁呕吐，便里还带脓血，该到哪类医疗机构就诊？",
+    "expected_doc_ids": [
+      "BJ-DIARRHEA-20210406"
+    ],
+    "expected_evidence": [
+      {
+        "doc_id": "BJ-DIARRHEA-20210406",
+        "version": 1,
+        "body_sha256": "d3b31d779b87b194cbb14aafcd10808e8b42030912cdda18286e2143c9000314",
+        "ranges": [
+          [
+            164,
+            183
+          ]
+        ],
+        "required_conditions": [
+          [
+            132,
+            140
+          ],
+          [
+            147,
+            152
+          ]
+        ]
+      }
+    ],
+    "source_binding": {
+      "doc_id": "BJ-DIARRHEA-20210406",
+      "version": 1,
+      "source_locator": "天坛科普——请您重视腹泻；第3自然段（以‘腹泻病情轻重缓急差异较大’开头）",
+      "normalized_document_sha256": "cbbd30e9bd85ff534a0b5ff8364717538fdadbf6189531e2af351bc7a443bfc2"
+    },
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "diarrhea_referral_signals",
+    "template_id": "symptom_new_warning_followup",
+    "topic": "diarrhea",
+    "authorship": "developer_source_derived_not_external_blind",
+    "history": "我从昨天晚上开始腹泻。"
+  }
+]

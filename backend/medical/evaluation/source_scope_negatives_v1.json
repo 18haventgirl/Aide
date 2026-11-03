@@ -1,0 +1,258 @@
+[
+  {
+    "id": "SDN01",
+    "kind": "unanswerable",
+    "query": "睡眠监测报告上的 AHI 到多少分别算轻、中、重度？请给出三个等级的数值界限。",
+    "expected_doc_ids": [],
+    "forbidden_doc_ids": [
+      "NHC-SLEEP-CORE-20250318"
+    ],
+    "no_evidence_reason": "有鼾声与呼吸间歇的求助提示，缺少 AHI 分级界限。",
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "sleep_polygraph_cutoffs",
+    "template_id": "negative_clinical_criteria",
+    "topic": "sleep",
+    "authorship": "developer_scope_labelled_not_external_blind"
+  },
+  {
+    "id": "SDN02",
+    "kind": "unanswerable",
+    "query": "匹兹堡睡眠质量指数的七个成分分别怎样计分并算出总分？",
+    "expected_doc_ids": [],
+    "forbidden_doc_ids": [
+      "NHC-SLEEP-CORE-20250318"
+    ],
+    "no_evidence_reason": "有睡眠质量的描述，缺少该量表的逐项计分规则。",
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "sleep_scale_scoring",
+    "template_id": "negative_instrument_scoring",
+    "topic": "sleep",
+    "authorship": "developer_scope_labelled_not_external_blind"
+  },
+  {
+    "id": "SDN03",
+    "kind": "unanswerable",
+    "query": "记了三个月的头痛日记，怎么把误工天数换算成 MIDAS 量表的分数和等级？",
+    "expected_doc_ids": [],
+    "forbidden_doc_ids": [
+      "FJ-HEADACHE-20260626"
+    ],
+    "no_evidence_reason": "有头痛日记记录项目，缺少 MIDAS 计分和分级。",
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "headache_diary_score",
+    "template_id": "negative_instrument_scoring",
+    "topic": "headache",
+    "authorship": "developer_scope_labelled_not_external_blind"
+  },
+  {
+    "id": "SDN04",
+    "kind": "unanswerable",
+    "query": "对照试验里，做颈肩放松和只在暗处休息，两组轻度头痛平均各缩短几分钟？",
+    "expected_doc_ids": [],
+    "forbidden_doc_ids": [
+      "FJ-HEADACHE-20260626"
+    ],
+    "no_evidence_reason": "有两种生活调整，没有这两组的试验设计或缓解时间数据。",
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "headache_trial_outcome",
+    "template_id": "negative_comparative_evidence",
+    "topic": "headache",
+    "authorship": "developer_scope_labelled_not_external_blind"
+  },
+  {
+    "id": "SDN05",
+    "kind": "unanswerable",
+    "query": "眩晕障碍量表 DHI 的功能、情绪、躯体三个分量表各包含哪些题号？",
+    "expected_doc_ids": [],
+    "forbidden_doc_ids": [
+      "BJ-DIZZINESS-20240301"
+    ],
+    "no_evidence_reason": "有眩晕感受及就诊信息，缺少 DHI 题号及其分类。",
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "dizziness_inventory_score",
+    "template_id": "negative_instrument_scoring",
+    "topic": "dizziness",
+    "authorship": "developer_scope_labelled_not_external_blind"
+  },
+  {
+    "id": "SDN06",
+    "kind": "unanswerable",
+    "query": "那篇头晕科普出自垂杨柳医院，该院去年眩晕门诊确诊耳石症的比例是多少？",
+    "expected_doc_ids": [],
+    "forbidden_doc_ids": [
+      "BJ-DIZZINESS-20240301"
+    ],
+    "no_evidence_reason": "文章来源机构可核验，缺少该院年度门诊诊断统计和分母。",
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "dizziness_clinic_rates",
+    "template_id": "negative_local_statistics",
+    "topic": "dizziness",
+    "authorship": "developer_scope_labelled_not_external_blind"
+  },
+  {
+    "id": "SDN07",
+    "kind": "unanswerable",
+    "query": "布里斯托大便分类图第1型到第7型各长什么样？请按图表逐项说明。",
+    "expected_doc_ids": [],
+    "forbidden_doc_ids": [
+      "BJ-CONSTIPATION-20250331"
+    ],
+    "no_evidence_reason": "选段提及粪便形状变化和就医提示，缺少七型分类图及对应描述。",
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "constipation_stool_scale",
+    "template_id": "negative_clinical_criteria",
+    "topic": "constipation",
+    "authorship": "developer_scope_labelled_not_external_blind"
+  },
+  {
+    "id": "SDN08",
+    "kind": "unanswerable",
+    "query": "对久坐人群，用手机提醒起身和只发健康手册相比，哪组便秘发生率更低？两组的百分比是多少？",
+    "expected_doc_ids": [],
+    "forbidden_doc_ids": [
+      "BJ-CONSTIPATION-20250331"
+    ],
+    "no_evidence_reason": "有久坐与排便习惯描述，缺少这两种干预的对照数据。",
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "constipation_specific_trial",
+    "template_id": "negative_comparative_evidence",
+    "topic": "constipation",
+    "authorship": "developer_scope_labelled_not_external_blind"
+  },
+  {
+    "id": "SDN09",
+    "kind": "unanswerable",
+    "query": "同一种口服补液盐我看到两个不同规格的小袋。每一袋分别兑多少毫升水才符合各自的说明书？",
+    "expected_doc_ids": [],
+    "forbidden_doc_ids": [
+      "BJ-DIARRHEA-20210406"
+    ],
+    "no_evidence_reason": "缺少两个具体产品的名称、规格和对应说明书，普通脱水科普无法确定各自配法。",
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "diarrhea_product_mix",
+    "template_id": "negative_product_specific",
+    "topic": "diarrhea",
+    "authorship": "developer_scope_labelled_not_external_blind"
+  },
+  {
+    "id": "SDN10",
+    "kind": "unanswerable",
+    "query": "嗓子发干后医生让我填 VHI-10，十道题分别有几个选项，总分怎么计算？",
+    "expected_doc_ids": [],
+    "forbidden_doc_ids": [
+      "NHC-THROAT-20240821"
+    ],
+    "no_evidence_reason": "有咽喉不适的原因与就医提示，缺少该量表的题项和评分。",
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "voice_handicap_scoring",
+    "template_id": "negative_instrument_scoring",
+    "topic": "throat",
+    "authorship": "developer_scope_labelled_not_external_blind"
+  },
+  {
+    "id": "SDN11",
+    "kind": "unanswerable",
+    "query": "这把额温枪开启人体模式后，显示温度比物体模式高多少度？我找不到型号说明书了。",
+    "expected_doc_ids": [],
+    "forbidden_doc_ids": [
+      "NHC-HL2024-57"
+    ],
+    "no_evidence_reason": "体温测量资料不含这台仪器的型号、固件或模式补偿算法。",
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "thermometer_device_error",
+    "template_id": "negative_product_specific",
+    "topic": "fever",
+    "authorship": "developer_scope_labelled_not_external_blind"
+  },
+  {
+    "id": "SDN12",
+    "kind": "unanswerable",
+    "query": "莱斯特咳嗽问卷的三个维度怎样从各题答案换算成得分？",
+    "expected_doc_ids": [],
+    "forbidden_doc_ids": [
+      "NHC-HL2024-12"
+    ],
+    "no_evidence_reason": "长期咳嗽的检查提示无法提供 LCQ 问卷及计分键。",
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "cough_lcq_scoring",
+    "template_id": "negative_instrument_scoring",
+    "topic": "cough",
+    "authorship": "developer_scope_labelled_not_external_blind"
+  },
+  {
+    "id": "SDN13",
+    "kind": "unanswerable",
+    "query": "想看运动心肺试验里直接测 VO₂max 的逐分钟功率方案，需要怎样设置功率自行车和气体分析仪？",
+    "expected_doc_ids": [],
+    "forbidden_doc_ids": [
+      "NHC-HL2024-32"
+    ],
+    "no_evidence_reason": "一般运动时长与强度说明没有实验室设备及逐分钟负荷协议。",
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "exercise_lab_protocol",
+    "template_id": "negative_measurement_protocol",
+    "topic": "exercise",
+    "authorship": "developer_scope_labelled_not_external_blind"
+  },
+  {
+    "id": "SDN14",
+    "kind": "unanswerable",
+    "query": "两款同样标为低钠的即食燕麦，每100克到底哪款钠少、少多少毫克？手头没有营养成分表。",
+    "expected_doc_ids": [],
+    "forbidden_doc_ids": [
+      "NHC-HL2024-54"
+    ],
+    "no_evidence_reason": "有阅读标签的方法，没有这两款产品的营养数据，差值无法确定。",
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "nutrition_brand_sodium",
+    "template_id": "negative_product_specific",
+    "topic": "nutrition",
+    "authorship": "developer_scope_labelled_not_external_blind"
+  },
+  {
+    "id": "SDN15",
+    "kind": "unanswerable",
+    "query": "同一种常用药的两个批次，一个拆了外盒。两个批次各是哪一天到期？",
+    "expected_doc_ids": [],
+    "forbidden_doc_ids": [
+      "NHC-HL2024-56"
+    ],
+    "no_evidence_reason": "有保存和阅读标签的一般方法，没有批号对应的生产记录和批次有效期。",
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "drug_batch_expiry",
+    "template_id": "negative_product_specific",
+    "topic": "medication",
+    "authorship": "developer_scope_labelled_not_external_blind"
+  },
+  {
+    "id": "SDN16",
+    "kind": "unanswerable",
+    "query": "北京两个具体哨点医院上周流感样病例的核酸阳性率分别是多少？我想比较哪家更高。",
+    "expected_doc_ids": [],
+    "forbidden_doc_ids": [
+      "NHC-FLU-CARE-20250117"
+    ],
+    "no_evidence_reason": "居家和就医指导缺少医院、周次对应的监测数据。",
+    "split": "development",
+    "exposed_for_changes": true,
+    "family_id": "flu_local_weekly_stats",
+    "template_id": "negative_local_statistics",
+    "topic": "flu",
+    "authorship": "developer_scope_labelled_not_external_blind"
+  }
+]

@@ -137,6 +137,9 @@ def main() -> None:
     if not 1 <= args.k <= 20:
         parser.error("k must be between 1 and 20")
     cases = json.loads(args.cases.read_text(encoding="utf-8"))
+    validate_cases(cases)
+    if any(case.get("split") == "validation" for case in cases):
+        parser.error("validation cases require medical.experiment with a verified partition seal")
     print(json.dumps(evaluate(get_knowledge_base(args.preview), cases, args.k), ensure_ascii=False, indent=2))
 
 

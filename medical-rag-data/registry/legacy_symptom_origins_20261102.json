@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "collected_at": "2026-11-02",
+  "coordinate_unit": "zero_based_paragraph_and_python_unicode_half_open_slice",
+  "sources": [
+    {
+      "doc_id": "BJ-DIARRHEA-20210406",
+      "previous_document_sha256": "cbbd30e9bd85ff534a0b5ff8364717538fdadbf6189531e2af351bc7a443bfc2",
+      "kind": "same_original_page",
+      "source_url": "https://wjw.beijing.gov.cn/bmfw_20143/jkzs/jksh/202104/t20210406_2345583.html",
+      "html_path": "bj-diarrhea-20210406/2026-11-02/page.html",
+      "html_sha256": "34d0418f036a27791ee0926731c3f691eef8ece06329081e76715ef255525b20",
+      "capture_sha256": "139e3b211df48377e26b020686ed463261660ece015ebbd034f59bdd30609f9d",
+      "body_sha256": "d3b31d779b87b194cbb14aafcd10808e8b42030912cdda18286e2143c9000314",
+      "source_published_at": "2021-04-06",
+      "paragraph_count": 9,
+      "sections": [[[2, 0, 170]]],
+      "reason": "旧摘录在北京天坛医院供稿的同一北京市卫健委页面上逐字匹配。"
+    },
+    {
+      "doc_id": "NHC-FLU-CARE-20250117",
+      "previous_document_sha256": "05a343e418c26f3585a7196451009021865b3a65ed1bfd17c1cbbce64ab1aa56",
+      "kind": "official_parallel_transcript",
+      "source_url": "https://www.ndcpa.gov.cn/jbkzzx/c100009/common/content/content_1881176926602252288.html",
+      "html_path": "ndcpa-flu-care-20250117/2026-11-02/page.html",
+      "html_sha256": "d05213fbe1274f09b8f1eacecb9b62bcaa7fff67da609930d89278bdca8a8564",
+      "capture_sha256": "5fafc159bf3340abdbcf5c7b8cc8f7dd8c82ccb5be50111f14cad5ee20587335",
+      "body_sha256": "8836188a58395c8ff1fa550597a3cd24d8b801f7bf800b9a6ba3fdec17c78b92",
+      "source_org": "国家疾病预防控制局（来源：国家疾控局官微）",
+      "source_published_at": "2025-01-17",
+      "source_locator": "国家卫生健康委2025-01-17发布会；新华社记者提问、北京佑安医院李侗曾答复。原始页非空p段0起算32、33，全文位置见sidecar。",
+      "paragraph_count": 138,
+      "sections": [[[32, 0, 130]], [[33, 0, 184]]],
+      "reason": "原国家卫健委地址此次直接获取返回HTTP 412。国家疾控局同日发布该场答记者问；本次选段与旧摘录相差一字，按实际原文保留“传染给他人”。",
+      "original_fetch_status": 412
+    },
+    {
+      "doc_id": "NHC-THROAT-20240821",
+      "previous_document_sha256": "9f276b857c4917146022513b89b6b44ee56f65cde11d5338dbcc49272841c494",
+      "kind": "official_parallel_transcript",
+      "source_url": "https://wsjkw.weihai.gov.cn/art/2024/8/21/art_29483_6182447.html",
+      "html_path": "weihai-throat-20240821/2026-11-02/page.html",
+      "html_sha256": "926d9e5f56fb2efc21e03a3d4d4753ce16704a88524ef73ef11b15fdb9a42aa1",
+      "capture_sha256": "58b7d87d1b187e99bd6f73c20a9c14513c166c5a95965db98feb40306b021724",
+      "body_sha256": "3a7212b79b4d142327853610564911a556dbe386837ba91f6df1bf81cc82f64f",
+      "source_org": "威海市卫生健康委员会（国家卫生健康委发布会文字实录）",
+      "source_published_at": "2024-08-21",
+      "source_locator": "国家卫生健康委2024-08-21发布会；中国网记者提问、北京大学第一医院王全桂答复。原始页非空p段0起算38、40、41，末两句分别定位。",
+      "paragraph_count": 78,
+      "sections": [[[38, 4, 204]], [[40, 341, 388], [41, 0, 59]]],
+      "reason": "原国家卫健委地址此次直接获取返回HTTP 412。威海市卫健委同日发布该场实录；旧正文所有字句匹配，第二小节的两句跨不同HTML段落。",
+      "original_fetch_status": 412
+    }
+  ]
+}

@@ -136,6 +136,15 @@ class ManifestTests(unittest.TestCase):
                             output=self.output, **self.roots)
         self.assertFalse(self.output.exists())
 
+    def test_historical_candidate_questions_are_checked_with_their_original_bytes(self):
+        prior = {"id": "H01", "query": self.old_case["query"], "expected_ids": ["HISTORICAL-CANDIDATE"]}
+        self.write(self.exposed, [prior]); self.seal()
+        self.assertTrue(self.audit()["valid"])
+        self.output = self.data/"different-seal.json"
+        self.write(self.exposed, [{**prior, "query": self.val_case["query"]}])
+        with self.assertRaisesRegex(ValueError, "exposed_query_and_facts_reused"):
+            self.seal()
+
     def test_sealed_paths_cannot_escape_declared_roots(self):
         self.seal()
         original = json.loads(self.output.read_text(encoding="utf-8"))

@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "recipe_id": "chinese-official-thermometry-20261102-v1",
+  "selection_date": "2026-11-02",
+  "scope": "isolated_local_research",
+  "sources": [
+    {
+      "html_path": "sz-temperature-20261023/2026-11-02/page.html",
+      "html_sha256": "be6a5d425e3e5ecceb12e40aa00682d798c83a326c3bac3fc00d67cad1021fc8",
+      "capture_path": "sz-temperature-20261023/2026-11-02/extracted-paragraphs.txt",
+      "capture_sha256": "2d5bb391526a2ecc4ac24f95ed19e9b5f66792582af3d039d36288b51a0e4dbb",
+      "paragraph_count": 25,
+      "source_url": "https://wjw.sz.gov.cn/szylws/gzdt/content/post_13037547.html",
+      "original_title": "指南系列四：家用体温计怎么挑？水银、电子、红外额温枪有何区别",
+      "published_date_evidence": "深圳市卫生健康委员会网站文章页显示2026-10-23 14:22:01，信息来源为深圳市医疗卫生专业服务中心。",
+      "selected_paragraphs": [6, 7, 10, 19, 20, 21],
+      "heading_paragraphs": [],
+      "omitted_paragraphs": {
+        "0": "家用体温计产品选择概述",
+        "1": "未选水银体温计简介标题",
+        "2": "水银体温计操作与选购超出本次居家复测范围",
+        "3": "水银体温计和儿童安全提醒已从独立小节排除",
+        "4": "生产政策说明与本次居家观察无关",
+        "5": "设备名称已在选入正文说明，省略原小节标题以免将后续跨小节选段归入电子体温计",
+        "8": "设备名称已在选入正文说明，省略原小节标题以免将后续通用提醒归入额温枪",
+        "9": "额温枪使用场景包含儿童快速测温",
+        "11": "未选耳温枪使用说明的小节标题",
+        "12": "婴幼儿耳温枪使用方法超出本次成人范围",
+        "13": "耳道专用设备说明超出本次范围",
+        "14": "商品选购及资质查验",
+        "15": "购买建议含婴幼儿专用人群",
+        "16": "测量前准备与儿童陪同操作在同一段落",
+        "17": "设备清洁消毒说明",
+        "18": "设备存放说明",
+        "22": "网站页脚单位信息",
+        "23": "网站页脚联系方式",
+        "24": "网站备案信息"
+      },
+      "document": {
+        "doc_id": "SZ-TEMPERATURE-20261023",
+        "version": 1,
+        "title": "家用体温测量、异常读数复测及持续发热就医（原文选段）",
+        "topic": "家用测温与发热观察",
+        "audience": "中文普通成年人；本机研究",
+        "source_org": "深圳市医疗卫生专业服务中心（深圳市卫生健康委员会网站发布）",
+        "source_published_at": "2026-10-23",
+        "status": "source_checked",
+        "reviewer": "Aide literal source verification (non-clinician)",
+        "reviewed_at": "2026-11-02",
+        "next_review_at": "2027-05-02",
+        "source_collected_at": "2026-11-02",
+        "source_version": "2026-10-23 public article; original HTTP HTML and normalized paragraph subset checked 2026-11-02",
+        "source_locator": "原HTML提取25个非空p段落（从0起算），采用6、7、10、19、20、21；第20段含复测与独立的水银破损提醒，均按原文保留；逐段范围见origin sidecar。",
+        "license_note": "官方公开科普页面，公开再分发许可待确认，使用范围为本机研究与来源核对。",
+        "usage_scope": "限于普通成年人了解家用电子体温计接触测量、额温读数影响因素、异常复测以及持续发热等情况的就医提醒。测量设备、测量值和复测提示不能用于推断个体病因、指导药物剂量或延迟就医。水银破损一句仅为设备警示。",
+        "language": "zh"
+      }
+    }
+  ]
+}

@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "recipe_id": "chinese-official-respiratory-20261102-v1",
+  "selection_date": "2026-11-02",
+  "scope": "isolated_local_research",
+  "sources": [
+    {
+      "html_path": "qj-cough-20241010/2026-11-02/page.html",
+      "html_sha256": "9f766ef5cf57eff2748eaf86b57e353fbc9a8cacc332c35d4b5a917ff8629915",
+      "capture_path": "qj-cough-20241010/2026-11-02/extracted-paragraphs.txt",
+      "capture_sha256": "18bd2729ee9da044635fc22dc61dfd17be606b1e79e04e8e969e6330384d97be",
+      "paragraph_count": 26,
+      "source_url": "https://www.hbqj.gov.cn/xxgk/xxgkml/szfxxgkml/qtzdgknr/hygq/202410/t20241021_5378358.html",
+      "original_title": "一换季就咳个不停怎么办？会咳成肺炎吗？",
+      "published_date_evidence": "原HTML的PubDate与页面发布日期均为2024-10-10，ContentSource为武汉协和医院、健康湖北，页面发布机构为潜江市卫生健康委员会。",
+      "selected_paragraphs": [15, 16, 17, 18, 19],
+      "heading_paragraphs": [],
+      "omitted_paragraphs": {
+        "0": "网站导航",
+        "1": "季节性引入",
+        "2": "引入文字，未包含就医信息",
+        "3": "开篇口语化示例",
+        "4": "开篇口语化示例",
+        "5": "未选小节的序号",
+        "6": "未选小节的标题",
+        "7": "干冷空气刺激机制超出本选段范围",
+        "8": "空气干燥和粉尘影响机制超出本选段范围",
+        "9": "未选小节的序号",
+        "10": "未选小节的标题",
+        "11": "成人和儿童的过敏情境混合，超出呼吸道感染病程范围",
+        "12": "未选小节的序号",
+        "13": "仅属于下一段病因讨论的小节标题",
+        "14": "天气变化与免疫的因果解释未纳入本次范围",
+        "20": "儿童止咳用药与食疗建议混合",
+        "21": "病因未明情况下的蜂蜜等缓解建议未纳入",
+        "22": "网页链接区标题",
+        "23": "网站导航",
+        "24": "网站备案信息",
+        "25": "网站主办和承办单位"
+      },
+      "document": {
+        "doc_id": "QJ-COUGH-20241010",
+        "version": 1,
+        "title": "呼吸道感染后咳嗽的常见病程与就医信号（原文选段）",
+        "topic": "短期咳嗽的常见病程与就医引导",
+        "audience": "中文普通成年人；本机研究",
+        "source_org": "潜江市卫生健康委员会（页面来源标注武汉协和医院、健康湖北）",
+        "source_published_at": "2024-10-10",
+        "status": "source_checked",
+        "reviewer": "Aide literal source verification (non-clinician)",
+        "reviewed_at": "2026-11-02",
+        "next_review_at": "2027-05-02",
+        "source_collected_at": "2026-11-02",
+        "source_version": "2024-10-10 public article; original HTTP HTML and normalized paragraph subset checked 2026-11-02",
+        "source_locator": "原HTML的26个非空p段落（从0起算）中第15至19段，含病程和全部四项就医信号，逐段位置见origin sidecar",
+        "license_note": "官方公开科普页面，开放再分发许可待确认，使用范围为本机研究与来源核对。",
+        "usage_scope": "限于普通成年人了解呼吸道感染造成的咳嗽通常持续的时间及文中的四项就医提示。出现伴随警示症状就应尽快就医，不能把三周当成统一等待时间。判断个体病因、排除肺炎、发热居家处置及药物选择超出本选段范围。",
+        "language": "zh"
+      }
+    }
+  ]
+}

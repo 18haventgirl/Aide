@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "hash_scheme": "canonical-json-v1",
+  "suite_id": "aide-source-mixed-development-v1",
+  "evaluation_date": "2026-11-04",
+  "authorship": "developer_authored_not_external_blind",
+  "query_contract": "explicit_user_facts_v1",
+  "metric_contract": "source-evidence-v1",
+  "groups": [
+    {
+      "name": "source-symptoms-development",
+      "purpose": "development",
+      "path": "source_symptom_cases_v2.json",
+      "count": 10,
+      "sha256": "7ba0d7949f7c86f822c82412ff98815ea61986abf5c149958a84d81336dd3b28",
+      "allow_historical_missing_ids": false,
+      "used_for_changes_after_first_run": true
+    },
+    {
+      "name": "source-scope-negatives-development",
+      "purpose": "development",
+      "path": "source_scope_negatives_v1.json",
+      "count": 16,
+      "sha256": "eaabf79a38dfdbc4c07a17770f53697e346cd6b58b394db42fc49f54a40f379f",
+      "allow_historical_missing_ids": false,
+      "used_for_changes_after_first_run": true
+    },
+    {
+      "name": "source-batch-regression",
+      "purpose": "regression",
+      "path": "source_batch_cases_v1.json",
+      "count": 12,
+      "sha256": "8e3652899653fc0e8f243367748706e1d5b04d1e9227eac941ed9d7c838177f9",
+      "allow_historical_missing_ids": false,
+      "used_for_changes_after_first_run": true
+    },
+    {
+      "name": "source-pilot-regression",
+      "purpose": "regression",
+      "path": "source_pilot_cases_v1.json",
+      "count": 12,
+      "sha256": "1930b4a09d3068a946e2776966ec5b7b356a7ad5bca8a5b0ad0c6c9848a4e5c2",
+      "allow_historical_missing_ids": false,
+      "used_for_changes_after_first_run": true
+    }
+  ]
+}

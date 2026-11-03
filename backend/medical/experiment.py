@@ -39,30 +39,87 @@ def digest(value) -> str:
 
 
 def load_suite(path: Path) -> tuple[dict, dict]:
-    manifest = json.loads(path.read_text(encoding="utf-8"))
+    return _load_suite(path, json.loads(path.read_bytes()))
+
+
+def _load_suite(path, manifest, *, validation_binding=None):
     if manifest.get("schema_version") != 1 or manifest.get("hash_scheme") != "canonical-json-v1" or not manifest.get("groups"):
         raise ValueError("unsupported or empty suite manifest")
     if manifest.get("query_contract", QUERY_CONTRACT) != QUERY_CONTRACT:
         raise ValueError("unsupported query contract")
+    if not validation_binding and any(group.get("purpose") == "validation" for group in manifest["groups"]):
+        raise ValueError("validation suites require a verified partition seal before loading cases")
     groups, names = {}, set()
     for entry in manifest["groups"]:
         name = entry["name"]
-        if name in names or entry["purpose"] not in {"development", "regression", "topic_acceptance", "frozen"}:
+        if name in names or entry["purpose"] not in {"development", "regression", "topic_acceptance", "frozen", "validation"}:
             raise ValueError("invalid or duplicate evaluation group")
         names.add(name)
         source = (path.parent / entry["path"]).resolve()
         if not source.is_relative_to(MEDICAL):
             raise ValueError("case file must stay inside medical package")
         raw = source.read_bytes()
+        if validation_binding and hashlib.sha256(raw).hexdigest() != validation_binding["file_sha256"]:
+            raise ValueError("executed validation file differs from sealed bytes")
         cases = json.loads(raw)
         if digest(cases) != entry["sha256"]:
             raise ValueError(f"case hash mismatch: {name}")
         validate_cases(cases)
+        if entry["purpose"] != "validation" and any(c.get("split") == "validation" for c in cases):
+            raise ValueError("validation cases require a validation group")
         if len(cases) != entry["count"]:
             raise ValueError(f"case count mismatch: {name}")
         groups[name] = cases
     date.fromisoformat(manifest["evaluation_date"])
     return manifest, groups
+
+
+def run_options(profiles, k, rerank_max_length, input_policy, chunk_strategy, child_tokens):
+    from .token_budget import POLICIES
+    if (not isinstance(profiles, (list, tuple)) or not profiles or set(profiles) - set(PROFILES)
+            or len(set(profiles)) != len(profiles)):
+        raise ValueError("invalid profile selection")
+    if type(k) is not int or not 1 <= k <= 20:
+        raise ValueError("k must be between 1 and 20")
+    if (type(rerank_max_length) is not int or not 64 <= rerank_max_length <= 512
+            or input_policy not in POLICIES or chunk_strategy not in {"legacy", "token-v1"}
+            or type(child_tokens) is not int or not 64 <= child_tokens <= 220):
+        raise ValueError("invalid experimental token settings")
+    if chunk_strategy == "token-v1" and input_policy != "query_first_v1":
+        raise ValueError("token chunks require explicit query/passage budgets")
+    return {"profiles": list(profiles), "k": k, "rerank_max_length": rerank_max_length,
+            "input_policy": input_policy, "chunk_strategy": chunk_strategy, "child_tokens": child_tokens}
+
+
+def verify_validation_run(manifest, manifest_path, suite_hash, groups, options, metric_contract,
+                          source_snapshot, corpus_path, partition_seal, seal_sha256):
+    formal = any(g.get("purpose") == "validation" for g in manifest.get("groups", []))
+    if not formal:
+        if partition_seal is not None or seal_sha256 is not None or "validation_config" in manifest:
+            raise ValueError("sealed validation requires a dedicated validation suite")
+        return None
+    if partition_seal is None or not isinstance(seal_sha256, str) or len(seal_sha256) != 64:
+        raise ValueError("validation requires --partition-seal and --seal-sha256")
+    if len(manifest["groups"]) != 1 or (groups is not None and list(groups) != [manifest["groups"][0]["name"]]):
+        raise ValueError("validation requires the entire registered group")
+    if metric_contract != "source-evidence-v1" or source_snapshot is None:
+        raise ValueError("validation requires a strict source snapshot")
+    if manifest.get("validation_config") != options:
+        raise ValueError("requested options differ from registered validation configuration")
+    from .evaluation.partition_manifest import audit_partition_manifest
+    datasets = ROOT / "medical-rag-data/datasets"
+    audit = audit_partition_manifest(partition_seal, data_root=MEDICAL, snapshot_root=datasets,
+                                     raw_root=ROOT / "medical-rag-data/raw", expected_sha256=seal_sha256)
+    registration = audit.get("validation_run")
+    if not registration or (MEDICAL/registration["suite_path"]).resolve() != manifest_path.resolve():
+        raise ValueError("suite was not registered in this partition seal")
+    if registration["suite_file_sha256"] != suite_hash:
+        raise ValueError("validation suite differs from registered bytes")
+    if ((datasets/audit["source_snapshot"]["path"]).resolve() != Path(source_snapshot).resolve()
+            or (Path(source_snapshot)/"corpus").resolve() != Path(corpus_path).resolve()):
+        raise ValueError("validation source snapshot differs from partition seal")
+    return {"seal_sha256": audit["manifest_file_sha256"], "validation_run": registration,
+            "validation_file": audit["validation_file"], "source_snapshot": audit["source_snapshot"]}
 
 
 def validate_source_bindings(cases, documents):
@@ -156,6 +213,7 @@ def repository_version():
         files += ["evaluation/author_source_pilot_v1.py"]
         files += ["build_source_snapshot.py", "capture_headache_origin.py", "capture_official_batch.py"]
         files += ["evaluation/author_source_batch_v1.py"]
+        files += ["capture_legacy_symptoms.py", "source_pipeline.py"]
         return {"commit": git("rev-parse", "HEAD"),
                 "retrieval_implementation_sha256": digest({name: hashlib.sha256((MEDICAL/name).read_bytes()).hexdigest() for name in files}),
                 "tracked_changes": bool(git("status", "--porcelain", "--untracked-files=no"))}
@@ -195,6 +253,8 @@ def prepare_origin_contract(metric_contract, source_snapshot, corpus_path, docum
         raise ValueError("source contract documents differ from audited snapshot")
     origins = {path.stem: json.loads(path.read_text(encoding="utf-8"))
                for path in (Path(source_snapshot)/"origins").glob("*.json")}
+    if digest(origins) != audit["origins_sha256"]:
+        raise ValueError("source sidecars changed after snapshot audit")
     resolver = OriginResolver(documents, origins, raw_root)
     validate_literal_references(selected_cases, resolver)
     return audit, origins
@@ -202,20 +262,24 @@ def prepare_origin_contract(metric_contract, source_snapshot, corpus_path, docum
 
 def run_experiment(manifest_path, corpus_path, output, groups=None, profiles=PROFILES, k=5,
                    metric_contract="evidence-v1", *, rerank_max_length=256, input_policy="legacy",
-                   chunk_strategy="legacy", child_tokens=180, source_snapshot=None):
+                   chunk_strategy="legacy", child_tokens=180, source_snapshot=None,
+                   partition_seal=None, seal_sha256=None):
     output.parent.mkdir(parents=True, exist_ok=True)
     initial = {"report_version": "retrieval_experiment_v2", "complete": False,
                "stage": "preflight", "started_at_utc": datetime.now(timezone.utc).isoformat(),
                "requested": {"suite": str(manifest_path), "groups": groups, "profiles": list(profiles), "k": k,
                              "metric_contract": metric_contract, "rerank_max_length": rerank_max_length,
                              "input_policy": input_policy, "chunk_strategy": chunk_strategy, "child_tokens": child_tokens,
-                             "source_snapshot": str(source_snapshot) if source_snapshot is not None else None}}
+                             "source_snapshot": str(source_snapshot) if source_snapshot is not None else None,
+                             "partition_seal": str(partition_seal) if partition_seal is not None else None,
+                             "seal_sha256": seal_sha256}}
     # Exclusive reservation protects historical runs, including concurrent writers.
     with output.open("x", encoding="utf-8") as handle:
         json.dump(initial, handle)
     try:
         return _run_experiment(manifest_path, corpus_path, output, groups, profiles, k, metric_contract,
-                               rerank_max_length, input_policy, chunk_strategy, child_tokens, source_snapshot)
+                               rerank_max_length, input_policy, chunk_strategy, child_tokens, source_snapshot,
+                               partition_seal, seal_sha256)
     except Exception as exc:
         current = json.loads(output.read_text(encoding="utf-8"))
         current.update(complete=False, failure_type=type(exc).__name__)
@@ -224,26 +288,23 @@ def run_experiment(manifest_path, corpus_path, output, groups=None, profiles=PRO
 
 
 def _run_experiment(manifest_path, corpus_path, output, groups, profiles, k, metric_contract,
-                    rerank_max_length, input_policy, chunk_strategy, child_tokens, source_snapshot):
-    from .token_budget import POLICIES
-    if (type(rerank_max_length) is not int or not 64 <= rerank_max_length <= 512
-            or input_policy not in POLICIES or chunk_strategy not in {"legacy", "token-v1"}
-            or type(child_tokens) is not int or not 64 <= child_tokens <= 220):
-        raise ValueError("invalid experimental token settings")
-    if chunk_strategy == "token-v1" and input_policy != "query_first_v1":
-        raise ValueError("token chunks require explicit query/passage budgets")
+                    rerank_max_length, input_policy, chunk_strategy, child_tokens, source_snapshot,
+                    partition_seal, seal_sha256):
+    options = run_options(profiles, k, rerank_max_length, input_policy, chunk_strategy, child_tokens)
     if metric_contract not in {"evidence-v1", "source-evidence-v1", "legacy-doc-v3"}:
         raise ValueError("unknown metric contract")
-    manifest, cases_by_group = load_suite(manifest_path)
+    suite_bytes = manifest_path.read_bytes()
+    suite_hash = hashlib.sha256(suite_bytes).hexdigest()
+    manifest = json.loads(suite_bytes)
+    validation = verify_validation_run(manifest, manifest_path, suite_hash, groups, options, metric_contract,
+                                       source_snapshot, corpus_path, partition_seal, seal_sha256)
+    manifest, cases_by_group = _load_suite(manifest_path, manifest,
+                                          validation_binding=validation["validation_file"] if validation else None)
     if manifest.get("metric_contract", metric_contract) != metric_contract:
         raise ValueError("suite requires its declared metric contract")
     selected = groups or list(cases_by_group)
     if not selected or set(selected) - set(cases_by_group) or len(set(selected)) != len(selected):
         raise ValueError("unknown, duplicate or empty group selection")
-    if not profiles or set(profiles) - set(PROFILES) or len(set(profiles)) != len(profiles):
-        raise ValueError("invalid profile selection")
-    if not 1 <= k <= 20:
-        raise ValueError("k must be between 1 and 20")
     budget = EvidenceBudget(max_chunks=k) if metric_contract in {"evidence-v1", "source-evidence-v1"} else None
     documents = load_corpus(corpus_path)
     for group in selected:
@@ -251,6 +312,13 @@ def _run_experiment(manifest_path, corpus_path, output, groups, profiles, k, met
         validate_references(cases_by_group[group], documents)
     origin_audit, origins = prepare_origin_contract(metric_contract, source_snapshot, corpus_path, documents,
                                                     [case for group in selected for case in cases_by_group[group]])
+    if validation:
+        for field in ("corpus_sha256", "origins_sha256"):
+            if validation["source_snapshot"][field] != origin_audit[field]:
+                raise ValueError("executed source snapshot differs from partition seal")
+        preflight = json.loads(output.read_bytes())
+        preflight["validation"] = validation
+        output.write_text(json.dumps(preflight, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
     day = date.fromisoformat(manifest["evaluation_date"])
     eligible = {d.doc_id for d in documents if d.is_searchable(day, research_mode=True)}
     unavailable = {}
@@ -265,10 +333,11 @@ def _run_experiment(manifest_path, corpus_path, output, groups, profiles, k, met
     before = require_available(1536)
     previous = {key: os.environ.get(key) for key in PARAMETERS}
     report = {
-        "report_version": "retrieval_experiment_v2", "scope": "developer_cases_not_blind_not_clinical",
+        "report_version": "retrieval_experiment_v2",
+        "scope": "sealed_local_validation" if validation else "developer_cases_not_blind_not_clinical",
         "stage": "model_and_index_initialization", "metric_contract": metric_contract,
         "started_at_utc": datetime.now(timezone.utc).isoformat(), "code": repository_version(),
-        "suite": manifest, "suite_manifest_sha256": hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
+        "suite": manifest, "suite_manifest_sha256": suite_hash, "validation": validation,
         "query_contract": QUERY_CONTRACT,
         "query_transport_contract": "current_question_first_charcap_v1",
         "selected_groups": selected, "profiles": list(profiles), "k": k,
@@ -399,6 +468,8 @@ def main():
     parser.add_argument("--k", type=int, default=5)
     parser.add_argument("--metric-contract", choices=("evidence-v1", "source-evidence-v1", "legacy-doc-v3"), default="evidence-v1")
     parser.add_argument("--source-snapshot", type=Path, help="matching isolated snapshot required for source-evidence-v1")
+    parser.add_argument("--partition-seal", type=Path, help="registered partition manifest for a validation suite")
+    parser.add_argument("--seal-sha256", help="SHA256 of the seal recorded before running validation")
     parser.add_argument("--rerank-max-length", type=int, default=256)
     parser.add_argument("--input-policy", choices=("legacy", "query_first_v1"), default="legacy")
     parser.add_argument("--chunk-strategy", choices=("legacy", "token-v1"), default="legacy")
@@ -406,7 +477,8 @@ def main():
     args = parser.parse_args()
     run_experiment(args.suite, args.corpus, args.output, args.group, args.profiles, args.k, args.metric_contract,
                    rerank_max_length=args.rerank_max_length, input_policy=args.input_policy,
-                   chunk_strategy=args.chunk_strategy, child_tokens=args.child_tokens, source_snapshot=args.source_snapshot)
+                   chunk_strategy=args.chunk_strategy, child_tokens=args.child_tokens, source_snapshot=args.source_snapshot,
+                   partition_seal=args.partition_seal, seal_sha256=args.seal_sha256)
 
 
 if __name__ == "__main__":
