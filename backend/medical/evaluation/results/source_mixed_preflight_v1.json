@@ -1,0 +1,241 @@
+{
+  "schema_version": 1,
+  "complete": true,
+  "as_of": "2026-11-04",
+  "scope": "development_source_labels_and_document_bm25_overlap",
+  "code": {
+    "commit": "4df4e0a06f7f0f384e5de7ec6ebfa2a0cc8d98fd",
+    "retrieval_implementation_sha256": "052bb577ca12648b1f0c3a622ad2ac0a049563fc671badcd71e32909dd8c64db",
+    "tracked_changes": true
+  },
+  "checker_sha256": "77fdc0a304c0eb6d07b9e0f8a5dc18c0926953d336c9576fbb6ffac6bcabea21",
+  "suite_id": "aide-source-mixed-development-v1",
+  "suite_file_sha256": "abf5d5acf3beb28b04bb95855bec55f5c6a6051116c953c5be9d3a7742035217",
+  "snapshot": "medical-rag-data/datasets/official-zh-v4/2026-11-04",
+  "corpus_sha256": "ed903e734423da9e83dbd5d4c1a408cf348ede7273011545039e07b6218bfd43",
+  "origins_sha256": "472f2bc4dc3cd87728ebb133aecd63283aca9603879f878c43fdf2e10d10fbfb",
+  "documents": 77,
+  "eligible_documents": 77,
+  "origin_verified_documents": 77,
+  "counts": {
+    "supported": 27,
+    "followup": 7,
+    "unanswerable": 16
+  },
+  "cases": 50,
+  "groups": {
+    "source-symptoms-development": 10,
+    "source-scope-negatives-development": 16,
+    "source-batch-regression": 12,
+    "source-pilot-regression": 12
+  },
+  "literal_gold_spans": 42,
+  "literal_conditions": 12,
+  "historical_exact_overlap_checks": [
+    {
+      "suite_id": "aide-token-input-regression-v5",
+      "suite_sha256": "59015645192841e857c6a02e3461e51df63292e73a727c63c191d11ab860bc63",
+      "cases": 274,
+      "matching_ids": [],
+      "matching_normalized_inputs": []
+    }
+  ],
+  "document_lexical_screen": [
+    {
+      "id": "SDN01",
+      "labelled_distractors": [
+        "NHC-SLEEP-CORE-20250318"
+      ],
+      "first_distractor_rank": 5,
+      "first_three_docs": [
+        "NHC-HL2024-16",
+        "NHC-HL2024-57",
+        "SZ-TEMPERATURE-20261023"
+      ]
+    },
+    {
+      "id": "SDN02",
+      "labelled_distractors": [
+        "NHC-SLEEP-CORE-20250318"
+      ],
+      "first_distractor_rank": 1,
+      "first_three_docs": [
+        "NHC-SLEEP-CORE-20250318",
+        "NHC-HL2024-39",
+        "NHC-HL2024-25"
+      ]
+    },
+    {
+      "id": "SDN03",
+      "labelled_distractors": [
+        "FJ-HEADACHE-20260626"
+      ],
+      "first_distractor_rank": 1,
+      "first_three_docs": [
+        "FJ-HEADACHE-20260626",
+        "NHC-HL2024-49",
+        "NHC-HL2024-09"
+      ]
+    },
+    {
+      "id": "SDN04",
+      "labelled_distractors": [
+        "FJ-HEADACHE-20260626"
+      ],
+      "first_distractor_rank": 1,
+      "first_three_docs": [
+        "FJ-HEADACHE-20260626",
+        "NHC-FLU-CARE-20250117",
+        "NHC-HL2024-52"
+      ]
+    },
+    {
+      "id": "SDN05",
+      "labelled_distractors": [
+        "BJ-DIZZINESS-20240301"
+      ],
+      "first_distractor_rank": 1,
+      "first_three_docs": [
+        "BJ-DIZZINESS-20240301",
+        "NHC-SLEEP-CORE-20250318",
+        "NHC-HL2024-37"
+      ]
+    },
+    {
+      "id": "SDN06",
+      "labelled_distractors": [
+        "BJ-DIZZINESS-20240301"
+      ],
+      "first_distractor_rank": 1,
+      "first_three_docs": [
+        "BJ-DIZZINESS-20240301",
+        "NHC-HL2024-35",
+        "NHC-HL2024-28"
+      ]
+    },
+    {
+      "id": "SDN07",
+      "labelled_distractors": [
+        "BJ-CONSTIPATION-20250331"
+      ],
+      "first_distractor_rank": 11,
+      "first_three_docs": [
+        "NHC-HL2024-51",
+        "NHC-HL2024-19",
+        "NHC-HL2024-25"
+      ]
+    },
+    {
+      "id": "SDN08",
+      "labelled_distractors": [
+        "BJ-CONSTIPATION-20250331"
+      ],
+      "first_distractor_rank": 1,
+      "first_three_docs": [
+        "BJ-CONSTIPATION-20250331",
+        "NHC-HL2024-54",
+        "NHC-SLEEP-CORE-20250318"
+      ]
+    },
+    {
+      "id": "SDN09",
+      "labelled_distractors": [
+        "BJ-DIARRHEA-20210406"
+      ],
+      "first_distractor_rank": 1,
+      "first_three_docs": [
+        "BJ-DIARRHEA-20210406",
+        "NHC-HL2024-56",
+        "NHC-HL2024-43"
+      ]
+    },
+    {
+      "id": "SDN10",
+      "labelled_distractors": [
+        "NHC-THROAT-20240821"
+      ],
+      "first_distractor_rank": 12,
+      "first_three_docs": [
+        "NHC-HL2024-42",
+        "BJ-CONSTIPATION-20250331",
+        "NHC-HL2024-62"
+      ]
+    },
+    {
+      "id": "SDN11",
+      "labelled_distractors": [
+        "NHC-HL2024-57"
+      ],
+      "first_distractor_rank": 15,
+      "first_three_docs": [
+        "NHC-HL2024-64",
+        "NHC-THROAT-20240821",
+        "SZ-TEMPERATURE-20261023"
+      ]
+    },
+    {
+      "id": "SDN12",
+      "labelled_distractors": [
+        "NHC-HL2024-12"
+      ],
+      "first_distractor_rank": 4,
+      "first_three_docs": [
+        "NHC-HL2024-09",
+        "NHC-HL2024-62",
+        "QJ-COUGH-20241010"
+      ]
+    },
+    {
+      "id": "SDN13",
+      "labelled_distractors": [
+        "NHC-HL2024-32"
+      ],
+      "first_distractor_rank": 5,
+      "first_three_docs": [
+        "NHC-HL2024-29",
+        "NHC-THROAT-20240821",
+        "NHC-HL2024-60"
+      ]
+    },
+    {
+      "id": "SDN14",
+      "labelled_distractors": [
+        "NHC-HL2024-54"
+      ],
+      "first_distractor_rank": 1,
+      "first_three_docs": [
+        "NHC-HL2024-54",
+        "NHC-HL2024-27",
+        "NHC-HL2024-35"
+      ]
+    },
+    {
+      "id": "SDN15",
+      "labelled_distractors": [
+        "NHC-HL2024-56"
+      ],
+      "first_distractor_rank": null,
+      "first_three_docs": [
+        "NHC-HL2024-21",
+        "NHC-HL2024-37",
+        "NHC-HL2024-34"
+      ]
+    },
+    {
+      "id": "SDN16",
+      "labelled_distractors": [
+        "NHC-FLU-CARE-20250117"
+      ],
+      "first_distractor_rank": 2,
+      "first_three_docs": [
+        "NHC-THROAT-20240821",
+        "NHC-FLU-CARE-20250117",
+        "NHC-HL2024-43"
+      ]
+    }
+  ],
+  "distractor_in_first_three": 9,
+  "neural_retrieval_executed": false,
+  "llm_generation_calls": 0,
+  "independent_validation_cases": 0
+}

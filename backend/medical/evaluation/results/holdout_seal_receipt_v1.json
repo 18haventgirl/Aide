@@ -1,0 +1,120 @@
+{
+  "as_of": "2026-11-04",
+  "contract": "evidence_partition_manifest_v1",
+  "status": "sealed_local_not_external_blind",
+  "valid": true,
+  "counts": {
+    "development": 50,
+    "validation": 12
+  },
+  "case_kinds": {
+    "development": {
+      "supported": 27,
+      "followup": 7,
+      "unanswerable": 16
+    },
+    "validation": {
+      "supported": 7,
+      "followup": 3,
+      "unanswerable": 2
+    }
+  },
+  "source_snapshot": {
+    "path": "official-zh-v4/2026-11-04",
+    "manifest_file_sha256": "155aa465f1b48bdba996de5eede8e1d8fd56725f52d5181124fb95c88535030d",
+    "corpus_sha256": "ed903e734423da9e83dbd5d4c1a408cf348ede7273011545039e07b6218bfd43",
+    "origins_sha256": "472f2bc4dc3cd87728ebb133aecd63283aca9603879f878c43fdf2e10d10fbfb",
+    "documents": 77,
+    "origin_verified_documents": 77,
+    "pending_origin_documents": []
+  },
+  "implementation": {
+    "commit": "4df4e0a06f7f0f384e5de7ec6ebfa2a0cc8d98fd",
+    "retrieval_implementation_sha256": "052bb577ca12648b1f0c3a622ad2ac0a049563fc671badcd71e32909dd8c64db",
+    "tracked_changes": true
+  },
+  "development_suite": "source_mixed_suite_v1.json",
+  "development_suite_sha256": "abf5d5acf3beb28b04bb95855bec55f5c6a6051116c953c5be9d3a7742035217",
+  "local_manifest": "backend/medical/evaluation/local_holdouts/partition_data_seal_20261104_v1.json",
+  "manifest_sha256": "d72c6700dd2fd30c0590d45dab1f25a48fab75d62fda70ea58bd00cdd76ff3c9",
+  "partition_file_sha256": {
+    "development": "5c476628036faf09db3fa8261b250d5bbf58abf441b15ef5c3b7bbae7f90c6f4",
+    "validation": "f06e68b7d55d652f61ff9f5ef6367797bc33d47744cd89c80ef4c420771516f1"
+  },
+  "exposure_files": [
+    {
+      "path": "eval_cases.json",
+      "file_sha256": "23826a2528342b031ccf08a867d154cf209eee783089e75798cf46ce85878e35",
+      "canonical_json_sha256": "ee35722ad16c42151dba51ec2f353ed154c08a00569d5140fc9b881f540b0050",
+      "count": 5
+    },
+    {
+      "path": "eval_cases_chinese_symptoms_v1.json",
+      "file_sha256": "6150f04d7d7930b6e56e1ac98dd7aaf5814e9f3f9009316cc8466f94ce3ec655",
+      "canonical_json_sha256": "92714ccb10798fee282bd0bcfbbd14d1c26b9be5a126a5eb8b3ac3a93143fb1a",
+      "count": 10
+    },
+    {
+      "path": "eval_cases_expansion_v1.json",
+      "file_sha256": "34266449dffb691c3d7623f0de5a6efccc3a71c0a87353ce6b90312899eee216",
+      "canonical_json_sha256": "14fc5b7a87f8b5d13023b37fcd6ccd41abb267f28c891195ac8f32c10e14c20c",
+      "count": 10
+    },
+    {
+      "path": "eval_cases_huatuo_v1.json",
+      "file_sha256": "a9c25e140786e2485489aaa06e4993d9ddcfbee812c15a4e4fe50975d9c8f221",
+      "canonical_json_sha256": "feee0feebd77a376b595c3168cf8805bbf8055000c1dc251645d5dc6ea4c6304",
+      "count": 50
+    },
+    {
+      "path": "eval_cases_medlineplus_expansion.json",
+      "file_sha256": "61303f305db3b0c3a6e2a098631fd08c66486d705af89fdf3503e12b2d569532",
+      "canonical_json_sha256": "fe4e86365efc88ac03516b7fb6b0c2d3dddced3c158882395e42914904cdbe9c",
+      "count": 10
+    },
+    {
+      "path": "eval_cases_research.json",
+      "file_sha256": "06f3671332016608740baf10c112ff81b6a51132a4dfc068036e2e2e497af34a",
+      "canonical_json_sha256": "6c4419c16bdb40cc799dbb5295820a4450dae6f5c19ad83b472f16f316da49e4",
+      "count": 111
+    },
+    {
+      "path": "eval_cases_validation_v1.json",
+      "file_sha256": "88e53be42bcb08b45cefcb606455d79d471b4c463e52d2e60d3bf40fd6c64e7a",
+      "canonical_json_sha256": "6cf26a8a0c768d762bd61e3e7931506642fa37b2e702f3296fd807580ab28510",
+      "count": 33
+    },
+    {
+      "path": "evaluation/evidence_cases_v1.json",
+      "file_sha256": "2e395c5fb689a35944f79f1baaa871b29fda50d60aa7edb36961525d46309742",
+      "canonical_json_sha256": "d4217b44a2e61839d39d6e0b3ba8a90691aa7c08bb3f27b9ac54d9e1f26e3663",
+      "count": 24
+    },
+    {
+      "path": "evaluation/frozen_chinese_general_v1.json",
+      "file_sha256": "d240033b2a5e60cf3a9e2010dd5e9f215b4cfe46ef02e6521b0f4217fa78c56a",
+      "canonical_json_sha256": "9ce5e24394e13f571f8554ab58ebf2e29d6a96febbd1f8d37067561e399e1087",
+      "count": 80
+    },
+    {
+      "path": "evaluation/token_cases_v1.json",
+      "file_sha256": "882fad5c131d98cf63904fb491d241409500124746da2e7b6303a7bd7ef1e537",
+      "canonical_json_sha256": "3caf2fcf4e4c584a98be4f09c24d7510e575f53ae461abc454a1f243a48de6d1",
+      "count": 16
+    }
+  ],
+  "exposure_rows": 349,
+  "distinct_historical_inputs": 342,
+  "jaccard_threshold": 0.85,
+  "prior_exposure_matches": 0,
+  "development_validation_near_matches": 0,
+  "validation_run_registered": false,
+  "validation_model_runs": 0,
+  "limitations": [
+    "mechanical checks do not prove semantic independence or an external blind evaluation",
+    "exposure history and authorship declarations are operator attestations, not access controls",
+    "source matching is not clinical review, answer correctness, or permission to publish",
+    "no retrieval, LLM generation, or model quality is measured by this audit",
+    "validation_run binds settings when supplied; pass/fail thresholds and first-use exposure are separate"
+  ]
+}
