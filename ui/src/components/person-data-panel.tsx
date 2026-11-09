@@ -27,7 +27,7 @@ export function PersonDataPanel({ userId }: PersonDataPanelProps) {
 
   return (
     <div className="flex h-full min-h-0 w-full flex-col">
-      <WorkspaceHeader title="个人数据" description="把日常笔记、待办与健康记录，妥善整理在一起。" />
+      <WorkspaceHeader title="我的记录" description="把笔记、待办与健康记录，妥善整理在一起。" />
       <div className="mx-5 mb-5 flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-card sm:mx-8 sm:mb-8">
       <div className="flex shrink-0 gap-1 border-b border-border px-3 sm:px-5" role="tablist" aria-label="个人数据分类">
         {tabs.map(([tab, Icon, label]) => (
@@ -36,7 +36,7 @@ export function PersonDataPanel({ userId }: PersonDataPanelProps) {
             role="tab"
             aria-selected={activeTab === tab}
             onClick={() => setActiveTab(tab)}
-            className={`flex-1 whitespace-nowrap rounded-none py-4 text-xs font-medium flex items-center justify-center gap-1 transition-colors sm:flex-none sm:gap-2 sm:px-5 sm:text-sm ${
+            className={`flex min-h-12 flex-1 items-center justify-center gap-1 whitespace-nowrap rounded-none py-3 text-sm font-medium transition-colors sm:flex-none sm:gap-2 sm:px-5 ${
               activeTab === tab
                 ? 'text-primary border-b-2 border-primary'
                 : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'

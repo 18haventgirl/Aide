@@ -40,24 +40,24 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="app-shell grid overflow-y-auto lg:grid-cols-2">
-      <aside className="hidden flex-col justify-between bg-[#141e30] p-12 text-white lg:flex xl:p-16">
+    <div className="app-shell grid overflow-y-auto lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
+      <aside className="hidden flex-col justify-between bg-[#15243a] p-12 text-white lg:flex xl:p-16">
         <AppLogo />
-        <div className="max-w-md py-12">
-          <p className="mb-5 text-xs font-medium tracking-[0.25em] text-blue-300">YOUR EVERYDAY ASSISTANT</p>
-          <h1 className="text-4xl font-semibold leading-[1.5] tracking-tight">让日常井然有序，<br />让记录清晰可循。</h1>
-          <p className="mt-6 text-sm leading-8 text-slate-400">从随手记下的想法，到每一次就诊的细节。<br />Aide 帮你把重要的信息，放在触手可及的地方。</p>
+        <div className="max-w-lg py-12">
+          <p className="mb-6 text-sm font-medium tracking-[0.18em] text-blue-200">AIDE · 个人记录工作空间</p>
+          <h1 className="text-4xl font-semibold leading-[1.4] tracking-tight xl:text-[2.75rem]">重要的日常，<br />值得好好记录。</h1>
+          <p className="mt-7 max-w-md text-base leading-8 text-slate-300">从一条想法，到一次就诊。把分散的信息整理清楚，需要时从容找回。</p>
           <div className="mt-10 flex flex-wrap gap-3">{[[MessageCircle, '智能对话'], [FileText, '病历解析'], [CheckCircle2, '日常管理']].map(([Icon, label]) => {
             const FeatureIcon = Icon as typeof MessageCircle;
-            return <span key={label as string} className="inline-flex items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-xs text-slate-300"><FeatureIcon className="h-4 w-4 text-blue-300" />{label as string}</span>;
+            return <span key={label as string} className="inline-flex items-center gap-2 rounded-lg border border-white/15 px-3 py-2 text-sm text-slate-200"><FeatureIcon className="h-4 w-4 text-blue-300" />{label as string}</span>;
           })}</div>
         </div>
-        <p className="text-xs text-slate-500">Aide · 个人智能工作空间</p>
+        <p className="text-sm text-slate-400">清晰整理，安心留存。</p>
       </aside>
       <main className="flex items-center justify-center bg-card px-6 py-12 sm:px-12">
-        <div className="w-full max-w-sm">
+        <div className="w-full max-w-[25rem]">
           <div className="mb-12 lg:hidden"><AppLogo /></div>
-          <div className="mb-8"><h2 className="text-2xl font-semibold tracking-tight">欢迎回来</h2><p className="mt-3 text-sm text-muted-foreground">登录 Aide，继续你的个人工作空间。</p></div>
+          <div className="mb-8"><h2 className="text-3xl font-semibold tracking-tight">欢迎回来</h2><p className="mt-3 text-base text-muted-foreground">登录后，继续整理你的日常与健康记录。</p></div>
           {/* Error */}
           {error && (
             <div className="mb-6 p-3.5 bg-destructive/10 border border-destructive/20 rounded-xl flex items-center gap-3 animate-fade-in">
@@ -69,7 +69,7 @@ const Login: React.FC = () => {
           {/* Form */}
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div className="space-y-1.5">
-              <label htmlFor="login-username" className="block text-sm font-medium text-foreground">
+              <label htmlFor="login-username" className="block text-base font-medium text-foreground">
                 用户名
               </label>
               <div className="relative">
@@ -92,7 +92,7 @@ const Login: React.FC = () => {
             </div>
 
             <div className="space-y-1.5">
-              <label htmlFor="login-password" className="block text-sm font-medium text-foreground">
+              <label htmlFor="login-password" className="block text-base font-medium text-foreground">
                 密码
               </label>
               <div className="relative">
@@ -143,12 +143,7 @@ const Login: React.FC = () => {
           </form>
 
           {/* Footer */}
-          <div className="mt-6 pt-5 border-t border-border/50 text-center">
-            <div className="text-xs leading-6 text-muted-foreground">
-
-              <span>测试账号：admin / 密码：admin123456</span>
-            </div>
-          </div>
+          {import.meta.env.DEV && <p className="mt-7 rounded-lg border border-border bg-muted/60 px-4 py-3 text-sm leading-6 text-muted-foreground">本地体验账号：admin · 密码：admin123456</p>}
         </div>
       </main>
     </div>

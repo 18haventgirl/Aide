@@ -64,7 +64,7 @@ export function Chat({
       {!connected && (
         <div className="mx-5 mb-3 flex shrink-0 items-center gap-2 rounded-lg border border-amber-200/60 bg-amber-50 px-3 py-2 text-xs text-amber-800 sm:mx-8">
           <WifiOff className="w-3.5 h-3.5" />
-          <span>{wsStatus === 'connecting' ? '连接中...' : '未连接，消息功能不可用'}</span>
+          <span>{wsStatus === 'connecting' ? '正在连接对话服务…' : '对话服务暂未连接，请稍后重试'}</span>
         </div>
       )}
 
@@ -73,9 +73,9 @@ export function Chat({
         {messages.length === 0 && !streamingResponse && (
           <div className="mx-auto flex min-h-full max-w-3xl flex-col items-center justify-center py-8 text-center">
             <span className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border border-primary/10 bg-primary/5 text-primary"><Bot className="h-7 w-7" strokeWidth={1.5} /></span>
-            <p className="mb-3 text-xs font-medium tracking-[0.15em] text-muted-foreground">AIDE · 你的日常助手</p>
-            <h2 className="text-2xl font-semibold tracking-tight sm:text-3xl">今天，有什么可以帮你？</h2>
-            <p className="mt-3 max-w-md text-sm leading-7 text-muted-foreground">记录想法，安排日常，让零散的信息井井有条。</p>
+            <p className="mb-3 text-sm font-medium tracking-[0.12em] text-muted-foreground">AIDE · 日常与健康记录</p>
+            <h2 className="text-[1.75rem] font-semibold tracking-tight sm:text-3xl">从今天想记录的事开始</h2>
+            <p className="mt-3 max-w-md text-base leading-7 text-muted-foreground">整理待办、留下灵感，也能回顾就诊与身体状况。</p>
             <div className="mt-8 grid w-full gap-3 text-left sm:grid-cols-3">
               {[
                 { title: '整理待办', text: '帮我整理今天需要完成的事情', icon: CheckSquare },
@@ -83,7 +83,7 @@ export function Chat({
                 { title: '聊聊近况', text: '我想记录一下最近的身体状况', icon: MessageCircle },
               ].map(({ title, text, icon: Icon }) => <button key={title} onClick={() => setInputText(text)} disabled={!connected} className="surface-card group p-4 text-left transition-colors hover:border-primary/30 disabled:opacity-60">
                 <span className="flex items-center justify-between text-primary"><Icon className="h-5 w-5" strokeWidth={1.5} /><ArrowUpRight className="h-4 w-4 text-slate-300 group-hover:text-primary" /></span>
-                <span className="mt-3 block text-sm font-medium">{title}</span><span className="mt-1 block text-xs leading-6 text-muted-foreground">{text}</span>
+                <span className="mt-3 block text-base font-medium">{title}</span><span className="mt-1 block text-sm leading-6 text-muted-foreground">{text}</span>
               </button>)}
             </div>
           </div>
@@ -102,7 +102,7 @@ export function Chat({
                   <Bot className="w-4 h-4 text-primary" />
                 </div>
               )}
-              <div className={`min-w-0 ${isUser ? 'max-w-[78%]' : 'max-w-[94%] sm:max-w-[85%]'} overflow-hidden px-4 py-2.5 text-sm leading-relaxed break-words ${
+              <div className={`min-w-0 ${isUser ? 'max-w-[86%] sm:max-w-[78%]' : 'max-w-[92%] sm:max-w-[85%]'} overflow-hidden px-4 py-3 text-base leading-7 break-words ${
                 isUser
                   ? 'msg-user'
                   : isError ? 'msg-error' : 'msg-ai'
@@ -143,7 +143,7 @@ export function Chat({
             <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 mr-2.5 mt-0.5">
               <Bot className="w-4 h-4 text-primary" />
             </div>
-            <div className="min-w-0 max-w-[94%] sm:max-w-[85%] overflow-hidden px-4 py-2.5 msg-streaming text-sm leading-relaxed break-words">
+            <div className="min-w-0 max-w-[92%] sm:max-w-[85%] overflow-hidden px-4 py-3 msg-streaming text-base leading-7 break-words">
               <div className="flex items-center gap-2 mb-2 text-xs text-primary/70 font-medium">
                 <div className="flex gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse-dot" />
@@ -184,7 +184,7 @@ export function Chat({
               aria-label="聊天消息"
               rows={2}
               placeholder={connected ? "输入消息，Enter 发送，Shift + Enter 换行" : "等待聊天服务连接…"}
-              className={`min-w-0 flex-1 resize-none bg-transparent text-sm px-3 py-2.5 outline-none placeholder:text-muted-foreground/50 min-h-[44px] max-h-[120px] ${
+              className={`min-w-0 flex-1 resize-none bg-transparent px-3 py-2.5 text-base leading-7 outline-none placeholder:text-muted-foreground min-h-[48px] max-h-[144px] ${
                 !connected && 'text-muted-foreground/50'
               }`}
               value={inputText}

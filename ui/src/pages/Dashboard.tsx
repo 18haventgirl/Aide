@@ -272,8 +272,8 @@ const Dashboard: React.FC = () => {
   const navigation = [
     { id: 'chat', label: '智能对话', icon: MessageCircle, description: '你的日常助手' },
     { id: 'medical-parser', label: '病历解析', icon: ScanLine, description: '整理就诊信息' },
-    { id: 'personal', label: '个人数据', icon: User, description: '笔记、待办与健康' },
-    { id: 'agents', label: '智能体', icon: Bot, description: '查看协作过程' },
+    { id: 'personal', label: '我的记录', icon: User, description: '笔记、待办与健康' },
+    { id: 'agents', label: '协作过程', icon: Bot, description: '查看助手如何协作' },
   ] as const;
   const selectWorkspace = (next: typeof workspace) => {
     if (next === 'medical-parser') setParserOpened(true);
@@ -284,43 +284,43 @@ const Dashboard: React.FC = () => {
   return (
     <ErrorBoundary>
       <div className="app-shell flex overflow-hidden bg-background">
-        <aside className="hidden w-[216px] shrink-0 flex-col bg-[#141e30] text-white md:flex">
+        <aside className="hidden w-[240px] shrink-0 flex-col bg-[#15243a] text-white lg:flex">
           <div className="px-6 pb-9 pt-7"><AppLogo /></div>
-          <p className="px-6 pb-3 text-[10px] font-medium tracking-[0.2em] text-slate-500">工作空间</p>
+          <p className="px-6 pb-3 text-xs font-medium tracking-[0.16em] text-slate-400">工作空间</p>
           <nav aria-label="主导航" className="space-y-1.5 px-3">
             {navigation.map(({ id, label, icon: Icon }) => <button key={id}
               onClick={() => selectWorkspace(id)} aria-current={workspace === id ? 'page' : undefined}
-              className={`flex w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-sm transition-colors ${workspace === id ? 'bg-primary text-white' : 'text-slate-400 hover:bg-white/5 hover:text-white'}`}>
+              className={`flex min-h-12 w-full items-center gap-3 rounded-lg px-3 py-3 text-left text-base transition-colors ${workspace === id ? 'bg-primary text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white'}`}>
               <Icon className="h-[18px] w-[18px]" /><span>{label}</span>
               {workspace === id && <ChevronRight className="ml-auto h-3.5 w-3.5 opacity-70" />}
             </button>)}
           </nav>
           <div className="mt-auto px-5 pb-5">
             <div className="mb-5 rounded-xl border border-white/10 p-4">
-              <p className="flex items-center gap-2 text-xs font-medium text-slate-300"><ScanLine className="h-4 w-4 text-blue-400" />从原文到清晰记录</p>
-              <p className="mt-2 text-xs leading-6 text-slate-500">上传、核对、保存。让每一次就诊都有迹可循。</p>
+              <p className="flex items-center gap-2 text-sm font-medium text-slate-200"><ScanLine className="h-4 w-4 text-blue-300" />从原文到清晰记录</p>
+              <p className="mt-2 text-sm leading-6 text-slate-300">上传、核对、保存。让每一次就诊都有迹可循。</p>
             </div>
             <div className="flex items-center gap-3 border-t border-white/10 pt-5">
               <span className="flex h-9 w-9 items-center justify-center rounded-full bg-white/10 text-sm text-slate-200">{user?.username?.slice(0, 1).toUpperCase() || 'A'}</span>
-              <div className="min-w-0 flex-1"><p className="truncate text-sm text-slate-200">{user?.username}</p><p className="mt-0.5 text-[11px] text-slate-500">个人工作空间</p></div>
+              <div className="min-w-0 flex-1"><p className="truncate text-sm text-slate-200">{user?.username}</p><p className="mt-0.5 text-xs text-slate-300">个人工作空间</p></div>
               <Button variant="ghost" size="icon" onClick={handleLogout} aria-label="退出登录" className="h-8 w-8 text-slate-400 hover:bg-white/10 hover:text-white"><LogOut className="h-4 w-4" /></Button>
             </div>
           </div>
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
-          <header className="flex h-16 shrink-0 items-center justify-between border-b border-border bg-card px-4 sm:px-8">
+          <header className="flex h-[4.5rem] shrink-0 items-center justify-between border-b border-border bg-card px-5 sm:px-8">
             <div className="flex min-w-0 items-center gap-3">
-              <div className="md:hidden"><AppLogo compact /></div>
-              <span className="hidden text-xs text-muted-foreground md:inline">工作空间</span>
-              <ChevronRight className="hidden h-3.5 w-3.5 text-slate-300 md:block" />
-              <span className="text-sm font-medium">{activeNavigation.label}</span>
+              <div className="lg:hidden"><AppLogo compact /></div>
+              <span className="hidden text-sm text-muted-foreground lg:inline">工作空间</span>
+              <ChevronRight className="hidden h-3.5 w-3.5 text-slate-300 lg:block" />
+              <span className="text-base font-semibold">{activeNavigation.label}</span>
             </div>
             <div className="flex items-center gap-3">
               <span title={wsError || `聊天服务${statusConfig.text}`} className={`inline-flex items-center gap-1.5 text-xs ${statusConfig.color}`}>
                 {statusConfig.icon}<span className="hidden sm:inline">聊天服务 · {statusConfig.text}</span>
               </span>
-              <Button variant="ghost" size="icon" onClick={handleLogout} aria-label="退出登录" className="h-8 w-8 text-muted-foreground md:hidden"><LogOut className="h-4 w-4" /></Button>
+              <Button variant="ghost" size="icon" onClick={handleLogout} aria-label="退出登录" className="h-10 w-10 text-muted-foreground lg:hidden"><LogOut className="h-4 w-4" /></Button>
             </div>
           </header>
 
@@ -337,10 +337,10 @@ const Dashboard: React.FC = () => {
             {workspace === 'agents' && <AgentPanel agents={agents} currentAgent={currentAgent} events={events} guardrails={guardrails} context={context} />}
           </main>
 
-          <nav aria-label="移动端主导航" className="safe-bottom grid shrink-0 grid-cols-4 border-t border-border bg-card md:hidden">
+          <nav aria-label="窄屏主导航" className="safe-bottom grid shrink-0 grid-cols-4 border-t border-border bg-card lg:hidden">
             {navigation.map(({ id, label, icon: Icon }) => <button key={id} onClick={() => selectWorkspace(id)}
               aria-current={workspace === id ? 'page' : undefined}
-              className={`flex min-h-16 flex-col items-center justify-center gap-1 rounded-none text-[11px] ${workspace === id ? 'text-primary' : 'text-muted-foreground'}`}>
+              className={`flex min-h-[4.5rem] flex-col items-center justify-center gap-1 rounded-none px-0.5 text-xs sm:text-sm ${workspace === id ? 'text-primary' : 'text-muted-foreground'}`}>
               <span className={`rounded-lg px-4 py-1 ${workspace === id ? 'bg-primary/10' : ''}`}><Icon className="h-[18px] w-[18px]" /></span>{label}
             </button>)}
           </nav>

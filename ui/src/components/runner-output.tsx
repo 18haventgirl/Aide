@@ -1,5 +1,11 @@
 import { Terminal, ArrowRight, Wrench, FileText } from "lucide-react";
 import type { AgentEvent } from "../lib/types";
+import { agentLabel } from "../lib/agent-labels";
+
+const eventLabels: Record<string, string> = {
+  handoff: '任务转交', tool_call: '调用工具', tool_output: '工具结果',
+  context_update: '信息更新', message: '对话消息',
+};
 
 interface RunnerOutputProps {
   runnerEvents: AgentEvent[];
@@ -43,12 +49,12 @@ export function RunnerOutput({ runnerEvents }: RunnerOutputProps) {
       const date = new Date(timestamp);
       // 检查转换后的日期是否有效
       if (isNaN(date.getTime())) {
-        return 'Invalid Date';
+        return '时间未记录';
       }
       return date.toLocaleTimeString();
     } catch (error) {
       console.error('Error formatting timestamp:', error);
-      return 'Time Error';
+      return '时间未记录';
     }
   };
 
@@ -68,14 +74,14 @@ export function RunnerOutput({ runnerEvents }: RunnerOutputProps) {
               {getEventIcon(event.type)}
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 mb-1">
-                  <span className="text-xs font-medium text-gray-900 uppercase">
-                    {event.type}
+                  <span className="text-sm font-medium text-foreground">
+                    {eventLabels[event.type] ?? '运行事件'}
                   </span>
-                  <span className="text-xs text-gray-600">
-                    by {event.agent}
+                  <span className="text-sm text-muted-foreground">
+                    · {agentLabel(event.agent)}
                   </span>
                 </div>
-                <p className="text-xs text-gray-700 break-words [overflow-wrap:anywhere]">
+                <p className="break-words text-sm text-foreground [overflow-wrap:anywhere]">
                   {event.content}
                 </p>
                 

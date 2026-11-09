@@ -16,7 +16,7 @@ export function PanelSection({
   return (
     <div className="surface-card min-w-0 overflow-hidden">
       <div className="flex items-center justify-between border-b border-border px-5 py-4">
-        <h3 className="text-sm font-semibold">{title}</h3>
+        <h3 className="text-base font-semibold">{title}</h3>
         {collapsible && (
           <button onClick={() => setIsOpen(!isOpen)} aria-label={`${isOpen ? '收起' : '展开'}${title}`} aria-expanded={isOpen} className="rounded p-1 hover:bg-muted">
             {isOpen ? <ChevronUp className="h-4 w-4 text-muted-foreground" /> : <ChevronDown className="h-4 w-4 text-muted-foreground" />}

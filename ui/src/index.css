@@ -5,8 +5,8 @@
 @layer base {
   :root {
     /* === Semantic Color Tokens (SaaS Blue) === */
-    --background: 220 25% 97%;
-    --foreground: 222 47% 11%;
+    --background: 218 24% 97%;
+    --foreground: 222 34% 17%;
 
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
@@ -14,7 +14,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    --primary: 224 76% 56%;
+    --primary: 219 66% 46%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96%;
@@ -24,7 +24,7 @@
     --accent-foreground: 222 35% 20%;
 
     --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    --muted-foreground: 215 17% 39%;
 
     --success: 142 71% 45%;
     --success-foreground: 0 0% 100%;
@@ -37,7 +37,7 @@
 
     --border: 214 32% 91%;
     --input: 214 32% 91%;
-    --ring: 224 76% 56%;
+    --ring: 219 66% 46%;
 
     --radius: 0.75rem;
 
@@ -60,7 +60,8 @@
     width: 100%;
     height: 100dvh;
     min-width: 320px;
-    font-size: 14px;
+    font-size: 16px;
+    line-height: 1.6;
     overflow: hidden;
   }
 
@@ -76,11 +77,11 @@
 @layer components {
   .app-shell { height: 100vh; height: 100dvh; }
   .workspace-header {
-    @apply flex shrink-0 flex-wrap items-center justify-between gap-4 px-5 pb-5 pt-6 sm:px-8 sm:pb-6 sm:pt-8;
+    @apply flex shrink-0 flex-wrap items-center justify-between gap-4 px-5 pb-5 pt-6 sm:px-8 sm:pb-7 sm:pt-8;
   }
-  .surface-card { @apply rounded-xl border border-border bg-card; }
+  .surface-card { @apply rounded-xl border border-border bg-card shadow-sm; }
   .field-control {
-    @apply w-full rounded-lg border border-input bg-card px-3 py-2 text-sm leading-6 text-foreground outline-none transition-colors placeholder:text-muted-foreground/60 focus:border-primary focus:ring-2 focus:ring-primary/10 disabled:bg-muted/60 disabled:text-muted-foreground;
+    @apply w-full rounded-lg border border-input bg-card px-3 py-2 text-base leading-6 text-foreground outline-none transition-colors placeholder:text-muted-foreground focus:border-primary focus:ring-2 focus:ring-primary/10 disabled:bg-muted/60 disabled:text-muted-foreground;
   }
   /* Existing surfaces share the same opaque card treatment. */
   .glass-card, .glass-card-strong, .glass-frosted, .glass-tinted, .glass-gradient-border {

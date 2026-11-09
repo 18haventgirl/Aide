@@ -1,5 +1,6 @@
 import { Badge } from "./ui/badge";
 import type { Agent } from "../lib/types";
+import { agentDescription, agentLabel } from "../lib/agent-labels";
 
 interface AgentsListProps {
   agents: Agent[];
@@ -20,11 +21,11 @@ export function AgentsList({ agents, currentAgent }: AgentsListProps) {
         >
           <div className="flex min-w-0 items-start justify-between gap-2">
             <div className="min-w-0 flex-1">
-              <h3 className="font-semibold text-sm text-gray-900">
-                {agent.name}
+              <h3 className="text-base font-semibold text-foreground">
+                {agentLabel(agent.name)}
               </h3>
-              <p className="text-xs text-gray-600 mt-1 break-words [overflow-wrap:anywhere]">
-                {agent.description}
+              <p className="mt-1 break-words text-sm text-muted-foreground [overflow-wrap:anywhere]">
+                {agentDescription(agent.name, agent.description)}
               </p>
             </div>
             {currentAgent === agent.name && (
@@ -36,7 +37,7 @@ export function AgentsList({ agents, currentAgent }: AgentsListProps) {
           
           {agent.tools.length > 0 && (
             <div className="mt-3">
-              <h4 className="text-xs font-medium text-gray-700 mb-1">
+              <h4 className="mb-1 text-sm font-medium text-foreground">
                 可用工具:
               </h4>
               <div className="flex flex-wrap gap-1">
@@ -51,13 +52,13 @@ export function AgentsList({ agents, currentAgent }: AgentsListProps) {
           
           {agent.handoffs.length > 0 && (
             <div className="mt-2">
-              <h4 className="text-xs font-medium text-gray-700 mb-1">
+              <h4 className="mb-1 text-sm font-medium text-foreground">
                 可转交给:
               </h4>
               <div className="flex flex-wrap gap-1">
                 {[...new Set(agent.handoffs)].map((handoff, handoffIndex) => (
                   <Badge key={`handoff-${agentIndex}-${handoffIndex}-${handoff}`} variant="secondary" className="text-xs">
-                    {handoff}
+                    {agentLabel(handoff)}
                   </Badge>
                 ))}
               </div>

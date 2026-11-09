@@ -116,7 +116,7 @@ export function TodosPanel({ userId }: TodosPanelProps) {
         <div className="px-5 py-3 border-b border-border bg-muted/20 animate-fade-in">
           <div className="grid grid-cols-4 gap-2 text-center">
             {[['总计', 'text-blue-600', stats.total], ['完成', 'text-green-600', stats.completed], ['待办', 'text-amber-600', stats.pending], ['过期', 'text-red-600', stats.overdue]].map(([l, c, v]) => (
-              <div key={l as string}><div className={`text-lg font-bold ${c}`}>{v}</div><div className="text-[10px] text-muted-foreground">{l}</div></div>
+              <div key={l as string}><div className={`text-lg font-bold ${c}`}>{v}</div><div className="text-xs text-muted-foreground">{l}</div></div>
             ))}
           </div>
         </div>
@@ -155,13 +155,13 @@ export function TodosPanel({ userId }: TodosPanelProps) {
                     <h4 className={`text-sm truncate ${t.completed ? 'line-through text-muted-foreground' : 'text-foreground font-medium'}`}>{t.title}</h4>
                     {t.description && <p className="text-xs text-muted-foreground truncate mt-0.5">{t.description}</p>}
                     <div className="flex items-center gap-1.5 mt-1 flex-wrap">
-                      <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] rounded-full ${pc(t.priority)}`}><Flag className="w-2.5 h-2.5" />{pt(t.priority)}</span>
+                      <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 text-xs rounded-full ${pc(t.priority)}`}><Flag className="w-2.5 h-2.5" />{pt(t.priority)}</span>
                       {t.due_date && (
-                        <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] rounded-full ${t.is_overdue && !t.completed ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600'}`}>
+                        <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 text-xs rounded-full ${t.is_overdue && !t.completed ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600'}`}>
                           <Calendar className="w-2.5 h-2.5" />{fmt(t.due_date)}
                         </span>
                       )}
-                      {t.is_overdue && !t.completed && <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] bg-red-50 text-red-600 rounded-full"><AlertCircle className="w-2.5 h-2.5" />过期</span>}
+                      {t.is_overdue && !t.completed && <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-xs bg-red-50 text-red-600 rounded-full"><AlertCircle className="w-2.5 h-2.5" />过期</span>}
                     </div>
                   </div>
                   {/* ... menu */}

@@ -194,9 +194,9 @@ export function NotesPanel({ userId }: NotesPanelProps) {
                     <h4 className="text-sm font-medium text-foreground truncate">{n.title}</h4>
                     {(n.snippet || n.content) && <p className="text-xs text-muted-foreground line-clamp-2 break-words mt-0.5">{n.snippet || n.content}</p>}
                     <div className="flex items-center gap-1.5 mt-1.5 flex-wrap">
-                      {n.tag && <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] bg-primary/10 text-primary rounded-full"><Tag className="w-2.5 h-2.5" />{tagLabel(n.tag)}</span>}
-                      <span className={`px-1.5 py-0.5 text-[10px] rounded-full ${sc(n.status)}`}>{n.status === 'draft' ? '草稿' : n.status === 'published' ? '已发布' : '归档'}</span>
-                      <span className="text-[10px] text-muted-foreground/60">{fmt(n.last_updated)}</span>
+                      {n.tag && <span className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-xs bg-primary/10 text-primary rounded-full"><Tag className="w-2.5 h-2.5" />{tagLabel(n.tag)}</span>}
+                      <span className={`px-1.5 py-0.5 text-xs rounded-full ${sc(n.status)}`}>{n.status === 'draft' ? '草稿' : n.status === 'published' ? '已发布' : '归档'}</span>
+                      <span className="text-xs text-muted-foreground/60">{fmt(n.last_updated)}</span>
                     </div>
                   </div>
                   {/* ... menu */}
