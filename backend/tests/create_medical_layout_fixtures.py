@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-OUTPUT = ROOT / "backend" / "tests" / "fixtures" / "medical-layout"
+OUTPUT = ROOT / "logs" / "parser-format-matrix"
 
 IDENTITY = [
     ("姓名", "周示例", "性别", "女"),
@@ -159,7 +159,7 @@ def main() -> None:
             {"name": "fictional-handwritten-note.pdf", "purpose": "扫描 PDF 表格 OCR、手写备注与模拟签名原件预览。"},
         ],
     }
-    (OUTPUT / "manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
+    (OUTPUT / "layout-manifest.json").write_text(json.dumps(manifest, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"Created {len(manifest['files'])} fictional fixtures in {OUTPUT}")
 
 

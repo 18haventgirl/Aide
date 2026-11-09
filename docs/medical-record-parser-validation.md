@@ -2,7 +2,7 @@
 
 ## 表格与模拟手写版式补充（2026-11-09）
 
-新增四份可直接上传的虚构材料，位于 [`backend/tests/fixtures/medical-layout/`](../backend/tests/fixtures/medical-layout/README.md)，生成器为 `backend/tests/create_medical_layout_fixtures.py`。DOCX 和文字 PDF 包含姓名、日期、过敏史、现病史、诊断与医嘱的表格；PNG 和扫描 PDF 在相同表格下增加蓝色模拟手写备注、模拟签名。材料均无真实患者或医护签名。
+新增四份可直接上传的虚构材料，位于本机 `logs/parser-format-matrix/`，文件名以 `fictional-` 开头，清单为 `layout-manifest.json`；原有格式矩阵的 `manifest.json` 不变。生成器为 `backend/tests/create_medical_layout_fixtures.py`，可用于重新生成；`logs/` 不纳入 Git。DOCX 和文字 PDF 包含姓名、日期、过敏史、现病史、诊断与医嘱的表格；PNG 和扫描 PDF 在相同表格下增加蓝色模拟手写备注、模拟签名。材料均无真实患者或医护签名。
 
 | 样例 | 本地读取方式 | 来源行数 | 关键字段原文检查 |
 | --- | --- | ---: | --- |
