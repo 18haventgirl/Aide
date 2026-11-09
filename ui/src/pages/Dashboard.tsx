@@ -22,6 +22,22 @@ import { AppLogo } from "../components/app-logo";
    Session Persistence Helpers
    ================================================================ */
 const STORAGE_KEY = 'current_conversation_id';
+const SIDEBAR_WIDTH_KEY = 'aide.sidebarWidth';
+const DEFAULT_SIDEBAR_WIDTH = 240;
+const MIN_SIDEBAR_WIDTH = 200;
+const MAX_SIDEBAR_WIDTH = 420;
+
+const clampSidebarWidth = (width: number) => {
+  const available = typeof window === 'undefined' ? MAX_SIDEBAR_WIDTH : window.innerWidth - 640;
+  return Math.max(MIN_SIDEBAR_WIDTH, Math.min(width, MAX_SIDEBAR_WIDTH, available));
+};
+
+const restoreSidebarWidth = () => {
+  try {
+    const saved = Number(localStorage.getItem(SIDEBAR_WIDTH_KEY));
+    return clampSidebarWidth(saved || DEFAULT_SIDEBAR_WIDTH);
+  } catch { return DEFAULT_SIDEBAR_WIDTH; }
+};
 
 const saveConversationId = (id: string | null) => {
   try {
@@ -49,6 +65,52 @@ const Dashboard: React.FC = () => {
   const [workspace, setWorkspace] = useState<'chat' | 'medical-parser' | 'personal' | 'agents'>('chat');
   const [parserOpened, setParserOpened] = useState(false);
   const [healthRevision, setHealthRevision] = useState(0);
+  const [sidebarWidth, setSidebarWidth] = useState(restoreSidebarWidth);
+  const sidebarDrag = useRef<{ pointerId: number; startX: number; startWidth: number; currentWidth: number } | null>(null);
+
+  const saveSidebarWidth = (width: number) => {
+    const next = clampSidebarWidth(width);
+    setSidebarWidth(next);
+    try { localStorage.setItem(SIDEBAR_WIDTH_KEY, String(next)); } catch { /* Storage may be unavailable. */ }
+  };
+
+  useEffect(() => {
+    const fitSidebar = () => setSidebarWidth(width => clampSidebarWidth(width));
+    window.addEventListener('resize', fitSidebar);
+    return () => window.removeEventListener('resize', fitSidebar);
+  }, []);
+
+  const beginSidebarDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.button !== 0) return;
+    event.preventDefault();
+    sidebarDrag.current = { pointerId: event.pointerId, startX: event.clientX, startWidth: sidebarWidth, currentWidth: sidebarWidth };
+    event.currentTarget.setPointerCapture(event.pointerId);
+  };
+
+  const moveSidebarDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    const drag = sidebarDrag.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    drag.currentWidth = clampSidebarWidth(drag.startWidth + event.clientX - drag.startX);
+    setSidebarWidth(drag.currentWidth);
+  };
+
+  const finishSidebarDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    const drag = sidebarDrag.current;
+    if (!drag || drag.pointerId !== event.pointerId) return;
+    sidebarDrag.current = null;
+    saveSidebarWidth(drag.currentWidth);
+    if (event.currentTarget.hasPointerCapture(event.pointerId)) event.currentTarget.releasePointerCapture(event.pointerId);
+  };
+
+  const handleSidebarKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    const next = event.key === 'ArrowLeft' ? sidebarWidth - 16
+      : event.key === 'ArrowRight' ? sidebarWidth + 16
+      : event.key === 'Home' ? MIN_SIDEBAR_WIDTH
+      : event.key === 'End' ? MAX_SIDEBAR_WIDTH : null;
+    if (next === null) return;
+    event.preventDefault();
+    saveSidebarWidth(next);
+  };
 
   /* ---- Data state ---- */
   const [messages, setMessages] = useState<Message[]>([]);
@@ -284,7 +346,7 @@ const Dashboard: React.FC = () => {
   return (
     <ErrorBoundary>
       <div className="app-shell flex overflow-hidden bg-background">
-        <aside className="hidden w-[240px] shrink-0 flex-col bg-[#15243a] text-white lg:flex">
+        <aside className="relative hidden shrink-0 flex-col bg-[#15243a] text-white lg:flex" style={{ width: sidebarWidth }}>
           <div className="px-6 pb-9 pt-7"><AppLogo /></div>
           <p className="px-6 pb-3 text-xs font-medium tracking-[0.16em] text-slate-400">工作空间</p>
           <nav aria-label="主导航" className="space-y-1.5 px-3">
@@ -305,6 +367,27 @@ const Dashboard: React.FC = () => {
               <div className="min-w-0 flex-1"><p className="truncate text-sm text-slate-200">{user?.username}</p><p className="mt-0.5 text-xs text-slate-300">个人工作空间</p></div>
               <Button variant="ghost" size="icon" onClick={handleLogout} aria-label="退出登录" className="h-8 w-8 text-slate-400 hover:bg-white/10 hover:text-white"><LogOut className="h-4 w-4" /></Button>
             </div>
+          </div>
+          <div
+            role="separator"
+            aria-label="调整左侧导航宽度"
+            aria-orientation="vertical"
+            aria-valuemin={MIN_SIDEBAR_WIDTH}
+            aria-valuemax={Math.max(MIN_SIDEBAR_WIDTH, Math.min(MAX_SIDEBAR_WIDTH, window.innerWidth - 640))}
+            aria-valuenow={sidebarWidth}
+            aria-valuetext={`${sidebarWidth} 像素`}
+            tabIndex={0}
+            title="拖动调整宽度 · 双击恢复默认宽度"
+            onPointerDown={beginSidebarDrag}
+            onPointerMove={moveSidebarDrag}
+            onPointerUp={finishSidebarDrag}
+            onPointerCancel={finishSidebarDrag}
+            onLostPointerCapture={finishSidebarDrag}
+            onDoubleClick={() => saveSidebarWidth(DEFAULT_SIDEBAR_WIDTH)}
+            onKeyDown={handleSidebarKeyDown}
+            className="group absolute inset-y-0 right-0 z-20 w-3 translate-x-1/2 cursor-col-resize touch-none outline-none"
+          >
+            <span aria-hidden="true" className="absolute inset-y-0 left-1/2 w-px -translate-x-1/2 bg-white/15 transition-[width,background-color] group-hover:w-1 group-hover:bg-blue-300 group-focus-visible:w-1 group-focus-visible:bg-blue-300" />
           </div>
         </aside>
 
