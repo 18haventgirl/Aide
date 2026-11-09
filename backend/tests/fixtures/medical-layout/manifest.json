@@ -1,0 +1,28 @@
+{
+  "disclaimer": "全为虚构资料，蓝色手写和签名仅为模拟视觉标记，不是真实患者或医护签名。",
+  "facts_to_check": {
+    "name": "周示例",
+    "date": "2026-10-09",
+    "allergy": "青霉素过敏",
+    "diagnosis_qualifier": "待排",
+    "negation": "否认胸痛"
+  },
+  "files": [
+    {
+      "name": "fictional-table.docx",
+      "purpose": "DOCX 文字表格读取；页面展示为提取后的原文。"
+    },
+    {
+      "name": "fictional-table.pdf",
+      "purpose": "文字 PDF 表格读取和 PDF 原件预览。"
+    },
+    {
+      "name": "fictional-handwritten-note.png",
+      "purpose": "扫描表格 OCR、手写备注与模拟签名原件预览。"
+    },
+    {
+      "name": "fictional-handwritten-note.pdf",
+      "purpose": "扫描 PDF 表格 OCR、手写备注与模拟签名原件预览。"
+    }
+  ]
+}

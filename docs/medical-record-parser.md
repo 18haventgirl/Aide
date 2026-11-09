@@ -102,4 +102,6 @@ npm run build
 
 测试覆盖 TXT、DOCX、文字 PDF、PNG、JPG、JPEG、扫描 PDF、混合 PDF，以及原文顺序、输入限制、DOCX 图片防遗漏、PDF 页数与密码保护、虚构字段/伪造引用/丢失限定词、基础字段名前缀清理、用户隔离、确认前不入健康记录、人工修正留痕、并发确认、删除和 API 流程。格式矩阵使用真实文件解码和本地 OCR，只替换远程模型；真实模型在浏览器流程中另行验证。不设置 `MEDICAL_PARSER_TEST_FIXTURES` 时会明确跳过矩阵测试，不能据此宣称全部格式已通过。具体实测记录见 `medical-record-parser-validation.md`。
 
+额外的版式测试文件在 [`backend/tests/fixtures/medical-layout/`](../backend/tests/fixtures/medical-layout/README.md)：DOCX 文字表格、文字 PDF 表格，以及含模拟手写备注和签名的 PNG/扫描 PDF。可运行 `python backend/tests/create_medical_layout_fixtures.py` 重新生成。此组材料用于观察原文提取、OCR 和原件预览，不代表手写识别准确率；本地检查记录见 `medical-record-parser-validation.md`。
+
 第一版不做化验数值的专用表格识别，不生成新诊断或调整治疗，不支持手写保证、跨页病历拼接、批量异步队列或图像坐标框。原文校验只能校验取字后的文本；OCR 读错原件仍需人工发现。进程异常或请求断开时未完成解析不会自动恢复；确认已写入的结果可从最近记录恢复。真实脱敏病历的提取质量尚需样本评估。
